@@ -483,8 +483,9 @@ class Api {
 
   Future<HttpResponse<String>> scriptDetail(String name, String? path) async {
     return await getIt<Http>(instanceName: index.toString()).get<String>(
-      getIt<Url>(instanceName: index.toString()).scriptDetailForReadFile + name,
+      getIt<Url>(instanceName: index.toString()).scriptDetailForReadFile,
       {
+        "file": name,
         "path": path,
       },
     );
