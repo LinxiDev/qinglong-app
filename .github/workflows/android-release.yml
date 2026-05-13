@@ -63,7 +63,7 @@ jobs:
 
           echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
           echo "tag=v${VERSION}" >> "$GITHUB_OUTPUT"
-          echo "apk_file=qinglong_app-v${VERSION}.apk" >> "$GITHUB_OUTPUT"
+          echo "apk_file=qinglong_app-${VERSION}.apk" >> "$GITHUB_OUTPUT"
           echo "本次发布版本：v${VERSION}"
 
       - name: 安装 Java 环境
@@ -129,7 +129,7 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ steps.version.outputs.tag }}
-          name: Release ${{ steps.version.outputs.tag }}
+          name: ${{ steps.version.outputs.tag }}
           prerelease: false
           make_latest: true
           generate_release_notes: true

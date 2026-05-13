@@ -39,7 +39,7 @@ git push origin v1.0.0
 推送 `v*` 标签后，会自动运行 `Android 正式发布`，并创建 GitHub Release：
 
 ```text
-Releases -> Release v1.0.0 -> qinglong_app-v1.0.0.apk
+Releases -> v1.0.0 -> qinglong_app-1.0.0.apk
 ```
 
 ### 手动发布
