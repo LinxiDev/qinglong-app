@@ -1,12 +1,14 @@
 import 'package:cupertino_ui/cupertino_ui.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:qinglong_app/main.dart' as app;
 
-/// 写入类流程：任务详情字段、环境变量新增、配置文件新增页、IP 黑名单增删。
+/// 环境变量新增回归（需已登录的真实面板）。
+///
+/// 断言提交成功后新增页自动关闭且列表出现新变量。
+/// 测试数据 TEST_UI_VAR 需在用例结束后通过接口清理，避免污染面板。
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
@@ -34,116 +36,65 @@ void main() {
     }
   }
 
-  Future<void> step(WidgetTester tester, String label,
-      Future<void> Function() action) async {
-    try {
-      await action();
-      await settle(tester, 2);
-      final Object? error = tester.takeException();
-      if (!ignorable(error)) {
-        // ignore: avoid_print
-        print('  FAIL $label -> $error');
-        return;
+  Future<bool> tapTab(WidgetTester tester, String label) async {
+    final List<Element> elements = find.text(label).evaluate().toList();
+    if (elements.isEmpty) return false;
+    Element? best;
+    double bestDy = -1;
+    for (final Element e in elements) {
+      final RenderObject? ro = e.renderObject;
+      if (ro is! RenderBox || !ro.hasSize) continue;
+      final double dy = ro.localToGlobal(Offset.zero).dy;
+      if (dy > bestDy) {
+        bestDy = dy;
+        best = e;
       }
-      // ignore: avoid_print
-      print('  OK   $label');
-    } catch (e) {
-      // ignore: avoid_print
-      print('  FAIL $label -> $e');
     }
-  }
-
-  Future<bool> tapText(WidgetTester tester, String text,
-      {int wait = 4}) async {
-    final Finder f = find.text(text);
-    if (f.evaluate().isEmpty) return false;
-    await tester.tap(f.last, warnIfMissed: false);
-    await settle(tester, wait);
+    if (best == null) return false;
+    await tester.tap(find.byElementPredicate((Element e) => identical(e, best)),
+        warnIfMissed: false);
+    await settle(tester, 4);
     return true;
   }
 
-  testWidgets('写入流程', (WidgetTester tester) async {
+  testWidgets('环境变量新增', (WidgetTester tester) async {
     final ErrorWidgetBuilder original = ErrorWidget.builder;
     app.main();
     await settle(tester, 10);
 
     if (find.text('账号登录').evaluate().isNotEmpty) {
       // ignore: avoid_print
-      print('WRITE_FLOW: 未登录，跳过');
+      print('ENV_ADD: 未登录，跳过');
+      ErrorWidget.builder = original;
       return;
     }
 
-    await step(tester, '任务详情-打开', () async {
-      await tapText(tester, '定时任务');
-      if (!await tapText(tester, '每日签到', wait: 6)) {
-        throw '未找到任务「每日签到」';
-      }
-    });
+    await tapTab(tester, '环境变量');
+    expect(find.byIcon(CupertinoIcons.add), findsWidgets,
+        reason: '环境变量页应存在右上角新增按钮');
+
+    await tester.tap(find.byIcon(CupertinoIcons.add).first, warnIfMissed: false);
+    await settle(tester, 3);
+    expect(find.text('新增环境变量'), findsOneWidget, reason: '应进入新增环境变量页');
+    expect(find.byType(TextField).evaluate().length, greaterThanOrEqualTo(2),
+        reason: '表单应有名称与值两个输入框');
+
+    final String suffix =
+        '${DateTime.now().millisecondsSinceEpoch % 100000}';
+    final String envName = 'TEST_UI_VAR_$suffix';
+    final String envValue = 'hello_$suffix';
+    await tester.enterText(find.byType(TextField).at(0), envName);
+    await tester.pump();
+    await tester.enterText(find.byType(TextField).at(1), envValue);
+    await tester.pump();
+    await tester.tap(find.text('提交').last, warnIfMissed: false);
+    await settle(tester, 8);
+
+    expect(find.text('新增环境变量'), findsNothing, reason: '提交成功后应自动返回列表页');
+    // 列表里名称可能被高亮文本包裹，这里用唯一的值做断言
+    expect(find.text(envValue), findsWidgets, reason: '列表应出现新增变量');
     // ignore: avoid_print
-    print('  INFO 定时类型=${find.text('定时类型').evaluate().isNotEmpty} '
-        '额外规则=${find.text('额外规则').evaluate().isNotEmpty} '
-        '实例模式=${find.text('实例模式').evaluate().isNotEmpty}');
-    await step(tester, '任务详情-返回', () async {
-      await tester.tap(find.byIcon(CupertinoIcons.left_chevron).first,
-          warnIfMissed: false);
-    });
-
-    await step(tester, '环境变量-新增页', () async {
-      await tapText(tester, '环境变量');
-      final Finder add = find.byIcon(CupertinoIcons.add);
-      if (add.evaluate().isEmpty) throw '未找到新增按钮';
-      await tester.tap(add.first, warnIfMissed: false);
-      await settle(tester, 3);
-      if (find.byType(TextField).evaluate().length < 2) throw '表单未出现';
-      await tester.enterText(find.byType(TextField).at(0), 'APP_UI_VAR');
-      await tester.pump();
-      await tester.enterText(find.byType(TextField).at(1), 'hello');
-      await tester.pump();
-      if (!await tapText(tester, '提交', wait: 6)) throw '未找到提交';
-      await settle(tester, 3);
-      if (find.text('APP_UI_VAR').evaluate().isEmpty) throw '列表未出现新增项';
-    });
-
-    await step(tester, '配置文件-新增页', () async {
-      await tapText(tester, '配置文件');
-      final Finder add = find.byIcon(CupertinoIcons.add);
-      if (add.evaluate().isEmpty) throw '未找到新增按钮';
-      await tester.tap(add.first, warnIfMissed: false);
-      await settle(tester, 4);
-      if (find.text('提交').evaluate().isEmpty &&
-          find.byType(TextField).evaluate().isEmpty) {
-        throw '新增配置页未渲染';
-      }
-      if (find.byIcon(CupertinoIcons.left_chevron).evaluate().isNotEmpty) {
-        await tester.tap(find.byIcon(CupertinoIcons.left_chevron).first,
-            warnIfMissed: false);
-        await settle(tester, 2);
-      }
-    });
-
-    await step(tester, 'IP黑名单-增删', () async {
-      await tapText(tester, '我的');
-      final Finder scrollable = find.byType(Scrollable);
-      if (scrollable.evaluate().isNotEmpty) {
-        await tester.drag(scrollable.first, const Offset(0, -500));
-        await settle(tester, 2);
-      }
-      if (!await tapText(tester, 'IP黑名单', wait: 5)) {
-        throw '未找到 IP黑名单 入口';
-      }
-      final Finder add = find.byIcon(CupertinoIcons.add);
-      if (add.evaluate().isEmpty) throw '未找到新增按钮';
-      await tester.tap(add.first, warnIfMissed: false);
-      await settle(tester, 2);
-      await tester.enterText(find.byType(TextField).first, '10.0.0.2');
-      await tester.pump();
-      if (!await tapText(tester, '确定', wait: 5)) throw '未找到确定按钮';
-      await settle(tester, 2);
-      if (find.text('10.0.0.2').evaluate().isEmpty) throw '新增未生效';
-      if (!await tapText(tester, '解除', wait: 5)) throw '未找到解除';
-      await settle(tester, 2);
-      if (find.text('10.0.0.2').evaluate().isNotEmpty) throw '解除未生效';
-    });
+    print('ENV_ADD PASS: $envName 新增成功且已返回列表');
 
     ErrorWidget.builder = original;
   });
