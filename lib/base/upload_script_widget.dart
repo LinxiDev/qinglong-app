@@ -2,21 +2,17 @@ import 'dart:io';
 import 'dart:math';
 import 'package:path/path.dart' as ints;
 import 'package:file_picker/file_picker.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
+import 'package:cupertino_ui/cupertino_ui.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:qinglong_app/base/commit_button.dart';
 import 'package:qinglong_app/base/cupertino_sheet.dart';
-import 'package:qinglong_app/base/sp_const.dart';
 import 'package:qinglong_app/base/theme.dart';
 import 'package:qinglong_app/base/ui/lazy_load_state.dart';
 import 'package:qinglong_app/base/ui/loading_widget.dart';
 import 'package:qinglong_app/base/ui/tree/models/script_data.dart';
-import 'package:qinglong_app/main.dart';
 import 'package:qinglong_app/module/others/scripts/script_code_detail_page.dart';
 import 'package:qinglong_app/base/http/http.dart';
 import 'package:qinglong_app/utils/extension.dart';
-import 'package:qinglong_app/utils/sp_utils.dart';
 import '../module/others/scripts/script_download_page.dart';
 import '../module/subscribe/add_subscribe_page.dart';
 import 'single_account_page.dart';
@@ -164,7 +160,7 @@ class UploadScriptWidgetState extends ConsumerState<UploadScriptWidget>
                   CupertinoIcons.chevron_up_chevron_down,
                   size: 16,
                 ),
-                value: scriptPath,
+                initialValue: scriptPath,
                 onChanged: (value) {
                   scriptPath = value ?? "";
                   widget.nameCallBack(fileName);
@@ -252,9 +248,9 @@ class UploadScriptWidgetState extends ConsumerState<UploadScriptWidget>
   }
 
   void pickLocalFile() async {
-    FilePickerResult? result = await FilePicker.platform.pickFiles();
-    if (result != null && result.files.isNotEmpty && result.files.single.path != null) {
-      file = File(result.files.single.path!);
+    final List<PlatformFile> files = await FilePicker.pickFiles();
+    if (files.isNotEmpty && files.first.path != null) {
+      file = File(files.first.path!);
       fileName = null;
 
       if (file == null) return;

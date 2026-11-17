@@ -1,7 +1,7 @@
 import 'dart:convert';
 
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
+import 'package:cupertino_ui/cupertino_ui.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:qinglong_app/base/commit_button.dart';
@@ -100,7 +100,7 @@ class _AddDependencyPageState extends ConsumerState<AddDependencyPage> {
                     CupertinoIcons.chevron_up_chevron_down,
                     size: 16,
                   ),
-                  value: DepedencyEnum.NodeJS,
+                  initialValue: DepedencyEnum.NodeJS,
                   onChanged: (value) {
                     depedencyType = value!;
                   },

@@ -1,7 +1,7 @@
 import 'dart:math';
 
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
+import 'package:cupertino_ui/cupertino_ui.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -25,6 +25,7 @@ import '../../code_editor/codemirror/io.dart';
 import '../../code_editor/editor.dart';
 import '../../config/config_detail_page.dart';
 import '../../home/system_bean.dart';
+import 'script_history_page.dart';
 import 'script_upload_page.dart';
 
 class ScriptDetailPage extends ConsumerStatefulWidget {
@@ -105,6 +106,57 @@ class _ScriptDetailPageState extends ConsumerState<ScriptDetailPage> with LazyLo
         ),
         addDivider(),
         CupertinoSheer(
+          title: "运行脚本",
+          onTap: () async {
+            EasyLoading.show(status: "运行中");
+            final response = await SingleAccountPageState.ofApi(context).runScript(
+              widget.title,
+              widget.path ?? "",
+            );
+            EasyLoading.dismiss();
+            if (response.success) {
+              "已开始运行".toast();
+              Navigator.of(context).pop(true);
+            } else {
+              (response.message ?? "运行失败").toast();
+            }
+          },
+        ),
+        addDivider(),
+        CupertinoSheer(
+          title: "停止脚本",
+          onTap: () async {
+            final response = await SingleAccountPageState.ofApi(context).stopScript(
+              widget.title,
+              widget.path ?? "",
+            );
+            if (response.success) {
+              "已发送停止指令".toast();
+            } else {
+              (response.message ?? "停止失败").toast();
+            }
+          },
+        ),
+        addDivider(),
+        CupertinoSheer(
+          title: "历史版本",
+          onTap: () {
+            Navigator.of(context).push(
+              CupertinoPageRoute(
+                builder: (context) => ScriptHistoryPage(
+                  filename: widget.title,
+                  path: widget.path ?? "",
+                ),
+              ),
+            ).then((value) {
+              if (value == true) {
+                loadData();
+              }
+            });
+          },
+        ),
+        addDivider(),
+        CupertinoSheer(
           title: "编辑",
           onTap: () {
             if (content == null || content!.isEmpty) {
@@ -131,7 +183,7 @@ class _ScriptDetailPageState extends ConsumerState<ScriptDetailPage> with LazyLo
         CupertinoSheer(
           title: "分享",
           onTap: () {
-            Share.share(content ?? "");
+            SharePlus.instance.share(ShareParams(text: content ?? ""));
           },
         ),
         addDivider(),
@@ -140,7 +192,7 @@ class _ScriptDetailPageState extends ConsumerState<ScriptDetailPage> with LazyLo
           onTap: () async {
             try {
               String name = "${Random().nextInt(40000)}_${widget.title}";
-              var file = await FileUtil(0).writeDownloadFile(name, content ?? "");
+              await FileUtil(0).writeDownloadFile(name, content ?? "");
               "已写入qinglong_app文件夹下,文件名$name".toast2();
             } catch (e) {
               e.toString().toast();

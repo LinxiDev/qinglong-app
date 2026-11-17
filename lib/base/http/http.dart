@@ -2,11 +2,10 @@ import 'dart:convert';
 import 'dart:core';
 import 'dart:io';
 
-import 'package:dio/adapter.dart';
 import 'package:dio/dio.dart';
-import 'package:dio_log/dio_log.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:dio/io.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/widgets.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 import 'package:qinglong_app/base/http/token_interceptor.dart';
 import 'package:qinglong_app/base/http/url.dart';
@@ -31,29 +30,45 @@ class Http {
     _init();
   }
 
+  static const Duration _timeout = Duration(seconds: 50);
+
   void initDioConfig(
     String host,
   ) {
     _dio = Dio(
       BaseOptions(
         baseUrl: host,
-        connectTimeout: 50000,
-        receiveTimeout: 50000,
-        sendTimeout: 50000,
+        connectTimeout: _timeout,
+        receiveTimeout: _timeout,
+        sendTimeout: _timeout,
         contentType: "application/json",
       ),
     );
-    _dio?.interceptors.add(DioLogInterceptor());
-    _dio?.interceptors.add(PrettyDioLogger());
+    if (kDebugMode) {
+      _dio?.interceptors.add(
+        PrettyDioLogger(
+          requestHeader: false,
+          requestBody: true,
+          responseBody: true,
+          responseHeader: false,
+          compact: true,
+        ),
+      );
+    }
 
     _dio?.interceptors.add(TokenInterceptor(
       host,
       index,
     ));
-    (_dio?.httpClientAdapter as DefaultHttpClientAdapter).onHttpClientCreate = (HttpClient client) {
-      client.badCertificateCallback = (X509Certificate cert, String host, int port) => true;
-      return client;
-    };
+    _dio?.httpClientAdapter = IOHttpClientAdapter(
+      createHttpClient: () {
+        final HttpClient client = HttpClient();
+        // 青龙面板常使用自签名证书，客户端需要放开校验
+        client.badCertificateCallback =
+            (X509Certificate cert, String host, int port) => true;
+        return client;
+      },
+    );
   }
 
   void _init() {
@@ -76,7 +91,7 @@ class Http {
       _init();
       var response = await _dio!.get(uri, queryParameters: json);
       return decodeResponse<T>(response, serializationName, compute);
-    } on DioError catch (e) {
+    } on DioException catch (e) {
       return exceptionHandler<T>(e, uri);
     }
   }
@@ -96,7 +111,7 @@ class Http {
         serializationName,
         compute,
       );
-    } on DioError catch (e) {
+    } on DioException catch (e) {
       return exceptionHandler<T>(e, uri);
     }
   }
@@ -116,7 +131,7 @@ class Http {
         serializationName,
         compute,
       );
-    } on DioError catch (e) {
+    } on DioException catch (e) {
       return exceptionHandler<T>(e, uri);
     }
   }
@@ -135,7 +150,7 @@ class Http {
         serializationName,
         compute,
       );
-    } on DioError catch (e) {
+    } on DioException catch (e) {
       return exceptionHandler<T>(e, uri);
     }
   }
@@ -151,7 +166,7 @@ class Http {
     }
   }
 
-  HttpResponse<T> exceptionHandler<T>(DioError e, String path) {
+  HttpResponse<T> exceptionHandler<T>(DioException e, String path) {
     try {
       logger.e(e);
       if (e.response?.statusCode == 401 && !Url.inWhiteList(path)) {

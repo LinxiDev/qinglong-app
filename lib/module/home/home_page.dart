@@ -1,8 +1,8 @@
 import 'dart:convert';
 import 'dart:ui';
 
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
+import 'package:cupertino_ui/cupertino_ui.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -17,7 +17,7 @@ import 'package:qinglong_app/module/env/env_page.dart';
 import 'package:qinglong_app/module/home/version_history_bean.dart';
 import 'package:qinglong_app/module/others/other_page.dart';
 import 'package:qinglong_app/module/task/task_page.dart';
-import 'package:move_to_background/move_to_background.dart';
+import 'package:move_to_bg/move_to_bg.dart';
 import 'package:qinglong_app/utils/extension.dart';
 import 'package:qinglong_app/utils/login_helper.dart';
 import 'package:qinglong_app/utils/sp_utils.dart';
@@ -210,10 +210,11 @@ class HomePageState extends ConsumerState<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async {
-        await MoveToBackground.moveTaskToBack();
-        return false;
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (bool didPop, Object? result) async {
+        if (didPop) return;
+        await MoveToBg().moveTaskToBack();
       },
       child: Material(
         color: Colors.transparent,
@@ -343,8 +344,8 @@ class HomePageState extends ConsumerState<HomePage> {
                   },
                   child: Container(
                     color: ref.watch(themeProvider).themeMode == modeDark
-                        ? Colors.black.withOpacity(0.6)
-                        : Colors.grey.withOpacity(0.6),
+                        ? Colors.black.withValues(alpha: 0.6)
+                        : Colors.grey.withValues(alpha: 0.6),
                   ),
                 ),
               ),

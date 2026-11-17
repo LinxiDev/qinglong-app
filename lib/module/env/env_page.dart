@@ -1,10 +1,11 @@
 import 'package:custom_sliding_segmented_control/custom_sliding_segmented_control.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
+import 'package:cupertino_ui/cupertino_ui.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:qinglong_app/base/base_state_widget.dart';
+import 'package:qinglong_app/base/cupertino_sheet.dart';
 import 'package:qinglong_app/base/ql_app_bar.dart';
 import 'package:qinglong_app/base/routes.dart';
 import 'package:qinglong_app/base/single_account_page.dart';
@@ -338,7 +339,7 @@ class EnvPageState extends ConsumerState<EnvPage> with TickerProviderStateMixin 
           alignment: Alignment.bottomCenter,
           child: Container(
             width: MediaQuery.of(context).size.width,
-            color: ref.watch(themeProvider).currentTheme.bottomNavigationBarTheme.backgroundColor?.withOpacity(1),
+            color: ref.watch(themeProvider).currentTheme.bottomNavigationBarTheme.backgroundColor?.withValues(alpha: 1),
             child: SafeArea(
               top: false,
               child: SizedBox(
@@ -545,6 +546,23 @@ class EnvItemCell extends StatelessWidget {
                     Navigator.of(context).pushNamed(Routes.routeEnvDetail, arguments: bean);
                   }
                 },
+                onLongPress: () {
+                  if (editMode) return;
+                  showMoreOperate(
+                    context,
+                    [
+                      CupertinoSheer(
+                        title: (bean.isPinned ?? 0) == 1 ? "取消置顶" : "置顶",
+                        onTap: () => togglePinEnv(context, ref),
+                      ),
+                      addDivider(),
+                      CupertinoSheer(
+                        title: "重命名变量名",
+                        onTap: () => renameEnvName(context, ref),
+                      ),
+                    ],
+                  );
+                },
                 child: Row(
                   children: [
                     AnimatedSize(
@@ -717,6 +735,93 @@ class EnvItemCell extends StatelessWidget {
     ref.read(SingleAccountPageState.ofEnvProvider(context)(getProviderName(context))).enableEnv(context, [bean.sId!], bean.status!);
   }
 
+  /// 置顶 / 取消置顶（面板 v2.22+）
+  Future<void> togglePinEnv(BuildContext context, WidgetRef ref) async {
+    final int? envId = bean.id ?? int.tryParse(bean.sId ?? "");
+    if (envId == null) {
+      "当前面板的变量 ID 不是数字，暂不支持置顶".toast();
+      return;
+    }
+    final bool pinned = (bean.isPinned ?? 0) == 1;
+    final response = pinned
+        ? await SingleAccountPageState.ofApi(context).unpinEnv([envId])
+        : await SingleAccountPageState.ofApi(context).pinEnv([envId]);
+
+    if (response.success) {
+      pinned ? "已取消置顶".toast() : "已置顶".toast();
+      ref
+          .read(SingleAccountPageState.ofEnvProvider(context)(
+                  getProviderName(context))
+              .notifier)
+          .loadData(context, false);
+    } else {
+      response.message.toast();
+    }
+  }
+
+  /// 重命名变量名
+  Future<void> renameEnvName(BuildContext context, WidgetRef ref) async {
+    final int? envId = bean.id ?? int.tryParse(bean.sId ?? "");
+    if (envId == null) {
+      "当前面板的变量 ID 不是数字，暂不支持重命名".toast();
+      return;
+    }
+
+    final TextEditingController controller =
+        TextEditingController(text: bean.name ?? "");
+    final String? name = await showCupertinoDialog<String>(
+      context: context,
+      useRootNavigator: false,
+      builder: (childContext) => CupertinoAlertDialog(
+        title: const Text("重命名变量"),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const SizedBox(height: 10),
+            Material(
+              color: Colors.transparent,
+              child: TextField(
+                controller: controller,
+                autofocus: true,
+                decoration: const InputDecoration(hintText: "变量名"),
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          CupertinoDialogAction(
+            child: const Text("取消", style: TextStyle(color: Color(0xff999999))),
+            onPressed: () => Navigator.of(childContext).pop(),
+          ),
+          CupertinoDialogAction(
+            child: Text(
+              "确定",
+              style: TextStyle(color: ref.read(themeProvider).primaryColor),
+            ),
+            onPressed: () =>
+                Navigator.of(childContext).pop(controller.text.trim()),
+          ),
+        ],
+      ),
+    );
+
+    if (name == null || name.isEmpty) return;
+
+    final response =
+        await SingleAccountPageState.ofApi(context).renameEnv([envId], name);
+
+    if (response.success) {
+      "已重命名".toast();
+      ref
+          .read(SingleAccountPageState.ofEnvProvider(context)(
+                  getProviderName(context))
+              .notifier)
+          .loadData(context, false);
+    } else {
+      response.message.toast();
+    }
+  }
+
   void delEnv(BuildContext context1, WidgetRef ref) {
     showCupertinoDialog(
       useRootNavigator: false,
@@ -880,7 +985,7 @@ class _EnvRecordListViewState extends ConsumerState<EnvRecordListView> with Auto
         top: kToolbarHeight,
       ),
       keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-      onReorder: (int oldIndex, int newIndex) {
+      onReorderItem: (int oldIndex, int newIndex) {
         if (widget.searchText.isNotEmpty) {
           "请先清空搜索关键词".toast();
           return;
@@ -889,9 +994,6 @@ class _EnvRecordListViewState extends ConsumerState<EnvRecordListView> with Auto
         setState(
           () {
             //交换数据
-            if (newIndex > oldIndex) {
-              newIndex -= 1;
-            }
             final EnvBean item = widget.list.removeAt(oldIndex);
             widget.list.insert(newIndex, item);
 

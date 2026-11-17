@@ -1,10 +1,8 @@
 import 'dart:io';
 
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
+import 'package:cupertino_ui/cupertino_ui.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:qinglong_app/base/commit_button.dart';
 import 'package:qinglong_app/base/multi_account_userinfo_viewmodel.dart';
 import 'package:qinglong_app/base/routes.dart';
 import 'package:qinglong_app/base/single_account_page.dart';
@@ -119,7 +117,7 @@ class _SettingPageState extends ConsumerState<SettingPage> {
                               Transform.scale(
                                 scale: 0.9,
                                 child: CupertinoSwitch(
-                                  activeColor:
+                                  activeTrackColor:
                                       ref.watch(themeProvider).primaryColor,
                                   value: SpUtil.getBool(spOpenAuth,
                                       defValue: false),
@@ -204,7 +202,7 @@ class _SettingPageState extends ConsumerState<SettingPage> {
                               Transform.scale(
                                 scale: 0.9,
                                 child: CupertinoSwitch(
-                                  activeColor:
+                                  activeTrackColor:
                                       ref.watch(themeProvider).primaryColor,
                                   value: SpUtil.getBool(spSingleInstance,
                                       defValue: false),
@@ -252,7 +250,7 @@ class _SettingPageState extends ConsumerState<SettingPage> {
                               Transform.scale(
                                 scale: 0.9,
                                 child: CupertinoSwitch(
-                                  activeColor:
+                                  activeTrackColor:
                                       ref.watch(themeProvider).primaryColor,
                                   value: SpUtil.getInt(spThemeStyle,
                                           defValue: modeLight) ==
@@ -341,7 +339,7 @@ class _SettingPageState extends ConsumerState<SettingPage> {
                         Transform.scale(
                           scale: 0.9,
                           child: CupertinoSwitch(
-                            activeColor: ref.watch(themeProvider).primaryColor,
+                            activeTrackColor: ref.watch(themeProvider).primaryColor,
                             value:
                                 SpUtil.getBool(spAutoShowLog, defValue: true),
                             onChanged: (open) async {
@@ -388,7 +386,7 @@ class _SettingPageState extends ConsumerState<SettingPage> {
                         Transform.scale(
                           scale: 0.9,
                           child: CupertinoSwitch(
-                            activeColor: ref.watch(themeProvider).primaryColor,
+                            activeTrackColor: ref.watch(themeProvider).primaryColor,
                             value: SpUtil.getBool(spShowLine, defValue: false),
                             onChanged: (open) async {
                               await SpUtil.putBool(spShowLine, open);
@@ -434,7 +432,7 @@ class _SettingPageState extends ConsumerState<SettingPage> {
                         Transform.scale(
                           scale: 0.9,
                           child: CupertinoSwitch(
-                            activeColor: ref.watch(themeProvider).primaryColor,
+                            activeTrackColor: ref.watch(themeProvider).primaryColor,
                             value: SpUtil.getBool(spLogAutoJump2Bottom,
                                 defValue: false),
                             onChanged: (open) async {
@@ -481,7 +479,7 @@ class _SettingPageState extends ConsumerState<SettingPage> {
                         Transform.scale(
                           scale: 0.9,
                           child: CupertinoSwitch(
-                            activeColor: ref.watch(themeProvider).primaryColor,
+                            activeTrackColor: ref.watch(themeProvider).primaryColor,
                             value: SpUtil.getInt(spThemeStyle,
                                     defValue: modeLight) ==
                                 modeDark,
@@ -517,7 +515,7 @@ class _SettingPageState extends ConsumerState<SettingPage> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Icon(
-                          SchedulerBinding.instance.window.platformBrightness ==
+                          WidgetsBinding.instance.platformDispatcher.platformBrightness ==
                                   Brightness.dark
                               ? CupertinoIcons.moon_circle
                               : CupertinoIcons.sun_max,
@@ -541,7 +539,7 @@ class _SettingPageState extends ConsumerState<SettingPage> {
                         Transform.scale(
                           scale: 0.9,
                           child: CupertinoSwitch(
-                            activeColor: ref.watch(themeProvider).primaryColor,
+                            activeTrackColor: ref.watch(themeProvider).primaryColor,
                             value: SpUtil.getBool(spThemeFollowSystem,
                                 defValue: false),
                             onChanged: (open) async {

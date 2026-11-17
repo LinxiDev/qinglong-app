@@ -1,9 +1,7 @@
-import 'package:json_conversion_annotation/json_conversion_annotation.dart';
 import 'package:qinglong_app/module/task/task_bean.dart';
 
 import '../../main.dart';
 
-@JsonConversion()
 class TaskBean2 {
   List<TaskBean>? data;
 

@@ -126,6 +126,100 @@ class Url {
     return getIt<UserInfoViewModel>(instanceName: index.toString()).useSecretLogined ? "/open/envs/$envId/move" : "/api/envs/$envId/move";
   }
 
+  /// 根据登录方式自动拼接 /api 或 /open 前缀
+  String p(String path) {
+    return getIt<UserInfoViewModel>(instanceName: index.toString()).useSecretLogined ? "/open$path" : "/api$path";
+  }
+
+  // ---------------- 脚本（v2.23+ 新增运行/停止/重命名/历史版本） ----------------
+  get scriptsRun => p("/scripts/run");
+
+  get scriptsStop => p("/scripts/stop");
+
+  get scriptsRename => p("/scripts/rename");
+
+  get scriptsHistory => p("/scripts/history");
+
+  get scriptsHistoryDetail => p("/scripts/history/detail");
+
+  get scriptsHistoryRestore => p("/scripts/history/restore");
+
+  // ---------------- 定时任务（v2.22+ 新增预览/实例/触发历史） ----------------
+  get cronPreview => p("/crons/preview");
+
+  get cronDetail => p("/crons/detail");
+
+  get cronStatus => p("/crons/status");
+
+  get cronImport => p("/crons/import");
+
+  String cronInstances(String id) => p("/crons/$id/instances");
+
+  String cronTriggers(String id) => p("/crons/$id/triggers");
+
+  String cronDailyResults(String id) => p("/crons/$id/daily-results");
+
+  String cronInstanceStop(String id, String instanceId) => p("/crons/$id/instances/$instanceId/stop");
+
+  String cronLogs(String id) => p("/crons/$id/logs");
+
+  String cronDetailById(String id) => p("/crons/$id");
+
+  // ---------------- 仪表盘统计 ----------------
+  get dashboardOverview => p("/dashboard/overview");
+
+  get dashboardTrend => p("/dashboard/trend");
+
+  get dashboardTopTime => p("/dashboard/top-time");
+
+  get dashboardTopCount => p("/dashboard/top-count");
+
+  get dashboardRuntime => p("/dashboard/runtime");
+
+  get dashboardSuccesses => p("/dashboard/successes");
+
+  get dashboardFailures => p("/dashboard/failures");
+
+  // ---------------- 系统 ----------------
+  // 2.23+ 下线的旧接口替代：配置文件/日志内容统一走 /detail
+  get configDetail => p("/configs/detail");
+
+  get logsDetail => p("/logs/detail");
+
+  get systemConfig => p("/system/config");
+
+  get systemNotifyLog => p("/system/notify-log");
+
+  get systemLog => p("/system/log");
+
+  get systemLogDelete => p("/system/log");
+
+  get systemNotify => p("/system/notify");
+
+  // ---------------- 数据保留与清理 ----------------
+  get retentionConfig => p("/system/storage-retention/config");
+
+  get retentionPreview => p("/system/storage-retention/preview");
+
+  get retentionCleanup => p("/system/storage-retention/cleanup");
+
+  // ---------------- 用户安全 ----------------
+  get ipBlacklist => p("/user/ip-blacklist");
+
+  // ---------------- 环境变量（置顶/重命名） ----------------
+  get envPin => p("/envs/pin");
+
+  get envUnpin => p("/envs/unpin");
+
+  get envRename => p("/envs/name");
+
+  // ---------------- 依赖 ----------------
+  get dependencyRefresh => p("/dependencies/refresh");
+
+  get dependencyRefreshActive => p("/dependencies/refresh/active");
+
+  get dependencyCancel => p("/dependencies/cancel");
+
   static bool inWhiteList(String path) {
     if (path == login || path == loginByClientId || path == loginTwo || path == loginOld) {
       return true;

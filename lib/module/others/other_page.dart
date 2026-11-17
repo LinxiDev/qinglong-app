@@ -2,10 +2,9 @@ import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dio/dio.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:material_ui/material_ui.dart';
+import 'package:cupertino_ui/cupertino_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:qinglong_app/base/routes.dart';
 import 'package:qinglong_app/base/single_account_page.dart';
@@ -43,7 +42,7 @@ class OtherPageState extends ConsumerState<OtherPage>
   var toggleValue = false;
   String? userIcon;
   String userName = "青龙客户端";
-  var desc = "欢迎使用青龙客户端".obs;
+  String desc = "欢迎使用青龙客户端";
   Map<String, dynamic> poetData = {};
 
   @override
@@ -150,14 +149,14 @@ class OtherPageState extends ConsumerState<OtherPage>
                                       imageUrl: userIcon!,
                                       width: 60,
                                       height: 60,
-                                      placeholder: (_, __) {
+                                      placeholder: (_, _) {
                                         return Image.asset(
                                           getImageByVIPLogo(),
                                           width: 60,
                                           height: 60,
                                         );
                                       },
-                                      errorWidget: (_, __, ___) {
+                                      errorWidget: (_, _, _) {
                                         return Image.asset(
                                           getImageByVIPLogo(),
                                           width: 60,
@@ -215,28 +214,26 @@ class OtherPageState extends ConsumerState<OtherPage>
                                   const SizedBox(
                                     height: 5,
                                   ),
-                                  Obx(
-                                    () => GestureDetector(
-                                      behavior: HitTestBehavior.opaque,
-                                      onTap: () {
-                                        if (poetData.isEmpty) return;
-                                        Navigator.of(context).push(
-                                          CupertinoPageRoute(
-                                            builder: (context) => PoetPage(
-                                              data: poetData,
-                                            ),
+                                  GestureDetector(
+                                    behavior: HitTestBehavior.opaque,
+                                    onTap: () {
+                                      if (poetData.isEmpty) return;
+                                      Navigator.of(context).push(
+                                        CupertinoPageRoute(
+                                          builder: (context) => PoetPage(
+                                            data: poetData,
                                           ),
-                                        );
-                                      },
-                                      child: Text(
-                                        desc.value,
-                                        style: TextStyle(
-                                          color: ref
-                                              .watch(themeProvider)
-                                              .themeColor
-                                              .descColor(),
-                                          fontSize: 12,
                                         ),
+                                      );
+                                    },
+                                    child: Text(
+                                      desc,
+                                      style: TextStyle(
+                                        color: ref
+                                            .watch(themeProvider)
+                                            .themeColor
+                                            .descColor(),
+                                        fontSize: 12,
                                       ),
                                     ),
                                   ),
@@ -271,14 +268,7 @@ class OtherPageState extends ConsumerState<OtherPage>
                                   CupertinoButton(
                                     padding: EdgeInsets.zero,
                                     onPressed: () {
-                                      if (getIt<SystemBean>(
-                                              instanceName:
-                                                  (SingleAccountPageState.of(
-                                                                  context)
-                                                              ?.index ??
-                                                          0)
-                                                      .toString())
-                                          .isUpperVersion2_13_0()) {
+                                      if (_systemBean.isUpperVersion2_13_0()) {
                                         Navigator.of(context).pushNamed(
                                           Routes.routeSubscribeList,
                                         );
@@ -309,14 +299,7 @@ class OtherPageState extends ConsumerState<OtherPage>
                                             height: 5,
                                           ),
                                           Text(
-                                            getIt<SystemBean>(
-                                                        instanceName:
-                                                            (SingleAccountPageState.of(
-                                                                            context)
-                                                                        ?.index ??
-                                                                    0)
-                                                                .toString())
-                                                    .isUpperVersion2_13_0()
+                                            _systemBean.isUpperVersion2_13_0()
                                                 ? "订阅管理"
                                                 : "拉库管理",
                                             style: TextStyle(
@@ -592,6 +575,87 @@ class OtherPageState extends ConsumerState<OtherPage>
                         height: 5,
                       ),
                       Text(
+                        "面板运维",
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 16,
+                          color:
+                              ref.watch(themeProvider).themeColor.titleColor(),
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: buildOtherFun2(
+                              "运行概览",
+                              CupertinoIcons.chart_bar_alt_fill,
+                              () {
+                                checkVersion("/dashboard", 22200);
+                              },
+                            ),
+                          ),
+                          Expanded(
+                            child: buildOtherFun2(
+                              "通知日志",
+                              CupertinoIcons.bell,
+                              () {
+                                checkVersion("/notifyLog", 22300);
+                              },
+                            ),
+                          ),
+                          Expanded(
+                            child: buildOtherFun2(
+                              "数据清理",
+                              CupertinoIcons.trash_slash,
+                              () {
+                                checkVersion("/retention", 22200);
+                              },
+                            ),
+                          ),
+                          Expanded(
+                            child: buildOtherFun2(
+                              "IP黑名单",
+                              CupertinoIcons.nosign,
+                              () {
+                                checkVersion("/ipBlacklist", 22200);
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+                Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 15),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    color: ref
+                        .watch(themeProvider)
+                        .themeColor
+                        .settingBordorColor(),
+                  ),
+                  width: MediaQuery.of(context).size.width,
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 10,
+                    horizontal: 15,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox(
+                        height: 5,
+                      ),
+                      Text(
                         "高级功能",
                         style: TextStyle(
                           fontWeight: FontWeight.w600,
@@ -802,6 +866,34 @@ class OtherPageState extends ConsumerState<OtherPage>
         ),
       ),
     );
+  }
+
+
+  /// 安全获取当前账号的 SystemBean：首页异步注册，未注册时降级为低版本
+  SystemBean get _systemBean {
+    try {
+      return getIt<SystemBean>(
+        instanceName: (SingleAccountPageState.of(context)?.index ?? 0).toString(),
+      );
+    } catch (e) {
+      return SystemBean(version: "2.10.13", fromAutoGet: false);
+    }
+  }
+
+  /// 新版面板能力做一次版本校验，避免老版本面板直接报错
+  void checkVersion(String route, int minVersionCode) {
+    if (_systemBean.versionCode < minVersionCode) {
+      "该功能需要面板版本 ${_formatVersionCode(minVersionCode)} 及以上".toast();
+      return;
+    }
+    Navigator.of(context).pushNamed(route);
+  }
+
+  String _formatVersionCode(int code) {
+    final int major = code ~/ 10000;
+    final int minor = (code % 10000) ~/ 100;
+    final int patch = code % 100;
+    return "$major.$minor.$patch";
   }
 
   void _delLog(BuildContext context) async {
@@ -1016,7 +1108,9 @@ class OtherPageState extends ConsumerState<OtherPage>
   }
 
   String getImageByVIPLogo() {
-    return "assets/images/ql.png";
+    return ref.watch(themeProvider).themeMode == modeDark
+        ? "assets/images/ql_dark.png"
+        : "assets/images/ql.png";
   }
 
   @override
@@ -1076,8 +1170,8 @@ class OtherPageState extends ConsumerState<OtherPage>
   Future<void> loadPoet() async {
     try {
       Dio dio = Dio(BaseOptions(
-        receiveTimeout: 10000,
-        connectTimeout: 10000,
+        receiveTimeout: const Duration(seconds: 10),
+        connectTimeout: const Duration(seconds: 10),
       ));
 
       if (!SpUtil.haveKey(spPoetToken)) {
@@ -1100,7 +1194,8 @@ class OtherPageState extends ConsumerState<OtherPage>
       if (response.statusCode == 200) {
         poetData.clear();
         poetData.addAll(response.data as Map<String, dynamic>);
-        desc.value = poetData["data"]?["content"]?.toString() ?? "欢迎使用青龙客户端";
+        desc = poetData["data"]?["content"]?.toString() ?? "欢迎使用青龙客户端";
+        if (mounted) setState(() {});
       }
     } catch (e) {}
   }

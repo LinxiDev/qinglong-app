@@ -1,13 +1,11 @@
-import 'dart:ui';
 
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
+import 'package:cupertino_ui/cupertino_ui.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:qinglong_app/base/commit_button.dart';
 import 'package:qinglong_app/base/ql_app_bar.dart';
 import 'package:qinglong_app/base/theme.dart';
 import 'package:qinglong_app/main.dart';
-import 'package:qinglong_app/utils/extension.dart';
 
 import '../../base/sp_const.dart';
 import '../../utils/sp_utils.dart';
@@ -33,7 +31,7 @@ class _TextSizePageState extends ConsumerState<TextSizePage> {
   @override
   Widget build(BuildContext context) {
     return MediaQuery(
-      data: MediaQueryData.fromWindow(window),
+      data: MediaQueryData.fromView(View.of(context)),
       child: Scaffold(
         backgroundColor: ref.watch(themeProvider).themeColor.bg2Color(),
         appBar: QlAppBar(
@@ -51,8 +49,8 @@ class _TextSizePageState extends ConsumerState<TextSizePage> {
         body: Column(
           children: [
             MediaQuery(
-              data: MediaQueryData.fromWindow(window).copyWith(
-                textScaleFactor: textScaleFactor,
+              data: MediaQueryData.fromView(View.of(context)).copyWith(
+                textScaler: TextScaler.linear(textScaleFactor),
               ),
               child: Material(
                 color: ref.watch(themeProvider).themeColor.settingBgColor(),

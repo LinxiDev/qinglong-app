@@ -1,6 +1,5 @@
 import 'package:dio/dio.dart';
 import 'package:qinglong_app/base/http/url.dart';
-import 'package:qinglong_app/base/multi_account_userinfo_viewmodel.dart';
 import 'package:qinglong_app/main.dart';
 
 import '../userinfo_viewmodel.dart';

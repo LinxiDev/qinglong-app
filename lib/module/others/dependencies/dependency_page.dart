@@ -1,8 +1,7 @@
-import 'dart:ui';
 
 import 'package:custom_sliding_segmented_control/custom_sliding_segmented_control.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
+import 'package:cupertino_ui/cupertino_ui.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -363,7 +362,7 @@ class DependcyPageState extends ConsumerState<DependencyPage> with TickerProvide
           alignment: Alignment.bottomCenter,
           child: Container(
             width: MediaQuery.of(context).size.width,
-            color: ref.watch(themeProvider).currentTheme.bottomNavigationBarTheme.backgroundColor?.withOpacity(1),
+            color: ref.watch(themeProvider).currentTheme.bottomNavigationBarTheme.backgroundColor?.withValues(alpha: 1),
             child: SafeArea(
               top: false,
               child: SizedBox(

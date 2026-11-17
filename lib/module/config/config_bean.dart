@@ -1,6 +1,4 @@
-import 'package:json_conversion_annotation/json_conversion_annotation.dart';
 
-@JsonConversion()
 class ConfigBean {
   String? title;
   String? value;
@@ -13,9 +11,9 @@ class ConfigBean {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['title'] = this.title;
-    data['value'] = this.value;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['title'] = title;
+    data['value'] = value;
     return data;
   }
 

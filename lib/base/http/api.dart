@@ -9,7 +9,6 @@ import 'package:qinglong_app/module/login/user_bean.dart';
 import 'package:qinglong_app/module/others/LogDelBean.dart';
 import 'package:qinglong_app/module/others/dependencies/dependency_bean.dart';
 import 'package:qinglong_app/module/others/login_log/login_log_bean.dart';
-import 'package:qinglong_app/module/others/scripts/script_bean.dart';
 import 'package:qinglong_app/module/others/task_log/task_log_bean.dart';
 import 'package:qinglong_app/module/others/update/check_update_bean.dart';
 import 'package:qinglong_app/module/task/task_bean.dart';
@@ -21,6 +20,15 @@ class Api {
   int index;
 
   Api(this.index);
+
+  /// 版本信息可能尚未注册（首页异步写入），取不到时按低版本处理
+  SystemBean? get _system {
+    try {
+      return getIt<SystemBean>(instanceName: index.toString());
+    } catch (e) {
+      return null;
+    }
+  }
 
   Future<HttpResponse<LogDelBean>> logDel() async {
     return await getIt<Http>(instanceName: index.toString()).get<LogDelBean>(
@@ -226,14 +234,16 @@ class Api {
     );
   }
 
+  /// 新建 / 编辑任务。
+  /// [payload] 支持面板的完整字段：schedule、extra_schedules、work_dir、
+  /// allow_multiple_instances、task_before、task_after、log_name、labels、
+  /// skip_if_pending、max_queue_wait、catchup_seconds。
   Future<HttpResponse<NullResponse>> addTask(
-    String name,
-    String command,
-    String cron, {
+    Map<String, dynamic> payload, {
     int? id,
     String? nId,
   }) async {
-    var data = <String, dynamic>{"name": name, "command": command, "schedule": cron};
+    final Map<String, dynamic> data = Map<String, dynamic>.from(payload);
 
     if (id != null || nId != null) {
       if (id != null) {
@@ -316,8 +326,16 @@ class Api {
   }
 
   Future<HttpResponse<String>> content(String name) async {
+    final Url url = getIt<Url>(instanceName: index.toString());
+    // 2.23+ 已下线 /configs/:file，改用 /configs/detail?path=
+    if (_system?.isUpperVersion2_23_0() ?? false) {
+      return await getIt<Http>(instanceName: index.toString()).get<String>(
+        url.configDetail,
+        {"path": name},
+      );
+    }
     return await getIt<Http>(instanceName: index.toString()).get<String>(
-      getIt<Url>(instanceName: index.toString()).configContent + name,
+      url.configContent + name,
       null,
     );
   }
@@ -410,11 +428,17 @@ class Api {
 
   Future<HttpResponse<List<TaskLogBean>>> taskLog() async {
     return await getIt<Http>(instanceName: index.toString()).get<List<TaskLogBean>>(getIt<Url>(instanceName: index.toString()).taskLog, null,
-        serializationName: getIt<SystemBean>(instanceName: index.toString()).isUpperVersion2_12_2() ? "data" : "dirs");
+        serializationName: (_system?.isUpperVersion2_12_2() ?? false) ? "data" : "dirs");
   }
 
   Future<HttpResponse<String>> taskLogDetail(String name, String path) async {
-    if (getIt<SystemBean>(instanceName: index.toString()).isUpperVersion2_13_0()) {
+    if (_system?.isUpperVersion2_23_0() ?? false) {
+      return await getIt<Http>(instanceName: index.toString()).get<String>(
+        getIt<Url>(instanceName: index.toString()).logsDetail,
+        {"file": name, "path": path},
+      );
+    }
+    if (_system?.isUpperVersion2_13_0() ?? false) {
       return await getIt<Http>(instanceName: index.toString()).get<String>(
         getIt<Url>(instanceName: index.toString()).taskLogDetail + name + "?path=" + path,
         null,
@@ -429,7 +453,7 @@ class Api {
 
   Future<HttpResponse<List<ScriptData>>> scripts() async {
     return await getIt<Http>(instanceName: index.toString()).get<List<ScriptData>>(
-      getIt<SystemBean>(instanceName: index.toString()).isUpperVersion2_13_0()
+      (_system?.isUpperVersion2_13_0() ?? false)
           ? getIt<Url>(instanceName: index.toString()).scripts2
           : getIt<Url>(instanceName: index.toString()).scripts,
       null,
@@ -543,7 +567,7 @@ class Api {
   }
 
   Future<HttpResponse<NullResponse>> delDependency(List<String?>? sIds, List<int?>? ids) async {
-    bool focus = getIt<SystemBean>(instanceName: index.toString()).isUpperVersion2_13_0();
+    bool focus = _system?.isUpperVersion2_13_0() ?? false;
 
     String url = "";
     if (focus) {
@@ -621,6 +645,297 @@ class Api {
     return await getIt<Http>(instanceName: index.toString()).put<NullResponse>(
       getIt<Url>(instanceName: index.toString()).resetAppKey(id),
       {},
+    );
+  }
+
+  // ==================== 脚本：运行 / 停止 / 重命名 / 历史版本 ====================
+
+  /// 运行脚本（v2.23+），content 为空时运行磁盘上的现有内容
+  Future<HttpResponse<String>> runScript(
+    String filename,
+    String path, {
+    String? content,
+  }) async {
+    return await getIt<Http>(instanceName: index.toString()).put<String>(
+      getIt<Url>(instanceName: index.toString()).scriptsRun,
+      {
+        "filename": filename,
+        "path": path,
+        "content": content ?? "",
+      },
+    );
+  }
+
+  /// 停止正在运行的脚本
+  Future<HttpResponse<String>> stopScript(String filename, String path) async {
+    return await getIt<Http>(instanceName: index.toString()).put<String>(
+      getIt<Url>(instanceName: index.toString()).scriptsStop,
+      {
+        "filename": filename,
+        "path": path,
+      },
+    );
+  }
+
+  Future<HttpResponse<NullResponse>> renameScript(
+    String filename,
+    String path,
+    String newFilename,
+  ) async {
+    return await getIt<Http>(instanceName: index.toString()).put<NullResponse>(
+      getIt<Url>(instanceName: index.toString()).scriptsRename,
+      {
+        "filename": filename,
+        "path": path,
+        "newFilename": newFilename,
+      },
+    );
+  }
+
+  /// 脚本历史版本列表
+  Future<HttpResponse<String>> scriptHistory(String filename, String path) async {
+    return await getIt<Http>(instanceName: index.toString()).get<String>(
+      getIt<Url>(instanceName: index.toString()).scriptsHistory,
+      {"filename": filename, "path": path},
+    );
+  }
+
+  /// 单个历史版本内容
+  Future<HttpResponse<String>> scriptHistoryDetail(
+    String filename,
+    String path,
+    String id,
+  ) async {
+    return await getIt<Http>(instanceName: index.toString()).get<String>(
+      getIt<Url>(instanceName: index.toString()).scriptsHistoryDetail,
+      {"filename": filename, "path": path, "id": id},
+    );
+  }
+
+  /// 还原历史版本
+  Future<HttpResponse<String>> restoreScriptHistory(
+    String filename,
+    String path,
+    String id,
+    String expectedHash,
+  ) async {
+    return await getIt<Http>(instanceName: index.toString()).put<String>(
+      getIt<Url>(instanceName: index.toString()).scriptsHistoryRestore,
+      {
+        "filename": filename,
+        "path": path,
+        "id": id,
+        "expectedHash": expectedHash,
+      },
+    );
+  }
+
+  // ==================== 定时任务 ====================
+
+  /// 定时规则预览（返回未来 3 次执行时间）
+  Future<HttpResponse<String>> cronPreview(String schedule) async {
+    return await getIt<Http>(instanceName: index.toString()).get<String>(
+      getIt<Url>(instanceName: index.toString()).cronPreview,
+      {"schedule": schedule},
+    );
+  }
+
+  /// 任务实例（运行/排队记录）
+  Future<HttpResponse<String>> cronInstances(String id) async {
+    return await getIt<Http>(instanceName: index.toString()).get<String>(
+      getIt<Url>(instanceName: index.toString()).cronInstances(id),
+      null,
+    );
+  }
+
+  Future<HttpResponse<String>> stopCronInstance(String id, String instanceId) async {
+    return await getIt<Http>(instanceName: index.toString()).post<String>(
+      getIt<Url>(instanceName: index.toString()).cronInstanceStop(id, instanceId),
+      {},
+    );
+  }
+
+  /// 任务的触发历史
+  Future<HttpResponse<String>> cronTriggers(String id, {int limit = 25}) async {
+    return await getIt<Http>(instanceName: index.toString()).get<String>(
+      getIt<Url>(instanceName: index.toString()).cronTriggers(id),
+      {"limit": "$limit"},
+    );
+  }
+
+  /// 任务当日执行结果
+  Future<HttpResponse<String>> cronDailyResults(String id) async {
+    return await getIt<Http>(instanceName: index.toString()).get<String>(
+      getIt<Url>(instanceName: index.toString()).cronDailyResults(id),
+      null,
+    );
+  }
+
+  // ==================== 仪表盘 ====================
+
+  Future<HttpResponse<String>> dashboardOverview() async {
+    return await getIt<Http>(instanceName: index.toString()).get<String>(
+      getIt<Url>(instanceName: index.toString()).dashboardOverview,
+      null,
+    );
+  }
+
+  Future<HttpResponse<String>> dashboardTrend({int days = 7}) async {
+    return await getIt<Http>(instanceName: index.toString()).get<String>(
+      getIt<Url>(instanceName: index.toString()).dashboardTrend,
+      {"days": "$days"},
+    );
+  }
+
+  Future<HttpResponse<String>> dashboardTopTime() async {
+    return await getIt<Http>(instanceName: index.toString()).get<String>(
+      getIt<Url>(instanceName: index.toString()).dashboardTopTime,
+      null,
+    );
+  }
+
+  Future<HttpResponse<String>> dashboardTopCount() async {
+    return await getIt<Http>(instanceName: index.toString()).get<String>(
+      getIt<Url>(instanceName: index.toString()).dashboardTopCount,
+      null,
+    );
+  }
+
+  Future<HttpResponse<String>> dashboardRuntime() async {
+    return await getIt<Http>(instanceName: index.toString()).get<String>(
+      getIt<Url>(instanceName: index.toString()).dashboardRuntime,
+      null,
+    );
+  }
+
+  Future<HttpResponse<String>> dashboardSuccesses() async {
+    return await getIt<Http>(instanceName: index.toString()).get<String>(
+      getIt<Url>(instanceName: index.toString()).dashboardSuccesses,
+      null,
+    );
+  }
+
+  Future<HttpResponse<String>> dashboardFailures() async {
+    return await getIt<Http>(instanceName: index.toString()).get<String>(
+      getIt<Url>(instanceName: index.toString()).dashboardFailures,
+      null,
+    );
+  }
+
+  // ==================== 系统 ====================
+
+  Future<HttpResponse<String>> systemConfig() async {
+    return await getIt<Http>(instanceName: index.toString()).get<String>(
+      getIt<Url>(instanceName: index.toString()).systemConfig,
+      null,
+    );
+  }
+
+  /// 通知审计日志（v2.24 新增）
+  Future<HttpResponse<String>> notifyLog() async {
+    return await getIt<Http>(instanceName: index.toString()).get<String>(
+      getIt<Url>(instanceName: index.toString()).systemNotifyLog,
+      null,
+    );
+  }
+
+  Future<HttpResponse<NullResponse>> deleteSystemLog() async {
+    return await getIt<Http>(instanceName: index.toString()).delete<NullResponse>(
+      getIt<Url>(instanceName: index.toString()).systemLogDelete,
+      null,
+    );
+  }
+
+  // ==================== 数据保留与清理 ====================
+
+  Future<HttpResponse<String>> retentionGetConfig() async {
+    return await getIt<Http>(instanceName: index.toString()).get<String>(
+      getIt<Url>(instanceName: index.toString()).retentionConfig,
+      null,
+    );
+  }
+
+  Future<HttpResponse<String>> retentionUpdateConfig(Map<String, dynamic> data) async {
+    return await getIt<Http>(instanceName: index.toString()).put<String>(
+      getIt<Url>(instanceName: index.toString()).retentionConfig,
+      data,
+    );
+  }
+
+  Future<HttpResponse<String>> retentionPreview(Map<String, dynamic> data) async {
+    return await getIt<Http>(instanceName: index.toString()).post<String>(
+      getIt<Url>(instanceName: index.toString()).retentionPreview,
+      data,
+    );
+  }
+
+  Future<HttpResponse<String>> retentionCleanup(Map<String, dynamic> data) async {
+    return await getIt<Http>(instanceName: index.toString()).post<String>(
+      getIt<Url>(instanceName: index.toString()).retentionCleanup,
+      {...data, "confirmation": "CLEAN"},
+    );
+  }
+
+  // ==================== 用户安全 ====================
+
+  Future<HttpResponse<String>> getIpBlacklist() async {
+    return await getIt<Http>(instanceName: index.toString()).get<String>(
+      getIt<Url>(instanceName: index.toString()).ipBlacklist,
+      null,
+    );
+  }
+
+  Future<HttpResponse<String>> addIpBlacklist(String ip) async {
+    return await getIt<Http>(instanceName: index.toString()).put<String>(
+      getIt<Url>(instanceName: index.toString()).ipBlacklist,
+      {"ip": ip},
+    );
+  }
+
+  Future<HttpResponse<String>> deleteIpBlacklist(String ip) async {
+    return await getIt<Http>(instanceName: index.toString()).delete<String>(
+      getIt<Url>(instanceName: index.toString()).ipBlacklist,
+      {"ip": ip},
+    );
+  }
+
+  // ==================== 环境变量 ====================
+
+  Future<HttpResponse<NullResponse>> pinEnv(List<int> ids) async {
+    return await getIt<Http>(instanceName: index.toString()).put<NullResponse>(
+      getIt<Url>(instanceName: index.toString()).envPin,
+      ids,
+    );
+  }
+
+  Future<HttpResponse<NullResponse>> unpinEnv(List<int> ids) async {
+    return await getIt<Http>(instanceName: index.toString()).put<NullResponse>(
+      getIt<Url>(instanceName: index.toString()).envUnpin,
+      ids,
+    );
+  }
+
+  Future<HttpResponse<NullResponse>> renameEnv(List<int> ids, String name) async {
+    return await getIt<Http>(instanceName: index.toString()).put<NullResponse>(
+      getIt<Url>(instanceName: index.toString()).envRename,
+      {"ids": ids, "name": name},
+    );
+  }
+
+  // ==================== 依赖 ====================
+
+  /// 重新检查并安装依赖，type 取值 nodejs / python3
+  Future<HttpResponse<String>> refreshDependencies(String type) async {
+    return await getIt<Http>(instanceName: index.toString()).post<String>(
+      getIt<Url>(instanceName: index.toString()).dependencyRefresh,
+      {"type": type},
+    );
+  }
+
+  Future<HttpResponse<NullResponse>> cancelDependency(List<int> ids) async {
+    return await getIt<Http>(instanceName: index.toString()).put<NullResponse>(
+      getIt<Url>(instanceName: index.toString()).dependencyCancel,
+      ids,
     );
   }
 }

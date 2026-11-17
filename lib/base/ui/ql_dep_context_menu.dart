@@ -12,7 +12,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:qinglong_app/module/others/dependencies/dependency_bean.dart';
 
-import '../routes.dart';
 
 // The scale of the child at the time that the CupertinoContextMenu opens.
 // This value was eyeballed from a physical device running iOS 13.1.2.

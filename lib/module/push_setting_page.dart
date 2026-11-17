@@ -1,13 +1,12 @@
 import 'dart:convert';
 
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
+import 'package:cupertino_ui/cupertino_ui.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:qinglong_app/base/ql_app_bar.dart';
 import 'package:qinglong_app/base/single_account_page.dart';
 import 'package:qinglong_app/base/theme.dart';
-import 'package:qinglong_app/base/ui/lazy_load_state.dart';
 import 'package:qinglong_app/base/ui/loading_widget.dart';
 import 'package:qinglong_app/module/subscribe/add_subscribe_page.dart';
 import 'package:qinglong_app/utils/extension.dart';
@@ -96,7 +95,7 @@ class _PushSettingPageState extends ConsumerState<PushSettingPage> {
                           CupertinoIcons.chevron_up_chevron_down,
                           size: 16,
                         ),
-                        value: current,
+                        initialValue: current,
                         onChanged: (value) {
                           current = value!;
                           setState(() {});

@@ -1,5 +1,5 @@
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
+import 'package:cupertino_ui/cupertino_ui.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:qinglong_app/base/base_state_widget.dart';
 import 'package:qinglong_app/base/http/http.dart';
@@ -13,7 +13,6 @@ import 'package:qinglong_app/module/config/add_config_page.dart';
 import 'package:qinglong_app/module/config/config_bean.dart';
 import 'package:qinglong_app/utils/utils.dart';
 
-import '../home/home_page.dart';
 import 'config_viewmodel.dart';
 
 class ConfigPage extends ConsumerStatefulWidget {

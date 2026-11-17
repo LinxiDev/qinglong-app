@@ -1,7 +1,7 @@
 import 'dart:math';
 
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
+import 'package:cupertino_ui/cupertino_ui.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:qinglong_app/base/cupertino_sheet.dart';
@@ -109,7 +109,7 @@ class _ConfigDetailPageState extends ConsumerState<ConfigDetailPage> with LazyLo
                 CupertinoSheer(
                   title: "分享",
                   onTap: () {
-                    Share.share(sourceContent ?? "");
+                    SharePlus.instance.share(ShareParams(text: sourceContent ?? ""));
                   },
                 ),
                 addDivider(),
@@ -118,7 +118,7 @@ class _ConfigDetailPageState extends ConsumerState<ConfigDetailPage> with LazyLo
                   onTap: () async {
                     try {
                       String name = "${Random().nextInt(40000)}_${widget.bean.title}";
-                      var file = await FileUtil(0).writeDownloadFile(name, sourceContent ?? "");
+                      await FileUtil(0).writeDownloadFile(name, sourceContent ?? "");
                       "已写入qinglong_app文件夹下,文件名$name".toast2();
                     } catch (e) {
                       e.toString().toast();

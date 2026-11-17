@@ -1,7 +1,5 @@
-import 'package:json_conversion_annotation/json_conversion_annotation.dart';
 
 
-@JsonConversion()
 class TaskLogBean {
   String? name;
   bool? isDir;
@@ -24,11 +22,11 @@ class TaskLogBean {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['name'] = this.name;
-    data['files'] = this.files;
-    if (this.children != null) {
-      data['children'] = this.children!.map((v) => v.toJson()).toList();
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['name'] = name;
+    data['files'] = files;
+    if (children != null) {
+      data['children'] = children!.map((v) => v.toJson()).toList();
     }
     return data;
   }
@@ -56,12 +54,12 @@ class Children {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['title'] = this.title;
-    data['value'] = this.value;
-    data['type'] = this.type;
-    data['key'] = this.key;
-    data['parent'] = this.parent;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['title'] = title;
+    data['value'] = value;
+    data['type'] = type;
+    data['key'] = key;
+    data['parent'] = parent;
     return data;
   }
 }

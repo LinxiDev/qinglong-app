@@ -1,13 +1,12 @@
 import 'dart:convert';
-import 'dart:ui';
 
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
-import 'package:json_table/json_table.dart';
+import 'package:cupertino_ui/cupertino_ui.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:qinglong_app/base/ql_app_bar.dart';
 import 'package:qinglong_app/base/single_account_page.dart';
 import 'package:qinglong_app/base/theme.dart';
+import 'package:qinglong_app/base/ui/json_table_view.dart';
 import 'package:qinglong_app/base/ui/lazy_load_state.dart';
 import 'package:qinglong_app/base/ui/loading_widget.dart';
 import 'package:qinglong_app/main.dart';
@@ -186,57 +185,15 @@ class ScriptCodeDetailPageState extends ConsumerState<ScriptCodeDetailPage> with
   Widget json() {
     return !showTable
         ? Center(
-            child: SelectableText(
-              getPrettyJSONString(),
-              selectionWidthStyle: BoxWidthStyle.max,
-              selectionHeightStyle: BoxHeightStyle.max,
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(12),
+              child: SelectableText(
+                getPrettyJSONString(),
+              ),
             ),
           )
-        : JsonTable(
+        : JsonTableView(
             jsonDecode(content ?? "[]"),
-            tableHeaderBuilder: (String? header) {
-              return Container(
-                padding: const EdgeInsets.symmetric(
-                  vertical: 10,
-                  horizontal: 15,
-                ),
-                constraints: const BoxConstraints(
-                  maxWidth: 200,
-                  minHeight: 50,
-                  maxHeight: 50,
-                ),
-                decoration: BoxDecoration(
-                  border: Border.all(width: 0.5),
-                ),
-                child: Text(
-                  header ?? "",
-                  maxLines: 1,
-                  textAlign: TextAlign.center,
-                ),
-              );
-            },
-            tableCellBuilder: (value) {
-              return Container(
-                padding: const EdgeInsets.symmetric(
-                  vertical: 10,
-                  horizontal: 15,
-                ),
-                constraints: const BoxConstraints(
-                  maxWidth: 200,
-                  minHeight: 50,
-                  maxHeight: 50,
-                ),
-                decoration: BoxDecoration(
-                    border: Border.all(
-                  width: 0.5,
-                )),
-                child: Text(
-                  value,
-                  maxLines: 1,
-                  textAlign: TextAlign.center,
-                ),
-              );
-            },
           );
   }
 

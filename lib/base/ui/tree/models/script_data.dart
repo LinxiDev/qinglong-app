@@ -1,11 +1,7 @@
-import 'dart:convert';
-import 'dart:ui';
 
 import 'package:flutter/widgets.dart';
-import 'package:json_conversion_annotation/json_conversion_annotation.dart';
 
 import '../tree_node.dart';
-import '../utilities.dart';
 
 /// Defines the data used to display a [TreeNode].
 ///
@@ -15,7 +11,6 @@ import '../utilities.dart';
 /// a node on the [TreeView] widget. The key and label properties are
 /// required. The key is needed for events that occur on the generated
 /// [TreeNode]. It should always be unique.
-@JsonConversion()
 class ScriptData {
   final String key;
 
@@ -82,7 +77,7 @@ class ScriptData {
     return ScriptData(
       key: '$_key',
       title: title ?? "",
-      type: type ?? "",
+      type: type,
       expanded: false,
       parent: parent ?? "",
       children: _children,
@@ -121,13 +116,13 @@ class ScriptData {
 
   @override
   int get hashCode {
-    return hashValues(
+    return Object.hashAll([
       key,
       title,
       expanded,
       parent,
       children,
-    );
+    ]);
   }
 
   @override

@@ -1,33 +1,40 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility that Flutter provides. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
-import 'package:qinglong_app/base/cron_parse.dart';
-import 'package:timezone/standalone.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:qinglong_app/base/ui/json_table_view.dart';
 
 void main() {
-  String time = "5 0-23/6 * * *";
+  testWidgets('JsonTableView 渲染表头与单元格', (WidgetTester tester) async {
+    final dynamic json = [
+      {"name": "任务A", "status": 1},
+      {"name": "任务B", "status": 0},
+    ];
 
-  String cronTime;
-  List<dynamic> timeList = time.split(" ");
-  Duration duration;
-  if (timeList.length > 5) {
-    var first = timeList.first;
-    var list = parseConstraint(first)?.first;
-    duration = Duration(seconds: list ?? 0);
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: SizedBox(
+            height: 300,
+            child: JsonTableView(json),
+          ),
+        ),
+      ),
+    );
 
-    cronTime = timeList.sublist(1, timeList.length).join(" ");
-  } else {
-    cronTime = time;
-    duration = const Duration(seconds: 0);
-  }
+    expect(find.text("name"), findsOneWidget);
+    expect(find.text("status"), findsOneWidget);
+    expect(find.text("任务A"), findsOneWidget);
+    expect(find.text("任务B"), findsOneWidget);
+  });
 
-  var cronIterator = Cron().parse(cronTime, "Asia/Shanghai");
-  TZDateTime nextDate = cronIterator.next();
-  var result = nextDate.add(duration);
-  print(result.toIso8601String());
+  testWidgets('JsonTableView 处理空数据', (WidgetTester tester) async {
+    await tester.pumpWidget(
+      const MaterialApp(
+        home: Scaffold(
+          body: JsonTableView(null),
+        ),
+      ),
+    );
+
+    expect(find.text("暂无数据"), findsOneWidget);
+  });
 }
-

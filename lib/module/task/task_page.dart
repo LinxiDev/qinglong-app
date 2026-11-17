@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:custom_sliding_segmented_control/custom_sliding_segmented_control.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
+import 'package:cupertino_ui/cupertino_ui.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -11,6 +11,7 @@ import 'package:qinglong_app/base/routes.dart';
 import 'package:qinglong_app/base/single_account_page.dart';
 import 'package:qinglong_app/base/sp_const.dart';
 import 'package:qinglong_app/base/theme.dart';
+import 'package:qinglong_app/base/ui/app_logo.dart';
 import 'package:qinglong_app/base/ui/loading_widget.dart';
 import 'package:qinglong_app/base/ui/search_cell.dart';
 import 'package:qinglong_app/module/task/add_task_page.dart';
@@ -533,7 +534,7 @@ class TaskPageState extends ConsumerState<TaskPage>
                 .currentTheme
                 .bottomNavigationBarTheme
                 .backgroundColor
-                ?.withOpacity(1),
+                ?.withValues(alpha: 1),
             child: SafeArea(
               top: false,
               child: SizedBox(
@@ -796,8 +797,7 @@ class TaskPageState extends ConsumerState<TaskPage>
                 ),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(5),
-                  child: Image.asset(
-                    "assets/images/ql.png",
+                  child: const AppLogo(
                     height: 45,
                   ),
                 ),

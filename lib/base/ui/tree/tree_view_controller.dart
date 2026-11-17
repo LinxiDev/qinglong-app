@@ -1,4 +1,4 @@
-import 'dart:convert' show jsonDecode, jsonEncode;
+import 'dart:convert' show jsonDecode;
 
 import 'models/script_data.dart';
 
@@ -38,7 +38,7 @@ class TreeViewController {
   final String? selectedKey;
 
   TreeViewController({
-    this.children: const [],
+    this.children = const [],
     this.selectedKey,
   });
 
@@ -59,7 +59,7 @@ class TreeViewController {
   ///   controller = controller.loadJSON(json: jsonString);
   /// });
   /// ```
-  TreeViewController loadJSON<T>({String json: '[]'}) {
+  TreeViewController loadJSON<T>({String json = '[]'}) {
     List jsonList = jsonDecode(json);
     List<Map<String, dynamic>> list = List<Map<String, dynamic>>.from(jsonList);
     return loadMap<T>(list: list);
@@ -73,12 +73,12 @@ class TreeViewController {
   ///   controller = controller.loadMap(map: dataMap);
   /// });
   /// ```
-  TreeViewController loadMap<T>({List<Map<String, dynamic>> list: const []}) {
+  TreeViewController loadMap<T>({List<Map<String, dynamic>> list = const []}) {
     List<ScriptData> treeData =
         list.map((Map<String, dynamic> item) => ScriptData.fromMap(item)).toList();
     return TreeViewController(
       children: treeData,
-      selectedKey: this.selectedKey,
+      selectedKey: selectedKey,
     );
   }
 
@@ -99,13 +99,13 @@ class TreeViewController {
     ScriptData newNode, {
     ScriptData? parent,
     int? index,
-    InsertMode mode: InsertMode.append,
+    InsertMode mode = InsertMode.append,
   }) {
     List<ScriptData> _data =
         addNode(key, newNode, parent: parent, mode: mode, index: index);
     return TreeViewController(
       children: _data,
-      selectedKey: this.selectedKey,
+      selectedKey: selectedKey,
     );
   }
 
@@ -125,7 +125,7 @@ class TreeViewController {
     List<ScriptData> _data = updateNode(key, newNode, parent: parent);
     return TreeViewController(
       children: _data,
-      selectedKey: this.selectedKey,
+      selectedKey: selectedKey,
     );
   }
 
@@ -145,7 +145,7 @@ class TreeViewController {
     List<ScriptData> _data = deleteNode(key, parent: parent);
     return TreeViewController(
       children: _data,
-      selectedKey: this.selectedKey,
+      selectedKey: selectedKey,
     );
   }
 
@@ -165,7 +165,7 @@ class TreeViewController {
     List<ScriptData> _data = toggleNode(key, parent: parent);
     return TreeViewController(
       children: _data,
-      selectedKey: this.selectedKey,
+      selectedKey: selectedKey,
     );
   }
 
@@ -185,7 +185,7 @@ class TreeViewController {
     List<ScriptData> _data = expandToNode(key);
     return TreeViewController(
       children: _data,
-      selectedKey: this.selectedKey,
+      selectedKey: selectedKey,
     );
   }
 
@@ -205,7 +205,7 @@ class TreeViewController {
     List<ScriptData> _data = collapseToNode(key);
     return TreeViewController(
       children: _data,
-      selectedKey: this.selectedKey,
+      selectedKey: selectedKey,
     );
   }
 
@@ -225,7 +225,7 @@ class TreeViewController {
     List<ScriptData> _data = expandAll(parent: parent);
     return TreeViewController(
       children: _data,
-      selectedKey: this.selectedKey,
+      selectedKey: selectedKey,
     );
   }
 
@@ -245,23 +245,23 @@ class TreeViewController {
     List<ScriptData> _data = collapseAll(parent: parent);
     return TreeViewController(
       children: _data,
-      selectedKey: this.selectedKey,
+      selectedKey: selectedKey,
     );
   }
 
   /// Gets the node that has a key value equal to the specified key.
   ScriptData? getNode(String key, {ScriptData? parent}) {
     ScriptData? _found;
-    List<ScriptData> _children = parent == null ? this.children : parent.children;
+    List<ScriptData> _children = parent == null ? children : parent.children;
     Iterator iter = _children.iterator;
     while (iter.moveNext()) {
       ScriptData child = iter.current;
       if (child.key == key) {
-        _found = child as ScriptData;
+        _found = child;
         break;
       } else {
         if (child.isParent) {
-          _found = this.getNode(key, parent: child);
+          _found = getNode(key, parent: child);
           if (_found != null) {
             break;
           }
@@ -275,13 +275,13 @@ class TreeViewController {
   List<ScriptData> expandAll({ScriptData? parent}) {
     List<ScriptData> _children = [];
     Iterator iter =
-        parent == null ? this.children.iterator : parent.children.iterator;
+        parent == null ? children.iterator : parent.children.iterator;
     while (iter.moveNext()) {
       ScriptData child = iter.current;
       if (child.isParent) {
         _children.add(child.copyWith(
           expanded: true,
-          children: this.expandAll(parent: child),
+          children: expandAll(parent: child),
         ));
       } else {
         _children.add(child);
@@ -294,13 +294,13 @@ class TreeViewController {
   List<ScriptData> collapseAll({ScriptData? parent}) {
     List<ScriptData> _children = [];
     Iterator iter =
-        parent == null ? this.children.iterator : parent.children.iterator;
+        parent == null ? children.iterator : parent.children.iterator;
     while (iter.moveNext()) {
       ScriptData child = iter.current;
       if (child.isParent) {
         _children.add(child.copyWith(
           expanded: false,
-          children: this.collapseAll(parent: child),
+          children: collapseAll(parent: child),
         ));
       } else {
         _children.add(child);
@@ -312,7 +312,7 @@ class TreeViewController {
   /// Gets the parent of the node identified by specified key.
   ScriptData? getParent(String key, {ScriptData? parent}) {
     ScriptData? _found;
-    List<ScriptData> _children = parent == null ? this.children : parent.children;
+    List<ScriptData> _children = parent == null ? children : parent.children;
     Iterator iter = _children.iterator;
     while (iter.moveNext()) {
       ScriptData child = iter.current;
@@ -321,14 +321,14 @@ class TreeViewController {
         break;
       } else {
         if (child.isParent) {
-          _found = this.getParent(key, parent: child);
+          _found = getParent(key, parent: child);
           if (_found != null) {
             break;
           }
         }
       }
     }
-    return _found == null ? null : _found as ScriptData;
+    return _found == null ? null : _found;
   }
 
   /// Expands a node and all of the node's ancestors so that the node is
@@ -339,12 +339,12 @@ class TreeViewController {
 
     _ancestors.add(_currentKey);
 
-    ScriptData? _parent = this.getParent(_currentKey);
+    ScriptData? _parent = getParent(_currentKey);
     if (_parent != null) {
       while (_parent!.key != _currentKey) {
         _currentKey = _parent.key;
         _ancestors.add(_currentKey);
-        _parent = this.getParent(_currentKey);
+        _parent = getParent(_currentKey);
       }
       TreeViewController _this = this;
       _ancestors.forEach((String k) {
@@ -354,7 +354,7 @@ class TreeViewController {
       });
       return _this.children;
     }
-    return this.children;
+    return children;
   }
 
   /// Collapses a node and all of the node's ancestors without the need to
@@ -365,12 +365,12 @@ class TreeViewController {
 
     _ancestors.add(_currentKey);
 
-    ScriptData? _parent = this.getParent(_currentKey);
+    ScriptData? _parent = getParent(_currentKey);
     if (_parent != null) {
       while (_parent!.key != _currentKey) {
         _currentKey = _parent.key;
         _ancestors.add(_currentKey);
-        _parent = this.getParent(_currentKey);
+        _parent = getParent(_currentKey);
       }
       TreeViewController _this = this;
       _ancestors.forEach((String k) {
@@ -380,7 +380,7 @@ class TreeViewController {
       });
       return _this.children;
     }
-    return this.children;
+    return children;
   }
 
   /// Adds a new node to an existing node identified by specified key. It optionally
@@ -392,9 +392,9 @@ class TreeViewController {
     ScriptData newNode, {
     ScriptData? parent,
     int? index,
-    InsertMode mode: InsertMode.append,
+    InsertMode mode = InsertMode.append,
   }) {
-    List<ScriptData> __children = parent == null ? this.children : parent.children;
+    List<ScriptData> __children = parent == null ? children : parent.children;
     return __children.map((ScriptData child) {
       if (child.key == key) {
         List<ScriptData> _children = child.children.toList(growable: true);
@@ -452,7 +452,7 @@ class TreeViewController {
   /// Deletes an existing node identified by specified key. This method
   /// returns a new list with the specified node removed.
   List<ScriptData> deleteNode(String key, {ScriptData? parent}) {
-    List<ScriptData> _children = parent == null ? this.children : parent.children;
+    List<ScriptData> _children = parent == null ? children : parent.children;
     List<ScriptData> _filteredChildren = [];
     Iterator iter = _children.iterator;
     while (iter.moveNext()) {
@@ -472,7 +472,7 @@ class TreeViewController {
 
   /// Get the current selected node. Returns null if there is no selectedKey
   ScriptData? get selectedNode {
-    return this.selectedKey!.isEmpty ? null : getNode(this.selectedKey!);
+    return selectedKey!.isEmpty ? null : getNode(selectedKey!);
   }
 
 

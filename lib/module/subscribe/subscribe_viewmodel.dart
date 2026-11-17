@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:flutter/cupertino.dart';
+import 'package:cupertino_ui/cupertino_ui.dart';
 import 'package:qinglong_app/base/base_viewmodel.dart';
 import 'package:qinglong_app/base/http/http.dart';
 import 'package:qinglong_app/base/single_account_page.dart';

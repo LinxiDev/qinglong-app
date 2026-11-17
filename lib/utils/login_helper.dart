@@ -1,12 +1,9 @@
-import 'package:flutter/cupertino.dart';
-import 'package:qinglong_app/base/http/api.dart';
+import 'package:cupertino_ui/cupertino_ui.dart';
 import 'package:qinglong_app/base/http/http.dart';
 import 'package:qinglong_app/base/single_account_page.dart';
-import 'package:qinglong_app/base/userinfo_viewmodel.dart';
 import 'package:qinglong_app/module/login/login_bean.dart';
 import 'package:qinglong_app/utils/extension.dart';
 
-import '../main.dart';
 
 class LoginHelper {
   static int success = 0;

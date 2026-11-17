@@ -1,7 +1,7 @@
 import 'dart:ui';
 
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
+import 'package:cupertino_ui/cupertino_ui.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:qinglong_app/base/cupertino_sheet.dart';
 import 'package:qinglong_app/base/ql_app_bar.dart';
@@ -24,10 +24,8 @@ class SubscribeDetailPage extends ConsumerStatefulWidget {
 }
 
 class _TaskDetailPageState extends ConsumerState<SubscribeDetailPage> with LazyLoadState<SubscribeDetailPage> {
-  final TextEditingController _nameController = TextEditingController();
   Type type = Type.public;
   CronType cronType = CronType.cron;
-  final TextEditingController _cronController = TextEditingController();
   PullType pullType = PullType.privateKey;
   String intervalUnit = "天";
 

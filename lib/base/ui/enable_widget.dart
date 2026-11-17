@@ -1,8 +1,6 @@
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
+import 'package:cupertino_ui/cupertino_ui.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:qinglong_app/base/theme.dart';
-import 'package:qinglong_app/base/ui/loading_widget.dart';
 
 
 
@@ -20,7 +18,7 @@ class StatusWidget extends ConsumerWidget {
   Widget build(BuildContext context, ref) {
     return Container(
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(2),
         border: Border.all(
           color: color,

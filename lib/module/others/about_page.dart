@@ -1,19 +1,18 @@
 import 'dart:io';
 
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
+import 'package:cupertino_ui/cupertino_ui.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:launch_review/launch_review.dart';
+import 'package:in_app_review/in_app_review.dart';
 import 'package:qinglong_app/base/ql_app_bar.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:qinglong_app/base/single_account_page.dart';
-import 'package:qinglong_app/base/sp_const.dart';
 import 'package:qinglong_app/base/theme.dart';
+import 'package:qinglong_app/base/ui/app_logo.dart';
 import 'package:qinglong_app/base/ui/lazy_load_state.dart';
 import 'package:qinglong_app/base/ui/qlvisible.dart';
 import 'package:qinglong_app/module/home/system_bean.dart';
 import 'package:qinglong_app/utils/extension.dart';
-import 'package:qinglong_app/utils/sp_utils.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -64,8 +63,7 @@ class _AboutPageState extends ConsumerState<AboutPage> with LazyLoadState<AboutP
               Center(
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(10),
-                  child: Image.asset(
-                    "assets/images/ql.png",
+                  child: const AppLogo(
                     height: 60,
                   ),
                 ),
@@ -218,7 +216,7 @@ class _AboutPageState extends ConsumerState<AboutPage> with LazyLoadState<AboutP
                             topRight: Radius.circular(10),
                           ),
                           onTap: () async {
-                            LaunchReview.launch(writeReview: false, iOSAppId: "1625871665");
+                            InAppReview.instance.openStoreListing(appStoreId: "1625871665");
                           },
                           child: Padding(
                             padding: const EdgeInsets.symmetric(
@@ -407,9 +405,9 @@ class _AboutPageState extends ConsumerState<AboutPage> with LazyLoadState<AboutP
                         ),
                         onTap: () {
                           if (Platform.isAndroid) {
-                            Share.share("分享一款好用的青龙客户端，快去点击下面的链接地址下载吧 https://github.com/LinxiDev/qinglong-app/wiki/qinglong-app%E2%80%90Wiki");
+                            SharePlus.instance.share(ShareParams(text: "分享一款好用的青龙客户端，快去点击下面的链接地址下载吧 https://github.com/LinxiDev/qinglong-app/wiki/qinglong-app%E2%80%90Wiki"));
                           } else {
-                            Share.share("分享一款好用的青龙客户端，快去美区 AppStore 搜索『青龙客户端』或者点击下面的链接地址下载吧 https://apps.apple.com/us/app/id1625871665");
+                            SharePlus.instance.share(ShareParams(text: "分享一款好用的青龙客户端，快去美区 AppStore 搜索『青龙客户端』或者点击下面的链接地址下载吧 https://apps.apple.com/us/app/id1625871665"));
                           }
                         },
                         child: Padding(

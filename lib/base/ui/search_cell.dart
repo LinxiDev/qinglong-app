@@ -1,5 +1,4 @@
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
+import 'package:cupertino_ui/cupertino_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../theme.dart';
@@ -34,7 +33,7 @@ class _SearchCellState extends ConsumerState<SearchCell> {
         ),
       ),
       textDirection: TextDirection.ltr,
-      textScaleFactor: MediaQuery.of(context).textScaleFactor,
+      textScaler: MediaQuery.textScalerOf(context),
     );
     textPainter.layout();
     return CupertinoTextField.borderless(

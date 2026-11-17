@@ -1,7 +1,6 @@
-import 'dart:ui';
 
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
+import 'package:cupertino_ui/cupertino_ui.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -186,7 +185,7 @@ class _TaskDetailPageState extends ConsumerState<AppKeyDetailDetailPage> {
                   .then((value) {
                 EasyLoading.dismiss();
                 Navigator.of(context1).pop(true);
-              }).catchError((_, __) {
+              }).catchError((_, _) {
                 EasyLoading.dismiss();
               });
             },
@@ -244,7 +243,7 @@ class AppKeyDetailCell extends ConsumerWidget {
                         onTap: () {
                           Clipboard.setData(
                             ClipboardData(
-                              text: desc,
+                              text: desc ?? "",
                             ),
                           );
                           "已复制到剪切板".toast();

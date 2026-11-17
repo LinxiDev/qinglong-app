@@ -1,8 +1,6 @@
-import 'package:json_conversion_annotation/json_conversion_annotation.dart';
 
 
 
-@JsonConversion()
 class CheckUpdateBean {
   bool? hasNewVersion;
   String? lastVersion;
@@ -17,10 +15,10 @@ class CheckUpdateBean {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['hasNewVersion'] = this.hasNewVersion;
-    data['lastVersion'] = this.lastVersion;
-    data['lastLog'] = this.lastLog;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['hasNewVersion'] = hasNewVersion;
+    data['lastVersion'] = lastVersion;
+    data['lastLog'] = lastLog;
     return data;
   }
 

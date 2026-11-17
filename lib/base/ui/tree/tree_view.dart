@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 import 'tree_view_controller.dart';
 import 'tree_view_theme.dart';
@@ -85,13 +85,13 @@ class TreeView extends InheritedWidget {
     this.physics,
     this.onExpansionChanged,
     this.onDeleteSelfClick,
-    this.allowParentSelect: false,
-    this.supportParentDoubleTap: false,
-    this.shrinkWrap: false,
-    this.primary: true,
+    this.allowParentSelect = false,
+    this.supportParentDoubleTap = false,
+    this.shrinkWrap = false,
+    this.primary = true,
     this.nodeBuilder,
     TreeViewTheme? theme,
-  })  : this.theme = theme ?? const TreeViewTheme(),
+  })  : theme = theme ?? const TreeViewTheme(),
         super(
           key: key,
           child: _TreeViewData(
@@ -106,12 +106,12 @@ class TreeView extends InheritedWidget {
 
   @override
   bool updateShouldNotify(TreeView oldWidget) {
-    return oldWidget.controller.children != this.controller.children ||
-        oldWidget.onNodeTap != this.onNodeTap ||
-        oldWidget.onExpansionChanged != this.onExpansionChanged ||
-        oldWidget.theme != this.theme ||
-        oldWidget.supportParentDoubleTap != this.supportParentDoubleTap ||
-        oldWidget.allowParentSelect != this.allowParentSelect;
+    return oldWidget.controller.children != controller.children ||
+        oldWidget.onNodeTap != onNodeTap ||
+        oldWidget.onExpansionChanged != onExpansionChanged ||
+        oldWidget.theme != theme ||
+        oldWidget.supportParentDoubleTap != supportParentDoubleTap ||
+        oldWidget.allowParentSelect != allowParentSelect;
   }
 }
 

@@ -143,7 +143,7 @@ class _CronIterator implements CronIterator<TZDateTime> {
   bool _previousCalled = false;
 
   _CronIterator(this._schedule, this._currentDate) {
-    _currentDate = TZDateTime.fromMillisecondsSinceEpoch(_currentDate.location, this._currentDate.millisecondsSinceEpoch ~/ 60000 * 60000);
+    _currentDate = TZDateTime.fromMillisecondsSinceEpoch(_currentDate.location, _currentDate.millisecondsSinceEpoch ~/ 60000 * 60000);
   }
 
   @override

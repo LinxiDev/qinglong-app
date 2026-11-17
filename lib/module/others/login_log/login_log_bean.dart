@@ -1,7 +1,5 @@
-import 'package:json_conversion_annotation/json_conversion_annotation.dart';
 
 
-@JsonConversion()
 class LoginLogBean {
   int? timestamp;
   String? address;
@@ -21,12 +19,12 @@ class LoginLogBean {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['timestamp'] = this.timestamp;
-    data['address'] = this.address;
-    data['ip'] = this.ip;
-    data['platform'] = this.platform;
-    data['status'] = this.status;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['timestamp'] = timestamp;
+    data['address'] = address;
+    data['ip'] = ip;
+    data['platform'] = platform;
+    data['status'] = status;
     return data;
   }
 

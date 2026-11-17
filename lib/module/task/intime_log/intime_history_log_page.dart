@@ -1,8 +1,6 @@
-import 'dart:ui';
 
-import 'package:extended_text/extended_text.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
+import 'package:cupertino_ui/cupertino_ui.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:qinglong_app/base/http/http.dart';
@@ -72,7 +70,7 @@ class _InTimeHistoryLogPageState extends State<InTimeHistoryLogPage> with LazyLo
                   CupertinoSheer(
                     title: "分享",
                     onTap: () async {
-                      Share.share(content ?? "");
+                      SharePlus.instance.share(ShareParams(text: content ?? ""));
                     },
                   ),
                   addDivider(),
@@ -116,11 +114,8 @@ class _InTimeHistoryLogPageState extends State<InTimeHistoryLogPage> with LazyLo
                   child: SingleChildScrollView(
                     primary: true,
                     padding: const EdgeInsets.symmetric(horizontal: 15),
-                    child: ExtendedText(
+                    child: SelectableText(
                       content!,
-                      selectionHeightStyle: BoxHeightStyle.max,
-                      selectionEnabled: true,
-                      selectionWidthStyle: BoxWidthStyle.max,
                       style: const TextStyle(
                         fontSize: 12,
                       ),

@@ -1,7 +1,5 @@
-import 'package:json_conversion_annotation/json_conversion_annotation.dart';
 
 
-@JsonConversion()
 class UserBean {
   String? username;
   bool? twoFactorActivated;
@@ -20,10 +18,10 @@ class UserBean {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['username'] = this.username;
-    data['avatar'] = this.avatar;
-    data['twoFactorActivated'] = this.twoFactorActivated;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['username'] = username;
+    data['avatar'] = avatar;
+    data['twoFactorActivated'] = twoFactorActivated;
     return data;
   }
 

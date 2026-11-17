@@ -98,14 +98,12 @@ class ICloudUtils {
     if (SpUtil.getInt(spVIP, defValue: typeNormal) == typeNormal) return;
 
     if (path == null) {
-      FilePickerResult? result = await FilePicker.platform.pickFiles();
-      if (result != null &&
-          result.files.isNotEmpty &&
-          result.files.single.path != null) {
-        if (!result.files.single.path!.endsWith(FileUtil.env)) {
+      final List<PlatformFile> files = await FilePicker.pickFiles();
+      if (files.isNotEmpty && files.first.path != null) {
+        if (!files.first.path!.endsWith(FileUtil.env)) {
           "只支持 .${FileUtil.env} 结尾的文件".toast();
         } else {
-          _handleRestoreEnv(result.files.single.path!);
+          _handleRestoreEnv(files.first.path!);
         }
       }
     } else {
@@ -116,14 +114,12 @@ class ICloudUtils {
   void restoreSubscribe(String? path) async {
     if (SpUtil.getInt(spVIP, defValue: typeNormal) == typeNormal) return;
     if (path == null) {
-      FilePickerResult? result = await FilePicker.platform.pickFiles();
-      if (result != null &&
-          result.files.isNotEmpty &&
-          result.files.single.path != null) {
-        if (!result.files.single.path!.endsWith(FileUtil.subscribe)) {
+      final List<PlatformFile> files = await FilePicker.pickFiles();
+      if (files.isNotEmpty && files.first.path != null) {
+        if (!files.first.path!.endsWith(FileUtil.subscribe)) {
           "只支持 .${FileUtil.subscribe} 结尾的文件".toast();
         } else {
-          _handleRestoreSubscribe(result.files.single.path!);
+          _handleRestoreSubscribe(files.first.path!);
         }
       }
     } else {
@@ -134,14 +130,12 @@ class ICloudUtils {
   void restoreConfig(String? path) async {
     if (SpUtil.getInt(spVIP, defValue: typeNormal) == typeNormal) return;
     if (path == null) {
-      FilePickerResult? result = await FilePicker.platform.pickFiles();
-      if (result != null &&
-          result.files.isNotEmpty &&
-          result.files.single.path != null) {
-        if (!result.files.single.path!.endsWith(FileUtil.config)) {
+      final List<PlatformFile> files = await FilePicker.pickFiles();
+      if (files.isNotEmpty && files.first.path != null) {
+        if (!files.first.path!.endsWith(FileUtil.config)) {
           "只支持 .${FileUtil.config} 结尾的文件".toast();
         } else {
-          String p = result.files.single.path!;
+          String p = files.first.path!;
           String title = "nameNotFound.sh";
 
           try {

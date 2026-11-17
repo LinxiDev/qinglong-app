@@ -1,7 +1,8 @@
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
+import 'package:cupertino_ui/cupertino_ui.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:qinglong_app/module/config/config_detail_page.dart';
 import 'package:qinglong_app/module/config/config_edit_page.dart';
+import 'package:qinglong_app/module/dashboard/dashboard_page.dart';
 import 'package:qinglong_app/module/env/add_env_page.dart';
 import 'package:qinglong_app/module/env/env_bean.dart';
 import 'package:qinglong_app/module/env/env_detail_page.dart';
@@ -10,7 +11,6 @@ import 'package:qinglong_app/module/icloud/icloud_file_page.dart';
 import 'package:qinglong_app/module/icloud/icloud_page.dart';
 import 'package:qinglong_app/module/login/login_page.dart';
 import 'package:qinglong_app/module/others/about_page.dart';
-import 'package:qinglong_app/module/others/change_account_page.dart';
 import 'package:qinglong_app/module/others/dependencies/add_dependency_page.dart';
 import 'package:qinglong_app/module/others/dependencies/dependency_page.dart';
 import 'package:qinglong_app/module/others/login_log/login_log_page.dart';
@@ -19,13 +19,15 @@ import 'package:qinglong_app/module/others/scripts/script_detail_page.dart';
 import 'package:qinglong_app/module/others/scripts/script_edit_page.dart';
 import 'package:qinglong_app/module/others/scripts/script_page.dart';
 import 'package:qinglong_app/module/others/task_log/task_log_page.dart';
+import 'package:qinglong_app/module/others/notify_log_page.dart';
 import 'package:qinglong_app/module/others/update_password_page.dart';
+import 'package:qinglong_app/module/setting/ip_blacklist_page.dart';
+import 'package:qinglong_app/module/setting/storage_retention_page.dart';
 import 'package:qinglong_app/module/setting_page.dart';
 import 'package:qinglong_app/module/subscribe/subscribe_detail_page.dart';
 import 'package:qinglong_app/module/subscribe/subscribe_page.dart';
 import 'package:qinglong_app/module/task/task_bean.dart';
 import 'package:qinglong_app/module/task/task_detail/task_detail_page.dart';
-import 'package:qinglong_app/utils/sp_utils.dart';
 
 class Routes {
   static const String routeHomePage = "/home/homepage";
@@ -50,6 +52,10 @@ class Routes {
   static const String routeAbout = "/about";
   static const String routeTheme = "/theme";
   static const String routeICloud = "/icloud";
+  static const String routeDashboard = "/dashboard";
+  static const String routeNotifyLog = "/notifyLog";
+  static const String routeStorageRetention = "/retention";
+  static const String routeIpBlacklist = "/ipBlacklist";
 
   static const String routeIcloudFile = "/icloudfile";
 
@@ -62,6 +68,16 @@ class Routes {
             builder: (context) => LoginPage(
                   fromAddNewAccount: (settings.arguments as bool?) ?? false,
                 ));
+      case routeDashboard:
+        return CupertinoPageRoute(builder: (context) => const DashboardPage());
+      case routeNotifyLog:
+        return CupertinoPageRoute(builder: (context) => const NotifyLogPage());
+      case routeStorageRetention:
+        return CupertinoPageRoute(
+            builder: (context) => const StorageRetentionPage());
+      case routeIpBlacklist:
+        return CupertinoPageRoute(
+            builder: (context) => const IpBlacklistPage());
       case routeICloud:
         return CupertinoPageRoute(builder: (context) => const IcloudPage());
       case routeSubscribeList:

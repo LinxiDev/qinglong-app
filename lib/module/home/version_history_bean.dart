@@ -10,9 +10,9 @@ class VersionHistoryBean {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['host'] = this.host;
-    data['version'] = this.version;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['host'] = host;
+    data['version'] = version;
     return data;
   }
 }

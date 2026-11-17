@@ -1,7 +1,5 @@
-import 'package:json_conversion_annotation/json_conversion_annotation.dart';
 
 
-@JsonConversion()
 class ScriptBean {
   String? title;
   String? value;
@@ -17,18 +15,18 @@ class ScriptBean {
     if (json['children'] != null) {
       children = <ScriptChildren>[];
       json['children'].forEach((v) {
-        children!.add(new ScriptChildren.fromJson(v));
+        children!.add(ScriptChildren.fromJson(v));
       });
     }
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['title'] = this.title;
-    data['value'] = this.value;
-    data['disabled'] = this.disabled;
-    if (this.children != null) {
-      data['children'] = this.children!.map((v) => v.toJson()).toList();
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['title'] = title;
+    data['value'] = value;
+    data['disabled'] = disabled;
+    if (children != null) {
+      data['children'] = children!.map((v) => v.toJson()).toList();
     }
     return data;
   }
@@ -52,10 +50,10 @@ class ScriptChildren {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['title'] = this.title;
-    data['value'] = this.value;
-    data['parent'] = this.parent;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['title'] = title;
+    data['value'] = value;
+    data['parent'] = parent;
     return data;
   }
 }

@@ -1,6 +1,4 @@
-import 'package:json_conversion_annotation/json_conversion_annotation.dart';
 
-@JsonConversion()
 class EnvBean {
   String? name;
   String? value;
@@ -10,6 +8,7 @@ class EnvBean {
   String? _id;
   int? id;
   int? created;
+  int? isPinned;
   String? timestamp;
   String? updatedAt;
   String? createdAt;
@@ -39,20 +38,21 @@ class EnvBean {
         : (json.containsKey('id') ? json['id'].toString() : "");
     created = int.tryParse(json['created'].toString());
     timestamp = json['timestamp'];
+    isPinned = json['isPinned'] is num ? (json['isPinned'] as num).toInt() : 0;
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['name'] = this.name;
-    data['value'] = this.value;
-    data['remarks'] = this.remarks;
-    data['status'] = this.status;
-    data['_id'] = this._id;
-    data['id'] = this.id;
-    data['created'] = this.created;
-    data['timestamp'] = this.timestamp;
-    data['createdAt'] = this.createdAt;
-    data['updatedAt'] = this.updatedAt;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['name'] = name;
+    data['value'] = value;
+    data['remarks'] = remarks;
+    data['status'] = status;
+    data['_id'] = _id;
+    data['id'] = id;
+    data['created'] = created;
+    data['timestamp'] = timestamp;
+    data['createdAt'] = createdAt;
+    data['updatedAt'] = updatedAt;
     return data;
   }
 

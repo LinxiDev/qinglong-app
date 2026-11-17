@@ -1,6 +1,6 @@
 import 'dart:io';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
+import 'package:cupertino_ui/cupertino_ui.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_displaymode/flutter_displaymode.dart';
@@ -17,9 +17,9 @@ import 'package:qinglong_app/base/ui/animated_indexed_switch.dart';
 import 'package:qinglong_app/base/ui/loading_widget.dart';
 import 'package:qinglong_app/utils/extension.dart';
 import 'package:qinglong_app/utils/sp_utils.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_localizations/flutter_localizations.dart' as fl;
 import 'package:local_auth_android/local_auth_android.dart';
-import 'package:local_auth_ios/local_auth_ios.dart';
+import 'package:local_auth_darwin/local_auth_darwin.dart';
 import 'package:quick_actions/quick_actions.dart';
 
 final getIt = GetIt.instance;
@@ -177,9 +177,13 @@ class QlAppState extends ConsumerState<QlApp> with WidgetsBindingObserver {
       locale: const Locale('zh', 'CN'),
       navigatorKey: navigatorState,
       localizationsDelegates: const [
+        // material_ui / cupertino_ui 自带一套本地化类型，
+        // 与 flutter_localizations 中的同名类不是同一个类型，需要同时注册。
         GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
+        fl.GlobalMaterialLocalizations.delegate,
+        fl.GlobalCupertinoLocalizations.delegate,
+        fl.GlobalWidgetsLocalizations.delegate,
       ],
       builder: EasyLoading.init(builder: (BuildContext context, Widget? child) {
         EasyLoading.instance.indicatorWidget = const LoadingWidget(
@@ -187,7 +191,7 @@ class QlAppState extends ConsumerState<QlApp> with WidgetsBindingObserver {
         );
         return MediaQuery(
           data: MediaQuery.of(context).copyWith(
-            textScaleFactor: textScaleFactor,
+            textScaler: TextScaler.linear(textScaleFactor),
           ),
           child: ScrollConfiguration(
             behavior: const ScrollPhysicsConfig(),
@@ -220,8 +224,6 @@ class ScrollPhysicsConfig extends ScrollBehavior {
       case TargetPlatform.linux:
       case TargetPlatform.windows:
         return const ClampingScrollPhysics();
-      default:
-        return const BouncingScrollPhysics();
     }
   }
 }
@@ -332,8 +334,7 @@ class MultiAccountPageState extends ConsumerState<MultiAccountPage>
     super.initState();
     WidgetsBinding.instance.addObserver(this);
 
-    var window = WidgetsBinding.instance.window;
-    window.onPlatformBrightnessChanged = () {
+    WidgetsBinding.instance.platformDispatcher.onPlatformBrightnessChanged = () {
       ref.read(themeProvider.notifier).changeThemeWithSystemStatus(false);
     };
     _addQuickActions();
@@ -360,17 +361,18 @@ class MultiAccountPageState extends ConsumerState<MultiAccountPage>
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async {
-        var key = getIt.get<GlobalKey<NavigatorState>>(
-            instanceName: _index.toString());
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (bool didPop, Object? result) async {
+        if (didPop) return;
+        final GlobalKey<NavigatorState> key = getIt.get<GlobalKey<NavigatorState>>(
+          instanceName: _index.toString(),
+        );
 
-        var result = await key.currentState?.maybePop() ?? true;
-
-        if (result) {
-          return false;
-        } else {
-          return true;
+        final bool handled = await key.currentState?.maybePop() ?? false;
+        if (!handled) {
+          // 当前账号内已无路由可退，退出应用
+          await SystemNavigator.pop();
         }
       },
       child: Scaffold(

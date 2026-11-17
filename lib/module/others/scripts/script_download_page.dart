@@ -1,20 +1,16 @@
 import 'dart:io';
 
 import 'package:dio/dio.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:qinglong_app/base/commit_button.dart';
 import 'package:qinglong_app/base/ql_app_bar.dart';
-import 'package:qinglong_app/base/sp_const.dart';
-import 'package:qinglong_app/base/theme.dart';
 import 'package:qinglong_app/module/subscribe/add_subscribe_page.dart';
 import 'package:path/path.dart';
 import 'package:qinglong_app/utils/extension.dart';
-import 'package:qinglong_app/utils/sp_utils.dart';
 
-import '../../../main.dart';
 
 class ScriptDownloadPage extends ConsumerStatefulWidget {
   const ScriptDownloadPage({Key? key}) : super(key: key);
@@ -99,9 +95,9 @@ class _ScriptDownloadPageState extends ConsumerState<ScriptDownloadPage> {
     try {
       var _dio = Dio(
         BaseOptions(
-          connectTimeout: 50000,
-          receiveTimeout: 50000,
-          sendTimeout: 50000,
+          connectTimeout: const Duration(seconds: 50),
+          receiveTimeout: const Duration(seconds: 50),
+          sendTimeout: const Duration(seconds: 50),
           contentType: "application/json",
         ),
       );

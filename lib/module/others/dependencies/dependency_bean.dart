@@ -1,7 +1,5 @@
-import 'package:json_conversion_annotation/json_conversion_annotation.dart';
 
 
-@JsonConversion()
 class DependencyBean {
   String? sId;
   String? mustId;
@@ -40,15 +38,15 @@ class DependencyBean {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['_id'] = this.sId;
-    data['created'] = this.created;
-    data['status'] = this.status;
-    data['type'] = this.type;
-    data['timestamp'] = this.timestamp;
-    data['name'] = this.name;
-    data['log'] = this.log;
-    data['remark'] = this.remark;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['_id'] = sId;
+    data['created'] = created;
+    data['status'] = status;
+    data['type'] = type;
+    data['timestamp'] = timestamp;
+    data['name'] = name;
+    data['log'] = log;
+    data['remark'] = remark;
     return data;
   }
 

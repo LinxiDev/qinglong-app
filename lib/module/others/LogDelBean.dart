@@ -1,8 +1,6 @@
-import 'package:json_conversion_annotation/json_conversion_annotation.dart';
 
 
 
-@JsonConversion()
 class LogDelBean {
   int? id;
   String? type;
@@ -24,22 +22,22 @@ class LogDelBean {
     frequency = json['frequency'];
     id = json['id'];
     type = json['type'];
-    info = json['info'] != null ? new Info.fromJson(json['info']) : null;
+    info = json['info'] != null ? Info.fromJson(json['info']) : null;
     createdAt = json['createdAt'];
     updatedAt = json['updatedAt'];
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['frequency'] = this.frequency;
-    data['id'] = this.id;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['frequency'] = frequency;
+    data['id'] = id;
 
-    data['type'] = this.type;
-    if (this.info != null) {
-      data['info'] = this.info!.toJson();
+    data['type'] = type;
+    if (info != null) {
+      data['info'] = info!.toJson();
     }
-    data['createdAt'] = this.createdAt;
-    data['updatedAt'] = this.updatedAt;
+    data['createdAt'] = createdAt;
+    data['updatedAt'] = updatedAt;
     return data;
   }
 
@@ -60,8 +58,8 @@ class Info {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['frequency'] = this.frequency;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['frequency'] = frequency;
     return data;
   }
 }

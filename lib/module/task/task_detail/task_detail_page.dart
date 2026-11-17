@@ -1,9 +1,8 @@
 import 'dart:ui';
 
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
+import 'package:cupertino_ui/cupertino_ui.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:get/get.dart';
 import 'package:qinglong_app/base/cupertino_sheet.dart';
 import 'package:qinglong_app/base/ql_app_bar.dart';
 import 'package:qinglong_app/base/routes.dart';
@@ -13,6 +12,7 @@ import 'package:qinglong_app/base/ui/lazy_load_state.dart';
 import 'package:qinglong_app/base/ui/loading_widget.dart';
 import 'package:qinglong_app/module/task/add_task_page.dart';
 import 'package:qinglong_app/module/task/intime_log/intime_log_page.dart';
+import 'package:qinglong_app/module/task/cron_instance_page.dart';
 import 'package:qinglong_app/module/task/task_bean.dart';
 import 'package:qinglong_app/utils/utils.dart';
 import 'package:timezone/standalone.dart';
@@ -33,7 +33,7 @@ class _TaskDetailPageState extends ConsumerState<TaskDetailPage> with LazyLoadSt
   bool isPin = false;
   bool isLoading = true;
 
-  var nextRunTime = "".obs;
+  String nextRunTime = "";
 
   void getNextRunTime(String time) {
     if (time.isEmpty) return;
@@ -56,9 +56,11 @@ class _TaskDetailPageState extends ConsumerState<TaskDetailPage> with LazyLoadSt
       TZDateTime nextDate = cronIterator.next();
       var result = nextDate.add(duration);
       var resultStr = Utils.formatMessageTime(result.millisecondsSinceEpoch);
-      nextRunTime.value = resultStr;
+      nextRunTime = resultStr;
+      if (mounted) setState(() {});
     } catch (e) {
-      nextRunTime.value = "- -";
+      nextRunTime = "- -";
+      if (mounted) setState(() {});
     }
   }
 
@@ -156,15 +158,63 @@ class _TaskDetailPageState extends ConsumerState<TaskDetailPage> with LazyLoadSt
                             : Utils.formatTime2(widget.taskBean.updatedAt),
                       ),
                       TaskDetailCell(
-                        title: "任务定时",
-                        desc: widget.taskBean.schedule ?? "",
+                        title: "定时类型",
+                        desc: ScheduleType.label(widget.taskBean.scheduleType),
                       ),
-                      Obx(() {
-                        return TaskDetailCell(
-                          title: "下次运行时间",
-                          desc: nextRunTime.value,
-                        );
-                      }),
+                      if (widget.taskBean.scheduleType == ScheduleType.normal)
+                        TaskDetailCell(
+                          title: "任务定时",
+                          desc: widget.taskBean.schedule ?? "",
+                        ),
+                      if (widget.taskBean.extraSchedules.isNotEmpty)
+                        TaskDetailCell(
+                          title: "额外规则",
+                          desc: widget.taskBean.extraSchedules.join("\n"),
+                        ),
+                      TaskDetailCell(
+                        title: "实例模式",
+                        desc: (widget.taskBean.allowMultipleInstances ?? 0) == 1
+                            ? "多实例（允许并发）"
+                            : "单实例（运行中跳过）",
+                      ),
+                      if ((widget.taskBean.workDir ?? "").isNotEmpty)
+                        TaskDetailCell(
+                          title: "工作目录",
+                          desc: widget.taskBean.workDir,
+                        ),
+                      if ((widget.taskBean.logName ?? "").isNotEmpty)
+                        TaskDetailCell(
+                          title: "日志名称",
+                          desc: widget.taskBean.logName,
+                        ),
+                      if ((widget.taskBean.taskBefore ?? "").isNotEmpty)
+                        TaskDetailCell(
+                          title: "执行前",
+                          desc: widget.taskBean.taskBefore,
+                        ),
+                      if ((widget.taskBean.taskAfter ?? "").isNotEmpty)
+                        TaskDetailCell(
+                          title: "执行后",
+                          desc: widget.taskBean.taskAfter,
+                        ),
+                      if (widget.taskBean.skipIfPending == true ||
+                          (widget.taskBean.maxQueueWait ?? 0) > 0 ||
+                          (widget.taskBean.catchupSeconds ?? 0) > 0)
+                        TaskDetailCell(
+                          title: "队列设置",
+                          desc: [
+                            if (widget.taskBean.skipIfPending == true)
+                              "运行中跳过新触发",
+                            if ((widget.taskBean.maxQueueWait ?? 0) > 0)
+                              "最长排队 ${widget.taskBean.maxQueueWait} 秒",
+                            if ((widget.taskBean.catchupSeconds ?? 0) > 0)
+                              "补跑 ${widget.taskBean.catchupSeconds} 秒",
+                          ].join("；"),
+                        ),
+                      TaskDetailCell(
+                        title: "下次运行时间",
+                        desc: nextRunTime,
+                      ),
                       TaskDetailCell(
                         title: "最后运行时间",
                         desc: Utils.formatMessageTime(widget.taskBean.lastExecutionTime ?? 0),
@@ -303,6 +353,20 @@ class _TaskDetailPageState extends ConsumerState<TaskDetailPage> with LazyLoadSt
                           builder: (context) => AddTaskPage(
                             taskBean: widget.taskBean,
                             hideUploadFile: true,
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                  addDivider(),
+                  CupertinoSheer(
+                    title: "运行实例",
+                    onTap: () {
+                      Navigator.of(context).push(
+                        CupertinoPageRoute(
+                          builder: (context) => CronInstancePage(
+                            cronId: "${widget.taskBean.sId}",
+                            cronName: widget.taskBean.name ?? "",
                           ),
                         ),
                       );

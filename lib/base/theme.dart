@@ -1,10 +1,9 @@
 import 'dart:io';
 
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
+import 'package:cupertino_ui/cupertino_ui.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/legacy.dart';
 import 'package:qinglong_app/base/sp_const.dart';
 import 'package:qinglong_app/utils/codeeditor_theme.dart';
 import 'package:qinglong_app/utils/sp_utils.dart';
@@ -41,7 +40,7 @@ class ThemeViewModel extends ChangeNotifier {
 
   void changeThemeWithSystemStatus([bool must = true]) {
     if (SpUtil.getBool(spThemeFollowSystem, defValue: false) == false) return;
-    var brightness = SchedulerBinding.instance.window.platformBrightness;
+    var brightness = WidgetsBinding.instance.platformDispatcher.platformBrightness;
     int theme;
     if (brightness == Brightness.dark) {
       theme = modeDark;
@@ -165,7 +164,7 @@ class ThemeViewModel extends ChangeNotifier {
       progressIndicatorTheme: ProgressIndicatorThemeData(
         color: _primaryColor,
       ),
-      tabBarTheme: TabBarTheme(
+      tabBarTheme: TabBarThemeData(
         labelStyle: const TextStyle(
           fontSize: 14,
         ),
@@ -179,14 +178,13 @@ class ThemeViewModel extends ChangeNotifier {
         ),
       ),
       hintColor: const Color(0xffBBBBBB),
-      toggleableActiveColor: _primaryColor,
       checkboxTheme: CheckboxThemeData(
-        checkColor: MaterialStateProperty.resolveWith(
-          (Set<MaterialState> states) {
-            if (states.contains(MaterialState.disabled)) {
+        checkColor: WidgetStateProperty.resolveWith(
+          (Set<WidgetState> states) {
+            if (states.contains(WidgetState.disabled)) {
               return Colors.transparent;
             }
-            if (states.contains(MaterialState.selected)) {
+            if (states.contains(WidgetState.selected)) {
               return Colors.white;
             }
             return Colors.black;
@@ -282,7 +280,7 @@ class ThemeViewModel extends ChangeNotifier {
       progressIndicatorTheme: ProgressIndicatorThemeData(
         color: _primaryColor,
       ),
-      tabBarTheme: TabBarTheme(
+      tabBarTheme: TabBarThemeData(
         labelStyle: const TextStyle(
           fontSize: 14,
         ),
@@ -296,14 +294,13 @@ class ThemeViewModel extends ChangeNotifier {
         ),
       ),
       hintColor: const Color(0xffBBBBBB),
-      toggleableActiveColor: _primaryColor,
       checkboxTheme: CheckboxThemeData(
-        checkColor: MaterialStateProperty.resolveWith(
-          (Set<MaterialState> states) {
-            if (states.contains(MaterialState.disabled)) {
+        checkColor: WidgetStateProperty.resolveWith(
+          (Set<WidgetState> states) {
+            if (states.contains(WidgetState.disabled)) {
               return Colors.transparent;
             }
-            if (states.contains(MaterialState.selected)) {
+            if (states.contains(WidgetState.selected)) {
               return Colors.white;
             }
             return Colors.black;
@@ -393,7 +390,7 @@ class ThemeViewModel extends ChangeNotifier {
           borderRadius: BorderRadius.circular(4),
         ),
       ),
-      tabBarTheme: const TabBarTheme(
+      tabBarTheme: const TabBarThemeData(
         labelStyle: TextStyle(
           fontSize: 14,
         ),
@@ -407,14 +404,13 @@ class ThemeViewModel extends ChangeNotifier {
         secondary: _primaryColor,
         primary: _primaryColor,
       ),
-      toggleableActiveColor: _primaryColor,
       checkboxTheme: CheckboxThemeData(
-        checkColor: MaterialStateProperty.resolveWith(
-          (Set<MaterialState> states) {
-            if (states.contains(MaterialState.disabled)) {
+        checkColor: WidgetStateProperty.resolveWith(
+          (Set<WidgetState> states) {
+            if (states.contains(WidgetState.disabled)) {
               return Colors.transparent;
             }
-            if (states.contains(MaterialState.selected)) {
+            if (states.contains(WidgetState.selected)) {
               return Colors.white;
             }
             return Colors.white;

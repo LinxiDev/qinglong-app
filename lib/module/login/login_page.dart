@@ -1,15 +1,15 @@
-import 'package:dio_log/dio_log.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
+import 'package:cupertino_ui/cupertino_ui.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_animator/flutter_animator.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:qinglong_app/base/multi_account_userinfo_viewmodel.dart';
 import 'package:qinglong_app/base/routes.dart';
 import 'package:qinglong_app/base/single_account_page.dart';
 import 'package:qinglong_app/base/sp_const.dart';
 import 'package:qinglong_app/base/theme.dart';
+import 'package:qinglong_app/base/ui/app_logo.dart';
 import 'package:qinglong_app/base/ui/loading_widget.dart';
+import 'package:qinglong_app/base/ui/shake.dart';
 import 'package:qinglong_app/base/userinfo_viewmodel.dart';
 import 'package:qinglong_app/main.dart';
 import 'package:qinglong_app/module/in_app_purchase_page.dart';
@@ -76,7 +76,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     }
   }
 
-  GlobalKey<AnimatorWidgetState> loginKey = GlobalKey<AnimatorWidgetState>();
+  GlobalKey<ShakeWidgetState> loginKey = GlobalKey<ShakeWidgetState>();
 
   @override
   Widget build(BuildContext context) {
@@ -162,19 +162,12 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                               ),
                             ),
                             GestureDetector(
-                              onDoubleTap: () {
-                                if (debugBtnIsShow()) {
-                                  dismissDebugBtn();
-                                } else {
-                                  showDebugBtn(context,
-                                      btnColor: ref.watch(themeProvider).primaryColor);
-                                }
-                                WidgetsBinding.instance.endOfFrame;
+                              onLongPress: () {
+                                "青龙客户端".toast();
                               },
                               child: ClipRRect(
                                 borderRadius: BorderRadius.circular(5),
-                                child: Image.asset(
-                                  "assets/images/ql.png",
+                                child: const AppLogo(
                                   height: 45,
                                 ),
                               ),
@@ -394,8 +387,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                 const SizedBox(
                   height: 30,
                 ),
-                Shake(
-                  preferences: const AnimationPreferences(autoPlay: AnimationPlayStates.None),
+                ShakeWidget(
                   key: loginKey,
                   child: Center(
                     child: Container(
@@ -412,8 +404,8 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                                   const Color(0xff089556),
                                 ]
                               : [
-                                  const Color(0xff5DD16F).withOpacity(0.6),
-                                  const Color(0xff089556).withOpacity(0.6),
+                                  const Color(0xff5DD16F).withValues(alpha: 0.6),
+                                  const Color(0xff089556).withValues(alpha: 0.6),
                                 ],
                         ),
                         borderRadius: const BorderRadius.all(

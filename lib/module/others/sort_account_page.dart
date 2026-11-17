@@ -1,14 +1,12 @@
 import 'dart:convert';
 
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
+import 'package:cupertino_ui/cupertino_ui.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:qinglong_app/base/multi_account_userinfo_viewmodel.dart';
 import 'package:qinglong_app/base/ql_app_bar.dart';
-import 'package:qinglong_app/base/sp_const.dart';
 import 'package:qinglong_app/base/theme.dart';
 import 'package:qinglong_app/base/userinfo_viewmodel.dart';
-import 'package:qinglong_app/utils/sp_utils.dart';
 
 import '../../base/commit_button.dart';
 import '../../main.dart';
@@ -77,13 +75,10 @@ class _ChangeAccountPageState extends ConsumerState<SortAccountPage> {
         child: ReorderableListView(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
-          onReorder: (int oldIndex, int newIndex) {
+          onReorderItem: (int oldIndex, int newIndex) {
             setState(
               () {
                 //交换数据
-                if (newIndex > oldIndex) {
-                  newIndex -= 1;
-                }
                 final TokenBean item = list.removeAt(oldIndex);
                 list.insert(newIndex, item);
               },

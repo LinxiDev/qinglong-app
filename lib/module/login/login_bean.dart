@@ -1,6 +1,4 @@
-import 'package:json_conversion_annotation/json_conversion_annotation.dart';
 
-@JsonConversion()
 class LoginBean {
   String? token;
   String? lastip;
@@ -27,13 +25,13 @@ class LoginBean {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['token'] = this.token;
-    data['lastip'] = this.lastip;
-    data['lastaddr'] = this.lastaddr;
-    data['lastlogon'] = this.lastlogon;
-    data['retries'] = this.retries;
-    data['platform'] = this.platform;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['token'] = token;
+    data['lastip'] = lastip;
+    data['lastaddr'] = lastaddr;
+    data['lastlogon'] = lastlogon;
+    data['retries'] = retries;
+    data['platform'] = platform;
     return data;
   }
 

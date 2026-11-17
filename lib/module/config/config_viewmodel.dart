@@ -1,12 +1,10 @@
-import 'package:flutter/cupertino.dart';
+import 'package:cupertino_ui/cupertino_ui.dart';
 import 'package:qinglong_app/base/base_viewmodel.dart';
 import 'package:qinglong_app/base/http/http.dart';
 import 'package:qinglong_app/base/single_account_page.dart';
-import 'package:qinglong_app/base/sp_const.dart';
 import 'package:qinglong_app/main.dart';
 import 'package:qinglong_app/module/config/config_bean.dart';
 import 'package:qinglong_app/utils/icloud_utils.dart';
-import 'package:qinglong_app/utils/sp_utils.dart';
 
 class ConfigViewModel extends BaseViewModel {
   List<ConfigBean> list = [];
