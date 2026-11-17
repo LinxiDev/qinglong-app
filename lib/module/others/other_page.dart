@@ -937,7 +937,8 @@ class OtherPageState extends ConsumerState<OtherPage>
                     width: 10,
                   ),
                   SizedBox(
-                    width: MediaQuery.of(context).size.width / 3,
+                    // 弹窗内容区宽度有限，这里用固定宽度避免大屏溢出
+                    width: 96,
                     child: TextField(
                       textAlign: TextAlign.center,
                       controller: controller,

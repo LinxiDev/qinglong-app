@@ -1,4 +1,5 @@
 import 'dart:io';
+
 import 'package:cupertino_ui/cupertino_ui.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter/scheduler.dart';
@@ -31,93 +32,75 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await SpUtil.getInstance();
   getIt.registerSingleton<MultiAccountUserInfoViewModel>(
-      MultiAccountUserInfoViewModel());
+    MultiAccountUserInfoViewModel(),
+  );
   MultiAccountUserInfoViewModel.payedVIP(typeSVIP);
   getIt.get<MultiAccountUserInfoViewModel>().initVipState();
   openAuth = SpUtil.getBool(spOpenAuth, defValue: false);
-  await SystemChrome.setPreferredOrientations(
-    [
-      DeviceOrientation.portraitUp,
-      DeviceOrientation.portraitDown,
-    ],
-  );
-  runApp(
-    ProviderScope(
-      overrides: [
-        themeProvider,
-      ],
-      child: const QlApp(),
-    ),
-  );
+  await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]);
+  runApp(ProviderScope(overrides: [themeProvider], child: const QlApp()));
   ErrorWidget.builder = (FlutterErrorDetails flutterErrorDetail) {
     print(flutterErrorDetail.toString());
     return Scaffold(
       backgroundColor: Colors.white,
-      body: Builder(builder: (context) {
-        return GestureDetector(
-          onDoubleTap: () {
-            showCupertinoDialog(
-              context: context,
-              useRootNavigator: false,
-              builder: (childContext) => CupertinoAlertDialog(
-                title: const Text("温馨提示"),
-                content: const Text("确定要还原App所有配置吗,本次操作不可逆?"),
-                actions: [
-                  CupertinoDialogAction(
-                    child: const Text(
-                      "取消",
+      body: Builder(
+        builder: (context) {
+          return GestureDetector(
+            onDoubleTap: () {
+              showCupertinoDialog(
+                context: context,
+                useRootNavigator: false,
+                builder: (childContext) => CupertinoAlertDialog(
+                  title: const Text("温馨提示"),
+                  content: const Text("确定要还原App所有配置吗,本次操作不可逆?"),
+                  actions: [
+                    CupertinoDialogAction(
+                      child: const Text("取消"),
+                      onPressed: () {
+                        Navigator.of(childContext).pop();
+                      },
                     ),
-                    onPressed: () {
-                      Navigator.of(childContext).pop();
-                    },
-                  ),
-                  CupertinoDialogAction(
-                    child: const Text(
-                      "确定",
+                    CupertinoDialogAction(
+                      child: const Text("确定"),
+                      onPressed: () {
+                        SpUtil.clear();
+                        "已完成,请重启App".toast();
+                        Navigator.of(context).pop();
+                      },
                     ),
-                    onPressed: () {
-                      SpUtil.clear();
-                      "已完成,请重启App".toast();
-                      Navigator.of(context).pop();
-                    },
-                  ),
-                ],
-              ),
-            );
-          },
-          child: Center(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 15,
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    "报错了:${flutterErrorDetail.toString()}",
-                    maxLines: 5,
-                  ),
-                  const SizedBox(
-                    height: 5,
-                  ),
-                  const Text(
-                    "请尝试右滑退出页面,或者重启App,如果打开App之后就报错,一直无法进入首页正常操作,请双击这段文字,清空所有本地配置数据(不会删除本地备份的数据文件),恢复App原始状态,注意,此操作不可逆",
-                    maxLines: 10,
-                    style: TextStyle(
-                      color: Color(0xffFB5858),
+                  ],
+                ),
+              );
+            },
+            child: Center(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 15),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text("报错了:${flutterErrorDetail.toString()}", maxLines: 5),
+                    const SizedBox(height: 5),
+                    const Text(
+                      "请尝试右滑退出页面,或者重启App,如果打开App之后就报错,一直无法进入首页正常操作,请双击这段文字,清空所有本地配置数据(不会删除本地备份的数据文件),恢复App原始状态,注意,此操作不可逆",
+                      maxLines: 10,
+                      style: TextStyle(color: Color(0xffFB5858)),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
-          ),
-        );
-      }),
+          );
+        },
+      ),
     );
   };
   if (Platform.isAndroid) {
-    SystemUiOverlayStyle style =
-        const SystemUiOverlayStyle(statusBarColor: Colors.transparent);
+    SystemUiOverlayStyle style = const SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+    );
     SystemChrome.setSystemUIOverlayStyle(style);
   }
 }
@@ -185,24 +168,22 @@ class QlAppState extends ConsumerState<QlApp> with WidgetsBindingObserver {
         fl.GlobalCupertinoLocalizations.delegate,
         fl.GlobalWidgetsLocalizations.delegate,
       ],
-      builder: EasyLoading.init(builder: (BuildContext context, Widget? child) {
-        EasyLoading.instance.indicatorWidget = const LoadingWidget(
-          color: Colors.white,
-        );
-        return MediaQuery(
-          data: MediaQuery.of(context).copyWith(
-            textScaler: TextScaler.linear(textScaleFactor),
-          ),
-          child: ScrollConfiguration(
-            behavior: const ScrollPhysicsConfig(),
-            child: child ?? Container(),
-          ),
-        );
-      }),
-      supportedLocales: const [
-        Locale('zh', 'CN'),
-        Locale('en', 'US'),
-      ],
+      builder: EasyLoading.init(
+        builder: (BuildContext context, Widget? child) {
+          EasyLoading.instance.indicatorWidget = const LoadingWidget(
+            color: Colors.white,
+          );
+          return MediaQuery(
+            data: MediaQuery.of(context)
+                .copyWith(textScaler: TextScaler.linear(textScaleFactor)),
+            child: ScrollConfiguration(
+              behavior: const ScrollPhysicsConfig(),
+              child: child ?? Container(),
+            ),
+          );
+        },
+      ),
+      supportedLocales: const [Locale('zh', 'CN'), Locale('en', 'US')],
       theme: ref.watch<ThemeViewModel>(themeProvider).currentTheme,
       home: const MultiAccountPage(),
       // home: LoginPage(),
@@ -271,10 +252,16 @@ class MultiAccountPageState extends ConsumerState<MultiAccountPage>
   }
 
   void _observerActions() {
-    const QuickActions quickActions = QuickActions();
-    quickActions.initialize((String shortcutType) {
-      _action = shortcutType;
-    });
+    try {
+      const QuickActions quickActions = QuickActions();
+      quickActions
+          .initialize((String shortcutType) {
+            _action = shortcutType;
+          })
+          .catchError((Object e) => logger.w("快捷方式不可用: $e"));
+    } catch (e) {
+      logger.w("快捷方式不可用: $e");
+    }
   }
 
   @override
@@ -288,45 +275,40 @@ class MultiAccountPageState extends ConsumerState<MultiAccountPage>
   }
 
   void _addQuickActions() {
+    try {
+      _setQuickActions();
+    } catch (e) {
+      logger.w("快捷方式不可用: $e");
+    }
+  }
+
+  void _setQuickActions() {
     const QuickActions quickActions = QuickActions();
 
-    quickActions.setShortcutItems(
-      <ShortcutItem>[
-        ShortcutItem(
-          type: actionRunAll,
-          localizedTitle: '运行所有任务',
-          icon: Platform.isAndroid ? 'icon_cron' : 'CronImage',
-        ),
-        ShortcutItem(
-          type: actionEditConfig,
-          localizedTitle: '编辑配置文件',
-          icon: Platform.isAndroid ? 'icon_file' : 'FileImage',
-        ),
-      ],
-    );
+    quickActions.setShortcutItems(<ShortcutItem>[
+      ShortcutItem(
+        type: actionRunAll,
+        localizedTitle: '运行所有任务',
+        icon: Platform.isAndroid ? 'icon_cron' : 'CronImage',
+      ),
+      ShortcutItem(
+        type: actionEditConfig,
+        localizedTitle: '编辑配置文件',
+        icon: Platform.isAndroid ? 'icon_file' : 'FileImage',
+      ),
+    ]).catchError((Object e) => logger.w("快捷方式不可用: $e"));
   }
 
   @override
   void initState() {
     if (SpUtil.getBool(spSingleInstance, defValue: false)) {
-      list = [
-        const RepaintBoundary(
-          child: SingleAccountPage(
-            index: 0,
-          ),
-        )
-      ];
+      list = [const RepaintBoundary(child: SingleAccountPage(index: 0))];
     } else {
-      list = List<Widget>.generate(
-        MultiAccountUserInfoViewModel.maxAccount,
-        (i) {
-          return RepaintBoundary(
-            child: SingleAccountPage(
-              index: i,
-            ),
-          );
-        },
-      );
+      list = List<Widget>.generate(MultiAccountUserInfoViewModel.maxAccount, (
+        i,
+      ) {
+        return RepaintBoundary(child: SingleAccountPage(index: i));
+      });
     }
     if (!openAuth) {
       authenticated = true;
@@ -334,9 +316,10 @@ class MultiAccountPageState extends ConsumerState<MultiAccountPage>
     super.initState();
     WidgetsBinding.instance.addObserver(this);
 
-    WidgetsBinding.instance.platformDispatcher.onPlatformBrightnessChanged = () {
-      ref.read(themeProvider.notifier).changeThemeWithSystemStatus(false);
-    };
+    WidgetsBinding.instance.platformDispatcher.onPlatformBrightnessChanged =
+        () {
+          ref.read(themeProvider.notifier).changeThemeWithSystemStatus(false);
+        };
     _addQuickActions();
     initAuth();
     _observerActions();
@@ -345,18 +328,21 @@ class MultiAccountPageState extends ConsumerState<MultiAccountPage>
   final LocalAuthentication auth = LocalAuthentication();
 
   void authMe() {
-    auth.authenticate(localizedReason: "请验证你的身份", authMessages: [
-      const AndroidAuthMessages(
-        signInTitle: '请验证你的身份',
-        cancelButton: '取消',
-      ),
-      const IOSAuthMessages(
-        cancelButton: '取消',
-      ),
-    ]).then((value) {
-      authenticated = value;
-      setState(() {});
-    });
+    auth
+        .authenticate(
+          localizedReason: "请验证你的身份",
+          authMessages: [
+            const AndroidAuthMessages(
+              signInTitle: '请验证你的身份',
+              cancelButton: '取消',
+            ),
+            const IOSAuthMessages(cancelButton: '取消'),
+          ],
+        )
+        .then((value) {
+          authenticated = value;
+          setState(() {});
+        });
   }
 
   @override
@@ -365,9 +351,8 @@ class MultiAccountPageState extends ConsumerState<MultiAccountPage>
       canPop: false,
       onPopInvokedWithResult: (bool didPop, Object? result) async {
         if (didPop) return;
-        final GlobalKey<NavigatorState> key = getIt.get<GlobalKey<NavigatorState>>(
-          instanceName: _index.toString(),
-        );
+        final GlobalKey<NavigatorState> key = getIt
+            .get<GlobalKey<NavigatorState>>(instanceName: _index.toString());
 
         final bool handled = await key.currentState?.maybePop() ?? false;
         if (!handled) {
@@ -380,11 +365,8 @@ class MultiAccountPageState extends ConsumerState<MultiAccountPage>
         body: !authenticated
             ? authWidget()
             : (list.length == 1
-                ? list.first
-                : AnimatedIndexedStack(
-                    index: _index,
-                    children: list,
-                  )),
+                  ? list.first
+                  : AnimatedIndexedStack(index: _index, children: list)),
       ),
     );
   }
@@ -414,22 +396,29 @@ class MultiAccountPageState extends ConsumerState<MultiAccountPage>
 
   void initAuth() async {
     if (!openAuth) return;
-    final isAvailable = await auth.canCheckBiometrics;
-    final isDeviceSupported = await auth.isDeviceSupported();
-    if (isAvailable && isDeviceSupported) {
-      final List<BiometricType> availableBiometrics =
-          await auth.getAvailableBiometrics();
-      if (availableBiometrics.contains(BiometricType.face)) {
-        faceID = true;
-      } else {
-        faceID = false;
-      }
-      setState(() {});
+    try {
+      final isAvailable = await auth.canCheckBiometrics;
+      final isDeviceSupported = await auth.isDeviceSupported();
+      if (isAvailable && isDeviceSupported) {
+        final List<BiometricType> availableBiometrics = await auth
+            .getAvailableBiometrics();
+        if (availableBiometrics.contains(BiometricType.face)) {
+          faceID = true;
+        } else {
+          faceID = false;
+        }
+        if (mounted) setState(() {});
 
-      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-        authMe();
-      });
-    } else {
+        WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+          authMe();
+        });
+        return;
+      }
+    } catch (e) {
+      logger.w("生物识别不可用: $e");
+    }
+
+    if (mounted) {
       authenticated = true;
       setState(() {});
     }

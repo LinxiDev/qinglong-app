@@ -804,7 +804,7 @@ class _IcloudPageState extends ConsumerState<IcloudPage> with LazyLoadState<Iclo
                     width: 10,
                   ),
                   SizedBox(
-                    width: MediaQuery.of(context).size.width / 3,
+                    width: 96,
                     child: TextField(
                       textAlign: TextAlign.center,
                       controller: controller,
