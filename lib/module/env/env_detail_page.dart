@@ -86,6 +86,8 @@ class TaskDetailPageState extends ConsumerState<EnvDetailPage> {
               child: CupertinoButton(
                 padding: const EdgeInsets.symmetric(vertical: 5),
                 color: Colors.red,
+                // 红底按钮强制白色文字，避免默认前景色（主题主色）与红底冲突
+                foregroundColor: Colors.white,
                 child: const Text("删 除", style: TextStyle(fontSize: 16)),
                 onPressed: () {
                   delTask(context, ref);
