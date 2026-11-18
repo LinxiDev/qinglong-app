@@ -2,8 +2,10 @@ name: iOS 日常构建
 
 on:
   push:
+    # 只在主开发分支构建，避免所有分支都占用紧张的 macOS runner 排队
     branches:
-      - "**"
+      - develop
+      - main
     tags-ignore:
       - "v*"
     paths:
@@ -17,6 +19,9 @@ on:
       - ".github/workflows/ios-ci.yml"
       - ".github/workflows/ios-release.yml"
   pull_request:
+    branches:
+      - develop
+      - main
     paths:
       - "lib/**"
       - "assets/**"
@@ -41,8 +46,11 @@ env:
 jobs:
   build-ios:
     name: 构建未签名 IPA
-    # 必须是 macOS runner 才能跑 Xcode 工具链
-    runs-on: macos-latest
+    # 必须是 macOS runner 才能跑 Xcode 工具链。
+    # 使用 Intel 版 runner：macos-latest（arm64）容量长期紧张，
+    # 常出现 "The job was not acquired by Runner" 的调度失败；
+    # Xcode 在 Intel 机器上同样能构建 arm64 的 iOS 包。
+    runs-on: macos-15-intel
     timeout-minutes: 60
 
     steps:

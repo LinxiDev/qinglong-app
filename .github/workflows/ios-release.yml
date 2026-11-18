@@ -37,7 +37,9 @@ env:
 jobs:
   release-ipa:
     name: 构建并发布 iOS IPA
-    runs-on: macos-latest
+    # Intel runner：macos-latest（arm64）容量长期紧张易排队/调度失败，
+    # Xcode 在 Intel 上同样可构建 arm64 的 iOS 包
+    runs-on: macos-15-intel
     timeout-minutes: 90
 
     steps:
