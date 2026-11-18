@@ -488,7 +488,7 @@ class _SettingPageState extends ConsumerState<SettingPage> {
                             activeTrackColor: ref
                                 .watch(themeProvider)
                                 .primaryColor,
-                            value: SpUtil.getBool(spShowLine, defValue: false),
+                            value: SpUtil.getBool(spShowLine, defValue: true),
                             onChanged: (open) async {
                               await SpUtil.putBool(spShowLine, open);
                               setState(() {});
@@ -533,7 +533,7 @@ class _SettingPageState extends ConsumerState<SettingPage> {
                                 .primaryColor,
                             value: SpUtil.getBool(
                               spLogAutoJump2Bottom,
-                              defValue: false,
+                              defValue: true,
                             ),
                             onChanged: (open) async {
                               await SpUtil.putBool(spLogAutoJump2Bottom, open);
@@ -642,7 +642,7 @@ class _SettingPageState extends ConsumerState<SettingPage> {
                                 .primaryColor,
                             value: SpUtil.getBool(
                               spThemeFollowSystem,
-                              defValue: false,
+                              defValue: true,
                             ),
                             onChanged: (open) async {
                               SpUtil.putBool(spThemeFollowSystem, open);

@@ -8,7 +8,7 @@ class CodeMirrorOptions {
     theme = (SpUtil.getInt(spThemeStyle, defValue: modeWhite) == modeDark)
         ? "3024-night"
         : "neat";
-    showLineNumber = SpUtil.getBool(spShowLine, defValue: false);
+    showLineNumber = SpUtil.getBool(spShowLine, defValue: true);
   }
 
   late final bool showLineNumber;

@@ -29,7 +29,7 @@ class ThemeViewModel extends ChangeNotifier {
   ThemeColors themeColor = LightThemeColors();
 
   ThemeViewModel() {
-    if (SpUtil.getBool(spThemeFollowSystem, defValue: false)) {
+    if (SpUtil.getBool(spThemeFollowSystem, defValue: true)) {
       changeThemeWithSystemStatus();
     } else {
       _themeMode = SpUtil.getInt(
@@ -44,7 +44,7 @@ class ThemeViewModel extends ChangeNotifier {
   }
 
   void changeThemeWithSystemStatus([bool must = true]) {
-    if (SpUtil.getBool(spThemeFollowSystem, defValue: false) == false) return;
+    if (SpUtil.getBool(spThemeFollowSystem, defValue: true) == false) return;
     var brightness =
         WidgetsBinding.instance.platformDispatcher.platformBrightness;
     int theme;

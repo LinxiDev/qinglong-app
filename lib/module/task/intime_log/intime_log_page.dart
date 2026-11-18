@@ -134,6 +134,9 @@ class InTimeLogPageState extends ConsumerState<InTimeLogPage>
         return Scaffold(
           floatingActionButton: FloatingActionButton(
             mini: true,
+            // 主题覆盖后 FAB 默认配色对比度过低，显式指定主色底+白图标
+            backgroundColor: const Color(0xFF20b54f),
+            foregroundColor: Colors.white,
             onPressed: () {
               setState(() {
                 alwaysAuthScroll = !alwaysAuthScroll;
@@ -188,7 +191,7 @@ class InTimeLogPageState extends ConsumerState<InTimeLogPage>
 
   @override
   void onLazyLoad() {
-    alwaysAuthScroll = SpUtil.getBool(spLogAutoJump2Bottom, defValue: false);
+    alwaysAuthScroll = SpUtil.getBool(spLogAutoJump2Bottom, defValue: true);
     if (widget.needTimer) {
       _timer = Timer.periodic(const Duration(seconds: 2), (timer) {
         getLogData();
