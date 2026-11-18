@@ -19,12 +19,6 @@
 - 🌙 **深色模式**：全量适配，跟随系统或手动切换
 - 🆕 **版本检测**：基于 GitHub Releases 的 APP 更新提示
 
-## 界面预览
-
-| 环境变量 | 配置文件 | 订阅管理 |
-| --- | --- | --- |
-| ![环境变量](docs/images/envs.png) | ![配置文件](docs/images/configs.png) | ![订阅](docs/images/subs.png) |
-
 ## 系统要求
 
 | 平台 | 要求 |
