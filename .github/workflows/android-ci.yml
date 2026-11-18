@@ -69,6 +69,13 @@ jobs:
       - name: 单元测试
         run: flutter test
 
+      - name: 补齐 Android SDK 平台
+        # compileSdk 37 取自 permission_handler 13 的要求，runner 镜像未必预装
+        run: |
+          SDKMANAGER="${ANDROID_HOME:-$ANDROID_SDK_ROOT}/cmdline-tools/latest/bin/sdkmanager"
+          yes | "$SDKMANAGER" --licenses > /dev/null 2>&1 || true
+          "$SDKMANAGER" "platforms;android-37.0" "build-tools;36.0.0"
+
       - name: 构建 Release APK
         run: flutter build apk --release
 
