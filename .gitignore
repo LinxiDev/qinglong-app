@@ -44,5 +44,7 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+# Gradle 构建报告（lint/problems 等）
+/android/build/
 .fvm/
 /android/app/qinglong.keystore
