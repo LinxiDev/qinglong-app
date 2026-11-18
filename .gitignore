@@ -48,3 +48,5 @@ app.*.map.json
 /android/build/
 .fvm/
 /android/app/qinglong.keystore
+# 本地 Wiki 文档（不提交到 GitHub）
+wiki/
