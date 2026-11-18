@@ -279,6 +279,26 @@ class LoginPageState extends ConsumerState<LoginPage> {
                           height: 22,
                           child: Checkbox(
                             value: rememberPassword,
+                            // 选中态用淡绿底 + 主题色对勾，比实心主色更柔和
+                            activeColor: primary.withValues(alpha: 0.18),
+                            checkColor: primary,
+                            hoverColor: Colors.transparent,
+                            overlayColor: WidgetStateProperty.all(
+                              Colors.transparent,
+                            ),
+                            // 未选中描边用浅灰（比文字色更淡），避免框线显得过重
+                            side: BorderSide(
+                              color: dark
+                                  ? const Color(0xFF4A4D52)
+                                  : const Color(0xFFC9CDD4),
+                              width: 1.2,
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            materialTapTargetSize:
+                                MaterialTapTargetSize.shrinkWrap,
+                            visualDensity: VisualDensity.compact,
                             onChanged: (checked) {
                               rememberPassword = checked ?? false;
                               setState(() {});
@@ -346,22 +366,10 @@ class LoginPageState extends ConsumerState<LoginPage> {
                             height: 50,
                             alignment: Alignment.center,
                             decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                begin: Alignment.centerLeft,
-                                end: Alignment.centerRight,
-                                stops: const [0.0, 1.0],
-                                colors: canClickLoginBtn()
-                                    ? const [
-                                        Color(0xff5DD16F),
-                                        Color(0xff089556),
-                                      ]
-                                    : [
-                                        const Color(0xff5DD16F)
-                                            .withValues(alpha: 0.5),
-                                        const Color(0xff089556)
-                                            .withValues(alpha: 0.5),
-                                      ],
-                              ),
+                              // 纯色主绿替代渐变：各渲染环境表现一致，更稳定
+                              color: const Color(
+                                0xff0FA85A,
+                              ).withValues(alpha: canClickLoginBtn() ? 1 : 0.5),
                               borderRadius: BorderRadius.circular(12),
                               boxShadow: canClickLoginBtn()
                                   ? [
