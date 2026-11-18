@@ -1,4 +1,3 @@
-
 import 'package:cupertino_ui/cupertino_ui.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
@@ -29,17 +28,16 @@ class InTimeHistoryLogPage extends StatefulWidget {
   InTimeHistoryLogPageState createState() => InTimeHistoryLogPageState();
 }
 
-class InTimeHistoryLogPageState extends State<InTimeHistoryLogPage> with LazyLoadState<InTimeHistoryLogPage> {
+class InTimeHistoryLogPageState extends State<InTimeHistoryLogPage>
+    with LazyLoadState<InTimeHistoryLogPage> {
   String? content;
 
   bool isRequest = false;
   bool canRequest = true;
 
   Future<void> getLogData() async {
-    HttpResponse<String> response = await SingleAccountPageState.ofApi(context).taskLogDetail(
-      widget.title,
-      widget.path,
-    );
+    HttpResponse<String> response = await SingleAccountPageState.ofApi(context)
+        .taskLogDetail(widget.title, widget.path);
 
     if (response.success) {
       content = response.bean;
@@ -64,30 +62,25 @@ class InTimeHistoryLogPageState extends State<InTimeHistoryLogPage> with LazyLoa
             color: Colors.transparent,
             padding: EdgeInsets.zero,
             onPressed: () {
-              showMoreOperate(
-                context,
-                [
-                  CupertinoSheer(
-                    title: "分享",
-                    onTap: () async {
-                      SharePlus.instance.share(ShareParams(text: content ?? ""));
-                    },
-                  ),
-                  addDivider(),
-                  CupertinoSheer(
-                    title: "删除",
-                    onTap: () {
-                      HapticFeedback.mediumImpact();
-                      deleteFold(widget.title, widget.path);
-                    },
-                  ),
-                ],
-              );
+              showMoreOperate(context, [
+                CupertinoSheer(
+                  title: "分享",
+                  onTap: () async {
+                    SharePlus.instance.share(ShareParams(text: content ?? ""));
+                  },
+                ),
+                addDivider(),
+                CupertinoSheer(
+                  title: "删除",
+                  onTap: () {
+                    HapticFeedback.mediumImpact();
+                    deleteFold(widget.title, widget.path);
+                  },
+                ),
+              ]);
             },
             child: Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 15,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 15),
               child: Center(
                 child: Icon(
                   Icons.more_horiz,
@@ -96,29 +89,23 @@ class InTimeHistoryLogPageState extends State<InTimeHistoryLogPage> with LazyLoa
                 ),
               ),
             ),
-          )
+          ),
         ],
         title: widget.title,
       ),
       body: SafeArea(
         child: Container(
           width: MediaQuery.of(context).size.width,
-          padding: const EdgeInsets.only(
-            bottom: 10,
-          ),
+          padding: const EdgeInsets.only(bottom: 10),
           child: (content == null)
-              ? const Center(
-                  child: LoadingWidget(),
-                )
+              ? const Center(child: LoadingWidget())
               : CupertinoScrollbar(
                   child: SingleChildScrollView(
                     primary: true,
                     padding: const EdgeInsets.symmetric(horizontal: 15),
                     child: SelectableText(
                       content!,
-                      style: const TextStyle(
-                        fontSize: 12,
-                      ),
+                      style: const TextStyle(fontSize: 12),
                     ),
                   ),
                 ),
@@ -136,7 +123,10 @@ class InTimeHistoryLogPageState extends State<InTimeHistoryLogPage> with LazyLoa
     SystemBean? systemBean;
 
     try {
-      systemBean = getIt<SystemBean>(instanceName: (SingleAccountPageState.of(context)?.index ?? 0).toString());
+      systemBean = getIt<SystemBean>(
+        instanceName: (SingleAccountPageState.of(context)?.index ?? 0)
+            .toString(),
+      );
     } catch (e) {
       systemBean = SystemBean(version: "2.10.13", fromAutoGet: false);
     }
@@ -146,12 +136,14 @@ class InTimeHistoryLogPageState extends State<InTimeHistoryLogPage> with LazyLoa
     }
 
     EasyLoading.show(status: "删除中...");
-    var temp = await SingleAccountPageState.ofApi(context).deleteLog(title, path);
+    var temp = await SingleAccountPageState.ofApi(context)
+        .deleteLog(title, path);
     EasyLoading.dismiss();
     if (temp.success) {
       "已删除".toast();
-      // ignore: use_build_context_synchronously
-      Navigator.of(context).pop(true);
+      if (mounted) {
+        Navigator.of(context).pop(true);
+      }
     } else {
       temp.message.toast();
     }

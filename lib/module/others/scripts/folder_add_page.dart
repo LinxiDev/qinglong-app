@@ -9,9 +9,7 @@ import 'package:qinglong_app/module/subscribe/add_subscribe_page.dart';
 import 'package:qinglong_app/utils/extension.dart';
 
 class FloderAddPage extends ConsumerStatefulWidget {
-  const FloderAddPage({
-    super.key,
-  });
+  const FloderAddPage({super.key});
 
   @override
   ConsumerState<FloderAddPage> createState() => ScriptUploadPageState();
@@ -41,32 +39,20 @@ class ScriptUploadPageState extends ConsumerState<FloderAddPage> {
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 15,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 15),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const SizedBox(
-                    height: 30,
-                  ),
-                  const TitleWidget(
-                    "文件夹名称",
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
+                  const SizedBox(height: 30),
+                  const TitleWidget("文件夹名称"),
+                  const SizedBox(height: 10),
                   TextField(
                     controller: _nameController,
-                    decoration: const InputDecoration(
-                      hintText: "请输入文件夹名称",
-                    ),
+                    decoration: const InputDecoration(hintText: "请输入文件夹名称"),
                     autofocus: false,
                   ),
-                  const SizedBox(
-                    height: 30,
-                  ),
+                  const SizedBox(height: 30),
                   UploadScriptWidget(
                     key: fileKey,
                     onlyShowName: true,
@@ -90,10 +76,7 @@ class ScriptUploadPageState extends ConsumerState<FloderAddPage> {
         return;
       }
 
-      addFloder(
-        context,
-        fileKey.currentState?.scriptPath ?? "",
-      );
+      addFloder(context, fileKey.currentState?.scriptPath ?? "");
     } catch (e) {
       e.toString().toast();
     }
@@ -101,15 +84,14 @@ class ScriptUploadPageState extends ConsumerState<FloderAddPage> {
 
   void addFloder(BuildContext context, String path) async {
     EasyLoading.show(status: "新增中...");
-    var temp = await SingleAccountPageState.ofApi(context).addScriptFolder(
-      _nameController.text.toString(),
-      path,
-    );
+    var temp = await SingleAccountPageState.ofApi(context)
+        .addScriptFolder(_nameController.text.toString(), path);
     EasyLoading.dismiss();
     if (temp.success) {
       "新增成功".toast();
-      // ignore: use_build_context_synchronously
-      Navigator.of(context).pop(true);
+      if (context.mounted) {
+        Navigator.of(context).pop(true);
+      }
     } else {
       temp.message.toast();
     }

@@ -1,4 +1,3 @@
-
 import 'package:cupertino_ui/cupertino_ui.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
@@ -16,10 +15,7 @@ import 'appkey_viewmodel.dart';
 class AppKeyDetailDetailPage extends ConsumerStatefulWidget {
   final Map<String, dynamic> bean;
 
-  const AppKeyDetailDetailPage(
-    this.bean, {
-    super.key,
-  });
+  const AppKeyDetailDetailPage(this.bean, {super.key});
 
   @override
   TaskDetailPageState createState() => TaskDetailPageState();
@@ -42,10 +38,7 @@ class TaskDetailPageState extends ConsumerState<AppKeyDetailDetailPage> {
         title: widget.bean["name"] ?? "",
       ),
       body: Container(
-        margin: const EdgeInsets.symmetric(
-          horizontal: 15,
-          vertical: 15,
-        ),
+        margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -55,23 +48,15 @@ class TaskDetailPageState extends ConsumerState<AppKeyDetailDetailPage> {
               title: 'Client ID	',
               desc: widget.bean >> "client_id",
             ),
-            const SizedBox(
-              height: 5,
-            ),
+            const SizedBox(height: 5),
             AppKeyDetailCell(
               title: 'Client Secret	',
               obtext: true,
               desc: widget.bean >> "client_secret",
             ),
-            const SizedBox(
-              height: 5,
-            ),
+            const SizedBox(height: 5),
             Padding(
-              padding: const EdgeInsets.only(
-                top: 10,
-                right: 10,
-                bottom: 10,
-              ),
+              padding: const EdgeInsets.only(top: 10, right: 10, bottom: 10),
               child: Text(
                 "权限",
                 style: TextStyle(
@@ -80,40 +65,44 @@ class TaskDetailPageState extends ConsumerState<AppKeyDetailDetailPage> {
                 ),
               ),
             ),
-            const SizedBox(
-              height: 5,
-            ),
+            const SizedBox(height: 5),
             Material(
               color: Colors.transparent,
               child: Wrap(
                 runSpacing: 5,
                 spacing: 5,
-                children: AppKeyViewModel.getScopeNames(
-                        (widget.bean["scopes"] as List<dynamic>?))
-                    .map((e) => Container(
-                          padding: const EdgeInsets.symmetric(
-                            vertical: 3,
-                            horizontal: 5,
-                          ),
-                          decoration: BoxDecoration(
-                            color:
-                                ref.watch(themeProvider).themeColor.descColor(),
-                            borderRadius: BorderRadius.circular(5),
-                          ),
-                          child: Text(
-                            e,
-                            maxLines: 1,
-                            style: TextStyle(
-                              overflow: TextOverflow.ellipsis,
+                children:
+                    AppKeyViewModel.getScopeNames(
+                          (widget.bean["scopes"] as List<dynamic>?),
+                        )
+                        .map(
+                          (e) => Container(
+                            padding: const EdgeInsets.symmetric(
+                              vertical: 3,
+                              horizontal: 5,
+                            ),
+                            decoration: BoxDecoration(
                               color: ref
                                   .watch(themeProvider)
                                   .themeColor
-                                  .blackAndWhite(),
-                              fontSize: 12,
+                                  .descColor(),
+                              borderRadius: BorderRadius.circular(5),
+                            ),
+                            child: Text(
+                              e,
+                              maxLines: 1,
+                              style: TextStyle(
+                                overflow: TextOverflow.ellipsis,
+                                color: ref
+                                    .watch(themeProvider)
+                                    .themeColor
+                                    .blackAndWhite(),
+                                fontSize: 12,
+                              ),
                             ),
                           ),
-                        ))
-                    .toList(),
+                        )
+                        .toList(),
               ),
             ),
             const Spacer(),
@@ -121,22 +110,16 @@ class TaskDetailPageState extends ConsumerState<AppKeyDetailDetailPage> {
               child: SizedBox(
                 width: MediaQuery.of(context).size.width - 80,
                 child: CupertinoButton(
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 5,
-                    ),
-                    alignment: Alignment.center,
-                    color: Colors.red,
-                    child: const Text(
-                      "删 除",
-                      style: TextStyle(
-                        fontSize: 16,
-                      ),
-                    ),
-                    onPressed: () {
-                      _del(context, ref);
-                    }),
+                  padding: const EdgeInsets.symmetric(vertical: 5),
+                  alignment: Alignment.center,
+                  color: Colors.red,
+                  child: const Text("删 除", style: TextStyle(fontSize: 16)),
+                  onPressed: () {
+                    _del(context, ref);
+                  },
+                ),
               ),
-            )
+            ),
           ],
         ),
       ),
@@ -152,12 +135,7 @@ class TaskDetailPageState extends ConsumerState<AppKeyDetailDetailPage> {
         content: Text("确认删除应用 ${widget.bean["name"] ?? ""} 吗"),
         actions: [
           CupertinoDialogAction(
-            child: const Text(
-              "取消",
-              style: TextStyle(
-                color: Color(0xff999999),
-              ),
-            ),
+            child: const Text("取消", style: TextStyle(color: Color(0xff999999))),
             onPressed: () {
               Navigator.of(context).pop();
             },
@@ -165,9 +143,7 @@ class TaskDetailPageState extends ConsumerState<AppKeyDetailDetailPage> {
           CupertinoDialogAction(
             child: Text(
               "确定",
-              style: TextStyle(
-                color: ref.watch(themeProvider).primaryColor,
-              ),
+              style: TextStyle(color: ref.watch(themeProvider).primaryColor),
             ),
             onPressed: () {
               Navigator.of(context).pop();
@@ -178,17 +154,19 @@ class TaskDetailPageState extends ConsumerState<AppKeyDetailDetailPage> {
                       getProviderName(context1),
                     ),
                   )
-                  .delAppKey(
-                    context1,
-                    getAppKeyId(widget.bean),
-                  )
+                  .delAppKey(context1, getAppKeyId(widget.bean))
                   .then((value) {
-                EasyLoading.dismiss();
-                // ignore: use_build_context_synchronously
-                Navigator.of(context1).pop(true);
-              }).catchError((_, _) {
-                EasyLoading.dismiss();
-              });
+                    if (!context1.mounted) {
+                      return;
+                    }
+                    EasyLoading.dismiss();
+                    if (mounted) {
+                      Navigator.of(context1).pop(true);
+                    }
+                  })
+                  .catchError((_, _) {
+                    EasyLoading.dismiss();
+                  });
             },
           ),
         ],
@@ -220,11 +198,7 @@ class AppKeyDetailCell extends ConsumerWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.only(
-            top: 10,
-            right: 10,
-            bottom: 10,
-          ),
+          padding: const EdgeInsets.only(top: 10, right: 10, bottom: 10),
           child: Row(
             children: [
               Text(
@@ -234,19 +208,13 @@ class AppKeyDetailCell extends ConsumerWidget {
                   fontSize: 16,
                 ),
               ),
-              const SizedBox(
-                width: 30,
-              ),
+              const SizedBox(width: 30),
               desc != null
                   ? Expanded(
                       child: GestureDetector(
                         behavior: HitTestBehavior.opaque,
                         onTap: () {
-                          Clipboard.setData(
-                            ClipboardData(
-                              text: desc ?? "",
-                            ),
-                          );
+                          Clipboard.setData(ClipboardData(text: desc ?? ""));
                           "已复制到剪切板".toast();
                         },
                         child: Align(
@@ -266,17 +234,15 @@ class AppKeyDetailCell extends ConsumerWidget {
                       ),
                     )
                   : Expanded(
-                      child:
-                          Align(alignment: Alignment.centerRight, child: icon!),
+                      child: Align(
+                        alignment: Alignment.centerRight,
+                        child: icon!,
+                      ),
                     ),
             ],
           ),
         ),
-        hideDivide
-            ? const SizedBox.shrink()
-            : const Divider(
-                height: 1,
-              ),
+        hideDivide ? const SizedBox.shrink() : const Divider(height: 1),
       ],
     );
   }

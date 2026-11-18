@@ -47,7 +47,9 @@ class _NotifyLogPageState extends ConsumerState<NotifyLogPage> {
       context,
     ).notifyLog();
 
-    if (!mounted) return;
+    if (!mounted) {
+      return;
+    }
 
     if (response.success) {
       try {

@@ -25,7 +25,8 @@ class AboutPage extends ConsumerStatefulWidget {
   ConsumerState createState() => _AboutPageState();
 }
 
-class _AboutPageState extends ConsumerState<AboutPage> with LazyLoadState<AboutPage> {
+class _AboutPageState extends ConsumerState<AboutPage>
+    with LazyLoadState<AboutPage> {
   String desc = "";
   String versionCode = "";
 
@@ -40,16 +41,16 @@ class _AboutPageState extends ConsumerState<AboutPage> with LazyLoadState<AboutP
     SystemBean? systemBean;
 
     try {
-      systemBean = getIt<SystemBean>(instanceName: (SingleAccountPageState.of(context)?.index ?? 0).toString());
+      systemBean = getIt<SystemBean>(
+        instanceName: (SingleAccountPageState.of(context)?.index ?? 0)
+            .toString(),
+      );
     } catch (e) {
       systemBean = SystemBean(version: "2.10.13", fromAutoGet: false);
     }
     return Scaffold(
       backgroundColor: ref.watch(themeProvider).themeColor.bg2Color(),
-      appBar: QlAppBar(
-        canBack: true,
-        title: "关于软件",
-      ),
+      appBar: QlAppBar(canBack: true, title: "关于软件"),
       body: SingleChildScrollView(
         child: SizedBox(
           width: MediaQuery.of(context).size.width,
@@ -57,20 +58,14 @@ class _AboutPageState extends ConsumerState<AboutPage> with LazyLoadState<AboutP
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(
-                height: MediaQuery.of(context).size.height / 25,
-              ),
+              SizedBox(height: MediaQuery.of(context).size.height / 25),
               Center(
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(10),
-                  child: const AppLogo(
-                    height: 60,
-                  ),
+                  child: const AppLogo(height: 60),
                 ),
               ),
-              const SizedBox(
-                height: 15,
-              ),
+              const SizedBox(height: 15),
               Center(
                 child: Text(
                   "青龙客户端",
@@ -81,9 +76,7 @@ class _AboutPageState extends ConsumerState<AboutPage> with LazyLoadState<AboutP
                   ),
                 ),
               ),
-              const SizedBox(
-                height: 5,
-              ),
+              const SizedBox(height: 5),
               Center(
                 child: Text(
                   "基于青龙开源项目打造的第三方${getPlatformName()}客户端",
@@ -93,15 +86,14 @@ class _AboutPageState extends ConsumerState<AboutPage> with LazyLoadState<AboutP
                   ),
                 ),
               ),
-              const SizedBox(
-                height: 30,
-              ),
+              const SizedBox(height: 30),
               Container(
-                margin: const EdgeInsets.symmetric(
-                  horizontal: 15,
-                ),
+                margin: const EdgeInsets.symmetric(horizontal: 15),
                 decoration: BoxDecoration(
-                  color: ref.watch(themeProvider).themeColor.settingBordorColor(),
+                  color: ref
+                      .watch(themeProvider)
+                      .themeColor
+                      .settingBordorColor(),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Column(
@@ -118,7 +110,10 @@ class _AboutPageState extends ConsumerState<AboutPage> with LazyLoadState<AboutP
                           Text(
                             "版本",
                             style: TextStyle(
-                              color: ref.watch(themeProvider).themeColor.titleColor(),
+                              color: ref
+                                  .watch(themeProvider)
+                                  .themeColor
+                                  .titleColor(),
                               fontSize: 16,
                             ),
                           ),
@@ -126,17 +121,17 @@ class _AboutPageState extends ConsumerState<AboutPage> with LazyLoadState<AboutP
                           Text(
                             "$desc ($versionCode)",
                             style: TextStyle(
-                              color: ref.watch(themeProvider).themeColor.descColor(),
+                              color: ref
+                                  .watch(themeProvider)
+                                  .themeColor
+                                  .descColor(),
                               fontSize: 16,
                             ),
                           ),
                         ],
                       ),
                     ),
-                    const Divider(
-                      indent: 15,
-                      height: 1,
-                    ),
+                    const Divider(indent: 15, height: 1),
                     Material(
                       color: Colors.transparent,
                       child: InkWell(
@@ -159,7 +154,10 @@ class _AboutPageState extends ConsumerState<AboutPage> with LazyLoadState<AboutP
                               Text(
                                 "青龙服务端",
                                 style: TextStyle(
-                                  color: ref.watch(themeProvider).themeColor.titleColor(),
+                                  color: ref
+                                      .watch(themeProvider)
+                                      .themeColor
+                                      .titleColor(),
                                   fontSize: 16,
                                 ),
                               ),
@@ -167,7 +165,10 @@ class _AboutPageState extends ConsumerState<AboutPage> with LazyLoadState<AboutP
                               Text(
                                 "${systemBean.version}",
                                 style: TextStyle(
-                                  color: ref.watch(themeProvider).themeColor.descColor(),
+                                  color: ref
+                                      .watch(themeProvider)
+                                      .themeColor
+                                      .descColor(),
                                   fontSize: 16,
                                 ),
                               ),
@@ -179,13 +180,9 @@ class _AboutPageState extends ConsumerState<AboutPage> with LazyLoadState<AboutP
                   ],
                 ),
               ),
-              const SizedBox(
-                height: 30,
-              ),
+              const SizedBox(height: 30),
               Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 30,
-                ),
+                padding: const EdgeInsets.symmetric(horizontal: 30),
                 child: Text(
                   "反馈",
                   style: TextStyle(
@@ -194,15 +191,14 @@ class _AboutPageState extends ConsumerState<AboutPage> with LazyLoadState<AboutP
                   ),
                 ),
               ),
-              const SizedBox(
-                height: 10,
-              ),
+              const SizedBox(height: 10),
               Container(
-                margin: const EdgeInsets.symmetric(
-                  horizontal: 15,
-                ),
+                margin: const EdgeInsets.symmetric(horizontal: 15),
                 decoration: BoxDecoration(
-                  color: ref.watch(themeProvider).themeColor.settingBordorColor(),
+                  color: ref
+                      .watch(themeProvider)
+                      .themeColor
+                      .settingBordorColor(),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Column(
@@ -217,7 +213,11 @@ class _AboutPageState extends ConsumerState<AboutPage> with LazyLoadState<AboutP
                           ),
                           onTap: () async {
                             try {
-                              await launchUrl(Uri.tryParse("https://github.com/LinxiDev/qinglong-app/wiki/qinglong-app%E2%80%90Wiki")!);
+                              await launchUrl(
+                                Uri.tryParse(
+                                  "https://github.com/LinxiDev/qinglong-app/wiki/qinglong-app%E2%80%90Wiki",
+                                )!,
+                              );
                             } catch (e) {
                               logger.e(e);
                             }
@@ -236,24 +236,26 @@ class _AboutPageState extends ConsumerState<AboutPage> with LazyLoadState<AboutP
                                   color: ref.watch(themeProvider).primaryColor,
                                   size: 20,
                                 ),
-                                const SizedBox(
-                                  width: 15,
-                                ),
+                                const SizedBox(width: 15),
                                 Text(
                                   "下载地址",
                                   style: TextStyle(
-                                    color: ref.watch(themeProvider).themeColor.titleColor(),
+                                    color: ref
+                                        .watch(themeProvider)
+                                        .themeColor
+                                        .titleColor(),
                                     fontSize: 16,
                                   ),
                                 ),
                                 const Spacer(),
-                                const SizedBox(
-                                  width: 5,
-                                ),
+                                const SizedBox(width: 5),
                                 Icon(
                                   CupertinoIcons.right_chevron,
                                   size: 16,
-                                  color: ref.watch(themeProvider).themeColor.descColor(),
+                                  color: ref
+                                      .watch(themeProvider)
+                                      .themeColor
+                                      .descColor(),
                                 ),
                               ],
                             ),
@@ -268,7 +270,9 @@ class _AboutPageState extends ConsumerState<AboutPage> with LazyLoadState<AboutP
                             topRight: Radius.circular(10),
                           ),
                           onTap: () async {
-                            InAppReview.instance.openStoreListing(appStoreId: "1625871665");
+                            InAppReview.instance.openStoreListing(
+                              appStoreId: "1625871665",
+                            );
                           },
                           child: Padding(
                             padding: const EdgeInsets.symmetric(
@@ -284,13 +288,14 @@ class _AboutPageState extends ConsumerState<AboutPage> with LazyLoadState<AboutP
                                   color: ref.watch(themeProvider).primaryColor,
                                   size: 20,
                                 ),
-                                const SizedBox(
-                                  width: 15,
-                                ),
+                                const SizedBox(width: 15),
                                 Text(
                                   "在 App Store 评分",
                                   style: TextStyle(
-                                    color: ref.watch(themeProvider).themeColor.titleColor(),
+                                    color: ref
+                                        .watch(themeProvider)
+                                        .themeColor
+                                        .titleColor(),
                                     fontSize: 16,
                                   ),
                                 ),
@@ -298,7 +303,10 @@ class _AboutPageState extends ConsumerState<AboutPage> with LazyLoadState<AboutP
                                 Icon(
                                   CupertinoIcons.right_chevron,
                                   size: 16,
-                                  color: ref.watch(themeProvider).themeColor.descColor(),
+                                  color: ref
+                                      .watch(themeProvider)
+                                      .themeColor
+                                      .descColor(),
                                 ),
                               ],
                             ),
@@ -306,10 +314,7 @@ class _AboutPageState extends ConsumerState<AboutPage> with LazyLoadState<AboutP
                         ),
                       ),
                     ),
-                    const Divider(
-                      indent: 50,
-                      height: 1,
-                    ),
+                    const Divider(indent: 50, height: 1),
                     Material(
                       color: Colors.transparent,
                       child: InkWell(
@@ -328,13 +333,14 @@ class _AboutPageState extends ConsumerState<AboutPage> with LazyLoadState<AboutP
                                 color: ref.watch(themeProvider).primaryColor,
                                 size: 20,
                               ),
-                              const SizedBox(
-                                width: 15,
-                              ),
+                              const SizedBox(width: 15),
                               Text(
                                 "用户协议",
                                 style: TextStyle(
-                                  color: ref.watch(themeProvider).themeColor.titleColor(),
+                                  color: ref
+                                      .watch(themeProvider)
+                                      .themeColor
+                                      .titleColor(),
                                   fontSize: 16,
                                 ),
                               ),
@@ -342,22 +348,24 @@ class _AboutPageState extends ConsumerState<AboutPage> with LazyLoadState<AboutP
                               Icon(
                                 CupertinoIcons.right_chevron,
                                 size: 16,
-                                color: ref.watch(themeProvider).themeColor.descColor(),
+                                color: ref
+                                    .watch(themeProvider)
+                                    .themeColor
+                                    .descColor(),
                               ),
                             ],
                           ),
                         ),
                       ),
                     ),
-                    const Divider(
-                      indent: 50,
-                      height: 1,
-                    ),
+                    const Divider(indent: 50, height: 1),
                     Material(
                       color: Colors.transparent,
                       child: InkWell(
                         onTap: () {
-                          _launchURL("https://github.com/LinxiDev/qinglong-app/wiki/qinglong-app%E2%80%90Wiki");
+                          _launchURL(
+                            "https://github.com/LinxiDev/qinglong-app/wiki/qinglong-app%E2%80%90Wiki",
+                          );
                         },
                         child: Padding(
                           padding: const EdgeInsets.symmetric(
@@ -371,13 +379,14 @@ class _AboutPageState extends ConsumerState<AboutPage> with LazyLoadState<AboutP
                                 color: ref.watch(themeProvider).primaryColor,
                                 size: 20,
                               ),
-                              const SizedBox(
-                                width: 15,
-                              ),
+                              const SizedBox(width: 15),
                               Text(
                                 "App更新通知",
                                 style: TextStyle(
-                                  color: ref.watch(themeProvider).themeColor.titleColor(),
+                                  color: ref
+                                      .watch(themeProvider)
+                                      .themeColor
+                                      .titleColor(),
                                   fontSize: 16,
                                 ),
                               ),
@@ -385,17 +394,17 @@ class _AboutPageState extends ConsumerState<AboutPage> with LazyLoadState<AboutP
                               Icon(
                                 CupertinoIcons.right_chevron,
                                 size: 16,
-                                color: ref.watch(themeProvider).themeColor.descColor(),
+                                color: ref
+                                    .watch(themeProvider)
+                                    .themeColor
+                                    .descColor(),
                               ),
                             ],
                           ),
                         ),
                       ),
                     ),
-                    const Divider(
-                      indent: 50,
-                      height: 1,
-                    ),
+                    const Divider(indent: 50, height: 1),
                     Material(
                       color: Colors.transparent,
                       child: InkWell(
@@ -405,9 +414,17 @@ class _AboutPageState extends ConsumerState<AboutPage> with LazyLoadState<AboutP
                         ),
                         onTap: () {
                           if (Platform.isAndroid) {
-                            SharePlus.instance.share(ShareParams(text: "分享一款好用的青龙客户端，快去点击下面的链接地址下载吧 https://github.com/LinxiDev/qinglong-app/wiki/qinglong-app%E2%80%90Wiki"));
+                            SharePlus.instance.share(
+                              ShareParams(
+                                text: "分享一款好用的青龙客户端，快去点击下面的链接地址下载吧 https://github.com/LinxiDev/qinglong-app/wiki/qinglong-app%E2%80%90Wiki",
+                              ),
+                            );
                           } else {
-                            SharePlus.instance.share(ShareParams(text: "分享一款好用的青龙客户端，快去美区 AppStore 搜索『青龙客户端』或者点击下面的链接地址下载吧 https://apps.apple.com/us/app/id1625871665"));
+                            SharePlus.instance.share(
+                              ShareParams(
+                                text: "分享一款好用的青龙客户端，快去美区 AppStore 搜索『青龙客户端』或者点击下面的链接地址下载吧 https://apps.apple.com/us/app/id1625871665",
+                              ),
+                            );
                           }
                         },
                         child: Padding(
@@ -422,13 +439,14 @@ class _AboutPageState extends ConsumerState<AboutPage> with LazyLoadState<AboutP
                                 color: ref.watch(themeProvider).primaryColor,
                                 size: 20,
                               ),
-                              const SizedBox(
-                                width: 15,
-                              ),
+                              const SizedBox(width: 15),
                               Text(
                                 "分享App",
                                 style: TextStyle(
-                                  color: ref.watch(themeProvider).themeColor.titleColor(),
+                                  color: ref
+                                      .watch(themeProvider)
+                                      .themeColor
+                                      .titleColor(),
                                   fontSize: 16,
                                 ),
                               ),
@@ -436,7 +454,10 @@ class _AboutPageState extends ConsumerState<AboutPage> with LazyLoadState<AboutP
                               Icon(
                                 CupertinoIcons.right_chevron,
                                 size: 16,
-                                color: ref.watch(themeProvider).themeColor.descColor(),
+                                color: ref
+                                    .watch(themeProvider)
+                                    .themeColor
+                                    .descColor(),
                               ),
                             ],
                           ),
@@ -446,9 +467,7 @@ class _AboutPageState extends ConsumerState<AboutPage> with LazyLoadState<AboutP
                   ],
                 ),
               ),
-              const SizedBox(
-                height: 30,
-              ),
+              const SizedBox(height: 30),
               Center(
                 child: Text(
                   "APP不会收集任何关于您的信息,使用前请仔细阅读用户协议",
@@ -458,9 +477,7 @@ class _AboutPageState extends ConsumerState<AboutPage> with LazyLoadState<AboutP
                   ),
                 ),
               ),
-              const SizedBox(
-                height: 15,
-              ),
+              const SizedBox(height: 15),
             ],
           ),
         ),
@@ -492,34 +509,30 @@ class _AboutPageState extends ConsumerState<AboutPage> with LazyLoadState<AboutP
     var response = await SingleAccountPageState.ofApi(context).checkUpdate();
     if (response.success) {
       if (response.bean?.hasNewVersion ?? false) {
-        showCupertinoDialog(
-          // ignore: use_build_context_synchronously
-          context: context,
-          useRootNavigator: false,
-          builder: (childContext) => CupertinoAlertDialog(
-            title: Text("青龙服务端发现新版本 ${response.bean?.lastVersion}"),
-            content: Padding(
-              padding: const EdgeInsets.only(
-                left: 5,
-                top: 5,
-              ),
-              child: Text(
-                "${response.bean?.lastLog}",
-                textAlign: TextAlign.left,
-              ),
-            ),
-            actions: [
-              CupertinoDialogAction(
-                child: const Text(
-                  "知道了",
+        if (mounted) {
+          showCupertinoDialog(
+            context: context,
+            useRootNavigator: false,
+            builder: (childContext) => CupertinoAlertDialog(
+              title: Text("青龙服务端发现新版本 ${response.bean?.lastVersion}"),
+              content: Padding(
+                padding: const EdgeInsets.only(left: 5, top: 5),
+                child: Text(
+                  "${response.bean?.lastLog}",
+                  textAlign: TextAlign.left,
                 ),
-                onPressed: () {
-                  Navigator.of(childContext).pop();
-                },
               ),
-            ],
-          ),
-        );
+              actions: [
+                CupertinoDialogAction(
+                  child: const Text("知道了"),
+                  onPressed: () {
+                    Navigator.of(childContext).pop();
+                  },
+                ),
+              ],
+            ),
+          );
+        }
       } else {
         "已经是新版本".toast();
       }

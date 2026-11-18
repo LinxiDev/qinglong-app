@@ -89,9 +89,7 @@ class ScriptEditPageState extends ConsumerState<ScriptEditPage> {
                   CupertinoDialogAction(
                     child: const Text(
                       "取消",
-                      style: TextStyle(
-                        color: Color(0xff999999),
-                      ),
+                      style: TextStyle(color: Color(0xff999999)),
                     ),
                     onPressed: () {
                       Navigator.of(childContext).pop();
@@ -123,9 +121,7 @@ class ScriptEditPageState extends ConsumerState<ScriptEditPage> {
               codeKey.currentState?.showSearchBar();
             },
             child: Padding(
-              padding: const EdgeInsets.only(
-                left: 15,
-              ),
+              padding: const EdgeInsets.only(left: 15),
               child: Center(
                 child: Icon(
                   Icons.search,
@@ -139,16 +135,24 @@ class ScriptEditPageState extends ConsumerState<ScriptEditPage> {
             color: Colors.transparent,
             padding: EdgeInsets.zero,
             onPressed: () async {
+              if (!mounted) {
+                return;
+              }
               try {
                 await hideKeyboardFocus();
                 await EasyLoading.show(status: " 提交中");
-                // ignore: use_build_context_synchronously
-                HttpResponse<NullResponse> response = await SingleAccountPageState.ofApi(context).updateScript(widget.title, widget.path, result);
+                if (!context.mounted) {
+                  return;
+                }
+                HttpResponse<NullResponse> response =
+                    await SingleAccountPageState.ofApi(context)
+                        .updateScript(widget.title, widget.path, result);
                 await EasyLoading.dismiss();
                 if (response.success) {
                   "提交成功".toast();
-                  // ignore: use_build_context_synchronously
-                  Navigator.of(context).pop(result);
+                  if (context.mounted) {
+                    Navigator.of(context).pop(result);
+                  }
                 } else {
                   (response.message ?? "").toast();
                 }
@@ -157,9 +161,7 @@ class ScriptEditPageState extends ConsumerState<ScriptEditPage> {
               }
             },
             child: Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 15,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 15),
               child: Center(
                 child: Text(
                   "提交",
@@ -170,7 +172,7 @@ class ScriptEditPageState extends ConsumerState<ScriptEditPage> {
                 ),
               ),
             ),
-          )
+          ),
         ],
       ),
       body: SafeArea(

@@ -1,4 +1,3 @@
-
 import 'package:custom_sliding_segmented_control/custom_sliding_segmented_control.dart';
 import 'package:cupertino_ui/cupertino_ui.dart';
 import 'package:material_ui/material_ui.dart';
@@ -27,7 +26,8 @@ class DependencyPage extends ConsumerStatefulWidget {
   DependcyPageState createState() => DependcyPageState();
 }
 
-class DependcyPageState extends ConsumerState<DependencyPage> with TickerProviderStateMixin {
+class DependcyPageState extends ConsumerState<DependencyPage>
+    with TickerProviderStateMixin {
   static List<DepedencyEnum> types = [
     DepedencyEnum.nodeJs,
     DepedencyEnum.python3,
@@ -52,7 +52,11 @@ class DependcyPageState extends ConsumerState<DependencyPage> with TickerProvide
   }
 
   void scrollToTop() {
-    controller?.animateTo(0, duration: const Duration(milliseconds: 200), curve: Curves.linear);
+    controller?.animateTo(
+      0,
+      duration: const Duration(milliseconds: 200),
+      curve: Curves.linear,
+    );
   }
 
   @override
@@ -80,7 +84,9 @@ class DependcyPageState extends ConsumerState<DependencyPage> with TickerProvide
           backCall: () {
             Navigator.of(context).pop();
           },
-          title: (editMode && checkedIds.isNotEmpty) ? "当前选中 ${checkedIds.length} 个依赖" : "依赖管理",
+          title: (editMode && checkedIds.isNotEmpty)
+              ? "当前选中 ${checkedIds.length} 个依赖"
+              : "依赖管理",
           canClick2Vip: !editMode,
           actions: [
             CupertinoButton(
@@ -100,10 +106,7 @@ class DependcyPageState extends ConsumerState<DependencyPage> with TickerProvide
                 setState(() {});
               },
               child: Padding(
-                padding: const EdgeInsets.only(
-                  right: 15,
-                  left: 15,
-                ),
+                padding: const EdgeInsets.only(right: 15, left: 15),
                 child: Center(
                   child: Text(
                     editMode ? "完成" : "编辑",
@@ -122,7 +125,11 @@ class DependcyPageState extends ConsumerState<DependencyPage> with TickerProvide
                 if (editMode) {
                   if (checkedIds.length ==
                       ref
-                          .read(SingleAccountPageState.ofDependencyProvider(context)(getProviderName(context)).notifier)
+                          .read(
+                            SingleAccountPageState.ofDependencyProvider(
+                              context,
+                            )(getProviderName(context)).notifier,
+                          )
                           .getListByType(_tabController!.index)
                           .length) {
                     //全不选
@@ -131,70 +138,109 @@ class DependcyPageState extends ConsumerState<DependencyPage> with TickerProvide
                   } else {
                     //全选
                     checkedIds.clear();
-                    checkedIds.addAll(ref
-                        .read(SingleAccountPageState.ofDependencyProvider(context)(getProviderName(context)).notifier)
-                        .getListByType(_tabController!.index)
-                        .map((e) => e.mustId ?? "")
-                        .toList());
+                    checkedIds.addAll(
+                      ref
+                          .read(
+                            SingleAccountPageState.ofDependencyProvider(
+                              context,
+                            )(getProviderName(context)).notifier,
+                          )
+                          .getListByType(_tabController!.index)
+                          .map((e) => e.mustId ?? "")
+                          .toList(),
+                    );
                     setState(() {});
                   }
                   return;
                 }
                 Navigator.of(context)
                     .push(
-                  CupertinoPageRoute(
-                    builder: (context) => const AddDependencyPage(),
-                  ),
-                )
-                    .then(
-                  (value) async {
-                    if (value != null && value is Map<String, dynamic> && value.isNotEmpty) {
-                      // ignore: use_build_context_synchronously
-                      await ref.read(SingleAccountPageState.ofDependencyProvider(context)(getProviderName(context)).notifier).loadData(
-                            // ignore: use_build_context_synchronously
-                            context,
-                            types[0].name.toLowerCase(),
-                            false,
-                          );
-                      // ignore: use_build_context_synchronously
-                      await ref.read(SingleAccountPageState.ofDependencyProvider(context)(getProviderName(context)).notifier).loadData(
-                            // ignore: use_build_context_synchronously
-                            context,
-                            types[1].name.toLowerCase(),
-                            false,
-                          );
-                      // ignore: use_build_context_synchronously
-                      await ref.read(SingleAccountPageState.ofDependencyProvider(context)(getProviderName(context)).notifier).loadData(
-                            // ignore: use_build_context_synchronously
-                            context,
-                            types[2].name.toLowerCase(),
-                            false,
-                          );
+                      CupertinoPageRoute(
+                        builder: (context) => const AddDependencyPage(),
+                      ),
+                    )
+                    .then((value) async {
+                      if (!context.mounted) {
+                        return;
+                      }
+                      if (value != null &&
+                          value is Map<String, dynamic> &&
+                          value.isNotEmpty) {
+                        if (context.mounted) {
+                          await ref
+                              .read(
+                                SingleAccountPageState.ofDependencyProvider(
+                                  context,
+                                )(getProviderName(context)).notifier,
+                              )
+                              .loadData(
+                                context,
+                                types[0].name.toLowerCase(),
+                                false,
+                              );
+                        }
+                        if (context.mounted) {
+                          await ref
+                              .read(
+                                SingleAccountPageState.ofDependencyProvider(
+                                  context,
+                                )(getProviderName(context)).notifier,
+                              )
+                              .loadData(
+                                context,
+                                types[1].name.toLowerCase(),
+                                false,
+                              );
+                        }
+                        if (context.mounted) {
+                          await ref
+                              .read(
+                                SingleAccountPageState.ofDependencyProvider(
+                                  context,
+                                )(getProviderName(context)).notifier,
+                              )
+                              .loadData(
+                                context,
+                                types[2].name.toLowerCase(),
+                                false,
+                              );
+                        }
 
-                      var bean = DependencyBean.fromJson(value);
-                      // ignore: use_build_context_synchronously
-                      showLog(context, bean.name ?? "", ref, bean.sId, bean.id);
-                    }
-                  },
-                );
+                        var bean = DependencyBean.fromJson(value);
+                        if (context.mounted) {
+                          showLog(
+                            context,
+                            bean.name ?? "",
+                            ref,
+                            bean.sId,
+                            bean.id,
+                          );
+                        }
+                      }
+                    });
               },
               child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 15,
-                ),
+                padding: const EdgeInsets.symmetric(horizontal: 15),
                 child: Center(
                   child: editMode
                       ? Text(
                           checkedIds.length ==
                                   ref
-                                      .read(SingleAccountPageState.ofDependencyProvider(context)(getProviderName(context)).notifier)
+                                      .read(
+                                        SingleAccountPageState.ofDependencyProvider(
+                                          context,
+                                        )(getProviderName(context)).notifier,
+                                      )
                                       .getListByType(_tabController!.index)
                                       .length
                               ? "全不选"
                               : "全选",
                           style: TextStyle(
                             fontSize: 16,
-                            color: Theme.of(context).appBarTheme.iconTheme?.color,
+                            color: Theme.of(context)
+                                .appBarTheme
+                                .iconTheme
+                                ?.color,
                           ),
                         )
                       : Icon(
@@ -214,7 +260,9 @@ class DependcyPageState extends ConsumerState<DependencyPage> with TickerProvide
             model.loadData(context, types[2].name.toLowerCase());
           },
           lazyLoad: true,
-          model: SingleAccountPageState.ofDependencyProvider(context)(getProviderName(context)),
+          model: SingleAccountPageState.ofDependencyProvider(context)(
+            getProviderName(context),
+          ),
           builder: (context1, model, child) {
             return NotificationListener<ScrollNotification>(
               onNotification: (detail) {
@@ -239,61 +287,66 @@ class DependcyPageState extends ConsumerState<DependencyPage> with TickerProvide
               child: NestedScrollView(
                 physics: const AlwaysScrollableScrollPhysics(),
                 controller: controller,
-                headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
-                  return [
-                    _buildAppBar(context, ref, model),
-                    SliverOverlapAbsorber(
-                      handle: NestedScrollView.sliverOverlapAbsorberHandleFor(context),
-                      sliver: SliverPersistentHeader(
-                        pinned: true,
-                        floating: false,
-                        delegate: SliverTabBarDelegate(
-                          _tabController!,
-                          editMode,
-                          ref,
+                headerSliverBuilder:
+                    (BuildContext context, bool innerBoxIsScrolled) {
+                      return [
+                        _buildAppBar(context, ref, model),
+                        SliverOverlapAbsorber(
+                          handle:
+                              NestedScrollView.sliverOverlapAbsorberHandleFor(
+                                context,
+                              ),
+                          sliver: SliverPersistentHeader(
+                            pinned: true,
+                            floating: false,
+                            delegate: SliverTabBarDelegate(
+                              _tabController!,
+                              editMode,
+                              ref,
+                            ),
+                          ),
                         ),
-                      ),
-                    ),
-                  ];
-                },
+                      ];
+                    },
                 body: SlidableAutoCloseBehavior(
                   child: RefreshIndicator(
                     color: Theme.of(context).primaryColor,
                     notificationPredicate: (_) => true,
                     onRefresh: () async {
-                      return model.loadData(context, types[_tabController!.index].name);
+                      return model.loadData(
+                        context,
+                        types[_tabController!.index].name,
+                      );
                     },
                     child: TabBarView(
                       controller: _tabController,
                       physics: const NeverScrollableScrollPhysics(),
-                      children: types.map(
-                        (e) {
-                          List<DependencyBean> list;
-                          if (e.index == 0) {
-                            list = model.nodeJsList;
-                          } else if (e.index == 1) {
-                            list = model.python3List;
-                          } else {
-                            list = model.linuxList;
-                          }
+                      children: types.map((e) {
+                        List<DependencyBean> list;
+                        if (e.index == 0) {
+                          list = model.nodeJsList;
+                        } else if (e.index == 1) {
+                          list = model.python3List;
+                        } else {
+                          list = model.linuxList;
+                        }
 
-                          return DepListView(
-                            list: list,
-                            type: e,
-                            searchText: searchText.text,
-                            editMode: editMode,
-                            checked: checkedIds,
-                            changed: (id) {
-                              if (checkedIds.contains(id)) {
-                                checkedIds.remove(id);
-                              } else {
-                                checkedIds.add(id);
-                              }
-                              setState(() {});
-                            },
-                          );
-                        },
-                      ).toList(),
+                        return DepListView(
+                          list: list,
+                          type: e,
+                          searchText: searchText.text,
+                          editMode: editMode,
+                          checked: checkedIds,
+                          changed: (id) {
+                            if (checkedIds.contains(id)) {
+                              checkedIds.remove(id);
+                            } else {
+                              checkedIds.add(id);
+                            }
+                            setState(() {});
+                          },
+                        );
+                      }).toList(),
                     ),
                   ),
                 ),
@@ -305,7 +358,13 @@ class DependcyPageState extends ConsumerState<DependencyPage> with TickerProvide
     );
   }
 
-  void showLog(BuildContext context, String title, WidgetRef ref, String? sId, int? id) {
+  void showLog(
+    BuildContext context,
+    String title,
+    WidgetRef ref,
+    String? sId,
+    int? id,
+  ) {
     String v = "";
     if (sId != null) {
       v = sId;
@@ -314,25 +373,33 @@ class DependcyPageState extends ConsumerState<DependencyPage> with TickerProvide
     }
     Navigator.of(context)
         .push(
-      CupertinoPageRoute(
-        builder: (context) => InTimeDepLogPage(v, true, title),
-      ),
-    )
-        .then(
-      (value) async {
-        // ignore: use_build_context_synchronously
-        await ref.read(SingleAccountPageState.ofDependencyProvider(context)(getProviderName(context))).loadData(
-              // ignore: use_build_context_synchronously
-              context,
-              types[_tabController!.index].name.toLowerCase(),
-            );
-      },
-    );
+          CupertinoPageRoute(
+            builder: (context) => InTimeDepLogPage(v, true, title),
+          ),
+        )
+        .then((value) async {
+          if (context.mounted) {
+            await ref
+                .read(
+                  SingleAccountPageState.ofDependencyProvider(context)(
+                    getProviderName(context),
+                  ),
+                )
+                .loadData(
+                  context,
+                  types[_tabController!.index].name.toLowerCase(),
+                );
+          }
+        });
   }
 
   double searchCellHeight = 55;
 
-  SliverAppBar _buildAppBar(BuildContext context, WidgetRef ref, DependencyViewModel model) {
+  SliverAppBar _buildAppBar(
+    BuildContext context,
+    WidgetRef ref,
+    DependencyViewModel model,
+  ) {
     return SliverAppBar(
       pinned: false,
       floating: false,
@@ -345,19 +412,16 @@ class DependcyPageState extends ConsumerState<DependencyPage> with TickerProvide
     );
   }
 
-  Widget searchCell(BuildContext context, WidgetRef context1, DependencyViewModel model) {
+  Widget searchCell(
+    BuildContext context,
+    WidgetRef context1,
+    DependencyViewModel model,
+  ) {
     return Container(
       color: ref.watch(themeProvider).themeColor.searchBgColor(),
-      padding: const EdgeInsets.only(
-        left: 15,
-        right: 15,
-        top: 10,
-        bottom: 10,
-      ),
+      padding: const EdgeInsets.only(left: 15, right: 15, top: 10, bottom: 10),
       height: searchCellHeight.toDouble(),
-      child: SearchCell(
-        controller: searchText,
-      ),
+      child: SearchCell(controller: searchText),
     );
   }
 
@@ -371,7 +435,12 @@ class DependcyPageState extends ConsumerState<DependencyPage> with TickerProvide
           alignment: Alignment.bottomCenter,
           child: Container(
             width: MediaQuery.of(context).size.width,
-            color: ref.watch(themeProvider).currentTheme.bottomNavigationBarTheme.backgroundColor?.withValues(alpha: 1),
+            color: ref
+                .watch(themeProvider)
+                .currentTheme
+                .bottomNavigationBarTheme
+                .backgroundColor
+                ?.withValues(alpha: 1),
             child: SafeArea(
               top: false,
               child: SizedBox(
@@ -422,12 +491,7 @@ class DependcyPageState extends ConsumerState<DependencyPage> with TickerProvide
         content: Text("确认$s吗"),
         actions: [
           CupertinoDialogAction(
-            child: const Text(
-              "取消",
-              style: TextStyle(
-                color: Color(0xff999999),
-              ),
-            ),
+            child: const Text("取消", style: TextStyle(color: Color(0xff999999))),
             onPressed: () {
               Navigator.of(context2).pop();
             },
@@ -435,55 +499,73 @@ class DependcyPageState extends ConsumerState<DependencyPage> with TickerProvide
           CupertinoDialogAction(
             child: Text(
               "确定",
-              style: TextStyle(
-                color: ref.watch(themeProvider).primaryColor,
-              ),
+              style: TextStyle(color: ref.watch(themeProvider).primaryColor),
             ),
             onPressed: () {
               Navigator.of(context2).pop();
               editMode = false;
               removeOverlay();
-              WidgetsBinding.instance.addPostFrameCallback(
-                (timeStamp) {
-                  if (s == "重新安装") {
-                    List<String?> sids = ref
-                        .read(SingleAccountPageState.ofDependencyProvider(context)(getProviderName(context)).notifier)
-                        .getListByType(_tabController!.index)
-                        .where((element) => checkedIds.contains(element.mustId))
-                        .map((e) => e.sId)
-                        .toList();
+              WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+                if (s == "重新安装") {
+                  List<String?> sids = ref
+                      .read(
+                        SingleAccountPageState.ofDependencyProvider(context)(
+                          getProviderName(context),
+                        ).notifier,
+                      )
+                      .getListByType(_tabController!.index)
+                      .where((element) => checkedIds.contains(element.mustId))
+                      .map((e) => e.sId)
+                      .toList();
 
-                    List<int?> ids = ref
-                        .read(SingleAccountPageState.ofDependencyProvider(context)(getProviderName(context)).notifier)
-                        .getListByType(_tabController!.index)
-                        .where((element) => checkedIds.contains(element.mustId))
-                        .map((e) => e.id)
-                        .toList();
+                  List<int?> ids = ref
+                      .read(
+                        SingleAccountPageState.ofDependencyProvider(context)(
+                          getProviderName(context),
+                        ).notifier,
+                      )
+                      .getListByType(_tabController!.index)
+                      .where((element) => checkedIds.contains(element.mustId))
+                      .map((e) => e.id)
+                      .toList();
 
-                    reInstalls(context, sids, ids);
-                  } else if (s == "删除") {
-                    List<String?> sids = ref
-                        .read(SingleAccountPageState.ofDependencyProvider(context)(getProviderName(context)).notifier)
-                        .getListByType(_tabController!.index)
-                        .where((element) => checkedIds.contains(element.mustId))
-                        .map((e) => e.sId)
-                        .toList();
+                  reInstalls(context, sids, ids);
+                } else if (s == "删除") {
+                  List<String?> sids = ref
+                      .read(
+                        SingleAccountPageState.ofDependencyProvider(context)(
+                          getProviderName(context),
+                        ).notifier,
+                      )
+                      .getListByType(_tabController!.index)
+                      .where((element) => checkedIds.contains(element.mustId))
+                      .map((e) => e.sId)
+                      .toList();
 
-                    List<int?> ids = ref
-                        .read(SingleAccountPageState.ofDependencyProvider(context)(getProviderName(context)).notifier)
-                        .getListByType(_tabController!.index)
-                        .where((element) => checkedIds.contains(element.mustId))
-                        .map((e) => e.id)
-                        .toList();
-                    ref.read(SingleAccountPageState.ofDependencyProvider(context)(getProviderName(context)).notifier).del(
-                          context,
-                          types[_tabController!.index].name,
-                          sids,
-                          ids,
-                        );
-                  }
-                },
-              );
+                  List<int?> ids = ref
+                      .read(
+                        SingleAccountPageState.ofDependencyProvider(context)(
+                          getProviderName(context),
+                        ).notifier,
+                      )
+                      .getListByType(_tabController!.index)
+                      .where((element) => checkedIds.contains(element.mustId))
+                      .map((e) => e.id)
+                      .toList();
+                  ref
+                      .read(
+                        SingleAccountPageState.ofDependencyProvider(context)(
+                          getProviderName(context),
+                        ).notifier,
+                      )
+                      .del(
+                        context,
+                        types[_tabController!.index].name,
+                        sids,
+                        ids,
+                      );
+                }
+              });
               setState(() {});
             },
           ),
@@ -492,13 +574,18 @@ class DependcyPageState extends ConsumerState<DependencyPage> with TickerProvide
     );
   }
 
-  void reInstalls(BuildContext context, List<String?>? sId, List<int?>? id) async {
-    ref.read(SingleAccountPageState.ofDependencyProvider(context)(getProviderName(context))).reInstall(
-          context,
-          types[_tabController!.index].name,
-          sId,
-          id,
-        );
+  void reInstalls(
+    BuildContext context,
+    List<String?>? sId,
+    List<int?>? id,
+  ) async {
+    ref
+        .read(
+          SingleAccountPageState.ofDependencyProvider(context)(
+            getProviderName(context),
+          ),
+        )
+        .reInstall(context, types[_tabController!.index].name, sId, id);
   }
 
   @override
@@ -517,16 +604,8 @@ class DependcyPageState extends ConsumerState<DependencyPage> with TickerProvide
   Widget buildTitle(String title) {
     return Container(
       color: _tabController!.index == 0 ? Colors.white : Colors.grey,
-      padding: const EdgeInsets.symmetric(
-        horizontal: 15,
-        vertical: 10,
-      ),
-      child: Text(
-        title,
-        style: const TextStyle(
-          fontSize: 14,
-        ),
-      ),
+      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+      child: Text(title, style: const TextStyle(fontSize: 14)),
     );
   }
 }
@@ -554,7 +633,8 @@ class DepListView extends StatefulWidget {
   State<DepListView> createState() => _DepListViewState();
 }
 
-class _DepListViewState extends State<DepListView> with AutomaticKeepAliveClientMixin {
+class _DepListViewState extends State<DepListView>
+    with AutomaticKeepAliveClientMixin {
   @override
   Widget build(BuildContext context) {
     super.build(context);
@@ -562,13 +642,14 @@ class _DepListViewState extends State<DepListView> with AutomaticKeepAliveClient
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-      padding: const EdgeInsets.only(
-        bottom: 80,
-        top: kToolbarHeight,
-      ),
+      padding: const EdgeInsets.only(bottom: 80, top: kToolbarHeight),
       itemBuilder: (context, index) {
         DependencyBean item = widget.list[index];
-        if (widget.searchText.isEmpty || (item.name?.toLowerCase().contains(widget.searchText.toLowerCase()) ?? false)) {
+        if (widget.searchText.isEmpty ||
+            (item.name?.toLowerCase().contains(
+                  widget.searchText.toLowerCase(),
+                ) ??
+                false)) {
           return DependencyCell(
             widget.type,
             widget.list[index],
@@ -585,11 +666,12 @@ class _DepListViewState extends State<DepListView> with AutomaticKeepAliveClient
       itemCount: widget.list.length,
       separatorBuilder: (BuildContext context, int index) {
         DependencyBean item = widget.list[index];
-        if (widget.searchText.isEmpty || (item.name?.toLowerCase().contains(widget.searchText.toLowerCase()) ?? false)) {
-          return Divider(
-            height: 1,
-            indent: widget.editMode ? 55 : 15,
-          );
+        if (widget.searchText.isEmpty ||
+            (item.name?.toLowerCase().contains(
+                  widget.searchText.toLowerCase(),
+                ) ??
+                false)) {
+          return Divider(height: 1, indent: widget.editMode ? 55 : 15);
         } else {
           return const SizedBox.shrink();
         }
@@ -629,13 +711,7 @@ class DependencyCell extends ConsumerWidget {
           SlidableAction(
             backgroundColor: const Color(0xff5D5E70),
             onPressed: (_) {
-              reInstall(
-                bean.name ?? "",
-                context,
-                ref,
-                bean.sId,
-                bean.id,
-              );
+              reInstall(bean.name ?? "", context, ref, bean.sId, bean.id);
             },
             foregroundColor: Colors.white,
             icon: CupertinoIcons.memories,
@@ -643,13 +719,7 @@ class DependencyCell extends ConsumerWidget {
           SlidableAction(
             backgroundColor: const Color(0xffA356D6),
             onPressed: (_) {
-              showLog(
-                context,
-                bean.name ?? "",
-                ref,
-                bean.sId,
-                bean.id,
-              );
+              showLog(context, bean.name ?? "", ref, bean.sId, bean.id);
             },
             foregroundColor: Colors.white,
             icon: CupertinoIcons.text_justifyleft,
@@ -657,13 +727,7 @@ class DependencyCell extends ConsumerWidget {
           SlidableAction(
             backgroundColor: const Color(0xffEA4D3E),
             onPressed: (_) {
-              del(
-                context,
-                ref,
-                bean,
-                bean.sId,
-                bean.id,
-              );
+              del(context, ref, bean, bean.sId, bean.id);
             },
             foregroundColor: Colors.white,
             icon: CupertinoIcons.delete,
@@ -688,13 +752,15 @@ class DependencyCell extends ConsumerWidget {
                 child: Visibility(
                   visible: editMode,
                   child: Padding(
-                    padding: const EdgeInsets.only(
-                      left: 15,
-                    ),
+                    padding: const EdgeInsets.only(left: 15),
                     child: Icon(
-                      checked ? CupertinoIcons.checkmark_alt_circle : CupertinoIcons.circle,
+                      checked
+                          ? CupertinoIcons.checkmark_alt_circle
+                          : CupertinoIcons.circle,
                       size: 25,
-                      color: checked ? ref.watch(themeProvider).primaryColor : ref.watch(themeProvider).themeColor.descColor(),
+                      color: checked
+                          ? ref.watch(themeProvider).primaryColor
+                          : ref.watch(themeProvider).themeColor.descColor(),
                     ),
                   ),
                 ),
@@ -717,26 +783,33 @@ class DependencyCell extends ConsumerWidget {
                         Material(
                           color: Colors.transparent,
                           child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                              vertical: 10,
-                            ),
+                            padding: const EdgeInsets.symmetric(vertical: 10),
                             child: Text(
                               bean.name ?? "",
                               maxLines: 1,
                               style: TextStyle(
                                 overflow: TextOverflow.ellipsis,
-                                color: ref.watch(themeProvider).themeColor.titleColor(),
+                                color: ref
+                                    .watch(themeProvider)
+                                    .themeColor
+                                    .titleColor(),
                                 fontSize: 17,
                               ),
                             ),
                           ),
                         ),
-                        const SizedBox(
-                          width: 5,
-                        ),
+                        const SizedBox(width: 5),
                         bean.status == 1
-                            ? StatusWidget(title: "已安装", color: ref.watch(themeProvider).primaryColor)
-                            : (bean.status == 2 ? const StatusWidget(title: "安装失败", color: Color(0xffFB5858)) : const RunningWidget()),
+                            ? StatusWidget(
+                                title: "已安装",
+                                color: ref.watch(themeProvider).primaryColor,
+                              )
+                            : (bean.status == 2
+                                  ? const StatusWidget(
+                                      title: "安装失败",
+                                      color: Color(0xffFB5858),
+                                    )
+                                  : const RunningWidget()),
                         Expanded(
                           child: Align(
                             alignment: Alignment.centerRight,
@@ -744,12 +817,17 @@ class DependencyCell extends ConsumerWidget {
                               color: Colors.transparent,
                               child: Text(
                                 (bean.created == null || bean.created == 0)
-                                    ? (Utils.formatGMTTime(bean.timestamp ?? ""))
+                                    ? (Utils.formatGMTTime(
+                                        bean.timestamp ?? "",
+                                      ))
                                     : Utils.formatMessageTime(bean.created!),
                                 maxLines: 1,
                                 style: TextStyle(
                                   overflow: TextOverflow.ellipsis,
-                                  color: ref.watch(themeProvider).themeColor.descColor(),
+                                  color: ref
+                                      .watch(themeProvider)
+                                      .themeColor
+                                      .descColor(),
                                   fontSize: 12,
                                 ),
                               ),
@@ -768,7 +846,13 @@ class DependencyCell extends ConsumerWidget {
     );
   }
 
-  void showLog(BuildContext context, String title, WidgetRef ref, String? sId, int? id) {
+  void showLog(
+    BuildContext context,
+    String title,
+    WidgetRef ref,
+    String? sId,
+    int? id,
+  ) {
     String v = "";
     if (sId != null) {
       v = sId;
@@ -778,33 +862,47 @@ class DependencyCell extends ConsumerWidget {
 
     Navigator.of(context)
         .push(
-      CupertinoPageRoute(
-        builder: (context) => InTimeDepLogPage(v, true, title),
-      ),
-    )
-        .then(
-      (value) async {
-        // ignore: use_build_context_synchronously
-        await ref.read(SingleAccountPageState.ofDependencyProvider(context)(getProviderName(context))).loadData(
-              // ignore: use_build_context_synchronously
-              context,
-              type.name.toLowerCase(),
-            );
-      },
-    );
+          CupertinoPageRoute(
+            builder: (context) => InTimeDepLogPage(v, true, title),
+          ),
+        )
+        .then((value) async {
+          if (context.mounted) {
+            await ref
+                .read(
+                  SingleAccountPageState.ofDependencyProvider(context)(
+                    getProviderName(context),
+                  ),
+                )
+                .loadData(context, type.name.toLowerCase());
+          }
+        });
   }
 
-  void reInstall(String title, BuildContext context, WidgetRef ref, String? sId, int? id) async {
-    ref.read(SingleAccountPageState.ofDependencyProvider(context)(getProviderName(context))).reInstall(
-      context,
-      type.name.toLowerCase(),
-      [sId],
-      [id],
-    );
+  void reInstall(
+    String title,
+    BuildContext context,
+    WidgetRef ref,
+    String? sId,
+    int? id,
+  ) async {
+    ref
+        .read(
+          SingleAccountPageState.ofDependencyProvider(context)(
+            getProviderName(context),
+          ),
+        )
+        .reInstall(context, type.name.toLowerCase(), [sId], [id]);
     showLog(context, title, ref, sId, id);
   }
 
-  void del(BuildContext context1, WidgetRef ref, DependencyBean bean, String? sId, int? id) {
+  void del(
+    BuildContext context1,
+    WidgetRef ref,
+    DependencyBean bean,
+    String? sId,
+    int? id,
+  ) {
     showCupertinoDialog(
       useRootNavigator: false,
       context: context1,
@@ -813,12 +911,7 @@ class DependencyCell extends ConsumerWidget {
         content: Text("确认删除依赖 ${bean.name ?? ""} 吗"),
         actions: [
           CupertinoDialogAction(
-            child: const Text(
-              "取消",
-              style: TextStyle(
-                color: Color(0xff999999),
-              ),
-            ),
+            child: const Text("取消", style: TextStyle(color: Color(0xff999999))),
             onPressed: () {
               Navigator.of(context2).pop();
             },
@@ -826,17 +919,20 @@ class DependencyCell extends ConsumerWidget {
           CupertinoDialogAction(
             child: Text(
               "确定",
-              style: TextStyle(
-                color: ref.watch(themeProvider).primaryColor,
-              ),
+              style: TextStyle(color: ref.watch(themeProvider).primaryColor),
             ),
             onPressed: () async {
               Navigator.of(context2).pop();
               await ref
-                  .read(SingleAccountPageState.ofDependencyProvider(context1)(getProviderName(context1)))
+                  .read(
+                    SingleAccountPageState.ofDependencyProvider(context1)(
+                      getProviderName(context1),
+                    ),
+                  )
                   .del(context1, type.name.toLowerCase(), [sId], [id]);
-              // ignore: use_build_context_synchronously
-              showLog(context1, bean.name ?? "", ref, sId, id);
+              if (context1.mounted) {
+                showLog(context1, bean.name ?? "", ref, sId, id);
+              }
             },
           ),
         ],
@@ -850,14 +946,14 @@ class SliverTabBarDelegate extends SliverPersistentHeaderDelegate {
   final bool editMode;
   final WidgetRef ref;
 
-  const SliverTabBarDelegate(
-    this.tabController,
-    this.editMode,
-    this.ref,
-  );
+  const SliverTabBarDelegate(this.tabController, this.editMode, this.ref);
 
   @override
-  Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
+  Widget build(
+    BuildContext context,
+    double shrinkOffset,
+    bool overlapsContent,
+  ) {
     return SizedBox(
       height: 55,
       child: ColoredBox(

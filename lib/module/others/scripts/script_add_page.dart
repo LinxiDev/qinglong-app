@@ -86,9 +86,7 @@ class _ScriptAddPageState extends ConsumerState<ScriptAddPage> {
                   CupertinoDialogAction(
                     child: const Text(
                       "取消",
-                      style: TextStyle(
-                        color: Color(0xff999999),
-                      ),
+                      style: TextStyle(color: Color(0xff999999)),
                     ),
                     onPressed: () {
                       Navigator.of(childContext).pop();
@@ -117,20 +115,23 @@ class _ScriptAddPageState extends ConsumerState<ScriptAddPage> {
             color: Colors.transparent,
             padding: EdgeInsets.zero,
             onPressed: () async {
+              if (!mounted) {
+                return;
+              }
               try {
                 await EasyLoading.show(status: " 提交中");
+                if (!context.mounted) {
+                  return;
+                }
                 HttpResponse<NullResponse> response =
-                    // ignore: use_build_context_synchronously
-                    await SingleAccountPageState.ofApi(context).addScript(
-                  widget.title,
-                  widget.path,
-                  result,
-                );
+                    await SingleAccountPageState.ofApi(context)
+                        .addScript(widget.title, widget.path, result);
                 await EasyLoading.dismiss();
                 if (response.success) {
                   "提交成功".toast();
-                  // ignore: use_build_context_synchronously
-                  Navigator.of(context).pop(true);
+                  if (context.mounted) {
+                    Navigator.of(context).pop(true);
+                  }
                 } else {
                   (response.message ?? "").toast();
                 }
@@ -138,10 +139,8 @@ class _ScriptAddPageState extends ConsumerState<ScriptAddPage> {
                 EasyLoading.dismiss();
               }
             },
-            child:  Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 15,
-              ),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 15),
               child: Center(
                 child: Text(
                   "提交",
@@ -152,7 +151,7 @@ class _ScriptAddPageState extends ConsumerState<ScriptAddPage> {
                 ),
               ),
             ),
-          )
+          ),
         ],
       ),
       body: SafeArea(

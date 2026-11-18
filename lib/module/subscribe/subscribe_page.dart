@@ -33,7 +33,11 @@ class SubscribePageState extends ConsumerState<SubscribePage> {
   bool buttonshow = false;
 
   void scrollToTop() {
-    controller.animateTo(0, duration: const Duration(milliseconds: 200), curve: Curves.linear);
+    controller.animateTo(
+      0,
+      duration: const Duration(milliseconds: 200),
+      curve: Curves.linear,
+    );
   }
 
   @override
@@ -82,39 +86,31 @@ class SubscribePageState extends ConsumerState<SubscribePage> {
             onTap: () {
               Navigator.of(context)
                   .push(
-                CupertinoPageRoute(
-                  builder: (context) => const AddSubscribePage(
-                    taskBean: {},
-                  ),
-                ),
-              )
-                  .then(
-                (value) {
-                  if (value != null && value == true) {
-                    ref
-                        .read(
-                          // ignore: use_build_context_synchronously
-                          SingleAccountPageState.ofSubscribeProvider(context)(
-                            // ignore: use_build_context_synchronously
-                            getProviderName(context),
-                          ),
-                        )
-                        // ignore: use_build_context_synchronously
-                        .loadData(context);
-                  }
-                },
-              );
+                    CupertinoPageRoute(
+                      builder: (context) =>
+                          const AddSubscribePage(taskBean: {}),
+                    ),
+                  )
+                  .then((value) {
+                    if (!context.mounted) {
+                      return;
+                    }
+                    if (value != null && value == true) {
+                      if (context.mounted) {
+                        ref
+                            .read(
+                              SingleAccountPageState.ofSubscribeProvider(
+                                context,
+                              )(getProviderName(context)),
+                            )
+                            .loadData(context);
+                      }
+                    }
+                  });
             },
             child: const Padding(
-              padding: EdgeInsets.symmetric(
-                horizontal: 15,
-              ),
-              child: Center(
-                child: Icon(
-                  CupertinoIcons.add,
-                  size: 24,
-                ),
-              ),
+              padding: EdgeInsets.symmetric(horizontal: 15),
+              child: Center(child: Icon(CupertinoIcons.add, size: 24)),
             ),
           ),
         ],
@@ -123,7 +119,9 @@ class SubscribePageState extends ConsumerState<SubscribePage> {
         builder: (ref, model, child) {
           return body(model, getListByType(model), ref);
         },
-        model: SingleAccountPageState.ofSubscribeProvider(context)(getProviderName(context)),
+        model: SingleAccountPageState.ofSubscribeProvider(context)(
+          getProviderName(context),
+        ),
         lazyLoad: true,
         onReady: (viewModel) {
           viewModel.loadData(context);
@@ -132,21 +130,21 @@ class SubscribePageState extends ConsumerState<SubscribePage> {
     );
   }
 
-  Widget body(SubscribeViewModel model, List<Map<String, dynamic>> list, WidgetRef ref) {
+  Widget body(
+    SubscribeViewModel model,
+    List<Map<String, dynamic>> list,
+    WidgetRef ref,
+  ) {
     return RefreshIndicator(
       color: Theme.of(context).primaryColor,
       onRefresh: () async {
         return model.loadData(context, false);
       },
       child: IconTheme(
-        data: const IconThemeData(
-          size: 25,
-        ),
+        data: const IconThemeData(size: 25),
         child: SlidableAutoCloseBehavior(
           child: ListView.separated(
-            padding: const EdgeInsets.only(
-              bottom: 80,
-            ),
+            padding: const EdgeInsets.only(bottom: 80),
             controller: controller,
             physics: const AlwaysScrollableScrollPhysics(),
             keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
@@ -156,8 +154,14 @@ class SubscribePageState extends ConsumerState<SubscribePage> {
               }
               Map<String, dynamic> item = list[index - 1];
               if (searchText.text.isEmpty ||
-                  (item["name"]?.toLowerCase().contains(searchText.text.toLowerCase()) ?? false) ||
-                  (item["url"]?.toLowerCase().contains(searchText.text.toLowerCase()) ?? false)) {
+                  (item["name"]?.toLowerCase().contains(
+                        searchText.text.toLowerCase(),
+                      ) ??
+                      false) ||
+                  (item["url"]?.toLowerCase().contains(
+                        searchText.text.toLowerCase(),
+                      ) ??
+                      false)) {
                 return TaskItemCell(item, ref);
               } else {
                 return const SizedBox.shrink();
@@ -168,14 +172,17 @@ class SubscribePageState extends ConsumerState<SubscribePage> {
               if (index == 0) return const SizedBox.shrink();
               Map<String, dynamic> item = list[index - 1];
               if (searchText.text.isEmpty ||
-                  (item["name"]?.toLowerCase().contains(searchText.text.toLowerCase()) ?? false) ||
-                  (item["url"]?.toLowerCase().contains(searchText.text.toLowerCase()) ?? false)) {
+                  (item["name"]?.toLowerCase().contains(
+                        searchText.text.toLowerCase(),
+                      ) ??
+                      false) ||
+                  (item["url"]?.toLowerCase().contains(
+                        searchText.text.toLowerCase(),
+                      ) ??
+                      false)) {
                 return Container(
                   color: ref.watch(themeProvider).themeColor.settingBgColor(),
-                  child: const Divider(
-                    height: 1,
-                    indent: 15,
-                  ),
+                  child: const Divider(height: 1, indent: 15),
                 );
               } else {
                 return const SizedBox.shrink();
@@ -190,17 +197,10 @@ class SubscribePageState extends ConsumerState<SubscribePage> {
   Widget searchCell(WidgetRef context) {
     return Container(
       color: ref.watch(themeProvider).themeColor.searchBgColor(),
-      padding: const EdgeInsets.only(
-        left: 15,
-        right: 15,
-      ),
+      padding: const EdgeInsets.only(left: 15, right: 15),
       child: Padding(
-        padding: const EdgeInsets.symmetric(
-          vertical: 10,
-        ),
-        child: SearchCell(
-          controller: searchText,
-        ),
+        padding: const EdgeInsets.symmetric(vertical: 10),
+        child: SearchCell(controller: searchText),
       ),
     );
   }
@@ -208,8 +208,12 @@ class SubscribePageState extends ConsumerState<SubscribePage> {
   List<Map<String, dynamic>> getListByType(SubscribeViewModel model) {
     return model.list.where((item) {
       if (searchText.text.isEmpty ||
-          (item["name"]?.toLowerCase().contains(searchText.text.toLowerCase()) ?? false) ||
-          (item["url"]?.toLowerCase().contains(searchText.text.toLowerCase()) ?? false)) {
+          (item["name"]?.toLowerCase().contains(
+                searchText.text.toLowerCase(),
+              ) ??
+              false) ||
+          (item["url"]?.toLowerCase().contains(searchText.text.toLowerCase()) ??
+              false)) {
         return true;
       } else {
         return false;
@@ -239,28 +243,23 @@ class TaskItemCell extends StatelessWidget {
               onPressed: (_) {
                 Navigator.of(context)
                     .push(
-                  CupertinoPageRoute(
-                    builder: (context) => AddSubscribePage(
-                      taskBean: bean,
-                    ),
-                  ),
-                )
-                    .then(
-                  (value) {
-                    if (value != null && value == true) {
-                      ref
-                          .read(
-                            // ignore: use_build_context_synchronously
-                            SingleAccountPageState.ofSubscribeProvider(context)(
-                              // ignore: use_build_context_synchronously
-                              getProviderName(context),
-                            ),
-                          )
-                          // ignore: use_build_context_synchronously
-                          .loadData(context);
-                    }
-                  },
-                );
+                      CupertinoPageRoute(
+                        builder: (context) => AddSubscribePage(taskBean: bean),
+                      ),
+                    )
+                    .then((value) {
+                      if (value != null && value == true) {
+                        if (context.mounted) {
+                          ref
+                              .read(
+                                SingleAccountPageState.ofSubscribeProvider(
+                                  context,
+                                )(getProviderName(context)),
+                              )
+                              .loadData(context);
+                        }
+                      }
+                    });
               },
               foregroundColor: Colors.white,
               icon: CupertinoIcons.pencil_outline,
@@ -269,19 +268,23 @@ class TaskItemCell extends StatelessWidget {
               backgroundColor: const Color(0xffA356D6),
               onPressed: (_) {
                 WidgetsBinding.instance.endOfFrame.then((value) {
-                  // ignore: use_build_context_synchronously
-                  _enableSubscribe(context, bean["is_disabled"] ?? 0);
+                  if (context.mounted) {
+                    _enableSubscribe(context, bean["is_disabled"] ?? 0);
+                  }
                 });
               },
               foregroundColor: Colors.white,
-              icon: (bean["is_disabled"] ?? 0) != 1 ? Icons.dnd_forwardslash : Icons.check_circle_outline_sharp,
+              icon: (bean["is_disabled"] ?? 0) != 1
+                  ? Icons.dnd_forwardslash
+                  : Icons.check_circle_outline_sharp,
             ),
             SlidableAction(
               backgroundColor: const Color(0xffEA4D3E),
               onPressed: (_) {
                 WidgetsBinding.instance.endOfFrame.then((value) {
-                  // ignore: use_build_context_synchronously
-                  _delSubscribe(context, ref);
+                  if (context.mounted) {
+                    _delSubscribe(context, ref);
+                  }
                 });
               },
               foregroundColor: Colors.white,
@@ -297,30 +300,23 @@ class TaskItemCell extends StatelessWidget {
               backgroundColor: const Color(0xffD25535),
               onPressed: (_) {
                 if (bean["status"] == 1) {
-                  _startCron(
-                    context,
-                    ref,
-                    true,
-                  );
+                  _startCron(context, ref, true);
                 } else {
-                  _stopCron(
-                    context,
-                    ref,
-                  );
+                  _stopCron(context, ref);
                 }
               },
               foregroundColor: Colors.white,
-              icon: bean["status"]! == 1 ? CupertinoIcons.memories : CupertinoIcons.stop_circle,
+              icon: bean["status"]! == 1
+                  ? CupertinoIcons.memories
+                  : CupertinoIcons.stop_circle,
             ),
             SlidableAction(
               backgroundColor: const Color(0xff606467),
               onPressed: (_) {
-                Future.delayed(
-                    const Duration(
-                      milliseconds: 250,
-                    ), () {
-                  // ignore: use_build_context_synchronously
-                  logCron(context, ref);
+                Future.delayed(const Duration(milliseconds: 250), () {
+                  if (context.mounted) {
+                    logCron(context, ref);
+                  }
                 });
               },
               foregroundColor: Colors.white,
@@ -332,15 +328,13 @@ class TaskItemCell extends StatelessWidget {
           color: ref.watch(themeProvider).themeColor.settingBgColor(),
           child: InkWell(
             onTap: () {
-              Navigator.of(context).pushNamed(Routes.routeSubscribeDetail, arguments: bean);
+              Navigator.of(context)
+                  .pushNamed(Routes.routeSubscribeDetail, arguments: bean);
             },
             child: Container(
               width: MediaQuery.of(context).size.width,
               color: Colors.transparent,
-              padding: const EdgeInsets.symmetric(
-                horizontal: 15,
-                vertical: 8,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 mainAxisAlignment: MainAxisAlignment.start,
@@ -368,20 +362,26 @@ class TaskItemCell extends StatelessWidget {
                                   overflow: TextOverflow.ellipsis,
                                   style: TextStyle(
                                     overflow: TextOverflow.ellipsis,
-                                    color: ref.watch(themeProvider).themeColor.titleColor(),
+                                    color: ref
+                                        .watch(themeProvider)
+                                        .themeColor
+                                        .titleColor(),
                                     fontSize: 16,
                                   ),
                                 ),
                               ),
                             ),
-                            const SizedBox(
-                              width: 7,
-                            ),
-                            bean["status"] == 0 ? const RunningWidget() : const SizedBox.shrink(),
-                            const SizedBox(
-                              width: 7,
-                            ),
-                            (bean["is_disabled"] ?? 0) == 1 ? const StatusWidget(title: "已禁用", color: Color(0xffFB5858)) : const SizedBox.shrink()
+                            const SizedBox(width: 7),
+                            bean["status"] == 0
+                                ? const RunningWidget()
+                                : const SizedBox.shrink(),
+                            const SizedBox(width: 7),
+                            (bean["is_disabled"] ?? 0) == 1
+                                ? const StatusWidget(
+                                    title: "已禁用",
+                                    color: Color(0xffFB5858),
+                                  )
+                                : const SizedBox.shrink(),
                           ],
                         ),
                       ),
@@ -392,16 +392,17 @@ class TaskItemCell extends StatelessWidget {
                           maxLines: 1,
                           style: TextStyle(
                             overflow: TextOverflow.ellipsis,
-                            color: ref.watch(themeProvider).themeColor.descColor(),
+                            color: ref
+                                .watch(themeProvider)
+                                .themeColor
+                                .descColor(),
                             fontSize: 12,
                           ),
                         ),
                       ),
                     ],
                   ),
-                  const SizedBox(
-                    height: 5,
-                  ),
+                  const SizedBox(height: 5),
                   Material(
                     color: Colors.transparent,
                     child: Text(
@@ -414,9 +415,7 @@ class TaskItemCell extends StatelessWidget {
                       ),
                     ),
                   ),
-                  const SizedBox(
-                    height: 5,
-                  ),
+                  const SizedBox(height: 5),
                   Material(
                     color: Colors.transparent,
                     child: Text(
@@ -439,21 +438,23 @@ class TaskItemCell extends StatelessWidget {
     );
   }
 
-  Future<void> _startCron(BuildContext context, WidgetRef ref, bool showLog) async {
+  Future<void> _startCron(
+    BuildContext context,
+    WidgetRef ref,
+    bool showLog,
+  ) async {
     await ref
         .read(
           SingleAccountPageState.ofSubscribeProvider(context)(
             getProviderName(context),
           ),
         )
-        .runCrons(
-          context,
-          bean["id"],
-        );
+        .runCrons(context, bean["id"]);
     if (showLog) {
       Future.delayed(const Duration(milliseconds: 250), () {
-        // ignore: use_build_context_synchronously
-        logCron(context, ref);
+        if (context.mounted) {
+          logCron(context, ref);
+        }
       });
     }
   }
@@ -465,20 +466,14 @@ class TaskItemCell extends StatelessWidget {
             getProviderName(context),
           ),
         )
-        .stopCrons(
-          context,
-          bean["id"],
-        );
+        .stopCrons(context, bean["id"]);
   }
 
   void logCron(BuildContext context, WidgetRef ref) {
     Navigator.of(context).push(
       CupertinoPageRoute(
-        builder: (context) => InTimeSubscribeLogPage(
-          bean["id"],
-          true,
-          bean["name"] ?? "",
-        ),
+        builder: (context) =>
+            InTimeSubscribeLogPage(bean["id"], true, bean["name"] ?? ""),
       ),
     );
   }
@@ -492,12 +487,7 @@ class TaskItemCell extends StatelessWidget {
         content: Text("确认删除订阅 ${bean["name"] ?? ""} 吗"),
         actions: [
           CupertinoDialogAction(
-            child: const Text(
-              "取消",
-              style: TextStyle(
-                color: Color(0xff999999),
-              ),
-            ),
+            child: const Text("取消", style: TextStyle(color: Color(0xff999999))),
             onPressed: () {
               Navigator.of(context).pop();
             },
@@ -505,9 +495,7 @@ class TaskItemCell extends StatelessWidget {
           CupertinoDialogAction(
             child: Text(
               "确定",
-              style: TextStyle(
-                color: ref.watch(themeProvider).primaryColor,
-              ),
+              style: TextStyle(color: ref.watch(themeProvider).primaryColor),
             ),
             onPressed: () {
               Navigator.of(context).pop();
@@ -517,10 +505,7 @@ class TaskItemCell extends StatelessWidget {
                       getProviderName(context1),
                     ),
                   )
-                  .delSubscribe(
-                    context1,
-                    bean["id"],
-                  );
+                  .delSubscribe(context1, bean["id"]);
             },
           ),
         ],
@@ -535,10 +520,6 @@ class TaskItemCell extends StatelessWidget {
             getProviderName(context),
           ),
         )
-        .enableSubscribe(
-          context,
-          bean["id"],
-          disabled,
-        );
+        .enableSubscribe(context, bean["id"], disabled);
   }
 }

@@ -29,7 +29,8 @@ class TaskDetailPage extends ConsumerStatefulWidget {
   TaskDetailPageState createState() => TaskDetailPageState();
 }
 
-class TaskDetailPageState extends ConsumerState<TaskDetailPage> with LazyLoadState<TaskDetailPage> {
+class TaskDetailPageState extends ConsumerState<TaskDetailPage>
+    with LazyLoadState<TaskDetailPage> {
   bool isPin = false;
   bool isLoading = true;
 
@@ -75,9 +76,7 @@ class TaskDetailPageState extends ConsumerState<TaskDetailPage> with LazyLoadSta
     Widget body;
 
     if (isLoading) {
-      body = const Center(
-        child: LoadingWidget(),
-      );
+      body = const Center(child: LoadingWidget());
     } else {
       body = Material(
         color: Colors.transparent,
@@ -88,14 +87,8 @@ class TaskDetailPageState extends ConsumerState<TaskDetailPage> with LazyLoadSta
             child: Column(
               children: [
                 Container(
-                  margin: const EdgeInsets.only(
-                    left: 15,
-                    bottom: 15,
-                  ),
-                  padding: const EdgeInsets.only(
-                    top: 10,
-                    bottom: 10,
-                  ),
+                  margin: const EdgeInsets.only(left: 15, bottom: 15),
+                  padding: const EdgeInsets.only(top: 10, bottom: 10),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -113,33 +106,59 @@ class TaskDetailPageState extends ConsumerState<TaskDetailPage> with LazyLoadSta
                         desc: widget.taskBean.command ?? "",
                       ),
                       Visibility(
-                        visible: widget.taskBean.command != null && widget.taskBean.command!.isNotEmpty && widget.taskBean.command!.startsWith("task "),
+                        visible:
+                            widget.taskBean.command != null &&
+                            widget.taskBean.command!.isNotEmpty &&
+                            widget.taskBean.command!.startsWith("task "),
                         child: TaskDetailCell(
                           title: "脚本",
                           suffixIcon: Icon(
                             CupertinoIcons.right_chevron,
                             size: 16,
-                            color: ref.watch(themeProvider).themeColor.descColor(),
+                            color: ref
+                                .watch(themeProvider)
+                                .themeColor
+                                .descColor(),
                           ),
-                          desc: widget.taskBean.command?.replaceAll("task ", "") ?? "-",
+                          desc:
+                              widget.taskBean.command?.replaceAll(
+                                "task ",
+                                "",
+                              ) ??
+                              "-",
                           taped: () {
-                            if (widget.taskBean.command == null || widget.taskBean.command!.isEmpty) return;
-                            if (!(widget.taskBean.command?.startsWith("task ") ?? true)) return;
+                            if (widget.taskBean.command == null ||
+                                widget.taskBean.command!.isEmpty) {
+                              return;
+                            }
+                            if (!(widget.taskBean.command?.startsWith(
+                                  "task ",
+                                ) ??
+                                true)) {
+                              return;
+                            }
 
-                            String path = widget.taskBean.command?.replaceAll("task ", "").trim() ?? "";
+                            String path =
+                                widget.taskBean.command
+                                    ?.replaceAll("task ", "")
+                                    .trim() ??
+                                "";
 
                             if (!path.contains("/")) {
-                              Navigator.of(context).pushNamed(Routes.routeScriptDetail, arguments: {
-                                "title": path.trim(),
-                                "path": "",
-                              });
+                              Navigator.of(context).pushNamed(
+                                Routes.routeScriptDetail,
+                                arguments: {"title": path.trim(), "path": ""},
+                              );
                             } else {
                               List<String> paths = path.split("/");
                               if (paths.length == 2) {
-                                Navigator.of(context).pushNamed(Routes.routeScriptDetail, arguments: {
-                                  "title": paths[1],
-                                  "path": paths[0],
-                                });
+                                Navigator.of(context).pushNamed(
+                                  Routes.routeScriptDetail,
+                                  arguments: {
+                                    "title": paths[1],
+                                    "path": paths[0],
+                                  },
+                                );
                               }
                             }
                           },
@@ -149,12 +168,16 @@ class TaskDetailPageState extends ConsumerState<TaskDetailPage> with LazyLoadSta
                         title: "创建时间",
                         desc: widget.taskBean.created == null
                             ? Utils.formatTime2(widget.taskBean.createdAt)
-                            : Utils.formatMessageTime(widget.taskBean.created ?? 0),
+                            : Utils.formatMessageTime(
+                                widget.taskBean.created ?? 0,
+                              ),
                       ),
                       TaskDetailCell(
                         title: "更新时间",
                         desc: widget.taskBean.updatedAt == null
-                            ? Utils.formatGMTTime(widget.taskBean.timestamp ?? "")
+                            ? Utils.formatGMTTime(
+                                widget.taskBean.timestamp ?? "",
+                              )
                             : Utils.formatTime2(widget.taskBean.updatedAt),
                       ),
                       TaskDetailCell(
@@ -211,17 +234,18 @@ class TaskDetailPageState extends ConsumerState<TaskDetailPage> with LazyLoadSta
                               "补跑 ${widget.taskBean.catchupSeconds} 秒",
                           ].join("；"),
                         ),
-                      TaskDetailCell(
-                        title: "下次运行时间",
-                        desc: nextRunTime,
-                      ),
+                      TaskDetailCell(title: "下次运行时间", desc: nextRunTime),
                       TaskDetailCell(
                         title: "最后运行时间",
-                        desc: Utils.formatMessageTime(widget.taskBean.lastExecutionTime ?? 0),
+                        desc: Utils.formatMessageTime(
+                          widget.taskBean.lastExecutionTime ?? 0,
+                        ),
                       ),
                       TaskDetailCell(
                         title: "最后运行时长",
-                        desc: widget.taskBean.lastRunningTime == null ? "-" : "${widget.taskBean.lastRunningTime ?? "-"}秒",
+                        desc: widget.taskBean.lastRunningTime == null
+                            ? "-"
+                            : "${widget.taskBean.lastRunningTime ?? "-"}秒",
                       ),
                       TaskDetailCell(
                         title: "最新日志",
@@ -229,26 +253,47 @@ class TaskDetailPageState extends ConsumerState<TaskDetailPage> with LazyLoadSta
                         suffixIcon: Icon(
                           CupertinoIcons.right_chevron,
                           size: 16,
-                          color: ref.watch(themeProvider).themeColor.descColor(),
+                          color: ref
+                              .watch(themeProvider)
+                              .themeColor
+                              .descColor(),
                         ),
                         taped: () {
                           showLog();
                         },
                       ),
                       Visibility(
-                        visible: widget.taskBean.command != null && widget.taskBean.command!.isNotEmpty && widget.taskBean.command!.startsWith("task "),
+                        visible:
+                            widget.taskBean.command != null &&
+                            widget.taskBean.command!.isNotEmpty &&
+                            widget.taskBean.command!.startsWith("task "),
                         child: TaskDetailCell(
                           title: "日志历史",
                           suffixIcon: Icon(
                             CupertinoIcons.right_chevron,
                             size: 16,
-                            color: ref.watch(themeProvider).themeColor.descColor(),
+                            color: ref
+                                .watch(themeProvider)
+                                .themeColor
+                                .descColor(),
                           ),
-                          desc: widget.taskBean.command?.replaceAll("task ", "").replaceAll("/", "_").split(".")[0] ?? "-",
+                          desc:
+                              widget.taskBean.command
+                                  ?.replaceAll("task ", "")
+                                  .replaceAll("/", "_")
+                                  .split(".")[0] ??
+                              "-",
                           taped: () {
                             Navigator.of(context).pushNamed(
                               Routes.routeTaskLog,
-                              arguments: {"search": widget.taskBean.command?.replaceAll("task ", "").replaceAll("/", "_").split(".")[0] ?? ""},
+                              arguments: {
+                                "search":
+                                    widget.taskBean.command
+                                        ?.replaceAll("task ", "")
+                                        .replaceAll("/", "_")
+                                        .split(".")[0] ??
+                                    "",
+                              },
                             );
                           },
                         ),
@@ -262,28 +307,27 @@ class TaskDetailPageState extends ConsumerState<TaskDetailPage> with LazyLoadSta
                         desc: widget.taskBean.isDisabled == 1 ? "已禁用" : "已启用",
                       ),
                       Padding(
-                        padding: const EdgeInsets.only(
-                          left: 15,
-                          right: 10,
-                        ),
+                        padding: const EdgeInsets.only(left: 15, right: 10),
                         child: Row(
                           children: [
                             Text(
                               "是否置顶",
                               style: TextStyle(
-                                color: ref.watch(themeProvider).themeColor.titleColor(),
+                                color: ref
+                                    .watch(themeProvider)
+                                    .themeColor
+                                    .titleColor(),
                                 fontSize: 16,
                               ),
                             ),
-                            const SizedBox(
-                              width: 30,
-                            ),
+                            const SizedBox(width: 30),
                             const Spacer(),
                             CupertinoSwitch(
-                                value: isPin,
-                                onChanged: (v) {
-                                  pinTask(v);
-                                }),
+                              value: isPin,
+                              onChanged: (v) {
+                                pinTask(v);
+                              },
+                            ),
                           ],
                         ),
                       ),
@@ -295,23 +339,18 @@ class TaskDetailPageState extends ConsumerState<TaskDetailPage> with LazyLoadSta
                     : SizedBox(
                         width: MediaQuery.of(context).size.width - 80,
                         child: CupertinoButton(
-                            padding: const EdgeInsets.symmetric(
-                              vertical: 5,
-                            ),
-                            color: Colors.red,
-                            child: const Text(
-                              "删 除",
-                              style: TextStyle(
-                                fontSize: 16,
-                              ),
-                            ),
-                            onPressed: () {
-                              delTask(context, ref);
-                            }),
+                          padding: const EdgeInsets.symmetric(vertical: 5),
+                          color: Colors.red,
+                          child: const Text(
+                            "删 除",
+                            style: TextStyle(fontSize: 16),
+                          ),
+                          onPressed: () {
+                            delTask(context, ref);
+                          },
+                        ),
                       ),
-                const SizedBox(
-                  height: 15,
-                ),
+                const SizedBox(height: 15),
               ],
             ),
           ),
@@ -331,61 +370,56 @@ class TaskDetailPageState extends ConsumerState<TaskDetailPage> with LazyLoadSta
             color: Colors.transparent,
             padding: EdgeInsets.zero,
             onPressed: () {
-              showMoreOperate(
-                context,
-                [
-                  CupertinoSheer(
-                    title: widget.taskBean.status! == 1 ? "运行" : "停止运行",
-                    onTap: () async {
-                      if (widget.taskBean.status! == 1) {
-                        await startCron(context, ref);
-                      } else {
-                        await stopCron(context, ref);
-                      }
-                    },
-                  ),
-                  addDivider(),
-                  CupertinoSheer(
-                    title: "编辑",
-                    onTap: () {
-                      Navigator.of(context).push(
-                        CupertinoPageRoute(
-                          builder: (context) => AddTaskPage(
-                            taskBean: widget.taskBean,
-                            hideUploadFile: true,
-                          ),
+              showMoreOperate(context, [
+                CupertinoSheer(
+                  title: widget.taskBean.status! == 1 ? "运行" : "停止运行",
+                  onTap: () async {
+                    if (widget.taskBean.status! == 1) {
+                      await startCron(context, ref);
+                    } else {
+                      await stopCron(context, ref);
+                    }
+                  },
+                ),
+                addDivider(),
+                CupertinoSheer(
+                  title: "编辑",
+                  onTap: () {
+                    Navigator.of(context).push(
+                      CupertinoPageRoute(
+                        builder: (context) => AddTaskPage(
+                          taskBean: widget.taskBean,
+                          hideUploadFile: true,
                         ),
-                      );
-                    },
-                  ),
-                  addDivider(),
-                  CupertinoSheer(
-                    title: "运行实例",
-                    onTap: () {
-                      Navigator.of(context).push(
-                        CupertinoPageRoute(
-                          builder: (context) => CronInstancePage(
-                            cronId: "${widget.taskBean.sId}",
-                            cronName: widget.taskBean.name ?? "",
-                          ),
+                      ),
+                    );
+                  },
+                ),
+                addDivider(),
+                CupertinoSheer(
+                  title: "运行实例",
+                  onTap: () {
+                    Navigator.of(context).push(
+                      CupertinoPageRoute(
+                        builder: (context) => CronInstancePage(
+                          cronId: "${widget.taskBean.sId}",
+                          cronName: widget.taskBean.name ?? "",
                         ),
-                      );
-                    },
-                  ),
-                  addDivider(),
-                  CupertinoSheer(
-                    title: widget.taskBean.isDisabled! == 0 ? "禁用" : "启用",
-                    onTap: () {
-                      enableTask();
-                    },
-                  ),
-                ],
-              );
+                      ),
+                    );
+                  },
+                ),
+                addDivider(),
+                CupertinoSheer(
+                  title: widget.taskBean.isDisabled! == 0 ? "禁用" : "启用",
+                  onTap: () {
+                    enableTask();
+                  },
+                ),
+              ]);
             },
             child: Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 15,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 15),
               child: Center(
                 child: Icon(
                   Icons.more_horiz,
@@ -394,7 +428,7 @@ class TaskDetailPageState extends ConsumerState<TaskDetailPage> with LazyLoadSta
                 ),
               ),
             ),
-          )
+          ),
         ],
       ),
       body: body,
@@ -402,7 +436,13 @@ class TaskDetailPageState extends ConsumerState<TaskDetailPage> with LazyLoadSta
   }
 
   Future<void> startCron(BuildContext context, WidgetRef ref) async {
-    await ref.read(SingleAccountPageState.ofTaskProvider(context)(getProviderName(context)).notifier).runCrons(context, [widget.taskBean.sId!]);
+    await ref
+        .read(
+          SingleAccountPageState.ofTaskProvider(context)(
+            getProviderName(context),
+          ).notifier,
+        )
+        .runCrons(context, [widget.taskBean.sId!]);
     setState(() {});
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       showLog();
@@ -410,19 +450,37 @@ class TaskDetailPageState extends ConsumerState<TaskDetailPage> with LazyLoadSta
   }
 
   Future<void> stopCron(BuildContext context, WidgetRef ref) async {
-    await ref.read(SingleAccountPageState.ofTaskProvider(context)(getProviderName(context)).notifier).stopCrons(context, [widget.taskBean.sId!]);
+    await ref
+        .read(
+          SingleAccountPageState.ofTaskProvider(context)(
+            getProviderName(context),
+          ).notifier,
+        )
+        .stopCrons(context, [widget.taskBean.sId!]);
     setState(() {});
   }
 
   void enableTask() async {
     await ref
-        .read(SingleAccountPageState.ofTaskProvider(context)(getProviderName(context)))
-        .enableTask(context, [widget.taskBean.sId!], widget.taskBean.isDisabled!);
+        .read(
+          SingleAccountPageState.ofTaskProvider(context)(
+            getProviderName(context),
+          ),
+        )
+        .enableTask(context, [
+          widget.taskBean.sId!,
+        ], widget.taskBean.isDisabled!);
     setState(() {});
   }
 
   void pinTask(bool v) async {
-    await ref.read(SingleAccountPageState.ofTaskProvider(context)(getProviderName(context)).notifier).pinTask(
+    await ref
+        .read(
+          SingleAccountPageState.ofTaskProvider(context)(
+            getProviderName(context),
+          ).notifier,
+        )
+        .pinTask(
           context,
           [widget.taskBean.sId!],
           //这里取反
@@ -441,12 +499,7 @@ class TaskDetailPageState extends ConsumerState<TaskDetailPage> with LazyLoadSta
         content: Text("确认删除定时任务 ${widget.taskBean.name ?? ""} 吗"),
         actions: [
           CupertinoDialogAction(
-            child: const Text(
-              "取消",
-              style: TextStyle(
-                color: Color(0xff999999),
-              ),
-            ),
+            child: const Text("取消", style: TextStyle(color: Color(0xff999999))),
             onPressed: () {
               Navigator.of(context).pop();
             },
@@ -454,15 +507,23 @@ class TaskDetailPageState extends ConsumerState<TaskDetailPage> with LazyLoadSta
           CupertinoDialogAction(
             child: Text(
               "确定",
-              style: TextStyle(
-                color: ref.watch(themeProvider).primaryColor,
-              ),
+              style: TextStyle(color: ref.watch(themeProvider).primaryColor),
             ),
             onPressed: () async {
+              if (!context1.mounted) {
+                return;
+              }
               Navigator.of(context).pop();
-              await ref.read(SingleAccountPageState.ofTaskProvider(context1)(getProviderName(context1))).delCron(context1, [widget.taskBean.sId!]);
-              // ignore: use_build_context_synchronously
-              Navigator.of(context1).pop();
+              await ref
+                  .read(
+                    SingleAccountPageState.ofTaskProvider(context1)(
+                      getProviderName(context1),
+                    ),
+                  )
+                  .delCron(context1, [widget.taskBean.sId!]);
+              if (context1.mounted) {
+                Navigator.of(context1).pop();
+              }
             },
           ),
         ],
@@ -535,11 +596,7 @@ class TaskDetailCell extends ConsumerWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.only(
-            top: 10,
-            left: 15,
-            bottom: 10,
-          ),
+          padding: const EdgeInsets.only(top: 10, left: 15, bottom: 10),
           child: Row(
             children: [
               Text(
@@ -549,13 +606,13 @@ class TaskDetailCell extends ConsumerWidget {
                   fontSize: 16,
                 ),
               ),
-              const SizedBox(
-                width: 30,
-              ),
+              const SizedBox(width: 30),
               desc != null
                   ? Expanded(
                       child: Align(
-                        alignment: left ? Alignment.centerLeft : Alignment.centerRight,
+                        alignment: left
+                            ? Alignment.centerLeft
+                            : Alignment.centerRight,
                         child: SelectableText(
                           desc!,
                           selectionHeightStyle: BoxHeightStyle.max,
@@ -566,34 +623,32 @@ class TaskDetailCell extends ConsumerWidget {
                             }
                           },
                           style: TextStyle(
-                            color: ref.watch(themeProvider).themeColor.descColor(),
+                            color: ref
+                                .watch(themeProvider)
+                                .themeColor
+                                .descColor(),
                             fontSize: 16,
                           ),
                         ),
                       ),
                     )
                   : Expanded(
-                      child: Align(alignment: Alignment.centerRight, child: icon!),
+                      child: Align(
+                        alignment: Alignment.centerRight,
+                        child: icon!,
+                      ),
                     ),
               suffixIcon == null
                   ? const SizedBox.shrink()
                   : Padding(
-                      padding: const EdgeInsets.only(
-                        left: 15,
-                      ),
+                      padding: const EdgeInsets.only(left: 15),
                       child: suffixIcon!,
                     ),
-              const SizedBox(
-                width: 15,
-              ),
+              const SizedBox(width: 15),
             ],
           ),
         ),
-        hideDivide
-            ? const SizedBox.shrink()
-            : const Divider(
-                indent: 15,
-              ),
+        hideDivide ? const SizedBox.shrink() : const Divider(indent: 15),
       ],
     );
   }

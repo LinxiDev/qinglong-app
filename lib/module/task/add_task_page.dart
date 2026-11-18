@@ -30,11 +30,7 @@ class AddTaskPage extends ConsumerStatefulWidget {
   final TaskBean? taskBean;
   final bool hideUploadFile;
 
-  const AddTaskPage({
-    super.key,
-    this.taskBean,
-    required this.hideUploadFile,
-  });
+  const AddTaskPage({super.key, this.taskBean, required this.hideUploadFile});
 
   @override
   ConsumerState<AddTaskPage> createState() => _AddTaskPageState();
@@ -351,9 +347,7 @@ class _AddTaskPageState extends ConsumerState<AddTaskPage>
                   controller: _afterController,
                   minLines: 1,
                   maxLines: 3,
-                  decoration: const InputDecoration(
-                    hintText: "运行任务后执行的命令",
-                  ),
+                  decoration: const InputDecoration(hintText: "运行任务后执行的命令"),
                   autofocus: false,
                 ),
               ],
@@ -411,9 +405,7 @@ class _AddTaskPageState extends ConsumerState<AddTaskPage>
                     controller: _maxQueueController,
                     keyboardType: TextInputType.number,
                     minLines: 1,
-                    decoration: const InputDecoration(
-                      hintText: "0 表示不限时",
-                    ),
+                    decoration: const InputDecoration(hintText: "0 表示不限时"),
                     autofocus: false,
                   ),
                   const SizedBox(height: 12),
@@ -423,9 +415,7 @@ class _AddTaskPageState extends ConsumerState<AddTaskPage>
                     controller: _catchupController,
                     keyboardType: TextInputType.number,
                     minLines: 1,
-                    decoration: const InputDecoration(
-                      hintText: "0 表示关闭补跑",
-                    ),
+                    decoration: const InputDecoration(hintText: "0 表示关闭补跑"),
                     autofocus: false,
                   ),
                 ],
@@ -518,9 +508,9 @@ class _AddTaskPageState extends ConsumerState<AddTaskPage>
                   color: selected
                       ? ref.watch(themeProvider).primaryColor
                       : ref
-                          .watch(themeProvider)
-                          .themeColor
-                          .segmentedUnCheckBg(),
+                            .watch(themeProvider)
+                            .themeColor
+                            .segmentedUnCheckBg(),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
@@ -632,12 +622,13 @@ class _AddTaskPageState extends ConsumerState<AddTaskPage>
     }
 
     EasyLoading.show(status: "计算中");
-    final response = await SingleAccountPageState.ofApi(
-      context,
-    ).cronPreview(schedule);
+    final response = await SingleAccountPageState.ofApi(context)
+        .cronPreview(schedule);
     EasyLoading.dismiss();
 
-    if (!mounted) return;
+    if (!mounted) {
+      return;
+    }
 
     if (!response.success) {
       (response.message ?? "定时规则格式有误").toast();
@@ -761,10 +752,11 @@ class _AddTaskPageState extends ConsumerState<AddTaskPage>
       hideKeyboardFocus();
       if (fileKey.currentState != null && fileKey.currentState!.file != null) {
         String content = await fileKey.currentState!.file!.readAsString();
-        HttpResponse<NullResponse> responseS = await SingleAccountPageState
-            // ignore: use_build_context_synchronously
-            .ofApi(context)
-            .addScript(
+        if (!mounted) {
+          return;
+        }
+        HttpResponse<NullResponse> responseS =
+            await SingleAccountPageState.ofApi(context).addScript(
               fileKey.currentState?.getFileName() ??
                   _commandController.text.split(" ").last,
               fileKey.currentState?.scriptPath ?? "",
@@ -798,14 +790,12 @@ class _AddTaskPageState extends ConsumerState<AddTaskPage>
       taskBean.catchupSeconds = payload["catchup_seconds"] as int?;
 
       await EasyLoading.show(status: " 提交中");
+      if (!mounted) {
+        return;
+      }
       HttpResponse<NullResponse> response = await SingleAccountPageState.ofApi(
-        // ignore: use_build_context_synchronously
         context,
-      ).addTask(
-        payload,
-        id: taskBean.id,
-        nId: taskBean.nId,
-      );
+      ).addTask(payload, id: taskBean.id, nId: taskBean.nId);
 
       // 老版本面板不支持部分高级字段（Joi 会拒绝未知字段），
       // 这里降级为只提交基础字段，避免整个操作失败。
@@ -815,10 +805,12 @@ class _AddTaskPageState extends ConsumerState<AddTaskPage>
           "command": payload["command"],
           "schedule": payload["schedule"],
         };
-        final HttpResponse<NullResponse> retry = await SingleAccountPageState
-            // ignore: use_build_context_synchronously
-            .ofApi(context)
-            .addTask(basic, id: taskBean.id, nId: taskBean.nId);
+        if (!mounted) {
+          return;
+        }
+        final HttpResponse<NullResponse> retry =
+            await SingleAccountPageState.ofApi(context)
+                .addTask(basic, id: taskBean.id, nId: taskBean.nId);
         if (retry.success) {
           "当前面板版本不支持部分高级设置，已仅保存基础信息".toast();
           response = retry;
@@ -828,18 +820,18 @@ class _AddTaskPageState extends ConsumerState<AddTaskPage>
       await EasyLoading.dismiss();
       if (response.success) {
         isEdit ? "修改成功".toast() : "新增成功".toast();
-        ref
-            .read(
-              // ignore: use_build_context_synchronously
-              SingleAccountPageState.ofTaskProvider(context)(
-                // ignore: use_build_context_synchronously
-                getProviderName(context),
-              ),
-            )
-            // ignore: use_build_context_synchronously
-            .updateBean(context, taskBean);
-        // ignore: use_build_context_synchronously
-        Navigator.of(context).pop();
+        if (mounted) {
+          ref
+              .read(
+                SingleAccountPageState.ofTaskProvider(context)(
+                  getProviderName(context),
+                ),
+              )
+              .updateBean(context, taskBean);
+        }
+        if (mounted) {
+          Navigator.of(context).pop();
+        }
       } else {
         response.message.toast();
       }

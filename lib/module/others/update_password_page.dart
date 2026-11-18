@@ -10,9 +10,7 @@ import 'package:qinglong_app/module/subscribe/add_subscribe_page.dart';
 import 'package:qinglong_app/utils/extension.dart';
 
 class UpdatePasswordPage extends ConsumerStatefulWidget {
-  const UpdatePasswordPage({
-    super.key,
-  });
+  const UpdatePasswordPage({super.key});
 
   @override
   ConsumerState<UpdatePasswordPage> createState() => _UpdatePasswordPageState();
@@ -49,89 +47,56 @@ class _UpdatePasswordPageState extends ConsumerState<UpdatePasswordPage>
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 15,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 15),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const SizedBox(
-                    height: 15,
-                  ),
-                  const TitleWidget(
-                    "用户名",
-                    required: true,
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
+                  const SizedBox(height: 15),
+                  const TitleWidget("用户名", required: true),
+                  const SizedBox(height: 10),
                   TextField(
                     focusNode: focusNode,
                     controller: _nameController,
-                    decoration: const InputDecoration(
-                      hintText: "请输入用户名",
-                    ),
+                    decoration: const InputDecoration(hintText: "请输入用户名"),
                     autofocus: false,
                   ),
                 ],
               ),
             ),
             Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 15,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 15),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const SizedBox(
-                    height: 15,
-                  ),
-                  const TitleWidget(
-                    "新密码",
-                    required: true,
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
+                  const SizedBox(height: 15),
+                  const TitleWidget("新密码", required: true),
+                  const SizedBox(height: 10),
                   TextField(
                     obscureText: true,
                     controller: _passwordController,
                     maxLines: 1,
-                    decoration: const InputDecoration(
-                      hintText: "请输入新密码",
-                    ),
+                    decoration: const InputDecoration(hintText: "请输入新密码"),
                     autofocus: false,
                   ),
                 ],
               ),
             ),
             Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 15,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 15),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const SizedBox(
-                    height: 15,
-                  ),
-                  const TitleWidget(
-                    "再次输入新密码",
-                    required: true,
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
+                  const SizedBox(height: 15),
+                  const TitleWidget("再次输入新密码", required: true),
+                  const SizedBox(height: 10),
                   TextField(
                     obscureText: true,
                     maxLines: 1,
                     controller: _passwordAgainController,
-                    decoration: const InputDecoration(
-                      hintText: "再次输入新密码",
-                    ),
+                    decoration: const InputDecoration(hintText: "再次输入新密码"),
                     autofocus: false,
                   ),
                 ],
@@ -165,29 +130,30 @@ class _UpdatePasswordPageState extends ConsumerState<UpdatePasswordPage>
   void commitReal() async {
     String name = _nameController.text;
     String password = _passwordController.text;
-    HttpResponse<NullResponse> response =
-        await SingleAccountPageState.ofApi(context)
-            .updatePassword(name, password);
+    HttpResponse<NullResponse> response = await SingleAccountPageState.ofApi(
+      context,
+    ).updatePassword(name, password);
 
     if (response.success) {
       "更新成功".toast();
 
-      // ignore: use_build_context_synchronously
-      if (!SingleAccountPageState.ofUserInfo(context).useSecretLogined) {
-        // ignore: use_build_context_synchronously
-        SingleAccountPageState.ofUserInfo(context).updateUserName(
-          // ignore: use_build_context_synchronously
-          SingleAccountPageState.ofUserInfo(context).host ?? "",
-          name,
-          password,
-          false,
-          // ignore: use_build_context_synchronously
-          SingleAccountPageState.ofUserInfo(context).alias,
-        );
+      if (mounted) {
+        if (!SingleAccountPageState.ofUserInfo(context).useSecretLogined) {
+          if (mounted) {
+            SingleAccountPageState.ofUserInfo(context).updateUserName(
+              SingleAccountPageState.ofUserInfo(context).host ?? "",
+              name,
+              password,
+              false,
+              SingleAccountPageState.ofUserInfo(context).alias,
+            );
+          }
+        }
       }
-      // ignore: use_build_context_synchronously
-      Navigator.of(context)
-          .pushNamedAndRemoveUntil(Routes.routeLogin, (route) => false);
+      if (mounted) {
+        Navigator.of(context)
+            .pushNamedAndRemoveUntil(Routes.routeLogin, (route) => false);
+      }
     } else {
       response.message.toast();
     }

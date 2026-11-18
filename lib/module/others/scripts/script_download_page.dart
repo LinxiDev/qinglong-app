@@ -11,7 +11,6 @@ import 'package:qinglong_app/module/subscribe/add_subscribe_page.dart';
 import 'package:path/path.dart';
 import 'package:qinglong_app/utils/extension.dart';
 
-
 class ScriptDownloadPage extends ConsumerStatefulWidget {
   const ScriptDownloadPage({super.key});
 
@@ -52,27 +51,18 @@ class _ScriptDownloadPageState extends ConsumerState<ScriptDownloadPage> {
           title: "远程地址",
         ),
         body: Container(
-          padding: const EdgeInsets.symmetric(
-            horizontal: 15,
-            vertical: 20,
-          ),
+          padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 20),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const TitleWidget(
-                "远程地址",
-              ),
-              const SizedBox(
-                height: 15,
-              ),
+              const TitleWidget("远程地址"),
+              const SizedBox(height: 15),
               TextField(
                 focusNode: focusNode,
                 controller: controller,
                 maxLines: 3,
                 minLines: 1,
-                decoration: const InputDecoration(
-                  hintText: "请输入远程地址",
-                ),
+                decoration: const InputDecoration(hintText: "请输入远程地址"),
                 autofocus: false,
               ),
             ],
@@ -101,23 +91,21 @@ class _ScriptDownloadPageState extends ConsumerState<ScriptDownloadPage> {
           contentType: "application/json",
         ),
       );
-      var response = await dio.get(
-        controller.text.trim(),
-      );
+      var response = await dio.get(controller.text.trim());
       EasyLoading.dismiss();
       if (response.statusCode == 200) {
         final path = await _localPath;
         String fileName = basename(controller.text.trim());
-        File f = File('$path/${DateTime.now().millisecondsSinceEpoch}_$fileName');
+        File f = File(
+          '$path/${DateTime.now().millisecondsSinceEpoch}_$fileName',
+        );
         if (f.existsSync()) {
           f.deleteSync();
         }
         await f.writeAsString(response.data.toString());
-        // ignore: use_build_context_synchronously
-        Navigator.of(context).pop({
-          "path": f.path,
-          "name": fileName,
-        });
+        if (context.mounted) {
+          Navigator.of(context).pop({"path": f.path, "name": fileName});
+        }
       } else {
         response.statusMessage.toast();
       }

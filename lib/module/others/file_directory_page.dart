@@ -12,10 +12,7 @@ import 'scripts/script_code_detail_page.dart';
 class FileDirectoryPage extends ConsumerStatefulWidget {
   final String path;
 
-  const FileDirectoryPage({
-    super.key,
-    required this.path,
-  });
+  const FileDirectoryPage({super.key, required this.path});
 
   @override
   ConsumerState<FileDirectoryPage> createState() => _FileDirectoryPageState();
@@ -33,37 +30,39 @@ class _FileDirectoryPageState extends ConsumerState<FileDirectoryPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: QlAppBar(
-        title: "查看文件",
-      ),
+      appBar: QlAppBar(title: "查看文件"),
       body: ListView.separated(
         itemBuilder: (context, index) {
           bool isDirectly = Directory(paths[index]).existsSync();
 
           return ListTile(
             onTap: () async {
+              if (!mounted) {
+                return;
+              }
               if (isDirectly) {
                 Navigator.of(context).push(
                   CupertinoPageRoute(
-                    builder: (context) => FileDirectoryPage(
-                      path: paths[index],
-                    ),
+                    builder: (context) => FileDirectoryPage(path: paths[index]),
                   ),
                 );
               } else {
                 try {
                   String content = await File(paths[index]).readAsString();
-                  // ignore: use_build_context_synchronously
-                  Navigator.of(context).push(
-                    CupertinoPageRoute(
-                      builder: (context) => ScriptCodeDetailPage(
-                        title: paths[index].replaceAll(widget.path, "").replaceAll("/", ""),
-                        content: content,
-                        absPath: paths[index],
-                        canRestore: true,
+                  if (context.mounted) {
+                    Navigator.of(context).push(
+                      CupertinoPageRoute(
+                        builder: (context) => ScriptCodeDetailPage(
+                          title: paths[index]
+                              .replaceAll(widget.path, "")
+                              .replaceAll("/", ""),
+                          content: content,
+                          absPath: paths[index],
+                          canRestore: true,
+                        ),
                       ),
-                    ),
-                  );
+                    );
+                  }
                 } catch (e) {
                   e.toString().toast();
                 }
@@ -80,15 +79,14 @@ class _FileDirectoryPageState extends ConsumerState<FileDirectoryPage> {
                     size: 16,
                     color: ref.watch(themeProvider).themeColor.descColor(),
                   ),
-            title: Text(paths[index].replaceAll(widget.path, "").replaceAll("/", "")),
+            title: Text(
+              paths[index].replaceAll(widget.path, "").replaceAll("/", ""),
+            ),
           );
         },
         itemCount: paths.length,
         separatorBuilder: (context, index) {
-          return const Divider(
-            indent: 15,
-            height: 1,
-          );
+          return const Divider(indent: 15, height: 1);
         },
       ),
     );

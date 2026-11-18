@@ -52,7 +52,9 @@ class _CronInstancePageState extends ConsumerState<CronInstancePage> {
       context,
     ).cronInstances(widget.cronId);
 
-    if (!mounted) return;
+    if (!mounted) {
+      return;
+    }
 
     if (response.success) {
       try {

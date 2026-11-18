@@ -32,17 +32,14 @@ class ScriptDetailPage extends ConsumerStatefulWidget {
   final String title;
   final String? path;
 
-  const ScriptDetailPage({
-    super.key,
-    required this.title,
-    this.path,
-  });
+  const ScriptDetailPage({super.key, required this.title, this.path});
 
   @override
   ScriptDetailPageState createState() => ScriptDetailPageState();
 }
 
-class ScriptDetailPageState extends ConsumerState<ScriptDetailPage> with LazyLoadState<ScriptDetailPage> {
+class ScriptDetailPageState extends ConsumerState<ScriptDetailPage>
+    with LazyLoadState<ScriptDetailPage> {
   String? content;
 
   List<Widget> actions = [];
@@ -78,189 +75,200 @@ class ScriptDetailPageState extends ConsumerState<ScriptDetailPage> with LazyLoa
       mode: getLanguageType(widget.title),
     );
     super.initState();
-    actions.addAll(
-      [
-        CupertinoSheer(
-          title: "添加到任务",
-          onTap: () {
-            if (content == null || content!.isEmpty) {
-              "未获取到脚本内容,请稍候重试".toast();
-              return;
-            }
-            String command = "task ${widget.path}${(widget.path != null && widget.path!.isNotEmpty) ? p.separator : ""}${widget.title} ";
-            String? cron = ScriptUploadPageState.getCronString(content!, widget.title);
+    actions.addAll([
+      CupertinoSheer(
+        title: "添加到任务",
+        onTap: () {
+          if (content == null || content!.isEmpty) {
+            "未获取到脚本内容,请稍候重试".toast();
+            return;
+          }
+          String command =
+              "task ${widget.path}${(widget.path != null && widget.path!.isNotEmpty) ? p.separator : ""}${widget.title} ";
+          String? cron = ScriptUploadPageState.getCronString(
+            content!,
+            widget.title,
+          );
 
-            Navigator.of(context).push(
-              CupertinoPageRoute(
-                builder: (context) => AddTaskPage(
-                  taskBean: TaskBean(
-                    name: widget.title,
-                    command: command,
-                    schedule: cron,
-                  ),
-                  hideUploadFile: true,
+          Navigator.of(context).push(
+            CupertinoPageRoute(
+              builder: (context) => AddTaskPage(
+                taskBean: TaskBean(
+                  name: widget.title,
+                  command: command,
+                  schedule: cron,
                 ),
+                hideUploadFile: true,
               ),
-            );
-          },
-        ),
-        addDivider(),
-        CupertinoSheer(
-          title: "运行脚本",
-          onTap: () async {
-            EasyLoading.show(status: "运行中");
-            final response = await SingleAccountPageState.ofApi(context).runScript(
-              widget.title,
-              widget.path ?? "",
-            );
-            EasyLoading.dismiss();
-            if (response.success) {
-              "已开始运行".toast();
-              // ignore: use_build_context_synchronously
+            ),
+          );
+        },
+      ),
+      addDivider(),
+      CupertinoSheer(
+        title: "运行脚本",
+        onTap: () async {
+          EasyLoading.show(status: "运行中");
+          final response = await SingleAccountPageState.ofApi(context)
+              .runScript(widget.title, widget.path ?? "");
+          EasyLoading.dismiss();
+          if (response.success) {
+            "已开始运行".toast();
+            if (mounted) {
               Navigator.of(context).pop(true);
-            } else {
-              (response.message ?? "运行失败").toast();
             }
-          },
-        ),
-        addDivider(),
-        CupertinoSheer(
-          title: "停止脚本",
-          onTap: () async {
-            final response = await SingleAccountPageState.ofApi(context).stopScript(
-              widget.title,
-              widget.path ?? "",
-            );
-            if (response.success) {
-              "已发送停止指令".toast();
-            } else {
-              (response.message ?? "停止失败").toast();
-            }
-          },
-        ),
-        addDivider(),
-        CupertinoSheer(
-          title: "历史版本",
-          onTap: () {
-            Navigator.of(context).push(
-              CupertinoPageRoute(
-                builder: (context) => ScriptHistoryPage(
-                  filename: widget.title,
-                  path: widget.path ?? "",
+          } else {
+            (response.message ?? "运行失败").toast();
+          }
+        },
+      ),
+      addDivider(),
+      CupertinoSheer(
+        title: "停止脚本",
+        onTap: () async {
+          final response = await SingleAccountPageState.ofApi(context)
+              .stopScript(widget.title, widget.path ?? "");
+          if (response.success) {
+            "已发送停止指令".toast();
+          } else {
+            (response.message ?? "停止失败").toast();
+          }
+        },
+      ),
+      addDivider(),
+      CupertinoSheer(
+        title: "历史版本",
+        onTap: () {
+          Navigator.of(context)
+              .push(
+                CupertinoPageRoute(
+                  builder: (context) => ScriptHistoryPage(
+                    filename: widget.title,
+                    path: widget.path ?? "",
+                  ),
                 ),
-              ),
-            ).then((value) {
-              if (value == true) {
-                loadData();
-              }
-            });
-          },
-        ),
-        addDivider(),
-        CupertinoSheer(
-          title: "编辑",
-          onTap: () {
-            if (content == null || content!.isEmpty) {
-              "未获取到脚本内容,请稍候重试".toast();
-              return;
-            }
-            Navigator.of(context).pushNamed(
-              Routes.routeScriptUpdate,
-              arguments: {
-                "title": widget.title,
-                "path": widget.path,
-                "content": content,
-              },
-            ).then((value) {
-              if (value != null) {
-                content = value.toString();
-                controller?.setValue(content ?? "");
-                setState(() {});
-              }
-            });
-          },
-        ),
-        addDivider(),
-        CupertinoSheer(
-          title: "分享",
-          onTap: () {
-            SharePlus.instance.share(ShareParams(text: content ?? ""));
-          },
-        ),
-        addDivider(),
-        CupertinoSheer(
-          title: "下载",
-          onTap: () async {
-            try {
-              String name = "${Random().nextInt(40000)}_${widget.title}";
-              await FileUtil(0).writeDownloadFile(name, content ?? "");
-              "已写入qinglong_app文件夹下,文件名$name".toast2();
-            } catch (e) {
-              e.toString().toast();
-            }
-          },
-        ),
-        addDivider(),
-        CupertinoSheer(
-          title: "删除",
-          onTap: () async {
-            HapticFeedback.mediumImpact();
-            showCupertinoDialog(
-              useRootNavigator: false,
-              context: context,
-              builder: (context1) => CupertinoAlertDialog(
-                title: const Text("确认删除"),
-                content: const Text("确认删除该脚本吗"),
-                actions: [
-                  CupertinoDialogAction(
-                    child: const Text(
-                      "取消",
-                      style: TextStyle(
-                        color: Color(0xff999999),
-                      ),
-                    ),
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
+              )
+              .then((value) {
+                if (value == true) {
+                  loadData();
+                }
+              });
+        },
+      ),
+      addDivider(),
+      CupertinoSheer(
+        title: "编辑",
+        onTap: () {
+          if (content == null || content!.isEmpty) {
+            "未获取到脚本内容,请稍候重试".toast();
+            return;
+          }
+          Navigator.of(context)
+              .pushNamed(
+                Routes.routeScriptUpdate,
+                arguments: {
+                  "title": widget.title,
+                  "path": widget.path,
+                  "content": content,
+                },
+              )
+              .then((value) {
+                if (value != null) {
+                  content = value.toString();
+                  controller?.setValue(content ?? "");
+                  setState(() {});
+                }
+              });
+        },
+      ),
+      addDivider(),
+      CupertinoSheer(
+        title: "分享",
+        onTap: () {
+          SharePlus.instance.share(ShareParams(text: content ?? ""));
+        },
+      ),
+      addDivider(),
+      CupertinoSheer(
+        title: "下载",
+        onTap: () async {
+          try {
+            String name = "${Random().nextInt(40000)}_${widget.title}";
+            await FileUtil(0).writeDownloadFile(name, content ?? "");
+            "已写入qinglong_app文件夹下,文件名$name".toast2();
+          } catch (e) {
+            e.toString().toast();
+          }
+        },
+      ),
+      addDivider(),
+      CupertinoSheer(
+        title: "删除",
+        onTap: () async {
+          HapticFeedback.mediumImpact();
+          showCupertinoDialog(
+            useRootNavigator: false,
+            context: context,
+            builder: (context1) => CupertinoAlertDialog(
+              title: const Text("确认删除"),
+              content: const Text("确认删除该脚本吗"),
+              actions: [
+                CupertinoDialogAction(
+                  child: const Text(
+                    "取消",
+                    style: TextStyle(color: Color(0xff999999)),
                   ),
-                  CupertinoDialogAction(
-                    child: Text(
-                      "确定",
-                      style: TextStyle(
-                        color: ref.watch(themeProvider).primaryColor,
-                      ),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+                CupertinoDialogAction(
+                  child: Text(
+                    "确定",
+                    style: TextStyle(
+                      color: ref.watch(themeProvider).primaryColor,
                     ),
-                    onPressed: () async {
-                      Navigator.of(context1).pop();
-                      SystemBean? systemBean;
+                  ),
+                  onPressed: () async {
+                    Navigator.of(context1).pop();
+                    SystemBean? systemBean;
 
-                      try {
-                        systemBean = getIt<SystemBean>(instanceName: (SingleAccountPageState.of(context)?.index ?? 0).toString());
-                      } catch (e) {
-                        systemBean = SystemBean(version: "2.10.13", fromAutoGet: false);
-                      }
-                      HttpResponse<NullResponse> result;
-                      if (systemBean.isUpperVersion2_14_5()) {
-                        result = await SingleAccountPageState.ofApi(context).delScriptNewVersion(widget.title, widget.path ?? "");
-                      } else {
-                        result = await SingleAccountPageState.ofApi(context).delScript(widget.title, widget.path ?? "");
-                      }
-                      if (result.success) {
-                        "删除成功".toast();
-                        // ignore: use_build_context_synchronously
+                    try {
+                      systemBean = getIt<SystemBean>(
+                        instanceName:
+                            (SingleAccountPageState.of(context)?.index ?? 0)
+                                .toString(),
+                      );
+                    } catch (e) {
+                      systemBean = SystemBean(
+                        version: "2.10.13",
+                        fromAutoGet: false,
+                      );
+                    }
+                    HttpResponse<NullResponse> result;
+                    if (systemBean.isUpperVersion2_14_5()) {
+                      result = await SingleAccountPageState.ofApi(context)
+                          .delScriptNewVersion(widget.title, widget.path ?? "");
+                    } else {
+                      result = await SingleAccountPageState.ofApi(context)
+                          .delScript(widget.title, widget.path ?? "");
+                    }
+                    if (result.success) {
+                      "删除成功".toast();
+                      if (mounted) {
                         Navigator.of(context).pop(true);
-                      } else {
-                        result.message?.toast();
                       }
-                    },
-                  ),
-                ],
-              ),
-            );
-          },
-        ),
-      ],
-    );
+                    } else {
+                      result.message?.toast();
+                    }
+                  },
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+    ]);
   }
 
   @override
@@ -287,9 +295,7 @@ class ScriptDetailPageState extends ConsumerState<ScriptDetailPage> with LazyLoa
               codeKey.currentState?.showSearchBar();
             },
             child: Padding(
-              padding: const EdgeInsets.only(
-                left: 15,
-              ),
+              padding: const EdgeInsets.only(left: 15),
               child: Center(
                 child: Icon(
                   Icons.search,
@@ -303,14 +309,16 @@ class ScriptDetailPageState extends ConsumerState<ScriptDetailPage> with LazyLoa
             color: Colors.transparent,
             padding: EdgeInsets.zero,
             onPressed: () async {
+              if (!mounted) {
+                return;
+              }
               await hideKeyboardFocus();
-              // ignore: use_build_context_synchronously
-              showMoreOperate(context, actions);
+              if (context.mounted) {
+                showMoreOperate(context, actions);
+              }
             },
             child: Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 15,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 15),
               child: Center(
                 child: Icon(
                   Icons.more_horiz,
@@ -323,9 +331,7 @@ class ScriptDetailPageState extends ConsumerState<ScriptDetailPage> with LazyLoa
         ],
       ),
       body: content == null
-          ? const Center(
-              child: LoadingWidget(),
-            )
+          ? const Center(child: LoadingWidget())
           : SafeArea(
               top: false,
               child: Editor(
@@ -345,10 +351,8 @@ class ScriptDetailPageState extends ConsumerState<ScriptDetailPage> with LazyLoa
   GlobalKey<CodeMirrorViewState> codeKey = GlobalKey();
 
   Future<void> loadData() async {
-    HttpResponse<String> response = await SingleAccountPageState.ofApi(context).scriptDetail(
-      widget.title,
-      widget.path,
-    );
+    HttpResponse<String> response = await SingleAccountPageState.ofApi(context)
+        .scriptDetail(widget.title, widget.path);
 
     if (response.success) {
       content = response.bean;

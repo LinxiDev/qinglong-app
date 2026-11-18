@@ -12,15 +12,10 @@ import '../../base/theme.dart';
 import '../../base/ui/drop.dart';
 import '../subscribe/add_subscribe_page.dart';
 
-
-
 class AddAppKeyPage extends ConsumerStatefulWidget {
   final Map<String, dynamic> bean;
 
-  const AddAppKeyPage({
-    super.key,
-    required this.bean,
-  });
+  const AddAppKeyPage({super.key, required this.bean});
 
   @override
   ConsumerState<AddAppKeyPage> createState() => _AddAppKeyPageState();
@@ -37,8 +32,9 @@ class _AddAppKeyPageState extends ConsumerState<AddAppKeyPage> {
       _nameController.text = widget.bean["name"] ?? "";
 
       selectedPermissions.clear();
-      selectedPermissions
-          .addAll(AppKeyViewModel.getScopeNames(widget.bean["scopes"]));
+      selectedPermissions.addAll(
+        AppKeyViewModel.getScopeNames(widget.bean["scopes"]),
+      );
     }
 
     super.initState();
@@ -66,54 +62,34 @@ class _AddAppKeyPageState extends ConsumerState<AddAppKeyPage> {
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 15,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 15),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const SizedBox(
-                    height: 15,
-                  ),
-                  const TitleWidget(
-                    "名称",
-                    required: true,
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
+                  const SizedBox(height: 15),
+                  const TitleWidget("名称", required: true),
+                  const SizedBox(height: 10),
                   TextField(
                     controller: _nameController,
                     maxLines: 3,
                     minLines: 1,
                     textAlignVertical: TextAlignVertical.center,
-                    decoration: const InputDecoration(
-                      hintText: "请输入名称",
-                    ),
+                    decoration: const InputDecoration(hintText: "请输入名称"),
                     autofocus: false,
                   ),
                 ],
               ),
             ),
             Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 15,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 15),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const SizedBox(
-                    height: 15,
-                  ),
-                  const TitleWidget(
-                    "权限",
-                    required: true,
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
+                  const SizedBox(height: 15),
+                  const TitleWidget("权限", required: true),
+                  const SizedBox(height: 10),
                   GestureDetector(
                     onTap: () {
                       onTextFieldTap();
@@ -136,32 +112,33 @@ class _AddAppKeyPageState extends ConsumerState<AddAppKeyPage> {
                               runSpacing: 5,
                               spacing: 5,
                               children: selectedPermissions
-                                  .map((e) => Container(
-                                        padding: const EdgeInsets.symmetric(
-                                          vertical: 3,
-                                          horizontal: 5,
-                                        ),
-                                        decoration: BoxDecoration(
+                                  .map(
+                                    (e) => Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        vertical: 3,
+                                        horizontal: 5,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: ref
+                                            .watch(themeProvider)
+                                            .themeColor
+                                            .descColor(),
+                                        borderRadius: BorderRadius.circular(5),
+                                      ),
+                                      child: Text(
+                                        e,
+                                        maxLines: 1,
+                                        style: TextStyle(
+                                          overflow: TextOverflow.ellipsis,
                                           color: ref
                                               .watch(themeProvider)
                                               .themeColor
-                                              .descColor(),
-                                          borderRadius:
-                                              BorderRadius.circular(5),
+                                              .blackAndWhite(),
+                                          fontSize: 12,
                                         ),
-                                        child: Text(
-                                          e,
-                                          maxLines: 1,
-                                          style: TextStyle(
-                                            overflow: TextOverflow.ellipsis,
-                                            color: ref
-                                                .watch(themeProvider)
-                                                .themeColor
-                                                .blackAndWhite(),
-                                            fontSize: 12,
-                                          ),
-                                        ),
-                                      ))
+                                      ),
+                                    ),
+                                  )
                                   .toList(),
                             ),
                           ),
@@ -236,8 +213,9 @@ class _AddAppKeyPageState extends ConsumerState<AddAppKeyPage> {
     EasyLoading.dismiss();
 
     if (response.success) {
-      // ignore: use_build_context_synchronously
-      Navigator.of(context).pop(true);
+      if (mounted) {
+        Navigator.of(context).pop(true);
+      }
     } else {
       response.message.toast();
     }

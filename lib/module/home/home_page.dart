@@ -64,9 +64,14 @@ class HomePageState extends ConsumerState<HomePage> {
       if (temp.isNotEmpty) {
         var list = temp.map((e) => VersionHistoryBean.fromJson(e)).toList();
 
-        String? version = list.firstWhere((element) => element.host == host, orElse: () {
-          return VersionHistoryBean();
-        }).version;
+        String? version = list
+            .firstWhere(
+              (element) => element.host == host,
+              orElse: () {
+                return VersionHistoryBean();
+              },
+            )
+            .version;
         return version;
       }
     }
@@ -85,19 +90,27 @@ class HomePageState extends ConsumerState<HomePage> {
     var bean = await SingleAccountPageState.ofApi(context).system();
 
     if (!bean.success) {
-      // ignore: use_build_context_synchronously
+      if (!context.mounted) {
+        return;
+      }
       String? host = SingleAccountPageState.ofUserInfo(context).host;
 
       String? version = getCurrentVersion(host);
 
       if (version == null || version.isEmpty) {
         "获取版本号失败，请前往应用设置中添加".toast();
-        updateVersionHistory(VersionHistoryBean(
-            // ignore: use_build_context_synchronously
-            host: SingleAccountPageState.ofUserInfo(context).host, version: "2.10.13"));
-        // ignore: use_build_context_synchronously
-        SingleAccountPageState.of(context)
-            ?.registerSystemBean(bean.bean?.version ?? "2.10.13", false);
+        if (context.mounted) {
+          updateVersionHistory(
+            VersionHistoryBean(
+              host: SingleAccountPageState.ofUserInfo(context).host,
+              version: "2.10.13",
+            ),
+          );
+        }
+        if (context.mounted) {
+          SingleAccountPageState.of(context)
+              ?.registerSystemBean(bean.bean?.version ?? "2.10.13", false);
+        }
         updateSystemBean();
         return;
       }
@@ -105,100 +118,113 @@ class HomePageState extends ConsumerState<HomePage> {
 
     if (bean.bean == null || bean.bean?.version == null) {
       //从历史记录里找版本号
-      // ignore: use_build_context_synchronously
+      if (!context.mounted) {
+        return;
+      }
       String? host = SingleAccountPageState.ofUserInfo(context).host;
 
       String? version = getCurrentVersion(host);
 
       if (version != null && version.isNotEmpty) {
-        // ignore: use_build_context_synchronously
-        SingleAccountPageState.of(context)?.registerSystemBean(version, false);
+        if (context.mounted) {
+          SingleAccountPageState.of(context)
+              ?.registerSystemBean(version, false);
+        }
         updateSystemBean();
         return;
       }
 
       "获取版本号失败，请手动配置".toast();
       TextEditingController controller = TextEditingController(text: "");
-      showCupertinoDialog(
-        useRootNavigator: false,
-        // ignore: use_build_context_synchronously
-        context: context,
-        builder: (context1) => CupertinoAlertDialog(
-          title: const Text("请输入版本号:"),
-          content: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                  vertical: 10,
-                ),
-                child: TextField(
-                  textAlign: TextAlign.center,
-                  controller: controller,
-                  autofocus: false,
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(
-                      borderSide: BorderSide(
-                        color: ref.watch(themeProvider).themeColor.title2Color(),
-                        width: 1,
+      if (context.mounted) {
+        showCupertinoDialog(
+          useRootNavigator: false,
+          context: context,
+          builder: (context1) => CupertinoAlertDialog(
+            title: const Text("请输入版本号:"),
+            content: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 10),
+                  child: TextField(
+                    textAlign: TextAlign.center,
+                    controller: controller,
+                    autofocus: false,
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(
+                        borderSide: BorderSide(
+                          color: ref
+                              .watch(themeProvider)
+                              .themeColor
+                              .title2Color(),
+                          width: 1,
+                        ),
+                        borderRadius: BorderRadius.circular(4),
                       ),
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(
-                        color: ref.watch(themeProvider).themeColor.title2Color(),
-                        width: 1,
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                          color: ref
+                              .watch(themeProvider)
+                              .themeColor
+                              .title2Color(),
+                          width: 1,
+                        ),
+                        borderRadius: BorderRadius.circular(4),
                       ),
-                      borderRadius: BorderRadius.circular(4),
                     ),
                   ),
                 ),
+              ],
+            ),
+            actions: [
+              CupertinoDialogAction(
+                child: const Text(
+                  "取消",
+                  style: TextStyle(color: Color(0xff999999)),
+                ),
+                onPressed: () {
+                  Navigator.of(context1).pop();
+                  "已默认为2.10.13版本".toast();
+                  updateVersionHistory(
+                    VersionHistoryBean(host: host, version: "2.10.13"),
+                  );
+                  SingleAccountPageState.of(
+                    context,
+                  )?.registerSystemBean(bean.bean?.version ?? "2.10.13", false);
+                  updateSystemBean();
+                },
+              ),
+              CupertinoDialogAction(
+                child: Text(
+                  "确定",
+                  style: TextStyle(
+                    color: ref.watch(themeProvider).primaryColor,
+                  ),
+                ),
+                onPressed: () async {
+                  Navigator.of(context1).pop();
+                  updateVersionHistory(
+                    VersionHistoryBean(
+                      host: host,
+                      version: controller.text.trim(),
+                    ),
+                  );
+                  SingleAccountPageState.of(context)
+                      ?.registerSystemBean(controller.text.trim(), false);
+                  updateSystemBean();
+                },
               ),
             ],
           ),
-          actions: [
-            CupertinoDialogAction(
-              child: const Text(
-                "取消",
-                style: TextStyle(
-                  color: Color(0xff999999),
-                ),
-              ),
-              onPressed: () {
-                Navigator.of(context1).pop();
-                "已默认为2.10.13版本".toast();
-                updateVersionHistory(VersionHistoryBean(host: host, version: "2.10.13"));
-                SingleAccountPageState.of(context)
-                    ?.registerSystemBean(bean.bean?.version ?? "2.10.13", false);
-                updateSystemBean();
-              },
-            ),
-            CupertinoDialogAction(
-              child: Text(
-                "确定",
-                style: TextStyle(
-                  color: ref.watch(themeProvider).primaryColor,
-                ),
-              ),
-              onPressed: () async {
-                Navigator.of(context1).pop();
-                updateVersionHistory(
-                    VersionHistoryBean(host: host, version: controller.text.trim()));
-                SingleAccountPageState.of(context)
-                    ?.registerSystemBean(controller.text.trim(), false);
-                updateSystemBean();
-              },
-            ),
-          ],
-        ),
-      );
+        );
+      }
     } else {
-      // ignore: use_build_context_synchronously
-      SingleAccountPageState.of(context)?.registerSystemBean(
-        bean.bean?.version ?? "2.10.13",
-        true,
-      );
+      if (context.mounted) {
+        SingleAccountPageState.of(context)
+            ?.registerSystemBean(bean.bean?.version ?? "2.10.13", true);
+      }
       updateSystemBean();
     }
   }
@@ -231,8 +257,11 @@ class HomePageState extends ConsumerState<HomePage> {
               child: Scaffold(
                 extendBody: true,
                 body: IndexedStack(
-                  index: ref.watch<int>(SingleAccountPageState.ofHomeIndexProvider(context)(
-                      getProviderName(context))),
+                  index: ref.watch<int>(
+                    SingleAccountPageState.ofHomeIndexProvider(context)(
+                      getProviderName(context),
+                    ),
+                  ),
                   children: [
                     Positioned.fill(
                       child: TaskPage(
@@ -240,26 +269,18 @@ class HomePageState extends ConsumerState<HomePage> {
                         loading: !getSystemBeanSuccess,
                       ),
                     ),
-                    Positioned.fill(
-                      child: EnvPage(
-                        key: envKey,
-                      ),
-                    ),
-                    const Positioned.fill(
-                      child: ConfigPage(),
-                    ),
-                    Positioned.fill(
-                      child: OtherPage(
-                        key: meKey,
-                      ),
-                    ),
+                    Positioned.fill(child: EnvPage(key: envKey)),
+                    const Positioned.fill(child: ConfigPage()),
+                    Positioned.fill(child: OtherPage(key: meKey)),
                   ],
                 ),
                 bottomNavigationBar: ClipRect(
                   child: BackdropFilter(
                     filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
                     child: Container(
-                      height: kBottomNavigationBarHeight + MediaQuery.of(context).padding.bottom,
+                      height:
+                          kBottomNavigationBarHeight +
+                          MediaQuery.of(context).padding.bottom,
                       width: MediaQuery.of(context).size.width,
                       color: ref
                           .watch(themeProvider)
@@ -287,32 +308,50 @@ class HomePageState extends ConsumerState<HomePage> {
                               ),
                             )
                             .toList(),
-                        currentIndex: ref.watch<int>(SingleAccountPageState.ofHomeIndexProvider(
-                            context)(getProviderName(context))),
+                        currentIndex: ref.watch<int>(
+                          SingleAccountPageState.ofHomeIndexProvider(context)(
+                            getProviderName(context),
+                          ),
+                        ),
                         onTap: (index) async {
-                          if (ref.read<int>((SingleAccountPageState.ofHomeIndexProvider(context)(
-                                  getProviderName(context)))) ==
+                          if (ref.read<int>(
+                                (SingleAccountPageState.ofHomeIndexProvider(
+                                  context,
+                                )(getProviderName(context))),
+                              ) ==
                               index) {
-                            if (ref.read<int>((SingleAccountPageState.ofHomeIndexProvider(context)(
-                                    getProviderName(context)))) ==
+                            if (ref.read<int>(
+                                  (SingleAccountPageState.ofHomeIndexProvider(
+                                    context,
+                                  )(getProviderName(context))),
+                                ) ==
                                 0) {
                               await taskKey.currentState?.move2Top();
-                            } else if (ref.read<int>((SingleAccountPageState.ofHomeIndexProvider(
-                                    context)(getProviderName(context)))) ==
+                            } else if (ref.read<int>(
+                                  (SingleAccountPageState.ofHomeIndexProvider(
+                                    context,
+                                  )(getProviderName(context))),
+                                ) ==
                                 1) {
                               await envKey.currentState?.move2Top();
-                            } else if (ref.read<int>((SingleAccountPageState.ofHomeIndexProvider(
-                                    context)(getProviderName(context)))) ==
+                            } else if (ref.read<int>(
+                                  (SingleAccountPageState.ofHomeIndexProvider(
+                                    context,
+                                  )(getProviderName(context))),
+                                ) ==
                                 3) {
                               await meKey.currentState?.move2Top();
                             }
                             return;
                           } else {
                             ref
-                                .read(SingleAccountPageState.ofHomeIndexProvider(context)(
-                                        getProviderName(context))
-                                    .notifier)
-                                .state = index;
+                                    .read(
+                                      SingleAccountPageState.ofHomeIndexProvider(
+                                        context,
+                                      )(getProviderName(context)).notifier,
+                                    )
+                                    .state =
+                                index;
                           }
                         },
                         elevation: 0,
@@ -338,10 +377,7 @@ class HomePageState extends ConsumerState<HomePage> {
             Visibility(
               visible: showMask,
               child: BackdropFilter(
-                filter: ImageFilter.blur(
-                  sigmaX: 5.0,
-                  sigmaY: 5.0,
-                ),
+                filter: ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
                 child: GestureDetector(
                   behavior: HitTestBehavior.opaque,
                   onTap: () async {
@@ -366,9 +402,7 @@ class HomePageState extends ConsumerState<HomePage> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Container(
-                      margin: const EdgeInsets.only(
-                        right: 10,
-                      ),
+                      margin: const EdgeInsets.only(right: 10),
                       width: MediaQuery.of(context).size.width / 2,
                       child: _buildOtherAccounts(),
                     ),
@@ -376,7 +410,7 @@ class HomePageState extends ConsumerState<HomePage> {
                   ],
                 ),
               ),
-            )
+            ),
           ],
         ),
       ),
@@ -430,7 +464,10 @@ class HomePageState extends ConsumerState<HomePage> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 ColorFiltered(
-                  colorFilter: const ColorFilter.mode(Colors.white, BlendMode.srcIn),
+                  colorFilter: const ColorFilter.mode(
+                    Colors.white,
+                    BlendMode.srcIn,
+                  ),
                   child: Image.asset(
                     "assets/images/icon_other.png",
                     fit: BoxFit.cover,
@@ -440,10 +477,7 @@ class HomePageState extends ConsumerState<HomePage> {
                 ),
                 const Text(
                   "我的",
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.white,
-                  ),
+                  style: TextStyle(fontSize: 12, color: Colors.white),
                 ),
               ],
             ),
@@ -462,8 +496,9 @@ class HomePageState extends ConsumerState<HomePage> {
     return ClipRRect(
       borderRadius: BorderRadius.circular(10),
       child: Container(
-        constraints:
-            BoxConstraints(maxHeight: MediaQuery.of(context).size.height - kToolbarHeight * 2),
+        constraints: BoxConstraints(
+          maxHeight: MediaQuery.of(context).size.height - kToolbarHeight * 2,
+        ),
         decoration: BoxDecoration(
           color: ref.watch(themeProvider).themeColor.settingBgColor(),
           borderRadius: BorderRadius.circular(10),
@@ -473,21 +508,29 @@ class HomePageState extends ConsumerState<HomePage> {
             children: SpUtil.getBool(spSingleInstance, defValue: false) == true
                 ? _buildSingleInstance()
                 : List.generate(count, (index) {
-                    if (index >= getIt<MultiAccountUserInfoViewModel>().tokenBeans.length ||
-                        (getIt<MultiAccountUserInfoViewModel>().tokenBeans.length < count &&
+                    if (index >=
+                            getIt<MultiAccountUserInfoViewModel>()
+                                .tokenBeans
+                                .length ||
+                        (getIt<MultiAccountUserInfoViewModel>()
+                                    .tokenBeans
+                                    .length <
+                                count &&
                             index == count - 1)) {
                       return Material(
                         color: Colors.transparent,
                         child: InkWell(
                           onTap: () {
                             dismissMask();
-                            WidgetsBinding.instance.addPostFrameCallback(
-                              (timeStamp) {
-                                context
-                                    .findAncestorStateOfType<MultiAccountPageState>()
-                                    ?.updateIndex(index);
-                              },
-                            );
+                            WidgetsBinding.instance.addPostFrameCallback((
+                              timeStamp,
+                            ) {
+                              context
+                                  .findAncestorStateOfType<
+                                    MultiAccountPageState
+                                  >()
+                                  ?.updateIndex(index);
+                            });
                           },
                           child: Container(
                             padding: const EdgeInsets.symmetric(
@@ -500,25 +543,31 @@ class HomePageState extends ConsumerState<HomePage> {
                                 Icon(
                                   CupertinoIcons.add,
                                   size: 15,
-                                  color: ref.watch(themeProvider).themeColor.titleColor(),
+                                  color: ref
+                                      .watch(themeProvider)
+                                      .themeColor
+                                      .titleColor(),
                                 ),
-                                const SizedBox(
-                                  width: 5,
-                                ),
+                                const SizedBox(width: 5),
                                 Text(
                                   "添加账户",
                                   style: TextStyle(
-                                    color: ref.watch(themeProvider).themeColor.titleColor(),
+                                    color: ref
+                                        .watch(themeProvider)
+                                        .themeColor
+                                        .titleColor(),
                                     fontSize: 14,
                                   ),
-                                )
+                                ),
                               ],
                             ),
                           ),
                         ),
                       );
                     }
-                    var userInfo = getIt<UserInfoViewModel>(instanceName: index.toString());
+                    var userInfo = getIt<UserInfoViewModel>(
+                      instanceName: index.toString(),
+                    );
 
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -529,9 +578,13 @@ class HomePageState extends ConsumerState<HomePage> {
                           child: InkWell(
                             onTap: () {
                               dismissMask();
-                              WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+                              WidgetsBinding.instance.addPostFrameCallback((
+                                timeStamp,
+                              ) {
                                 context
-                                    .findAncestorStateOfType<MultiAccountPageState>()
+                                    .findAncestorStateOfType<
+                                      MultiAccountPageState
+                                    >()
                                     ?.updateIndex(index);
                               });
                             },
@@ -550,17 +603,17 @@ class HomePageState extends ConsumerState<HomePage> {
                                 softWrap: true,
                                 overflow: TextOverflow.ellipsis,
                                 style: TextStyle(
-                                  color: ref.watch(themeProvider).themeColor.titleColor(),
+                                  color: ref
+                                      .watch(themeProvider)
+                                      .themeColor
+                                      .titleColor(),
                                   fontSize: 14,
                                 ),
                               ),
                             ),
                           ),
                         ),
-                        const Divider(
-                          indent: 15,
-                          height: 1,
-                        ),
+                        const Divider(indent: 15, height: 1),
                       ],
                     );
                   }),
@@ -592,20 +645,13 @@ class HomePageState extends ConsumerState<HomePage> {
           child: InkWell(
             onTap: () {
               dismissMask();
-              WidgetsBinding.instance.addPostFrameCallback(
-                (timeStamp) {
-                  Navigator.of(context).pushNamed(
-                    Routes.routeLogin,
-                    arguments: true,
-                  );
-                },
-              );
+              WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+                Navigator.of(context)
+                    .pushNamed(Routes.routeLogin, arguments: true);
+              });
             },
             child: Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 15,
-                vertical: 12,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 12),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
@@ -614,23 +660,22 @@ class HomePageState extends ConsumerState<HomePage> {
                     size: 15,
                     color: ref.watch(themeProvider).themeColor.titleColor(),
                   ),
-                  const SizedBox(
-                    width: 5,
-                  ),
+                  const SizedBox(width: 5),
                   Text(
                     "添加账户",
                     style: TextStyle(
                       color: ref.watch(themeProvider).themeColor.titleColor(),
                       fontSize: 14,
                     ),
-                  )
+                  ),
                 ],
               ),
             ),
           ),
         );
       }
-      var userInfo = getIt<MultiAccountUserInfoViewModel>().historyAccounts[index];
+      var userInfo =
+          getIt<MultiAccountUserInfoViewModel>().historyAccounts[index];
 
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -642,14 +687,24 @@ class HomePageState extends ConsumerState<HomePage> {
               onTap: () {
                 dismissMask();
 
-                if (SingleAccountPageState.ofHttp(context)?.host == userInfo.host) return;
+                if (SingleAccountPageState.ofHttp(context)?.host ==
+                    userInfo.host) {
+                  return;
+                }
 
                 WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
                   await EasyLoading.show(status: " 登录中");
 
                   LoginHelper loginHelper = LoginHelper(
-                      userInfo.host!, userInfo.userName!, userInfo.password!, true, userInfo.alias);
-                  // ignore: use_build_context_synchronously
+                    userInfo.host!,
+                    userInfo.userName!,
+                    userInfo.password!,
+                    true,
+                    userInfo.alias,
+                  );
+                  if (!mounted) {
+                    return;
+                  }
                   var response = await loginHelper.login(context);
 
                   EasyLoading.dismiss();
@@ -664,12 +719,17 @@ class HomePageState extends ConsumerState<HomePage> {
                 ),
                 alignment: Alignment.centerLeft,
                 child: Text(
-                  userInfo.host?.replaceAll("http://", "").replaceAll("https://", "") ?? "",
+                  userInfo.host
+                          ?.replaceAll("http://", "")
+                          .replaceAll("https://", "") ??
+                      "",
                   maxLines: 1,
                   softWrap: true,
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
-                    color: SingleAccountPageState.ofHttp(context)?.host == userInfo.host
+                    color:
+                        SingleAccountPageState.ofHttp(context)?.host ==
+                            userInfo.host
                         ? ref.watch(themeProvider).primaryColor
                         : ref.watch(themeProvider).themeColor.titleColor(),
                     fontSize: 14,
@@ -678,10 +738,7 @@ class HomePageState extends ConsumerState<HomePage> {
               ),
             ),
           ),
-          const Divider(
-            indent: 15,
-            height: 1,
-          ),
+          const Divider(indent: 15, height: 1),
         ],
       );
     });
@@ -690,57 +747,51 @@ class HomePageState extends ConsumerState<HomePage> {
   void twoFact(LoginHelper helper) {
     String twoFact = "";
     showCupertinoDialog(
-        useRootNavigator: false,
-        context: context,
-        builder: (_) => CupertinoAlertDialog(
-              title: const Text("两步验证"),
-              content: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Material(
-                    color: Colors.transparent,
-                    child: TextField(
-                      onChanged: (value) {
-                        twoFact = value;
-                      },
-                      maxLines: 1,
-                      keyboardType: TextInputType.number,
-                      decoration: const InputDecoration(
-                        contentPadding: EdgeInsets.fromLTRB(0, 5, 0, 5),
-                        hintText: "请输入code",
-                      ),
-                      autofocus: true,
-                    ),
-                  ),
-                ],
+      useRootNavigator: false,
+      context: context,
+      builder: (_) => CupertinoAlertDialog(
+        title: const Text("两步验证"),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Material(
+              color: Colors.transparent,
+              child: TextField(
+                onChanged: (value) {
+                  twoFact = value;
+                },
+                maxLines: 1,
+                keyboardType: TextInputType.number,
+                decoration: const InputDecoration(
+                  contentPadding: EdgeInsets.fromLTRB(0, 5, 0, 5),
+                  hintText: "请输入code",
+                ),
+                autofocus: true,
               ),
-              actions: [
-                CupertinoDialogAction(
-                  child: const Text(
-                    "取消",
-                    style: TextStyle(
-                      color: Color(0xff999999),
-                    ),
-                  ),
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                ),
-                CupertinoDialogAction(
-                  child: Text(
-                    "确定",
-                    style: TextStyle(
-                      color: ref.watch(themeProvider).primaryColor,
-                    ),
-                  ),
-                  onPressed: () async {
-                    Navigator.of(context).pop(true);
-                    var response = await helper.loginTwice(context, twoFact);
-                    dealLoginResponse(helper, response);
-                  },
-                ),
-              ],
-            )).then((value) {});
+            ),
+          ],
+        ),
+        actions: [
+          CupertinoDialogAction(
+            child: const Text("取消", style: TextStyle(color: Color(0xff999999))),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
+          CupertinoDialogAction(
+            child: Text(
+              "确定",
+              style: TextStyle(color: ref.watch(themeProvider).primaryColor),
+            ),
+            onPressed: () async {
+              Navigator.of(context).pop(true);
+              var response = await helper.loginTwice(context, twoFact);
+              dealLoginResponse(helper, response);
+            },
+          ),
+        ],
+      ),
+    ).then((value) {});
   }
 
   void dealLoginResponse(LoginHelper hepler, int response) {

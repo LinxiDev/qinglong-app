@@ -59,30 +59,24 @@ class _PushSettingPageState extends ConsumerState<PushSettingPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      const Text(
-                        "通知设置",
-                        style: TextStyle(
-                          fontSize: 14,
-                        ),
-                      ),
-                      const SizedBox(
-                        height: 10,
-                      ),
+                      const SizedBox(height: 10),
+                      const Text("通知设置", style: TextStyle(fontSize: 14)),
+                      const SizedBox(height: 10),
                       DropdownButtonFormField<PushBean>(
                         items: list
                             .map<DropdownMenuItem<PushBean>>(
-                                (e) => DropdownMenuItem<PushBean>(
-                                      value: e,
-                                      child: Text(getNameByKey(e.name)),
-                                    ))
+                              (e) => DropdownMenuItem<PushBean>(
+                                value: e,
+                                child: Text(getNameByKey(e.name)),
+                              ),
+                            )
                             .toList(),
                         style: TextStyle(
                           fontSize: 14,
-                          color:
-                              ref.watch(themeProvider).themeColor.title2Color(),
+                          color: ref
+                              .watch(themeProvider)
+                              .themeColor
+                              .title2Color(),
                         ),
                         decoration: const InputDecoration(
                           isDense: true,
@@ -104,23 +98,17 @@ class _PushSettingPageState extends ConsumerState<PushSettingPage> {
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisSize: MainAxisSize.min,
-                        children: current?.children
+                        children:
+                            current?.children
                                 .map(
                                   (e) => Column(
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
-                                      const SizedBox(
-                                        height: 15,
-                                      ),
-                                      TitleWidget(
-                                        e.key,
-                                        required: e.required,
-                                      ),
-                                      const SizedBox(
-                                        height: 10,
-                                      ),
+                                      const SizedBox(height: 15),
+                                      TitleWidget(e.key, required: e.required),
+                                      const SizedBox(height: 10),
                                       TextField(
                                         controller: e.controller,
                                         textAlignVertical:
@@ -129,13 +117,9 @@ class _PushSettingPageState extends ConsumerState<PushSettingPage> {
                                           hintText: "请输入${e.key}",
                                         ),
                                         autofocus: false,
-                                        style: const TextStyle(
-                                          fontSize: 14,
-                                        ),
+                                        style: const TextStyle(fontSize: 14),
                                       ),
-                                      const SizedBox(
-                                        height: 10,
-                                      ),
+                                      const SizedBox(height: 10),
                                       Text(
                                         e.name,
                                         style: TextStyle(
@@ -151,7 +135,7 @@ class _PushSettingPageState extends ConsumerState<PushSettingPage> {
                                 )
                                 .toList() ??
                             [],
-                      )
+                      ),
                     ],
                   ),
                 ),
@@ -174,15 +158,13 @@ class _PushSettingPageState extends ConsumerState<PushSettingPage> {
       "goCqHttpBot": [
         {
           "label": 'goCqHttpBotUrl',
-          "tip":
-              '推送到个人QQ: http://127.0.0.1/send_private_msg，群：http://127.0.0.1/send_group_msg',
+          "tip": '推送到个人QQ: http://127.0.0.1/send_private_msg，群：http://127.0.0.1/send_group_msg',
           "required": true,
         },
         {"label": 'goCqHttpBotToken', "tip": '访问密钥', "required": true},
         {
           "label": 'goCqHttpBotQq',
-          "tip":
-              '如果GOBOT_URL设置 /send_private_msg 则需要填入 user_id=个人QQ 相反如果是 /send_group_msg 则需要填入 group_id=QQ群',
+          "tip": '如果GOBOT_URL设置 /send_private_msg 则需要填入 user_id=个人QQ 相反如果是 /send_group_msg 则需要填入 group_id=QQ群',
           "required": true,
         },
       ],
@@ -202,18 +184,14 @@ class _PushSettingPageState extends ConsumerState<PushSettingPage> {
           "tip": 'Bark的信息IP/设备码，例如：https://api.day.app/XXXXXXXX',
           "required": true,
         },
-        {
-          "label": 'barkIcon',
-          "tip": 'BARK推送图标,自定义推送图标 (需iOS15或以上才能显示)',
-        },
+        {"label": 'barkIcon', "tip": 'BARK推送图标,自定义推送图标 (需iOS15或以上才能显示)'},
         {"label": 'barkSound', "tip": 'BARK推送铃声,铃声列表去APP查看复制填写'},
         {"label": 'barkGroup', "tip": 'BARK推送消息的分组, 默认为qinglong'},
       ],
       "telegramBot": [
         {
           "label": 'telegramBotToken',
-          "tip":
-              'telegram机器人的token，例如：1077xxx4424:AAFjv0FcqxxxxxxgEMGfi22B4yh15R5uw',
+          "tip": 'telegram机器人的token，例如：1077xxx4424:AAFjv0FcqxxxxxxgEMGfi22B4yh15R5uw',
           "required": true,
         },
         {
@@ -235,8 +213,7 @@ class _PushSettingPageState extends ConsumerState<PushSettingPage> {
       "dingtalkBot": [
         {
           "label": 'dingtalkBotToken',
-          "tip":
-              '钉钉机器人webhook token，例如：5a544165465465645d0f31dca676e7bd07415asdasd',
+          "tip": '钉钉机器人webhook token，例如：5a544165465465645d0f31dca676e7bd07415asdasd',
           "required": true,
         },
         {
@@ -247,16 +224,14 @@ class _PushSettingPageState extends ConsumerState<PushSettingPage> {
       "weWorkBot": [
         {
           "label": 'weWorkBotKey',
-          "tip":
-              '企业微信机器人的 webhook(详见文档 https://work.weixin.qq.com/api/doc/90000/90136/91770)，例如：693a91f6-7xxx-4bc4-97a0-0ec2sifa5aaa',
+          "tip": '企业微信机器人的 webhook(详见文档 https://work.weixin.qq.com/api/doc/90000/90136/91770)，例如：693a91f6-7xxx-4bc4-97a0-0ec2sifa5aaa',
           "required": true,
         },
       ],
       "weWorkApp": [
         {
           "label": 'weWorkAppKey',
-          "tip":
-              'corpid,corpsecret,touser(注:多个成员ID使用|隔开),agentid,消息类型(选填,不填默认文本消息类型) 注意用,号隔开(英文输入法的逗号)，例如：wwcfrs,B-76WERQ,qinglong,1000001,2COat',
+          "tip": 'corpid,corpsecret,touser(注:多个成员ID使用|隔开),agentid,消息类型(选填,不填默认文本消息类型) 注意用,号隔开(英文输入法的逗号)，例如：wwcfrs,B-76WERQ,qinglong,1000001,2COat',
           "required": true,
         },
       ],
@@ -276,27 +251,17 @@ class _PushSettingPageState extends ConsumerState<PushSettingPage> {
         },
         {
           "label": 'pushPlusUser',
-          "tip":
-              '一对多推送的“群组编码”（一对多推送下面->您的群组(如无则新建)->群组编码，如果您是创建群组人。也需点击“查看二维码”扫描绑定，否则不能接受群组消息推送）',
+          "tip": '一对多推送的“群组编码”（一对多推送下面->您的群组(如无则新建)->群组编码，如果您是创建群组人。也需点击“查看二维码”扫描绑定，否则不能接受群组消息推送）',
         },
       ],
       "chat": [
-        {
-          "label": 'chatUrl',
-          "tip": 'chat的url地址',
-          "required": true,
-        },
-        {
-          "label": 'chatToken',
-          "tip": 'chat的token码',
-          "required": true,
-        },
+        {"label": 'chatUrl', "tip": 'chat的url地址', "required": true},
+        {"label": 'chatToken', "tip": 'chat的token码', "required": true},
       ],
       "email": [
         {
           "label": 'emailService',
-          "tip":
-              '邮箱服务名称，比如126、163、Gmail、QQ等，支持列表https://nodemailer.com/smtp/well-known/',
+          "tip": '邮箱服务名称，比如126、163、Gmail、QQ等，支持列表https://nodemailer.com/smtp/well-known/',
           "required": true,
         },
         {"label": 'emailUser', "tip": '邮箱地址', "required": true},
@@ -306,13 +271,21 @@ class _PushSettingPageState extends ConsumerState<PushSettingPage> {
     };
 
     for (var entry in pushSetting.entries) {
-      list.add(PushBean(
+      list.add(
+        PushBean(
           entry.key,
           entry.key,
           entry.value
-              .map((e) => PushChildBean(e["label"].toString(),
-                  e["tip"].toString(), (e["required"] ?? false) as bool))
-              .toList()));
+              .map(
+                (e) => PushChildBean(
+                  e["label"].toString(),
+                  e["tip"].toString(),
+                  (e["required"] ?? false) as bool,
+                ),
+              )
+              .toList(),
+        ),
+      );
     }
   }
 
@@ -361,20 +334,22 @@ class _PushSettingPageState extends ConsumerState<PushSettingPage> {
     if (current == null || current!.key == "已关闭") {
       EasyLoading.show(status: "提交中");
 
-      var response =
-          await SingleAccountPageState.ofApi(context).updateNotifcation({});
+      var response = await SingleAccountPageState.ofApi(context)
+          .updateNotifcation({});
       EasyLoading.dismiss();
       if (response.success) {
         "设置成功".toast();
-        // ignore: use_build_context_synchronously
-        Navigator.of(context).pop();
+        if (mounted) {
+          Navigator.of(context).pop();
+        }
       } else {
         response.message.toast();
       }
       return;
     }
-    int? index = current?.children.indexWhere((element) =>
-        element.controller.text.isEmpty && element.required == true);
+    int? index = current?.children.indexWhere(
+      (element) => element.controller.text.isEmpty && element.required == true,
+    );
     index ??= -1;
     if (index >= 0) {
       ("${current?.children[index].key}为必填项").toast();
@@ -387,13 +362,14 @@ class _PushSettingPageState extends ConsumerState<PushSettingPage> {
 
     params["type"] = current!.key.toString();
     params.addAll(current!.children2Json());
-    var response =
-        await SingleAccountPageState.ofApi(context).updateNotifcation(params);
+    var response = await SingleAccountPageState.ofApi(context)
+        .updateNotifcation(params);
     EasyLoading.dismiss();
     if (response.success) {
       "设置成功".toast();
-      // ignore: use_build_context_synchronously
-      Navigator.of(context).pop();
+      if (mounted) {
+        Navigator.of(context).pop();
+      }
     } else {
       response.message.toast();
     }
@@ -411,8 +387,9 @@ class PushBean {
     Map<String, dynamic> data = {};
 
     for (var e in children) {
-      data[e.key] =
-          e.controller.text.isEmpty ? '' : e.controller.text.toString();
+      data[e.key] = e.controller.text.isEmpty
+          ? ''
+          : e.controller.text.toString();
     }
     return data;
   }

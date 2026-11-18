@@ -71,7 +71,9 @@ class TreeNodeState extends ConsumerState<TreeNode> with SingleTickerProviderSta
           _controller.forward();
         } else {
           _controller.reverse().then<void>((void value) {
-            if (!mounted) return;
+            if (!mounted) {
+              return;
+            }
             setState(() {});
           });
         }
@@ -91,7 +93,9 @@ class TreeNodeState extends ConsumerState<TreeNode> with SingleTickerProviderSta
         _controller.forward();
       } else {
         _controller.reverse().then<void>((void value) {
-          if (!mounted) return;
+          if (!mounted) {
+            return;
+          }
           setState(() {});
         });
       }

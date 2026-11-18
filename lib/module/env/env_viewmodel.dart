@@ -25,19 +25,22 @@ class EnvViewModel extends BaseViewModel {
       loading(notify: true);
     }
 
-    HttpResponse<List<EnvBean>> result =
-        await SingleAccountPageState.ofApi(context).envs("");
+    HttpResponse<List<EnvBean>> result = await SingleAccountPageState.ofApi(
+      context,
+    ).envs("");
 
     if (result.success && result.bean != null) {
       list.clear();
       list.addAll(result.bean!);
       disabledList.clear();
-      disabledList
-          .addAll(list.where((element) => element.status == 1).toList());
+      disabledList.addAll(
+        list.where((element) => element.status == 1).toList(),
+      );
       enabledList.clear();
       enabledList.addAll(list.where((element) => element.status == 0).toList());
-      // ignore: use_build_context_synchronously
-      notifyICloud(context, list);
+      if (context.mounted) {
+        notifyICloud(context, list);
+      }
       list.isEmpty ? empty(notify: true) : success();
     } else {
       list.clear();
@@ -49,30 +52,33 @@ class EnvViewModel extends BaseViewModel {
 
   void notifyICloud(BuildContext context, List<EnvBean> list) {
     getIt<ICloudUtils>(
-            instanceName:
-                SingleAccountPageState.of(context)?.index.toString() ?? "0")
-        .asyncEnv(list);
+      instanceName: SingleAccountPageState.of(context)?.index.toString() ?? "0",
+    ).asyncEnv(list);
   }
 
   Future<void> delEnvs(BuildContext context, List<String> id) async {
-    HttpResponse<NullResponse> result =
-        await SingleAccountPageState.ofApi(context).delEnvs(id);
+    HttpResponse<NullResponse> result = await SingleAccountPageState.ofApi(
+      context,
+    ).delEnvs(id);
     if (result.success) {
       "删除成功".toast();
-      // ignore: use_build_context_synchronously
-      loadData(context, false);
+      if (context.mounted) {
+        loadData(context, false);
+      }
     } else {
       failed(result.message, notify: true);
     }
   }
 
   Future<void> delEnv(BuildContext context, String id) async {
-    HttpResponse<NullResponse> result =
-        await SingleAccountPageState.ofApi(context).delEnv(id);
+    HttpResponse<NullResponse> result = await SingleAccountPageState.ofApi(
+      context,
+    ).delEnv(id);
     if (result.success) {
       "删除成功".toast();
-      // ignore: use_build_context_synchronously
-      loadData(context, false);
+      if (context.mounted) {
+        loadData(context, false);
+      }
     } else {
       failed(result.message, notify: true);
     }
@@ -83,26 +89,33 @@ class EnvViewModel extends BaseViewModel {
   }
 
   Future<void> enableEnv(
-      BuildContext context, List<String> sId, int status) async {
+    BuildContext context,
+    List<String> sId,
+    int status,
+  ) async {
     if (status == 1) {
-      HttpResponse<NullResponse> response =
-          await SingleAccountPageState.ofApi(context).enableEnv(sId);
+      HttpResponse<NullResponse> response = await SingleAccountPageState.ofApi(
+        context,
+      ).enableEnv(sId);
 
       if (response.success) {
         "启用成功".toast();
-        // ignore: use_build_context_synchronously
-        loadData(context, false);
+        if (context.mounted) {
+          loadData(context, false);
+        }
       } else {
         failToast(response.message, notify: true);
       }
     } else {
-      HttpResponse<NullResponse> response =
-          await SingleAccountPageState.ofApi(context).disableEnv(sId);
+      HttpResponse<NullResponse> response = await SingleAccountPageState.ofApi(
+        context,
+      ).disableEnv(sId);
 
       if (response.success) {
         "禁用成功".toast();
-        // ignore: use_build_context_synchronously
-        loadData(context, false);
+        if (context.mounted) {
+          loadData(context, false);
+        }
       } else {
         failToast(response.message, notify: true);
       }
@@ -110,9 +123,14 @@ class EnvViewModel extends BaseViewModel {
   }
 
   void update(
-      BuildContext context, String id, int newIndex, int oldIndex) async {
+    BuildContext context,
+    String id,
+    int newIndex,
+    int oldIndex,
+  ) async {
     await SingleAccountPageState.ofApi(context).moveEnv(id, oldIndex, newIndex);
-    // ignore: use_build_context_synchronously
-    loadData(context, false);
+    if (context.mounted) {
+      loadData(context, false);
+    }
   }
 }

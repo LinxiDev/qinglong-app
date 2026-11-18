@@ -58,7 +58,9 @@ class _ScriptHistoryPageState extends ConsumerState<ScriptHistoryPage> {
       context,
     ).scriptHistory(widget.filename, widget.path);
 
-    if (!mounted) return;
+    if (!mounted) {
+      return;
+    }
 
     if (response.success) {
       try {
@@ -359,7 +361,9 @@ class _ScriptHistoryDetailPageState
       context,
     ).scriptHistoryDetail(widget.filename, widget.path, widget.versionId);
 
-    if (!mounted) return;
+    if (!mounted) {
+      return;
+    }
 
     if (!response.success) {
       setState(() {
@@ -421,7 +425,9 @@ class _ScriptHistoryDetailPageState
     );
     EasyLoading.dismiss();
 
-    if (!mounted) return;
+    if (!mounted) {
+      return;
+    }
 
     if (response.success) {
       "已还原".toast();

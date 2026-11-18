@@ -57,9 +57,7 @@ class ConfigEditPageState extends ConsumerState<ConfigEditPage> {
           TextButton(
             child: Text(
               "知道了",
-              style: TextStyle(
-                color: ref.watch(themeProvider).primaryColor,
-              ),
+              style: TextStyle(color: ref.watch(themeProvider).primaryColor),
             ),
             onPressed: () {
               Navigator.of(childContext).pop();
@@ -91,8 +89,14 @@ class ConfigEditPageState extends ConsumerState<ConfigEditPage> {
     });
   }
 
-  Future<void> notifyICloud(BuildContext context, String? title, String? content) async {
-    await getIt<ICloudUtils>(instanceName: SingleAccountPageState.of(context)?.index.toString() ?? "0").asyncConfig(title, content);
+  Future<void> notifyICloud(
+    BuildContext context,
+    String? title,
+    String? content,
+  ) async {
+    await getIt<ICloudUtils>(
+      instanceName: SingleAccountPageState.of(context)?.index.toString() ?? "0",
+    ).asyncConfig(title, content);
   }
 
   @override
@@ -122,9 +126,7 @@ class ConfigEditPageState extends ConsumerState<ConfigEditPage> {
                   TextButton(
                     child: const Text(
                       "取消",
-                      style: TextStyle(
-                        color: Color(0xff999999),
-                      ),
+                      style: TextStyle(color: Color(0xff999999)),
                     ),
                     onPressed: () {
                       Navigator.of(childContext).pop();
@@ -156,9 +158,7 @@ class ConfigEditPageState extends ConsumerState<ConfigEditPage> {
               codeKey.currentState?.showSearchBar();
             },
             child: Padding(
-              padding: const EdgeInsets.only(
-                left: 15,
-              ),
+              padding: const EdgeInsets.only(left: 15),
               child: Center(
                 child: Icon(
                   Icons.search,
@@ -175,24 +175,14 @@ class ConfigEditPageState extends ConsumerState<ConfigEditPage> {
                 updateValueBykey(result);
               },
               itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
-                ...operateList
-                    .map(
-                      (e) => PopupMenuItem<String>(
-                        value: e,
-                        child: Text(e),
-                      ),
-                    )
-                    ,
+                ...operateList.map(
+                  (e) => PopupMenuItem<String>(value: e, child: Text(e)),
+                ),
               ],
               child: const Padding(
-                padding: EdgeInsets.symmetric(
-                  horizontal: 15,
-                ),
+                padding: EdgeInsets.symmetric(horizontal: 15),
                 child: Center(
-                  child: Icon(
-                    CupertinoIcons.arrow_up_right_diamond,
-                    size: 20,
-                  ),
+                  child: Icon(CupertinoIcons.arrow_up_right_diamond, size: 20),
                 ),
               ),
             ),
@@ -201,20 +191,29 @@ class ConfigEditPageState extends ConsumerState<ConfigEditPage> {
             color: Colors.transparent,
             padding: EdgeInsets.zero,
             onPressed: () async {
+              if (!mounted) {
+                return;
+              }
               try {
                 await hideKeyboardFocus();
                 await EasyLoading.show(status: " 提交中");
-                // ignore: use_build_context_synchronously
-                HttpResponse<NullResponse> response = await SingleAccountPageState.ofApi(context).saveFile(widget.title, result);
+                if (!context.mounted) {
+                  return;
+                }
+                HttpResponse<NullResponse> response =
+                    await SingleAccountPageState.ofApi(context)
+                        .saveFile(widget.title, result);
                 if (Platform.isIOS) {
-                  // ignore: use_build_context_synchronously
-                  await notifyICloud(context, widget.title, result);
+                  if (context.mounted) {
+                    await notifyICloud(context, widget.title, result);
+                  }
                 }
                 await EasyLoading.dismiss();
                 if (response.success) {
                   "提交成功".toast();
-                  // ignore: use_build_context_synchronously
-                  Navigator.of(context).pop(result);
+                  if (context.mounted) {
+                    Navigator.of(context).pop(result);
+                  }
                 } else {
                   (response.message ?? "").toast();
                 }
@@ -223,9 +222,7 @@ class ConfigEditPageState extends ConsumerState<ConfigEditPage> {
               }
             },
             child: Padding(
-              padding: const EdgeInsets.only(
-                right: 15,
-              ),
+              padding: const EdgeInsets.only(right: 15),
               child: Center(
                 child: Text(
                   "提交",
@@ -236,7 +233,7 @@ class ConfigEditPageState extends ConsumerState<ConfigEditPage> {
                 ),
               ),
             ),
-          )
+          ),
         ],
       ),
       body: SafeArea(
@@ -304,58 +301,52 @@ class ConfigEditPageState extends ConsumerState<ConfigEditPage> {
       // 忽略异常，保持原有行为
     }
 
-    TextEditingController controller = TextEditingController(text: defaultValue.replaceAll("\"", "").replaceAll("'", ""));
-    showCupertinoDialog(
-      useRootNavigator: false,
-      // ignore: use_build_context_synchronously
-      context: context,
-      builder: (context) => AlertDialog(
-        contentPadding: const EdgeInsets.symmetric(
-          vertical: 10,
-          horizontal: 15,
-        ),
-        elevation: 0,
-        title: Text(
-          "编辑$key:",
-          style: const TextStyle(
-            fontWeight: FontWeight.w400,
-          ),
-        ),
-        content: TextField(
-          controller: controller,
-          decoration: const InputDecoration(
-            isDense: true,
-            hintText: "请输入值",
-          ),
-          autofocus: false,
-        ),
-        actions: [
-          TextButton(
-            child: const Text(
-              "取消",
-              style: TextStyle(
-                color: Color(0xff999999),
-              ),
-            ),
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-          ),
-          TextButton(
-            child: Text(
-              "确定",
-              style: TextStyle(
-                color: ref.watch(themeProvider).primaryColor,
-              ),
-            ),
-            onPressed: () async {
-              Navigator.of(context).pop();
-              updateValueByKey(key, controller.text);
-            },
-          ),
-        ],
-      ),
+    TextEditingController controller = TextEditingController(
+      text: defaultValue.replaceAll("\"", "").replaceAll("'", ""),
     );
+    if (mounted) {
+      showCupertinoDialog(
+        useRootNavigator: false,
+        context: context,
+        builder: (context) => AlertDialog(
+          contentPadding: const EdgeInsets.symmetric(
+            vertical: 10,
+            horizontal: 15,
+          ),
+          elevation: 0,
+          title: Text(
+            "编辑$key:",
+            style: const TextStyle(fontWeight: FontWeight.w400),
+          ),
+          content: TextField(
+            controller: controller,
+            decoration: const InputDecoration(isDense: true, hintText: "请输入值"),
+            autofocus: false,
+          ),
+          actions: [
+            TextButton(
+              child: const Text(
+                "取消",
+                style: TextStyle(color: Color(0xff999999)),
+              ),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: Text(
+                "确定",
+                style: TextStyle(color: ref.watch(themeProvider).primaryColor),
+              ),
+              onPressed: () async {
+                Navigator.of(context).pop();
+                updateValueByKey(key, controller.text);
+              },
+            ),
+          ],
+        ),
+      );
+    }
   }
 
   void updateValueByKey(String key, String text) {

@@ -13,9 +13,7 @@ import 'package:qinglong_app/module/others/dependencies/dependency_viewmodel.dar
 import 'package:qinglong_app/utils/extension.dart';
 
 class AddDependencyPage extends ConsumerStatefulWidget {
-  const AddDependencyPage({
-    super.key,
-  });
+  const AddDependencyPage({super.key});
 
   @override
   ConsumerState<AddDependencyPage> createState() => _AddDependencyPageState();
@@ -51,25 +49,14 @@ class _AddDependencyPageState extends ConsumerState<AddDependencyPage> {
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
           Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 15,
-            ),
+            padding: const EdgeInsets.symmetric(horizontal: 15),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const SizedBox(
-                  height: 10,
-                ),
-                const Text(
-                  "依赖类型",
-                  style: TextStyle(
-                    fontSize: 16,
-                  ),
-                ),
-                const SizedBox(
-                  height: 10,
-                ),
+                const SizedBox(height: 10),
+                const Text("依赖类型", style: TextStyle(fontSize: 16)),
+                const SizedBox(height: 10),
                 DropdownButtonFormField<DepedencyEnum>(
                   items: [
                     DropdownMenuItem(
@@ -109,32 +96,19 @@ class _AddDependencyPageState extends ConsumerState<AddDependencyPage> {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 15,
-            ),
+            padding: const EdgeInsets.symmetric(horizontal: 15),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const SizedBox(
-                  height: 10,
-                ),
-                const Text(
-                  "名称",
-                  style: TextStyle(
-                    fontSize: 16,
-                  ),
-                ),
-                const SizedBox(
-                  height: 10,
-                ),
+                const SizedBox(height: 10),
+                const Text("名称", style: TextStyle(fontSize: 16)),
+                const SizedBox(height: 10),
                 TextField(
                   controller: _nameController,
                   maxLines: 10,
                   minLines: 1,
-                  decoration: const InputDecoration(
-                    hintText: "请输入名称,多个依赖换行添加",
-                  ),
+                  decoration: const InputDecoration(hintText: "请输入名称,多个依赖换行添加"),
                   autofocus: false,
                 ),
               ],
@@ -155,17 +129,16 @@ class _AddDependencyPageState extends ConsumerState<AddDependencyPage> {
       List<Map<String, dynamic>> list = [];
 
       List<String> names = _nameController.text.split("\n");
-      list.addAll(names
-          .map(
-            (e) => {
-              "name": e,
-              "type": depedencyType.index,
-            },
-          )
-          .toList());
+      list.addAll(
+        names.map((e) => {"name": e, "type": depedencyType.index}).toList(),
+      );
       await EasyLoading.show(status: " 提交中");
-      // ignore: use_build_context_synchronously
-      HttpResponse<String> response = await SingleAccountPageState.ofApi(context).addDependency(list);
+      if (!mounted) {
+        return;
+      }
+      HttpResponse<String> response = await SingleAccountPageState.ofApi(
+        context,
+      ).addDependency(list);
 
       await EasyLoading.dismiss();
       if (response.success) {
@@ -179,8 +152,9 @@ class _AddDependencyPageState extends ConsumerState<AddDependencyPage> {
             "新增成功".toast();
           }
         }
-        // ignore: use_build_context_synchronously
-        Navigator.of(context).pop(data);
+        if (mounted) {
+          Navigator.of(context).pop(data);
+        }
       } else {
         response.message.toast();
       }

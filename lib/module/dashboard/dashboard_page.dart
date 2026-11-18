@@ -55,7 +55,9 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
       api.dashboardTopCount(),
     ]);
 
-    if (!mounted) return;
+    if (!mounted) {
+      return;
+    }
 
     overview = _decodeMap(responses[0]);
     trend = _decodeList(responses[1]);

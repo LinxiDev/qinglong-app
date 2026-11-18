@@ -28,7 +28,8 @@ class ScriptPage extends ConsumerStatefulWidget {
   ScriptPageState createState() => ScriptPageState();
 }
 
-class ScriptPageState extends ConsumerState<ScriptPage> with LazyLoadState<ScriptPage> {
+class ScriptPageState extends ConsumerState<ScriptPage>
+    with LazyLoadState<ScriptPage> {
   List<ScriptData> list = [];
 
   String? path;
@@ -39,7 +40,11 @@ class ScriptPageState extends ConsumerState<ScriptPage> with LazyLoadState<Scrip
   bool buttonshow = false;
 
   void scrollToTop() {
-    controller.animateTo(0, duration: const Duration(milliseconds: 200), curve: Curves.linear);
+    controller.animateTo(
+      0,
+      duration: const Duration(milliseconds: 200),
+      curve: Curves.linear,
+    );
   }
 
   @override
@@ -97,53 +102,48 @@ class ScriptPageState extends ConsumerState<ScriptPage> with LazyLoadState<Scrip
             GestureDetector(
               behavior: HitTestBehavior.opaque,
               onTap: () {
-                showMoreOperate(
-                  context,
-                  [
-                    CupertinoSheer(
-                      title: "新增文件",
-                      onTap: () {
-                        addScript();
-                      },
-                    ),
-                    addDivider(),
-                    CupertinoSheer(
-                      title: "新增文件夹",
-                      onTap: () {
-                        SystemBean? systemBean;
-                        try {
-                          systemBean = getIt<SystemBean>(instanceName: (SingleAccountPageState.of(context)?.index ?? 0).toString());
-                        } catch (e) {
-                          systemBean = SystemBean(version: "2.10.13", fromAutoGet: false);
-                        }
-                        if (!systemBean.isUpperVersion2_14_5()) {
-                          "该功能仅支持v2.14.5及以上版本".toast();
-                          return;
-                        }
-                        addFloder();
-                      },
-                    )
-                  ],
-                );
+                showMoreOperate(context, [
+                  CupertinoSheer(
+                    title: "新增文件",
+                    onTap: () {
+                      addScript();
+                    },
+                  ),
+                  addDivider(),
+                  CupertinoSheer(
+                    title: "新增文件夹",
+                    onTap: () {
+                      SystemBean? systemBean;
+                      try {
+                        systemBean = getIt<SystemBean>(
+                          instanceName:
+                              (SingleAccountPageState.of(context)?.index ?? 0)
+                                  .toString(),
+                        );
+                      } catch (e) {
+                        systemBean = SystemBean(
+                          version: "2.10.13",
+                          fromAutoGet: false,
+                        );
+                      }
+                      if (!systemBean.isUpperVersion2_14_5()) {
+                        "该功能仅支持v2.14.5及以上版本".toast();
+                        return;
+                      }
+                      addFloder();
+                    },
+                  ),
+                ]);
               },
               child: const Padding(
-                padding: EdgeInsets.symmetric(
-                  horizontal: 15,
-                ),
-                child: Center(
-                  child: Icon(
-                    CupertinoIcons.add,
-                    size: 24,
-                  ),
-                ),
+                padding: EdgeInsets.symmetric(horizontal: 15),
+                child: Center(child: Icon(CupertinoIcons.add, size: 24)),
               ),
             ),
           ],
         ),
         body: list.isEmpty
-            ? const Center(
-                child: LoadingWidget(),
-              )
+            ? const Center(child: LoadingWidget())
             : RefreshIndicator(
                 color: Theme.of(context).primaryColor,
                 onRefresh: () async {
@@ -155,9 +155,14 @@ class ScriptPageState extends ConsumerState<ScriptPage> with LazyLoadState<Scrip
                   onExpansionChanged: (key, state) {
                     ScriptData? node = _treeViewController.getNode(key);
                     if (node != null) {
-                      List<ScriptData> updated = _treeViewController.updateNode(key, node.copyWith(expanded: !node.expanded));
+                      List<ScriptData> updated = _treeViewController.updateNode(
+                        key,
+                        node.copyWith(expanded: !node.expanded),
+                      );
                       setState(() {
-                        _treeViewController = _treeViewController.copyWith(children: updated);
+                        _treeViewController = _treeViewController.copyWith(
+                          children: updated,
+                        );
                       });
                     }
                   },
@@ -172,9 +177,7 @@ class ScriptPageState extends ConsumerState<ScriptPage> with LazyLoadState<Scrip
                           CupertinoDialogAction(
                             child: const Text(
                               "取消",
-                              style: TextStyle(
-                                color: Color(0xff999999),
-                              ),
+                              style: TextStyle(color: Color(0xff999999)),
                             ),
                             onPressed: () {
                               Navigator.of(context).pop();
@@ -198,19 +201,19 @@ class ScriptPageState extends ConsumerState<ScriptPage> with LazyLoadState<Scrip
                   },
                   onNodeTap: (key) {
                     ScriptData? selectedNode = _treeViewController.getNode(key);
-                    Navigator.of(context).pushNamed(
-                      Routes.routeScriptDetail,
-                      arguments: {
-                        "title": selectedNode?.title,
-                        "path": selectedNode?.parent,
-                      },
-                    ).then(
-                      (value) {
-                        if (value != null && value == true) {
-                          loadData();
-                        }
-                      },
-                    );
+                    Navigator.of(context)
+                        .pushNamed(
+                          Routes.routeScriptDetail,
+                          arguments: {
+                            "title": selectedNode?.title,
+                            "path": selectedNode?.parent,
+                          },
+                        )
+                        .then((value) {
+                          if (value != null && value == true) {
+                            loadData();
+                          }
+                        });
                   },
                 ),
               ),
@@ -221,18 +224,14 @@ class ScriptPageState extends ConsumerState<ScriptPage> with LazyLoadState<Scrip
   Widget searchCell(WidgetRef context) {
     return Container(
       color: ref.watch(themeProvider).themeColor.searchBgColor(),
-      padding: const EdgeInsets.symmetric(
-        horizontal: 15,
-        vertical: 10,
-      ),
-      child: SearchCell(
-        controller: searchText,
-      ),
+      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+      child: SearchCell(controller: searchText),
     );
   }
 
   Future<void> loadData() async {
-    HttpResponse<List<ScriptData>> response = await SingleAccountPageState.ofApi(context).scripts();
+    HttpResponse<List<ScriptData>> response =
+        await SingleAccountPageState.ofApi(context).scripts();
 
     if (response.success) {
       if (response.bean == null || response.bean!.isEmpty) {
@@ -258,36 +257,33 @@ class ScriptPageState extends ConsumerState<ScriptPage> with LazyLoadState<Scrip
   void addScript() {
     Navigator.of(context)
         .push(
-      CupertinoPageRoute(
-        builder: (context) => const ScriptUploadPage(),
-      ),
-    )
+          CupertinoPageRoute(builder: (context) => const ScriptUploadPage()),
+        )
         .then((value) {
-      if (value != null && value == true) {
-        loadData();
-      }
-    });
+          if (value != null && value == true) {
+            loadData();
+          }
+        });
   }
 
   void addFloder() {
     Navigator.of(context)
-        .push(
-      CupertinoPageRoute(
-        builder: (context) => const FloderAddPage(),
-      ),
-    )
+        .push(CupertinoPageRoute(builder: (context) => const FloderAddPage()))
         .then((value) {
-      if (value != null && value == true) {
-        loadData();
-      }
-    });
+          if (value != null && value == true) {
+            loadData();
+          }
+        });
   }
 
   void deleteFold(ScriptData item) async {
     SystemBean? systemBean;
 
     try {
-      systemBean = getIt<SystemBean>(instanceName: (SingleAccountPageState.of(context)?.index ?? 0).toString());
+      systemBean = getIt<SystemBean>(
+        instanceName: (SingleAccountPageState.of(context)?.index ?? 0)
+            .toString(),
+      );
     } catch (e) {
       systemBean = SystemBean(version: "2.10.13", fromAutoGet: false);
     }
@@ -297,22 +293,16 @@ class ScriptPageState extends ConsumerState<ScriptPage> with LazyLoadState<Scrip
     }
 
     EasyLoading.show(status: "删除中...");
+    if (!context.mounted) {
+      return;
+    }
+    // 先取出 Api，避免 await 之后的 context 使用
+    final api = SingleAccountPageState.ofApi(context);
     var temp = (item.type == "directory")
-        ? await SingleAccountPageState.ofApi(context).delScriptFold(
-            item.title,
-            item.parent,
-          )
+        ? await api.delScriptFold(item.title, item.parent)
         : (systemBean.isUpperVersion2_14_5()
-            // ignore: use_build_context_synchronously
-            ? await SingleAccountPageState.ofApi(context).delScriptNewVersion(
-                item.title,
-                item.parent,
-              )
-            // ignore: use_build_context_synchronously
-            : await SingleAccountPageState.ofApi(context).delScript(
-                item.title,
-                item.parent,
-              ));
+              ? await api.delScriptNewVersion(item.title, item.parent)
+              : await api.delScript(item.title, item.parent));
     EasyLoading.dismiss();
     if (temp.success) {
       "已删除".toast();

@@ -27,7 +27,8 @@ class EnvPage extends ConsumerStatefulWidget {
   EnvPageState createState() => EnvPageState();
 }
 
-class EnvPageState extends ConsumerState<EnvPage> with TickerProviderStateMixin {
+class EnvPageState extends ConsumerState<EnvPage>
+    with TickerProviderStateMixin {
   String currentState = EnvViewModel.allStr;
   TextEditingController searchText = TextEditingController();
   TabController? _tabController;
@@ -40,7 +41,11 @@ class EnvPageState extends ConsumerState<EnvPage> with TickerProviderStateMixin 
 
   Future<void> scrollToTop() async {
     if (!_scrollController.hasClients) return;
-    _scrollController.animateTo(0, duration: const Duration(milliseconds: 200), curve: Curves.linear);
+    _scrollController.animateTo(
+      0,
+      duration: const Duration(milliseconds: 200),
+      curve: Curves.linear,
+    );
   }
 
   Future<void> move2Top() async {
@@ -50,7 +55,8 @@ class EnvPageState extends ConsumerState<EnvPage> with TickerProviderStateMixin 
       }
       return;
     }
-    if (_scrollController.offset != _scrollController.position.minScrollExtent) {
+    if (_scrollController.offset !=
+        _scrollController.position.minScrollExtent) {
       await scrollToTop();
     } else {
       if (refreshKey.currentState?.mounted ?? false) {
@@ -60,7 +66,10 @@ class EnvPageState extends ConsumerState<EnvPage> with TickerProviderStateMixin 
   }
 
   List<EnvBean> getListByType(int index) {
-    var model = ref.read(SingleAccountPageState.ofEnvProvider(context)(getProviderName(context)).notifier);
+    var model = ref.read(
+      SingleAccountPageState.ofEnvProvider(context)(getProviderName(context))
+          .notifier,
+    );
     if (index == 0) {
       return model.list;
     } else if (index == 1) {
@@ -111,36 +120,40 @@ class EnvPageState extends ConsumerState<EnvPage> with TickerProviderStateMixin 
       },
       child: Scaffold(
         appBar: QlAppBar(
-          title: (editMode && checkedIds.isNotEmpty) ? "当前选中 ${checkedIds.length} 个变量" : "环境变量",
+          title: (editMode && checkedIds.isNotEmpty)
+              ? "当前选中 ${checkedIds.length} 个变量"
+              : "环境变量",
           canClick2Vip: !editMode,
-          backWidget: Builder(builder: (context) {
-            return CupertinoButton(
-              color: Colors.transparent,
-              padding: EdgeInsets.zero,
-              onPressed: () {
-                checkedIds.clear();
-                WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-                  if (editMode) {
-                    showOverlay(context);
-                  } else {
-                    removeOverlay();
-                  }
-                });
-                editMode = !editMode;
-                // searchText.text = "";
-                setState(() {});
-              },
-              child: Center(
-                child: Text(
-                  editMode == true ? "完成" : "编辑",
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: Theme.of(context).appBarTheme.iconTheme?.color,
+          backWidget: Builder(
+            builder: (context) {
+              return CupertinoButton(
+                color: Colors.transparent,
+                padding: EdgeInsets.zero,
+                onPressed: () {
+                  checkedIds.clear();
+                  WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+                    if (editMode) {
+                      showOverlay(context);
+                    } else {
+                      removeOverlay();
+                    }
+                  });
+                  editMode = !editMode;
+                  // searchText.text = "";
+                  setState(() {});
+                },
+                child: Center(
+                  child: Text(
+                    editMode == true ? "完成" : "编辑",
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Theme.of(context).appBarTheme.iconTheme?.color,
+                    ),
                   ),
                 ),
-              ),
-            );
-          }),
+              );
+            },
+          ),
           actions: [
             CupertinoButton(
               color: Colors.transparent,
@@ -150,9 +163,18 @@ class EnvPageState extends ConsumerState<EnvPage> with TickerProviderStateMixin 
                   if (checkedIds.length ==
                       getListByType(_tabController?.index ?? 0).where((value) {
                         if (searchText.text.isEmpty ||
-                            (value.name?.contains(searchText.text.toLowerCase()) ?? false) ||
-                            (value.value?.contains(searchText.text.toLowerCase()) ?? false) ||
-                            (value.remarks?.contains(searchText.text.toLowerCase()) ?? false)) {
+                            (value.name?.contains(
+                                  searchText.text.toLowerCase(),
+                                ) ??
+                                false) ||
+                            (value.value?.contains(
+                                  searchText.text.toLowerCase(),
+                                ) ??
+                                false) ||
+                            (value.remarks?.contains(
+                                  searchText.text.toLowerCase(),
+                                ) ??
+                                false)) {
                           return true;
                         } else {
                           return false;
@@ -165,57 +187,87 @@ class EnvPageState extends ConsumerState<EnvPage> with TickerProviderStateMixin 
                   } else {
                     //全选
                     checkedIds.clear();
-                    checkedIds.addAll(getListByType(_tabController?.index ?? 0)
-                        .where((value) {
-                          if (searchText.text.isEmpty ||
-                              (value.name?.contains(searchText.text.toLowerCase()) ?? false) ||
-                              (value.value?.contains(searchText.text.toLowerCase()) ?? false) ||
-                              (value.remarks?.contains(searchText.text.toLowerCase()) ?? false)) {
-                            return true;
-                          } else {
-                            return false;
-                          }
-                        })
-                        .map((e) => e.sId ?? "")
-                        .toList());
+                    checkedIds.addAll(
+                      getListByType(_tabController?.index ?? 0)
+                          .where((value) {
+                            if (searchText.text.isEmpty ||
+                                (value.name?.contains(
+                                      searchText.text.toLowerCase(),
+                                    ) ??
+                                    false) ||
+                                (value.value?.contains(
+                                      searchText.text.toLowerCase(),
+                                    ) ??
+                                    false) ||
+                                (value.remarks?.contains(
+                                      searchText.text.toLowerCase(),
+                                    ) ??
+                                    false)) {
+                              return true;
+                            } else {
+                              return false;
+                            }
+                          })
+                          .map((e) => e.sId ?? "")
+                          .toList(),
+                    );
                     setState(() {});
                   }
                   return;
                 }
                 Navigator.of(context)
                     .push(
-                  CupertinoPageRoute(
-                    builder: (context) => const AddEnvPage(),
-                  ),
-                )
+                      CupertinoPageRoute(
+                        builder: (context) => const AddEnvPage(),
+                      ),
+                    )
                     .then((value) {
-                  // ignore: use_build_context_synchronously
-                  ref.read(SingleAccountPageState.ofEnvProvider(context)(getProviderName(context)).notifier).loadData(context, false);
-                });
+                      if (context.mounted) {
+                        ref
+                            .read(
+                              SingleAccountPageState.ofEnvProvider(context)(
+                                getProviderName(context),
+                              ).notifier,
+                            )
+                            .loadData(context, false);
+                      }
+                    });
               },
               child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 15,
-                ),
+                padding: const EdgeInsets.symmetric(horizontal: 15),
                 child: Center(
                   child: editMode
                       ? Text(
                           checkedIds.length ==
-                                  getListByType(_tabController?.index ?? 0).where((value) {
-                                    if (searchText.text.isEmpty ||
-                                        (value.name?.contains(searchText.text.toLowerCase()) ?? false) ||
-                                        (value.value?.contains(searchText.text.toLowerCase()) ?? false) ||
-                                        (value.remarks?.contains(searchText.text.toLowerCase()) ?? false)) {
-                                      return true;
-                                    } else {
-                                      return false;
-                                    }
-                                  }).length
+                                  getListByType(_tabController?.index ?? 0)
+                                      .where((value) {
+                                        if (searchText.text.isEmpty ||
+                                            (value.name?.contains(
+                                                  searchText.text.toLowerCase(),
+                                                ) ??
+                                                false) ||
+                                            (value.value?.contains(
+                                                  searchText.text.toLowerCase(),
+                                                ) ??
+                                                false) ||
+                                            (value.remarks?.contains(
+                                                  searchText.text.toLowerCase(),
+                                                ) ??
+                                                false)) {
+                                          return true;
+                                        } else {
+                                          return false;
+                                        }
+                                      })
+                                      .length
                               ? "全不选"
                               : "全选",
                           style: TextStyle(
                             fontSize: 16,
-                            color: Theme.of(context).appBarTheme.iconTheme?.color,
+                            color: Theme.of(context)
+                                .appBarTheme
+                                .iconTheme
+                                ?.color,
                           ),
                         )
                       : Icon(
@@ -232,23 +284,26 @@ class EnvPageState extends ConsumerState<EnvPage> with TickerProviderStateMixin 
           builder: (ref, model, child) {
             return NestedScrollView(
               controller: _scrollController,
-              headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
-                return [
-                  _buildAppBar(ref, model),
-                  SliverOverlapAbsorber(
-                    handle: NestedScrollView.sliverOverlapAbsorberHandleFor(context),
-                    sliver: SliverPersistentHeader(
-                      pinned: true,
-                      floating: false,
-                      delegate: SliverTabBarDelegate(
-                        _tabController!,
-                        ref,
-                        editMode,
+              headerSliverBuilder:
+                  (BuildContext context, bool innerBoxIsScrolled) {
+                    return [
+                      _buildAppBar(ref, model),
+                      SliverOverlapAbsorber(
+                        handle: NestedScrollView.sliverOverlapAbsorberHandleFor(
+                          context,
+                        ),
+                        sliver: SliverPersistentHeader(
+                          pinned: true,
+                          floating: false,
+                          delegate: SliverTabBarDelegate(
+                            _tabController!,
+                            ref,
+                            editMode,
+                          ),
+                        ),
                       ),
-                    ),
-                  ),
-                ];
-              },
+                    ];
+                  },
               body: RefreshIndicator(
                 key: refreshKey,
                 edgeOffset: 15,
@@ -312,7 +367,9 @@ class EnvPageState extends ConsumerState<EnvPage> with TickerProviderStateMixin 
               ),
             );
           },
-          model: SingleAccountPageState.ofEnvProvider(context)(getProviderName(context)),
+          model: SingleAccountPageState.ofEnvProvider(context)(
+            getProviderName(context),
+          ),
           onReady: (viewModel) {
             viewModel.loadData(context);
           },
@@ -324,16 +381,9 @@ class EnvPageState extends ConsumerState<EnvPage> with TickerProviderStateMixin 
   Widget searchCell(BuildContext context, WidgetRef ref, EnvViewModel model) {
     return Container(
       color: ref.watch(themeProvider).themeColor.searchBgColor(),
-      padding: const EdgeInsets.only(
-        left: 15,
-        right: 15,
-        top: 10,
-        bottom: 10,
-      ),
+      padding: const EdgeInsets.only(left: 15, right: 15, top: 10, bottom: 10),
       height: searchCellHeight.toDouble(),
-      child: SearchCell(
-        controller: searchText,
-      ),
+      child: SearchCell(controller: searchText),
     );
   }
 
@@ -347,7 +397,12 @@ class EnvPageState extends ConsumerState<EnvPage> with TickerProviderStateMixin 
           alignment: Alignment.bottomCenter,
           child: Container(
             width: MediaQuery.of(context).size.width,
-            color: ref.watch(themeProvider).currentTheme.bottomNavigationBarTheme.backgroundColor?.withValues(alpha: 1),
+            color: ref
+                .watch(themeProvider)
+                .currentTheme
+                .bottomNavigationBarTheme
+                .backgroundColor
+                ?.withValues(alpha: 1),
             child: SafeArea(
               top: false,
               child: SizedBox(
@@ -405,12 +460,7 @@ class EnvPageState extends ConsumerState<EnvPage> with TickerProviderStateMixin 
         content: Text("确认$s吗"),
         actions: [
           CupertinoDialogAction(
-            child: const Text(
-              "取消",
-              style: TextStyle(
-                color: Color(0xff999999),
-              ),
-            ),
+            child: const Text("取消", style: TextStyle(color: Color(0xff999999))),
             onPressed: () {
               Navigator.of(context).pop();
             },
@@ -418,25 +468,21 @@ class EnvPageState extends ConsumerState<EnvPage> with TickerProviderStateMixin 
           CupertinoDialogAction(
             child: Text(
               "确定",
-              style: TextStyle(
-                color: ref.watch(themeProvider).primaryColor,
-              ),
+              style: TextStyle(color: ref.watch(themeProvider).primaryColor),
             ),
             onPressed: () {
               Navigator.of(context).pop();
               editMode = false;
               removeOverlay();
-              WidgetsBinding.instance.addPostFrameCallback(
-                (timeStamp) {
-                  if (s == "启用") {
-                    enableEnv();
-                  } else if (s == "禁用") {
-                    disableEnv();
-                  } else if (s == "删除") {
-                    deleteEnvs();
-                  }
-                },
-              );
+              WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+                if (s == "启用") {
+                  enableEnv();
+                } else if (s == "禁用") {
+                  disableEnv();
+                } else if (s == "删除") {
+                  deleteEnvs();
+                }
+              });
               setState(() {});
             },
           ),
@@ -446,23 +492,33 @@ class EnvPageState extends ConsumerState<EnvPage> with TickerProviderStateMixin 
   }
 
   void enableEnv() {
-    ref.read(SingleAccountPageState.ofEnvProvider(context)(getProviderName(context)).notifier).enableEnv(
-          context,
-          checkedIds.toList(),
-          1,
-        );
+    ref
+        .read(
+          SingleAccountPageState.ofEnvProvider(context)(
+            getProviderName(context),
+          ).notifier,
+        )
+        .enableEnv(context, checkedIds.toList(), 1);
   }
 
   void disableEnv() {
-    ref.read(SingleAccountPageState.ofEnvProvider(context)(getProviderName(context)).notifier).enableEnv(
-          context,
-          checkedIds.toList(),
-          0,
-        );
+    ref
+        .read(
+          SingleAccountPageState.ofEnvProvider(context)(
+            getProviderName(context),
+          ).notifier,
+        )
+        .enableEnv(context, checkedIds.toList(), 0);
   }
 
   void deleteEnvs() {
-    ref.read(SingleAccountPageState.ofEnvProvider(context)(getProviderName(context)).notifier).delEnvs(context, checkedIds.toList());
+    ref
+        .read(
+          SingleAccountPageState.ofEnvProvider(context)(
+            getProviderName(context),
+          ).notifier,
+        )
+        .delEnvs(context, checkedIds.toList());
   }
 
   void removeOverlay() {
@@ -507,16 +563,21 @@ class EnvItemCell extends StatelessWidget {
             onPressed: (_) {
               Navigator.of(context)
                   .push(
-                CupertinoPageRoute(
-                  builder: (context) => AddEnvPage(
-                    envBean: bean,
-                  ),
-                ),
-              )
+                    CupertinoPageRoute(
+                      builder: (context) => AddEnvPage(envBean: bean),
+                    ),
+                  )
                   .then((value) {
-                // ignore: use_build_context_synchronously
-                ref.read(SingleAccountPageState.ofEnvProvider(context)(getProviderName(context)).notifier).loadData(context, false);
-              });
+                    if (context.mounted) {
+                      ref
+                          .read(
+                            SingleAccountPageState.ofEnvProvider(context)(
+                              getProviderName(context),
+                            ).notifier,
+                          )
+                          .loadData(context, false);
+                    }
+                  });
             },
             foregroundColor: Colors.white,
             icon: CupertinoIcons.pencil_outline,
@@ -527,7 +588,9 @@ class EnvItemCell extends StatelessWidget {
               enableEnv(context);
             },
             foregroundColor: Colors.white,
-            icon: bean.status == 0 ? Icons.dnd_forwardslash : Icons.check_circle_outline_sharp,
+            icon: bean.status == 0
+                ? Icons.dnd_forwardslash
+                : Icons.check_circle_outline_sharp,
           ),
           SlidableAction(
             backgroundColor: const Color(0xffEA4D3E),
@@ -552,25 +615,23 @@ class EnvItemCell extends StatelessWidget {
                   if (editMode) {
                     checkedCallback(bean.sId ?? "");
                   } else {
-                    Navigator.of(context).pushNamed(Routes.routeEnvDetail, arguments: bean);
+                    Navigator.of(context)
+                        .pushNamed(Routes.routeEnvDetail, arguments: bean);
                   }
                 },
                 onLongPress: () {
                   if (editMode) return;
-                  showMoreOperate(
-                    context,
-                    [
-                      CupertinoSheer(
-                        title: (bean.isPinned ?? 0) == 1 ? "取消置顶" : "置顶",
-                        onTap: () => togglePinEnv(context, ref),
-                      ),
-                      addDivider(),
-                      CupertinoSheer(
-                        title: "重命名变量名",
-                        onTap: () => renameEnvName(context, ref),
-                      ),
-                    ],
-                  );
+                  showMoreOperate(context, [
+                    CupertinoSheer(
+                      title: (bean.isPinned ?? 0) == 1 ? "取消置顶" : "置顶",
+                      onTap: () => togglePinEnv(context, ref),
+                    ),
+                    addDivider(),
+                    CupertinoSheer(
+                      title: "重命名变量名",
+                      onTap: () => renameEnvName(context, ref),
+                    ),
+                  ]);
                 },
                 child: Row(
                   children: [
@@ -583,9 +644,16 @@ class EnvItemCell extends StatelessWidget {
                           visible: editMode,
                           child: GestureDetector(
                             child: Icon(
-                              checked ? CupertinoIcons.checkmark_alt_circle : CupertinoIcons.circle,
+                              checked
+                                  ? CupertinoIcons.checkmark_alt_circle
+                                  : CupertinoIcons.circle,
                               size: 25,
-                              color: checked ? ref.watch(themeProvider).primaryColor : ref.watch(themeProvider).themeColor.descColor(),
+                              color: checked
+                                  ? ref.watch(themeProvider).primaryColor
+                                  : ref
+                                        .watch(themeProvider)
+                                        .themeColor
+                                        .descColor(),
                             ),
                           ),
                         ),
@@ -613,24 +681,34 @@ class EnvItemCell extends StatelessWidget {
                                           horizontal: 5,
                                         ),
                                         decoration: BoxDecoration(
-                                          borderRadius: BorderRadius.circular(3),
-                                          border: Border.all(color: ref.watch(themeProvider).themeColor.descColor(), width: 1),
+                                          borderRadius: BorderRadius.circular(
+                                            3,
+                                          ),
+                                          border: Border.all(
+                                            color: ref
+                                                .watch(themeProvider)
+                                                .themeColor
+                                                .descColor(),
+                                            width: 1,
+                                          ),
                                         ),
                                         child: Text(
                                           "${getIndexByIndex(context, index)}",
                                           style: TextStyle(
-                                            color: ref.watch(themeProvider).themeColor.descColor(),
+                                            color: ref
+                                                .watch(themeProvider)
+                                                .themeColor
+                                                .descColor(),
                                             fontSize: 12,
                                           ),
                                         ),
                                       ),
-                                      const SizedBox(
-                                        width: 5,
-                                      ),
+                                      const SizedBox(width: 5),
                                       ConstrainedBox(
                                         constraints: BoxConstraints.loose(
                                           Size.fromWidth(
-                                            MediaQuery.of(context).size.width * 0.53,
+                                            MediaQuery.of(context).size.width *
+                                                0.53,
                                           ),
                                         ),
                                         child: RichText(
@@ -640,15 +718,26 @@ class EnvItemCell extends StatelessWidget {
                                             text: bean.name ?? "",
                                             style: TextStyle(
                                               overflow: TextOverflow.ellipsis,
-                                              color: ref.watch(themeProvider).themeColor.titleColor(),
+                                              color: ref
+                                                  .watch(themeProvider)
+                                                  .themeColor
+                                                  .titleColor(),
                                               fontSize: 16,
                                             ),
                                             children: <TextSpan>[
                                               TextSpan(
-                                                text: (bean.remarks == null || bean.remarks!.isEmpty) ? "" : "(${bean.remarks})",
+                                                text:
+                                                    (bean.remarks == null ||
+                                                        bean.remarks!.isEmpty)
+                                                    ? ""
+                                                    : "(${bean.remarks})",
                                                 style: TextStyle(
-                                                  overflow: TextOverflow.ellipsis,
-                                                  color: ref.watch(themeProvider).themeColor.descColor(),
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                  color: ref
+                                                      .watch(themeProvider)
+                                                      .themeColor
+                                                      .descColor(),
                                                   fontSize: 14,
                                                 ),
                                               ),
@@ -656,9 +745,7 @@ class EnvItemCell extends StatelessWidget {
                                           ),
                                         ),
                                       ),
-                                      const SizedBox(
-                                        width: 7,
-                                      ),
+                                      const SizedBox(width: 7),
                                       bean.status == 1
                                           ? const StatusWidget(
                                               title: "已禁用",
@@ -666,24 +753,31 @@ class EnvItemCell extends StatelessWidget {
                                             )
                                           : StatusWidget(
                                               title: "已启用",
-                                              color: ref.watch(themeProvider).primaryColor,
-                                            )
+                                              color: ref
+                                                  .watch(themeProvider)
+                                                  .primaryColor,
+                                            ),
                                     ],
                                   ),
                                 ),
-                                const SizedBox(
-                                  width: 15,
-                                ),
+                                const SizedBox(width: 15),
                                 Visibility(
                                   visible: !editMode2,
                                   child: Material(
                                     color: Colors.transparent,
                                     child: Text(
-                                      bean.updatedAt == null ? Utils.formatGMTTime(bean.timestamp ?? "") : Utils.formatTime2(bean.updatedAt),
+                                      bean.updatedAt == null
+                                          ? Utils.formatGMTTime(
+                                              bean.timestamp ?? "",
+                                            )
+                                          : Utils.formatTime2(bean.updatedAt),
                                       maxLines: 1,
                                       style: TextStyle(
                                         overflow: TextOverflow.ellipsis,
-                                        color: ref.watch(themeProvider).themeColor.descColor(),
+                                        color: ref
+                                            .watch(themeProvider)
+                                            .themeColor
+                                            .descColor(),
                                         fontSize: 12,
                                       ),
                                     ),
@@ -691,9 +785,7 @@ class EnvItemCell extends StatelessWidget {
                                 ),
                               ],
                             ),
-                            const SizedBox(
-                              height: 15,
-                            ),
+                            const SizedBox(height: 15),
                             Material(
                               color: Colors.transparent,
                               child: Text(
@@ -701,7 +793,10 @@ class EnvItemCell extends StatelessWidget {
                                 maxLines: 1,
                                 style: TextStyle(
                                   overflow: TextOverflow.ellipsis,
-                                  color: ref.watch(themeProvider).themeColor.descColor(),
+                                  color: ref
+                                      .watch(themeProvider)
+                                      .themeColor
+                                      .descColor(),
                                   fontSize: 12,
                                 ),
                               ),
@@ -715,9 +810,7 @@ class EnvItemCell extends StatelessWidget {
                       child: const IgnorePointer(
                         ignoring: true,
                         child: Padding(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 15,
-                          ),
+                          padding: EdgeInsets.symmetric(horizontal: 15),
                           child: Icon(
                             CupertinoIcons.line_horizontal_3,
                             color: Color(0xff999999),
@@ -730,10 +823,7 @@ class EnvItemCell extends StatelessWidget {
                 ),
               ),
             ),
-            const Divider(
-              height: 1,
-              indent: 15,
-            ),
+            const Divider(height: 1, indent: 15),
           ],
         ),
       ),
@@ -741,7 +831,13 @@ class EnvItemCell extends StatelessWidget {
   }
 
   void enableEnv(BuildContext context) {
-    ref.read(SingleAccountPageState.ofEnvProvider(context)(getProviderName(context))).enableEnv(context, [bean.sId!], bean.status!);
+    ref
+        .read(
+          SingleAccountPageState.ofEnvProvider(context)(
+            getProviderName(context),
+          ),
+        )
+        .enableEnv(context, [bean.sId!], bean.status!);
   }
 
   /// 置顶 / 取消置顶（面板 v2.22+）
@@ -758,14 +854,15 @@ class EnvItemCell extends StatelessWidget {
 
     if (response.success) {
       pinned ? "已取消置顶".toast() : "已置顶".toast();
-      ref
-          // ignore: use_build_context_synchronously
-          .read(SingleAccountPageState.ofEnvProvider(context)(
-                  // ignore: use_build_context_synchronously
-                  getProviderName(context))
-              .notifier)
-          // ignore: use_build_context_synchronously
-          .loadData(context, false);
+      if (context.mounted) {
+        ref
+            .read(
+              SingleAccountPageState.ofEnvProvider(context)(
+                getProviderName(context),
+              ).notifier,
+            )
+            .loadData(context, false);
+      }
     } else {
       response.message.toast();
     }
@@ -779,8 +876,9 @@ class EnvItemCell extends StatelessWidget {
       return;
     }
 
-    final TextEditingController controller =
-        TextEditingController(text: bean.name ?? "");
+    final TextEditingController controller = TextEditingController(
+      text: bean.name ?? "",
+    );
     final String? name = await showCupertinoDialog<String>(
       context: context,
       useRootNavigator: false,
@@ -819,20 +917,23 @@ class EnvItemCell extends StatelessWidget {
 
     if (name == null || name.isEmpty) return;
 
-    final response =
-        // ignore: use_build_context_synchronously
-        await SingleAccountPageState.ofApi(context).renameEnv([envId], name);
+    if (!context.mounted) {
+      return;
+    }
+    final response = await SingleAccountPageState.ofApi(context)
+        .renameEnv([envId], name);
 
     if (response.success) {
       "已重命名".toast();
-      ref
-          // ignore: use_build_context_synchronously
-          .read(SingleAccountPageState.ofEnvProvider(context)(
-                  // ignore: use_build_context_synchronously
-                  getProviderName(context))
-              .notifier)
-          // ignore: use_build_context_synchronously
-          .loadData(context, false);
+      if (context.mounted) {
+        ref
+            .read(
+              SingleAccountPageState.ofEnvProvider(context)(
+                getProviderName(context),
+              ).notifier,
+            )
+            .loadData(context, false);
+      }
     } else {
       response.message.toast();
     }
@@ -847,12 +948,7 @@ class EnvItemCell extends StatelessWidget {
         content: Text("确认删除环境变量 ${bean.name ?? ""} 吗"),
         actions: [
           CupertinoDialogAction(
-            child: const Text(
-              "取消",
-              style: TextStyle(
-                color: Color(0xff999999),
-              ),
-            ),
+            child: const Text("取消", style: TextStyle(color: Color(0xff999999))),
             onPressed: () {
               Navigator.of(context).pop();
             },
@@ -860,13 +956,17 @@ class EnvItemCell extends StatelessWidget {
           CupertinoDialogAction(
             child: Text(
               "确定",
-              style: TextStyle(
-                color: ref.watch(themeProvider).primaryColor,
-              ),
+              style: TextStyle(color: ref.watch(themeProvider).primaryColor),
             ),
             onPressed: () {
               Navigator.of(context).pop();
-              ref.read(SingleAccountPageState.ofEnvProvider(context1)(getProviderName(context1))).delEnv(context1, bean.sId!);
+              ref
+                  .read(
+                    SingleAccountPageState.ofEnvProvider(context1)(
+                      getProviderName(context1),
+                    ),
+                  )
+                  .delEnv(context1, bean.sId!);
             },
           ),
         ],
@@ -899,7 +999,8 @@ class EnvListView extends ConsumerStatefulWidget {
   ConsumerState<EnvListView> createState() => _EnvListViewState();
 }
 
-class _EnvListViewState extends ConsumerState<EnvListView> with AutomaticKeepAliveClientMixin {
+class _EnvListViewState extends ConsumerState<EnvListView>
+    with AutomaticKeepAliveClientMixin {
   @override
   bool get wantKeepAlive => true;
 
@@ -961,7 +1062,8 @@ class EnvRecordListView extends ConsumerStatefulWidget {
   ConsumerState<EnvRecordListView> createState() => _EnvRecordListViewState();
 }
 
-class _EnvRecordListViewState extends ConsumerState<EnvRecordListView> with AutomaticKeepAliveClientMixin {
+class _EnvRecordListViewState extends ConsumerState<EnvRecordListView>
+    with AutomaticKeepAliveClientMixin {
   final List<EnvItemCell> list = [];
 
   @override
@@ -1007,15 +1109,19 @@ class _EnvRecordListViewState extends ConsumerState<EnvRecordListView> with Auto
           return;
         }
 
-        setState(
-          () {
-            //交换数据
-            final EnvBean item = widget.list.removeAt(oldIndex);
-            widget.list.insert(newIndex, item);
+        setState(() {
+          //交换数据
+          final EnvBean item = widget.list.removeAt(oldIndex);
+          widget.list.insert(newIndex, item);
 
-            ref.read(SingleAccountPageState.ofEnvProvider(context)(getProviderName(context)).notifier).update(context, item.sId ?? "", newIndex, oldIndex);
-          },
-        );
+          ref
+              .read(
+                SingleAccountPageState.ofEnvProvider(context)(
+                  getProviderName(context),
+                ).notifier,
+              )
+              .update(context, item.sId ?? "", newIndex, oldIndex);
+        });
       },
       children: list,
     );
@@ -1028,14 +1134,14 @@ class SliverTabBarDelegate extends SliverPersistentHeaderDelegate {
 
   final bool editMode;
 
-  const SliverTabBarDelegate(
-    this.tabController,
-    this.ref,
-    this.editMode,
-  );
+  const SliverTabBarDelegate(this.tabController, this.ref, this.editMode);
 
   @override
-  Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
+  Widget build(
+    BuildContext context,
+    double shrinkOffset,
+    bool overlapsContent,
+  ) {
     return SizedBox(
       height: 55,
       child: IgnorePointer(

@@ -28,7 +28,11 @@ class AppKeyPageState extends ConsumerState<AppKeyPage> {
   bool buttonshow = false;
 
   void scrollToTop() {
-    controller.animateTo(0, duration: const Duration(milliseconds: 200), curve: Curves.linear);
+    controller.animateTo(
+      0,
+      duration: const Duration(milliseconds: 200),
+      curve: Curves.linear,
+    );
   }
 
   @override
@@ -77,39 +81,30 @@ class AppKeyPageState extends ConsumerState<AppKeyPage> {
             onTap: () {
               Navigator.of(context)
                   .push(
-                CupertinoPageRoute(
-                  builder: (context) => const AddAppKeyPage(
-                    bean: {},
-                  ),
-                ),
-              )
-                  .then(
-                (value) {
-                  if (value != null && value == true) {
-                    ref
-                        .read(
-                          // ignore: use_build_context_synchronously
-                          SingleAccountPageState.ofAppKeyProvider(context)(
-                            // ignore: use_build_context_synchronously
-                            getProviderName(context),
-                          ),
-                        )
-                        // ignore: use_build_context_synchronously
-                        .loadData(context);
-                  }
-                },
-              );
+                    CupertinoPageRoute(
+                      builder: (context) => const AddAppKeyPage(bean: {}),
+                    ),
+                  )
+                  .then((value) {
+                    if (!context.mounted) {
+                      return;
+                    }
+                    if (value != null && value == true) {
+                      if (context.mounted) {
+                        ref
+                            .read(
+                              SingleAccountPageState.ofAppKeyProvider(context)(
+                                getProviderName(context),
+                              ),
+                            )
+                            .loadData(context);
+                      }
+                    }
+                  });
             },
             child: const Padding(
-              padding: EdgeInsets.symmetric(
-                horizontal: 15,
-              ),
-              child: Center(
-                child: Icon(
-                  CupertinoIcons.add,
-                  size: 24,
-                ),
-              ),
+              padding: EdgeInsets.symmetric(horizontal: 15),
+              child: Center(child: Icon(CupertinoIcons.add, size: 24)),
             ),
           ),
         ],
@@ -118,7 +113,9 @@ class AppKeyPageState extends ConsumerState<AppKeyPage> {
         builder: (ref, model, child) {
           return body(model, getListByType(model), ref);
         },
-        model: SingleAccountPageState.ofAppKeyProvider(context)(getProviderName(context)),
+        model: SingleAccountPageState.ofAppKeyProvider(context)(
+          getProviderName(context),
+        ),
         lazyLoad: true,
         onReady: (viewModel) {
           viewModel.loadData(context);
@@ -127,21 +124,21 @@ class AppKeyPageState extends ConsumerState<AppKeyPage> {
     );
   }
 
-  Widget body(AppKeyViewModel model, List<Map<String, dynamic>> list, WidgetRef ref) {
+  Widget body(
+    AppKeyViewModel model,
+    List<Map<String, dynamic>> list,
+    WidgetRef ref,
+  ) {
     return RefreshIndicator(
       color: Theme.of(context).primaryColor,
       onRefresh: () async {
         return model.loadData(context, false);
       },
       child: IconTheme(
-        data: const IconThemeData(
-          size: 25,
-        ),
+        data: const IconThemeData(size: 25),
         child: SlidableAutoCloseBehavior(
           child: ListView.separated(
-            padding: const EdgeInsets.only(
-              bottom: 80,
-            ),
+            padding: const EdgeInsets.only(bottom: 80),
             controller: controller,
             physics: const AlwaysScrollableScrollPhysics(),
             keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
@@ -150,7 +147,11 @@ class AppKeyPageState extends ConsumerState<AppKeyPage> {
                 return searchCell(ref);
               }
               Map<String, dynamic> item = list[index - 1];
-              if (searchText.text.isEmpty || (item["name"]?.toLowerCase().contains(searchText.text.toLowerCase()) ?? false)) {
+              if (searchText.text.isEmpty ||
+                  (item["name"]?.toLowerCase().contains(
+                        searchText.text.toLowerCase(),
+                      ) ??
+                      false)) {
                 return AppKeyItemCell(item, ref);
               } else {
                 return const SizedBox.shrink();
@@ -160,13 +161,14 @@ class AppKeyPageState extends ConsumerState<AppKeyPage> {
             separatorBuilder: (BuildContext context, int index) {
               if (index == 0) return const SizedBox.shrink();
               Map<String, dynamic> item = list[index - 1];
-              if (searchText.text.isEmpty || (item["name"]?.toLowerCase().contains(searchText.text.toLowerCase()) ?? false)) {
+              if (searchText.text.isEmpty ||
+                  (item["name"]?.toLowerCase().contains(
+                        searchText.text.toLowerCase(),
+                      ) ??
+                      false)) {
                 return Container(
                   color: ref.watch(themeProvider).themeColor.settingBgColor(),
-                  child: const Divider(
-                    height: 1,
-                    indent: 15,
-                  ),
+                  child: const Divider(height: 1, indent: 15),
                 );
               } else {
                 return const SizedBox.shrink();
@@ -181,17 +183,10 @@ class AppKeyPageState extends ConsumerState<AppKeyPage> {
   Widget searchCell(WidgetRef context) {
     return Container(
       color: ref.watch(themeProvider).themeColor.searchBgColor(),
-      padding: const EdgeInsets.only(
-        left: 15,
-        right: 15,
-      ),
+      padding: const EdgeInsets.only(left: 15, right: 15),
       child: Padding(
-        padding: const EdgeInsets.symmetric(
-          vertical: 10,
-        ),
-        child: SearchCell(
-          controller: searchText,
-        ),
+        padding: const EdgeInsets.symmetric(vertical: 10),
+        child: SearchCell(controller: searchText),
       ),
     );
   }
@@ -222,48 +217,46 @@ class AppKeyItemCell extends StatelessWidget {
               onPressed: (_) {
                 Navigator.of(context)
                     .push(
-                  CupertinoPageRoute(
-                    builder: (context) => AddAppKeyPage(
-                      bean: bean,
-                    ),
-                  ),
-                )
-                    .then(
-                  (value) {
-                    if (value != null && value == true) {
-                      ref
-                          .read(
-                            // ignore: use_build_context_synchronously
-                            SingleAccountPageState.ofAppKeyProvider(context)(
-                              // ignore: use_build_context_synchronously
-                              getProviderName(context),
-                            ),
-                          )
-                          // ignore: use_build_context_synchronously
-                          .loadData(context);
-                    }
-                  },
-                );
+                      CupertinoPageRoute(
+                        builder: (context) => AddAppKeyPage(bean: bean),
+                      ),
+                    )
+                    .then((value) {
+                      if (value != null && value == true) {
+                        if (context.mounted) {
+                          ref
+                              .read(
+                                SingleAccountPageState.ofAppKeyProvider(
+                                  context,
+                                )(getProviderName(context)),
+                              )
+                              .loadData(context);
+                        }
+                      }
+                    });
               },
               foregroundColor: Colors.white,
               icon: CupertinoIcons.pencil_outline,
             ),
             SlidableAction(
-                backgroundColor: const Color(0xffA356D6),
-                onPressed: (_) {
-                  WidgetsBinding.instance.endOfFrame.then((value) {
-                    // ignore: use_build_context_synchronously
+              backgroundColor: const Color(0xffA356D6),
+              onPressed: (_) {
+                WidgetsBinding.instance.endOfFrame.then((value) {
+                  if (context.mounted) {
                     _reset(context);
-                  });
-                },
-                foregroundColor: Colors.white,
-                icon: CupertinoIcons.arrow_2_circlepath),
+                  }
+                });
+              },
+              foregroundColor: Colors.white,
+              icon: CupertinoIcons.arrow_2_circlepath,
+            ),
             SlidableAction(
               backgroundColor: const Color(0xffEA4D3E),
               onPressed: (_) {
                 WidgetsBinding.instance.endOfFrame.then((value) {
-                  // ignore: use_build_context_synchronously
-                  _del(context, ref);
+                  if (context.mounted) {
+                    _del(context, ref);
+                  }
                 });
               },
               foregroundColor: Colors.white,
@@ -277,19 +270,14 @@ class AppKeyItemCell extends StatelessWidget {
             onTap: () {
               Navigator.of(context).push(
                 CupertinoPageRoute(
-                  builder: (context) => AppKeyDetailDetailPage(
-                    bean,
-                  ),
+                  builder: (context) => AppKeyDetailDetailPage(bean),
                 ),
               );
             },
             child: Container(
               width: MediaQuery.of(context).size.width,
               color: Colors.transparent,
-              padding: const EdgeInsets.symmetric(
-                horizontal: 15,
-                vertical: 8,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 mainAxisAlignment: MainAxisAlignment.start,
@@ -308,46 +296,56 @@ class AppKeyItemCell extends StatelessWidget {
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
                           overflow: TextOverflow.ellipsis,
-                          color: ref.watch(themeProvider).themeColor.titleColor(),
+                          color: ref
+                              .watch(themeProvider)
+                              .themeColor
+                              .titleColor(),
                           fontSize: 16,
                         ),
                       ),
                     ),
                   ),
-                  const SizedBox(
-                    height: 5,
-                  ),
+                  const SizedBox(height: 5),
                   Material(
                     color: Colors.transparent,
                     child: Wrap(
                       runSpacing: 5,
                       spacing: 5,
-                      children: AppKeyViewModel.getScopeNames((bean["scopes"] as List<dynamic>?))
-                          .map((e) => Container(
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 3,
-                                  horizontal: 5,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: ref.watch(themeProvider).themeColor.descColor(),
-                                  borderRadius: BorderRadius.circular(5),
-                                ),
-                                child: Text(
-                                  e,
-                                  maxLines: 1,
-                                  style: TextStyle(
-                                    overflow: TextOverflow.ellipsis,
-                                    color: ref.watch(themeProvider).themeColor.blackAndWhite(),
-                                    fontSize: 12,
+                      children:
+                          AppKeyViewModel.getScopeNames(
+                                (bean["scopes"] as List<dynamic>?),
+                              )
+                              .map(
+                                (e) => Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 3,
+                                    horizontal: 5,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: ref
+                                        .watch(themeProvider)
+                                        .themeColor
+                                        .descColor(),
+                                    borderRadius: BorderRadius.circular(5),
+                                  ),
+                                  child: Text(
+                                    e,
+                                    maxLines: 1,
+                                    style: TextStyle(
+                                      overflow: TextOverflow.ellipsis,
+                                      color: ref
+                                          .watch(themeProvider)
+                                          .themeColor
+                                          .blackAndWhite(),
+                                      fontSize: 12,
+                                    ),
                                   ),
                                 ),
-                              ))
-                          .toList(),
+                              )
+                              .toList(),
                     ),
                   ),
-                  const SizedBox(
-                    height: 5,
-                  ),
+                  const SizedBox(height: 5),
                 ],
               ),
             ),
@@ -366,12 +364,7 @@ class AppKeyItemCell extends StatelessWidget {
         content: Text("确认删除应用 ${bean["name"] ?? ""} 吗"),
         actions: [
           CupertinoDialogAction(
-            child: const Text(
-              "取消",
-              style: TextStyle(
-                color: Color(0xff999999),
-              ),
-            ),
+            child: const Text("取消", style: TextStyle(color: Color(0xff999999))),
             onPressed: () {
               Navigator.of(context).pop();
             },
@@ -379,9 +372,7 @@ class AppKeyItemCell extends StatelessWidget {
           CupertinoDialogAction(
             child: Text(
               "确定",
-              style: TextStyle(
-                color: ref.watch(themeProvider).primaryColor,
-              ),
+              style: TextStyle(color: ref.watch(themeProvider).primaryColor),
             ),
             onPressed: () {
               Navigator.of(context).pop();
@@ -391,10 +382,7 @@ class AppKeyItemCell extends StatelessWidget {
                       getProviderName(context1),
                     ),
                   )
-                  .delAppKey(
-                    context1,
-                    getAppKeyId(bean),
-                  );
+                  .delAppKey(context1, getAppKeyId(bean));
             },
           ),
         ],
@@ -411,12 +399,7 @@ class AppKeyItemCell extends StatelessWidget {
         content: const Text("重置Secret会让当前应用所有token失效"),
         actions: [
           CupertinoDialogAction(
-            child: const Text(
-              "取消",
-              style: TextStyle(
-                color: Color(0xff999999),
-              ),
-            ),
+            child: const Text("取消", style: TextStyle(color: Color(0xff999999))),
             onPressed: () {
               Navigator.of(context).pop();
             },
@@ -424,9 +407,7 @@ class AppKeyItemCell extends StatelessWidget {
           CupertinoDialogAction(
             child: Text(
               "确定",
-              style: TextStyle(
-                color: ref.watch(themeProvider).primaryColor,
-              ),
+              style: TextStyle(color: ref.watch(themeProvider).primaryColor),
             ),
             onPressed: () {
               Navigator.of(context).pop();
@@ -436,10 +417,7 @@ class AppKeyItemCell extends StatelessWidget {
                       getProviderName(context),
                     ),
                   )
-                  .resetAppKey(
-                    context,
-                    getAppKeyId(bean),
-                  );
+                  .resetAppKey(context, getAppKeyId(bean));
             },
           ),
         ],

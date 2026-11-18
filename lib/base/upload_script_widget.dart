@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'dart:math';
+
 import 'package:path/path.dart' as ints;
 import 'package:file_picker/file_picker.dart';
 import 'package:cupertino_ui/cupertino_ui.dart';
@@ -13,6 +14,7 @@ import 'package:qinglong_app/base/ui/tree/models/script_data.dart';
 import 'package:qinglong_app/module/others/scripts/script_code_detail_page.dart';
 import 'package:qinglong_app/base/http/http.dart';
 import 'package:qinglong_app/utils/extension.dart';
+
 import '../module/others/scripts/script_download_page.dart';
 import '../module/subscribe/add_subscribe_page.dart';
 import 'single_account_page.dart';
@@ -51,7 +53,8 @@ class UploadScriptWidgetState extends ConsumerState<UploadScriptWidget>
 
   void init() async {
     isLoading = true;
-    HttpResponse<List<ScriptData>> response = await SingleAccountPageState.ofApi(context).scripts();
+    HttpResponse<List<ScriptData>> response =
+        await SingleAccountPageState.ofApi(context).scripts();
 
     if (response.success) {
       if (response.bean == null || response.bean!.isEmpty) {
@@ -104,47 +107,38 @@ class UploadScriptWidgetState extends ConsumerState<UploadScriptWidget>
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        TitleWidget(
-          widget.onlyShowName ? "父目录" : "脚本目录",
-        ),
-        const SizedBox(
-          height: 10,
-        ),
+        TitleWidget(widget.onlyShowName ? "父目录" : "脚本目录"),
+        const SizedBox(height: 10),
         isLoading
             ? const Center(child: LoadingWidget())
             : DropdownButtonFormField<String>(
                 elevation: 0,
                 isExpanded: true,
-                items: paths
-                    .map((e) => DropdownMenuItem(
-                          value: e,
-                          child: SizedBox(
-                            width: MediaQuery.of(context).size.width - 100,
-                            child: Text(
-                              e ?? "",
-                              maxLines: 2,
+                items:
+                    paths
+                        .map(
+                          (e) => DropdownMenuItem(
+                            value: e,
+                            child: SizedBox(
+                              width: MediaQuery.of(context).size.width - 100,
+                              child: Text(e ?? "", maxLines: 2),
                             ),
                           ),
-                        ))
-                    .toList()
-                  ..insert(
-                    0,
-                    DropdownMenuItem(
-                      value: "",
-                      child: SizedBox(
-                        width: MediaQuery.of(context).size.width - 100,
-                        child: const Padding(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 10,
-                          ),
-                          child: Text(
-                            "根目录",
-                            maxLines: 2,
+                        )
+                        .toList()
+                      ..insert(
+                        0,
+                        DropdownMenuItem(
+                          value: "",
+                          child: SizedBox(
+                            width: MediaQuery.of(context).size.width - 100,
+                            child: const Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 10),
+                              child: Text("根目录", maxLines: 2),
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                  ),
                 style: TextStyle(
                   fontSize: 14,
                   color: ref.watch(themeProvider).themeColor.title2Color(),
@@ -167,9 +161,7 @@ class UploadScriptWidgetState extends ConsumerState<UploadScriptWidget>
                   setState(() {});
                 },
               ),
-        const SizedBox(
-          height: 30,
-        ),
+        const SizedBox(height: 30),
         Visibility(
           visible: !widget.onlyShowName,
           child: RichText(
@@ -184,9 +176,7 @@ class UploadScriptWidgetState extends ConsumerState<UploadScriptWidget>
         ),
         Visibility(
           visible: !widget.onlyShowName,
-          child: const SizedBox(
-            height: 10,
-          ),
+          child: const SizedBox(height: 10),
         ),
         Visibility(
           visible: !widget.onlyShowName,
@@ -202,31 +192,26 @@ class UploadScriptWidgetState extends ConsumerState<UploadScriptWidget>
 
   Widget addWidget(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.only(
-        top: 10,
-      ),
+      margin: const EdgeInsets.only(top: 10),
       child: CupertinoButton(
         color: Colors.transparent,
         padding: EdgeInsets.zero,
         onPressed: () async {
-          showMoreOperate(
-            context,
-            [
-              CupertinoSheer(
-                title: "远程地址",
-                onTap: () {
-                  fromRemote(context);
-                },
-              ),
-              addDivider(),
-              CupertinoSheer(
-                title: "本地上传",
-                onTap: () {
-                  pickLocalFile();
-                },
-              )
-            ],
-          );
+          showMoreOperate(context, [
+            CupertinoSheer(
+              title: "远程地址",
+              onTap: () {
+                fromRemote(context);
+              },
+            ),
+            addDivider(),
+            CupertinoSheer(
+              title: "本地上传",
+              onTap: () {
+                pickLocalFile();
+              },
+            ),
+          ]);
         },
         child: Container(
           width: 70,
@@ -268,46 +253,48 @@ class UploadScriptWidgetState extends ConsumerState<UploadScriptWidget>
   void fromRemote(BuildContext context) {
     Navigator.of(context)
         .push(
-      CupertinoPageRoute(
-        builder: (context) => const ScriptDownloadPage(),
-      ),
-    )
+          CupertinoPageRoute(builder: (context) => const ScriptDownloadPage()),
+        )
         .then((value) {
-      if (value != null) {
-        Map<String, String> data = value;
+          if (value != null) {
+            Map<String, String> data = value;
 
-        fileName = data["name"] ?? "";
-        String path = data["path"] ?? "";
-        file = File(path);
-        if (file == null) return;
-        if (file!.lengthSync() > 5242880) {
-          file = null;
-          "最大支持上传5M的文件".toast();
-          return;
-        }
+            fileName = data["name"] ?? "";
+            String path = data["path"] ?? "";
+            file = File(path);
+            if (file == null) return;
+            if (file!.lengthSync() > 5242880) {
+              file = null;
+              "最大支持上传5M的文件".toast();
+              return;
+            }
 
-        widget.nameCallBack(getFileName());
-        setState(() {});
-      } else {
-        fileName = null;
-      }
-    });
+            widget.nameCallBack(getFileName());
+            setState(() {});
+          } else {
+            fileName = null;
+          }
+        });
   }
 
   Widget addedWidget(BuildContext context) {
     return GestureDetector(
       onTap: () async {
+        if (!mounted) {
+          return;
+        }
         try {
           String content = await file!.readAsString();
-          // ignore: use_build_context_synchronously
-          Navigator.of(context).push(
-            CupertinoPageRoute(
-              builder: (context) => ScriptCodeDetailPage(
-                title: getFileName(),
-                content: content,
+          if (context.mounted) {
+            Navigator.of(context).push(
+              CupertinoPageRoute(
+                builder: (context) => ScriptCodeDetailPage(
+                  title: getFileName(),
+                  content: content,
+                ),
               ),
-            ),
-          );
+            );
+          }
         } catch (e) {
           e.toString().toast();
         }
@@ -315,19 +302,11 @@ class UploadScriptWidgetState extends ConsumerState<UploadScriptWidget>
       behavior: HitTestBehavior.opaque,
       child: Container(
         height: 80,
-        padding: const EdgeInsets.symmetric(
-          vertical: 10,
-        ),
+        padding: const EdgeInsets.symmetric(vertical: 10),
         child: Row(
           children: [
-            Image.asset(
-              getIconBySuffix(),
-              width: 50,
-              fit: BoxFit.cover,
-            ),
-            const SizedBox(
-              width: 15,
-            ),
+            Image.asset(getIconBySuffix(), width: 50, fit: BoxFit.cover),
+            const SizedBox(width: 15),
             Expanded(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -342,9 +321,7 @@ class UploadScriptWidgetState extends ConsumerState<UploadScriptWidget>
                       fontSize: 16,
                     ),
                   ),
-                  const SizedBox(
-                    height: 5,
-                  ),
+                  const SizedBox(height: 5),
                   Text(
                     getFileSize(file!.path, 2),
                     style: TextStyle(

@@ -19,14 +19,16 @@ class ConfigViewModel extends BaseViewModel {
       loading(notify: true);
     }
 
-    HttpResponse<List<ConfigBean>> result =
-        await SingleAccountPageState.ofApi(context).files();
+    HttpResponse<List<ConfigBean>> result = await SingleAccountPageState.ofApi(
+      context,
+    ).files();
 
     if (result.success && result.bean != null) {
       list.clear();
       list.addAll(result.bean!);
-      // ignore: use_build_context_synchronously
-      backUpAllConfigFiles(context);
+      if (context.mounted) {
+        backUpAllConfigFiles(context);
+      }
       list.isEmpty ? empty(notify: true) : success();
     } else {
       list.clear();
@@ -35,16 +37,15 @@ class ConfigViewModel extends BaseViewModel {
   }
 
   void backUpAllConfigFiles(BuildContext context) async {
-
     var icloudUtils = getIt<ICloudUtils>(
-        instanceName:
-            (SingleAccountPageState.of(context)?.index ?? 0).toString());
+      instanceName: (SingleAccountPageState.of(context)?.index ?? 0).toString(),
+    );
     for (ConfigBean c in list) {
-      HttpResponse<String> result =
-          // ignore: use_build_context_synchronously
-          await SingleAccountPageState.ofApi(context).content(
-        c.title ?? c.value ?? "",
-      );
+      if (!context.mounted) {
+        return;
+      }
+      HttpResponse<String> result = await SingleAccountPageState.ofApi(context)
+          .content(c.title ?? c.value ?? "");
       if (result.success && result.bean != null) {
         String content = result.bean ?? "";
         await icloudUtils.asyncConfig(c.title, content);

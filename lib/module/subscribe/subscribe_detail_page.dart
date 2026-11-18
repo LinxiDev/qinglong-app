@@ -17,18 +17,22 @@ class SubscribeDetailPage extends ConsumerStatefulWidget {
   final Map<String, dynamic> taskBean;
   final bool hideAppbar;
 
-  const SubscribeDetailPage(this.taskBean, {super.key, this.hideAppbar = false});
+  const SubscribeDetailPage(
+    this.taskBean, {
+    super.key,
+    this.hideAppbar = false,
+  });
 
   @override
   TaskDetailPageState createState() => TaskDetailPageState();
 }
 
-class TaskDetailPageState extends ConsumerState<SubscribeDetailPage> with LazyLoadState<SubscribeDetailPage> {
+class TaskDetailPageState extends ConsumerState<SubscribeDetailPage>
+    with LazyLoadState<SubscribeDetailPage> {
   Type type = Type.public;
   CronType cronType = CronType.cron;
   PullType pullType = PullType.privateKey;
   String intervalUnit = "天";
-
 
   void _enableSubscribe(BuildContext context, int disabled) {
     ref
@@ -37,11 +41,7 @@ class TaskDetailPageState extends ConsumerState<SubscribeDetailPage> with LazyLo
             getProviderName(context),
           ),
         )
-        .enableSubscribe(
-          context,
-          widget.taskBean["id"],
-          disabled,
-        );
+        .enableSubscribe(context, widget.taskBean["id"], disabled);
   }
 
   @override
@@ -57,74 +57,69 @@ class TaskDetailPageState extends ConsumerState<SubscribeDetailPage> with LazyLo
             color: Colors.transparent,
             padding: EdgeInsets.zero,
             onPressed: () {
-              showMoreOperate(
-                context,
-                [
-                  CupertinoSheer(
-                    title: (widget.taskBean["status"] ?? 0) == 1 ? "运行" : "停止运行",
-                    onTap: () async {
-                      if (widget.taskBean["status"] == 1) {
-                        await _startCron(
-                          context,
-                          ref,
-                          true,
-                        );
-                      } else {
-                        _stopCron(context, ref);
-                      }
-                    },
-                  ),
-                  addDivider(),
-                  CupertinoSheer(
-                    title: "查看日志",
-                    onTap: () {
-                      showLog();
-                    },
-                  ),
-                  addDivider(),
-                  CupertinoSheer(
-                    title: "编辑",
-                    onTap: () {
-                      Navigator.of(context)
-                          .push(
-                        CupertinoPageRoute(
-                          builder: (context) => AddSubscribePage(
-                            taskBean: widget.taskBean,
+              showMoreOperate(context, [
+                CupertinoSheer(
+                  title: (widget.taskBean["status"] ?? 0) == 1 ? "运行" : "停止运行",
+                  onTap: () async {
+                    if (widget.taskBean["status"] == 1) {
+                      await _startCron(context, ref, true);
+                    } else {
+                      _stopCron(context, ref);
+                    }
+                  },
+                ),
+                addDivider(),
+                CupertinoSheer(
+                  title: "查看日志",
+                  onTap: () {
+                    showLog();
+                  },
+                ),
+                addDivider(),
+                CupertinoSheer(
+                  title: "编辑",
+                  onTap: () {
+                    Navigator.of(context)
+                        .push(
+                          CupertinoPageRoute(
+                            builder: (context) =>
+                                AddSubscribePage(taskBean: widget.taskBean),
                           ),
-                        ),
-                      )
-                          .then(
-                        (value) {
-                          if (value != null && value == true) {
-                            ref
-                                .read(
-                                  // ignore: use_build_context_synchronously
-                                  SingleAccountPageState.ofSubscribeProvider(context)(
-                                    // ignore: use_build_context_synchronously
-                                    getProviderName(context),
-                                  ),
-                                )
-                                // ignore: use_build_context_synchronously
-                                .loadData(context);
+                        )
+                        .then((value) {
+                          if (!context.mounted) {
+                            return;
                           }
-                        },
-                      );
-                    },
-                  ),
-                  addDivider(),
-                  CupertinoSheer(
-                    title: (widget.taskBean["is_disabled"] ?? 0) == 1 ? "禁用" : "启用",
-                    onTap: () {
-                      _enableSubscribe(context, (widget.taskBean["is_disabled"] ?? 0));
-                    },
-                  ),
-                ],
-              );
+                          if (value != null && value == true) {
+                            if (context.mounted) {
+                              ref
+                                  .read(
+                                    SingleAccountPageState.ofSubscribeProvider(
+                                      context,
+                                    )(getProviderName(context)),
+                                  )
+                                  .loadData(context);
+                            }
+                          }
+                        });
+                  },
+                ),
+                addDivider(),
+                CupertinoSheer(
+                  title: (widget.taskBean["is_disabled"] ?? 0) == 1
+                      ? "禁用"
+                      : "启用",
+                  onTap: () {
+                    _enableSubscribe(
+                      context,
+                      (widget.taskBean["is_disabled"] ?? 0),
+                    );
+                  },
+                ),
+              ]);
             },
             child: Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 15,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 15),
               child: Center(
                 child: Icon(
                   Icons.more_horiz,
@@ -133,14 +128,12 @@ class TaskDetailPageState extends ConsumerState<SubscribeDetailPage> with LazyLo
                 ),
               ),
             ),
-          )
+          ),
         ],
         title: "订阅详情",
       ),
       body: isLoading
-          ? const Center(
-              child: LoadingWidget(),
-            )
+          ? const Center(child: LoadingWidget())
           : SingleChildScrollView(
               primary: true,
               child: Container(
@@ -243,7 +236,9 @@ class TaskDetailPageState extends ConsumerState<SubscribeDetailPage> with LazyLo
                     ),
                     SubscribeDetailCell(
                       title: "订阅状态",
-                      desc: (widget.taskBean["is_disabled"] ?? 0) == 1 ? "已禁用" : "已启用",
+                      desc: (widget.taskBean["is_disabled"] ?? 0) == 1
+                          ? "已禁用"
+                          : "已启用",
                     ),
                     SubscribeDetailCell(
                       title: "日志",
@@ -257,29 +252,24 @@ class TaskDetailPageState extends ConsumerState<SubscribeDetailPage> with LazyLo
                       desc: widget.taskBean >> "createdAt",
                       hideDivide: true,
                     ),
-                    const SizedBox(
-                      height: 30,
-                    ),
+                    const SizedBox(height: 30),
                     Center(
                       child: SizedBox(
                         width: MediaQuery.of(context).size.width - 80,
                         child: CupertinoButton(
-                            padding: const EdgeInsets.symmetric(
-                              vertical: 5,
-                            ),
-                            alignment: Alignment.center,
-                            color: Colors.red,
-                            child: const Text(
-                              "删 除",
-                              style: TextStyle(
-                                fontSize: 16,
-                              ),
-                            ),
-                            onPressed: () {
-                              delSubscribe(context, ref);
-                            }),
+                          padding: const EdgeInsets.symmetric(vertical: 5),
+                          alignment: Alignment.center,
+                          color: Colors.red,
+                          child: const Text(
+                            "删 除",
+                            style: TextStyle(fontSize: 16),
+                          ),
+                          onPressed: () {
+                            delSubscribe(context, ref);
+                          },
+                        ),
                       ),
-                    )
+                    ),
                   ],
                 ),
               ),
@@ -296,12 +286,7 @@ class TaskDetailPageState extends ConsumerState<SubscribeDetailPage> with LazyLo
         content: Text("确认删除订阅 ${widget.taskBean["name"] ?? ""} 吗"),
         actions: [
           CupertinoDialogAction(
-            child: const Text(
-              "取消",
-              style: TextStyle(
-                color: Color(0xff999999),
-              ),
-            ),
+            child: const Text("取消", style: TextStyle(color: Color(0xff999999))),
             onPressed: () {
               Navigator.of(context).pop();
             },
@@ -309,15 +294,23 @@ class TaskDetailPageState extends ConsumerState<SubscribeDetailPage> with LazyLo
           CupertinoDialogAction(
             child: Text(
               "确定",
-              style: TextStyle(
-                color: ref.watch(themeProvider).primaryColor,
-              ),
+              style: TextStyle(color: ref.watch(themeProvider).primaryColor),
             ),
             onPressed: () async {
+              if (!context1.mounted) {
+                return;
+              }
               Navigator.of(context).pop();
-              await ref.read(SingleAccountPageState.ofSubscribeProvider(context1)(getProviderName(context1))).delSubscribe(context1, widget.taskBean["id"]);
-              // ignore: use_build_context_synchronously
-              Navigator.of(context1).pop();
+              await ref
+                  .read(
+                    SingleAccountPageState.ofSubscribeProvider(context1)(
+                      getProviderName(context1),
+                    ),
+                  )
+                  .delSubscribe(context1, widget.taskBean["id"]);
+              if (context1.mounted) {
+                Navigator.of(context1).pop();
+              }
             },
           ),
         ],
@@ -338,13 +331,13 @@ class TaskDetailPageState extends ConsumerState<SubscribeDetailPage> with LazyLo
         child: Row(
           children: [
             Image.asset(
-              isCheck ? "assets/images/icon_check.png" : "assets/images/icon_uncheck.png",
+              isCheck
+                  ? "assets/images/icon_check.png"
+                  : "assets/images/icon_uncheck.png",
               width: 16,
               fit: BoxFit.cover,
             ),
-            const SizedBox(
-              width: 5,
-            ),
+            const SizedBox(width: 5),
             Text(title),
           ],
         ),
@@ -371,10 +364,7 @@ class TaskDetailPageState extends ConsumerState<SubscribeDetailPage> with LazyLo
             getProviderName(context),
           ),
         )
-        .runCrons(
-          context,
-          widget.taskBean["id"],
-        );
+        .runCrons(context, widget.taskBean["id"]);
     if (log) {
       Future.delayed(const Duration(milliseconds: 250), () {
         showLog();
@@ -389,17 +379,12 @@ class TaskDetailPageState extends ConsumerState<SubscribeDetailPage> with LazyLo
             getProviderName(context),
           ),
         )
-        .stopCrons(
-          context,
-          widget.taskBean["id"],
-        );
+        .stopCrons(context, widget.taskBean["id"]);
   }
 
   Widget _buildSingle() {
     return Padding(
-      padding: const EdgeInsets.symmetric(
-        vertical: 10,
-      ),
+      padding: const EdgeInsets.symmetric(vertical: 10),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: const [],
@@ -409,16 +394,11 @@ class TaskDetailPageState extends ConsumerState<SubscribeDetailPage> with LazyLo
 
   Widget _buildOpenPub() {
     return Padding(
-      padding: const EdgeInsets.symmetric(
-        vertical: 10,
-      ),
+      padding: const EdgeInsets.symmetric(vertical: 10),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SubscribeDetailCell(
-            title: '分支',
-            desc: widget.taskBean >> "branch",
-          ),
+          SubscribeDetailCell(title: '分支', desc: widget.taskBean >> "branch"),
         ],
       ),
     );
@@ -426,55 +406,33 @@ class TaskDetailPageState extends ConsumerState<SubscribeDetailPage> with LazyLo
 
   Widget _buildPrivatePub() {
     return Padding(
-      padding: const EdgeInsets.symmetric(
-        vertical: 10,
-      ),
+      padding: const EdgeInsets.symmetric(vertical: 10),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const SizedBox(
-            height: 15,
-          ),
-          SubscribeDetailCell(
-            title: '分支',
-            desc: widget.taskBean >> "branch",
-          ),
-          const SizedBox(
-            height: 15,
-          ),
+          const SizedBox(height: 15),
+          SubscribeDetailCell(title: '分支', desc: widget.taskBean >> "branch"),
+          const SizedBox(height: 15),
           SubscribeDetailCell(
             title: '拉取方式',
             desc: widget.taskBean >> "pullType",
           ),
-          const SizedBox(
-            height: 15,
-          ),
+          const SizedBox(height: 15),
           Visibility(
             visible: pullType == PullType.privateKey,
-            child: const SubscribeDetailCell(
-              title: '私钥',
-              desc: "",
-            ),
+            child: const SubscribeDetailCell(title: '私钥', desc: ""),
           ),
           Visibility(
             visible: pullType == PullType.userName,
-            child: const SubscribeDetailCell(
-              title: '用户名',
-              desc: "",
-            ),
+            child: const SubscribeDetailCell(title: '用户名', desc: ""),
           ),
           Visibility(
             visible: pullType == PullType.userName,
-            child: const SizedBox(
-              height: 15,
-            ),
+            child: const SizedBox(height: 15),
           ),
           Visibility(
             visible: pullType == PullType.userName,
-            child: const SubscribeDetailCell(
-              title: "密码/Token",
-              desc: "",
-            ),
+            child: const SubscribeDetailCell(title: "密码/Token", desc: ""),
           ),
         ],
       ),
@@ -513,11 +471,7 @@ class SubscribeDetailCell extends ConsumerWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.only(
-            top: 10,
-            right: 10,
-            bottom: 10,
-          ),
+          padding: const EdgeInsets.only(top: 10, right: 10, bottom: 10),
           child: Row(
             children: [
               Text(
@@ -527,9 +481,7 @@ class SubscribeDetailCell extends ConsumerWidget {
                   fontSize: 16,
                 ),
               ),
-              const SizedBox(
-                width: 30,
-              ),
+              const SizedBox(width: 30),
               desc != null
                   ? Expanded(
                       child: Align(
@@ -545,23 +497,25 @@ class SubscribeDetailCell extends ConsumerWidget {
                             }
                           },
                           style: TextStyle(
-                            color: ref.watch(themeProvider).themeColor.descColor(),
+                            color: ref
+                                .watch(themeProvider)
+                                .themeColor
+                                .descColor(),
                             fontSize: 14,
                           ),
                         ),
                       ),
                     )
                   : Expanded(
-                      child: Align(alignment: Alignment.centerRight, child: icon!),
+                      child: Align(
+                        alignment: Alignment.centerRight,
+                        child: icon!,
+                      ),
                     ),
             ],
           ),
         ),
-        hideDivide
-            ? const SizedBox.shrink()
-            : const Divider(
-                height: 1,
-              ),
+        hideDivide ? const SizedBox.shrink() : const Divider(height: 1),
       ],
     );
   }

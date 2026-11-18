@@ -48,7 +48,9 @@ class _StorageRetentionPageState extends ConsumerState<StorageRetentionPage> {
       context,
     ).systemConfig();
 
-    if (!mounted) return;
+    if (!mounted) {
+      return;
+    }
 
     if (response.success) {
       try {
@@ -98,7 +100,9 @@ class _StorageRetentionPageState extends ConsumerState<StorageRetentionPage> {
         .retentionPreview(_payload);
     EasyLoading.dismiss();
 
-    if (!mounted) return;
+    if (!mounted) {
+      return;
+    }
 
     if (!response.success) {
       (response.message ?? "预览失败").toast();
@@ -145,7 +149,9 @@ class _StorageRetentionPageState extends ConsumerState<StorageRetentionPage> {
     final response = await api.retentionCleanup(_payload);
     EasyLoading.dismiss();
 
-    if (!mounted) return;
+    if (!mounted) {
+      return;
+    }
 
     if (response.success) {
       "清理完成".toast();

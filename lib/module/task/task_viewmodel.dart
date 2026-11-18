@@ -1,4 +1,3 @@
-
 import 'package:cupertino_ui/cupertino_ui.dart';
 import 'package:qinglong_app/base/base_viewmodel.dart';
 import 'package:qinglong_app/base/http/http.dart';
@@ -9,13 +8,7 @@ import 'package:qinglong_app/utils/extension.dart';
 
 import '../../main.dart';
 
-Map<int, int> sort = {
-  0: 0,
-  5: 1,
-  3: 2,
-  1: 3,
-  4: 4,
-};
+Map<int, int> sort = {0: 0, 5: 1, 3: 2, 1: 3, 4: 4};
 
 class TaskViewModel extends BaseViewModel {
   static const String allStr = "全部";
@@ -42,38 +35,47 @@ class TaskViewModel extends BaseViewModel {
       loading(notify: true);
     }
 
-    if (getIt<SystemBean>(instanceName: (SingleAccountPageState.of(context)?.index ?? 0).toString())
-        .isUpperVersion2_13_9()) {
+    if (getIt<SystemBean>(
+      instanceName: (SingleAccountPageState.of(context)?.index ?? 0).toString(),
+    ).isUpperVersion2_13_9()) {
       var temp = await SingleAccountPageState.ofApi(context).crons2_13_09();
       if (temp.success && temp.bean != null) {
         list.clear();
         list.addAll(temp.bean?.data ?? []);
-        // ignore: use_build_context_synchronously
-        sortList(context);
+        if (context.mounted) {
+          sortList(context);
+        }
         list.isEmpty ? empty(notify: true) : success();
-        if (MultiAccountPageState.actionRunAll == MultiAccountPageState.useAction() &&
+        if (MultiAccountPageState.actionRunAll ==
+                MultiAccountPageState.useAction() &&
             !runAllTasked) {
           runAllTasked = true;
-          // ignore: use_build_context_synchronously
-          runAllTasks(context);
+          if (context.mounted) {
+            runAllTasks(context);
+          }
         }
       } else {
         list.clear();
         failed(temp.message, notify: true);
       }
     } else {
-      HttpResponse<List<TaskBean>> result = await SingleAccountPageState.ofApi(context).crons();
+      HttpResponse<List<TaskBean>> result = await SingleAccountPageState.ofApi(
+        context,
+      ).crons();
       if (result.success && result.bean != null) {
         list.clear();
         list.addAll(result.bean!);
-        // ignore: use_build_context_synchronously
-        sortList(context);
+        if (context.mounted) {
+          sortList(context);
+        }
         list.isEmpty ? empty(notify: true) : success();
-        if (MultiAccountPageState.actionRunAll == MultiAccountPageState.useAction() &&
+        if (MultiAccountPageState.actionRunAll ==
+                MultiAccountPageState.useAction() &&
             !runAllTasked) {
           runAllTasked = true;
-          // ignore: use_build_context_synchronously
-          runAllTasks(context);
+          if (context.mounted) {
+            runAllTasks(context);
+          }
         }
       } else {
         list.clear();
@@ -85,8 +87,8 @@ class TaskViewModel extends BaseViewModel {
   void sortList(BuildContext context) {
     //2.14.0之后就不需要排序
     if (!getIt<SystemBean>(
-            instanceName: (SingleAccountPageState.of(context)?.index ?? 0).toString())
-        .isUpperVersion2_14_0()) {
+      instanceName: (SingleAccountPageState.of(context)?.index ?? 0).toString(),
+    ).isUpperVersion2_14_0()) {
       List<TaskBean> p = [];
       List<TaskBean> r = [];
       List<TaskBean> d = [];
@@ -169,43 +171,58 @@ class TaskViewModel extends BaseViewModel {
     running.clear();
     running.addAll(list.where((element) => element.status == 0));
     neverRunning.clear();
-    neverRunning.addAll(list.where((element) => element.lastRunningTime == null));
+    neverRunning.addAll(
+      list.where((element) => element.lastRunningTime == null),
+    );
     notScripts.clear();
-    notScripts.addAll(list.where((element) => (element.command != null &&
-        (element.command!.startsWith("ql repo") || element.command!.startsWith("ql raw")))));
+    notScripts.addAll(
+      list.where(
+        (element) =>
+            (element.command != null &&
+            (element.command!.startsWith("ql repo") ||
+                element.command!.startsWith("ql raw"))),
+      ),
+    );
 
     disabled.clear();
     disabled.addAll(list.where((element) => element.isDisabled == 1));
   }
 
   Future<void> runCrons(BuildContext context, List<String> crons) async {
-    HttpResponse<NullResponse> result =
-        await SingleAccountPageState.ofApi(context).startTasks(crons);
+    HttpResponse<NullResponse> result = await SingleAccountPageState.ofApi(
+      context,
+    ).startTasks(crons);
     if (result.success) {
-      // ignore: use_build_context_synchronously
-      loadData(context, false);
+      if (context.mounted) {
+        loadData(context, false);
+      }
     } else {
       failToast(result.message, notify: true);
     }
   }
 
   Future<void> stopCrons(BuildContext context, List<String> crons) async {
-    HttpResponse<NullResponse> result =
-        await SingleAccountPageState.ofApi(context).stopTasks(crons);
+    HttpResponse<NullResponse> result = await SingleAccountPageState.ofApi(
+      context,
+    ).stopTasks(crons);
     if (result.success) {
-      // ignore: use_build_context_synchronously
-      loadData(context, false);
+      if (context.mounted) {
+        loadData(context, false);
+      }
     } else {
       failToast(result.message, notify: true);
     }
   }
 
   Future<void> delCron(BuildContext context, List<String> id) async {
-    HttpResponse<NullResponse> result = await SingleAccountPageState.ofApi(context).delTask(id);
+    HttpResponse<NullResponse> result = await SingleAccountPageState.ofApi(
+      context,
+    ).delTask(id);
     if (result.success) {
       "删除成功".toast();
-      // ignore: use_build_context_synchronously
-      loadData(context, false);
+      if (context.mounted) {
+        loadData(context, false);
+      }
     } else {
       failToast(result.message, notify: true);
     }
@@ -215,52 +232,68 @@ class TaskViewModel extends BaseViewModel {
     loadData(context, false);
   }
 
-  Future<void> pinTask(BuildContext context, List<String> sId, int isPinned) async {
+  Future<void> pinTask(
+    BuildContext context,
+    List<String> sId,
+    int isPinned,
+  ) async {
     if (isPinned == 1) {
-      HttpResponse<NullResponse> response =
-          await SingleAccountPageState.ofApi(context).unpinTask(sId);
+      HttpResponse<NullResponse> response = await SingleAccountPageState.ofApi(
+        context,
+      ).unpinTask(sId);
 
       if (response.success) {
         "取消置顶成功".toast();
-        // ignore: use_build_context_synchronously
-        loadData(context, false);
+        if (context.mounted) {
+          loadData(context, false);
+        }
       } else {
         failToast(response.message, notify: true);
       }
     } else {
-      HttpResponse<NullResponse> response =
-          await SingleAccountPageState.ofApi(context).pinTask(sId);
+      HttpResponse<NullResponse> response = await SingleAccountPageState.ofApi(
+        context,
+      ).pinTask(sId);
 
       if (response.success) {
         "置顶成功".toast();
-        // ignore: use_build_context_synchronously
-        loadData(context, false);
+        if (context.mounted) {
+          loadData(context, false);
+        }
       } else {
         failToast(response.message, notify: true);
       }
     }
   }
 
-  Future<void> enableTask(BuildContext context, List<String> sId, int isDisabled) async {
+  Future<void> enableTask(
+    BuildContext context,
+    List<String> sId,
+    int isDisabled,
+  ) async {
     if (isDisabled == 0) {
-      HttpResponse<NullResponse> response =
-          await SingleAccountPageState.ofApi(context).disableTask(sId);
+      HttpResponse<NullResponse> response = await SingleAccountPageState.ofApi(
+        context,
+      ).disableTask(sId);
 
       if (response.success) {
         "禁用成功".toast();
-        // ignore: use_build_context_synchronously
-        loadData(context, false);
+        if (context.mounted) {
+          loadData(context, false);
+        }
       } else {
         failToast(response.message, notify: true);
       }
     } else {
-      HttpResponse<NullResponse> response =
-          await SingleAccountPageState.ofApi(context).enableTask(sId);
+      HttpResponse<NullResponse> response = await SingleAccountPageState.ofApi(
+        context,
+      ).enableTask(sId);
 
       if (response.success) {
         "启用成功".toast();
-        // ignore: use_build_context_synchronously
-        loadData(context, false);
+        if (context.mounted) {
+          loadData(context, false);
+        }
       } else {
         failToast(response.message, notify: true);
       }
@@ -269,8 +302,10 @@ class TaskViewModel extends BaseViewModel {
 
   void runAllTasks(BuildContext context) {
     runAllTasked = true;
-    List<String> ids =
-        list.where((element) => element.isDisabled != 1).map((e) => e.sId ?? "").toList();
+    List<String> ids = list
+        .where((element) => element.isDisabled != 1)
+        .map((e) => e.sId ?? "")
+        .toList();
     "已运行${ids.length}个任务".toast();
     runCrons(context, ids);
   }

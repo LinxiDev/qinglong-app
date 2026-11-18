@@ -15,8 +15,6 @@ import 'package:qinglong_app/utils/utils.dart';
 import '../base/http/http.dart';
 import '../base/ui/button.dart';
 
-
-
 class ScanPage extends ConsumerStatefulWidget {
   const ScanPage({super.key});
 
@@ -48,9 +46,7 @@ class ScanPageState extends ConsumerState<ScanPage> {
                   CupertinoDialogAction(
                     child: const Text(
                       "取消",
-                      style: TextStyle(
-                        color: Color(0xff999999),
-                      ),
+                      style: TextStyle(color: Color(0xff999999)),
                     ),
                     onPressed: () {
                       Navigator.of(childContext).pop();
@@ -83,9 +79,11 @@ class ScanPageState extends ConsumerState<ScanPage> {
     List<String> pyInstalled = [];
     Api api = Api(SingleAccountPageState.of(context)?.index ?? 0);
     List<TaskBean> list = ref
-        .read(SingleAccountPageState.ofTaskProvider(context)(
-                getProviderName(context))
-            .notifier)
+        .read(
+          SingleAccountPageState.ofTaskProvider(context)(
+            getProviderName(context),
+          ).notifier,
+        )
         .list;
     List<DependencyBean> jsList = [];
     List<DependencyBean> pyList = [];
@@ -110,9 +108,12 @@ class ScanPageState extends ConsumerState<ScanPage> {
       }
 
       _updateDescText("正在扫描: $command");
-      HttpResponse<String> response =
-          // ignore: use_build_context_synchronously
-          await SingleAccountPageState.ofApi(context).inTimeLog(bean.sId!);
+      if (!mounted) {
+        return;
+      }
+      HttpResponse<String> response = await SingleAccountPageState.ofApi(
+        context,
+      ).inTimeLog(bean.sId!);
 
       String text = "";
 
@@ -135,36 +136,35 @@ class ScanPageState extends ConsumerState<ScanPage> {
     }
 
     scaning = false;
-    WidgetsBinding.instance.addPostFrameCallback(
-      (timeStamp) {
-        if (jsInstalled.isNotEmpty || pyInstalled.isNotEmpty) {
-          showCupertinoDialog(
-            context: context,
-            useRootNavigator: false,
-            builder: (childContext) => CupertinoAlertDialog(
-              title: const Text("本次已安装如下依赖"),
-              content: Text(
-                  "NodeJS:\n ${jsInstalled.join("\n").toString()} \n Python3:\n ${pyInstalled.join("\n").toString()}"),
-              actions: [
-                CupertinoDialogAction(
-                  child: Text(
-                    "知道了",
-                    style: TextStyle(
-                      color: ref.watch(themeProvider).primaryColor,
-                    ),
-                  ),
-                  onPressed: () {
-                    Navigator.of(childContext).pop();
-                  },
-                ),
-              ],
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      if (jsInstalled.isNotEmpty || pyInstalled.isNotEmpty) {
+        showCupertinoDialog(
+          context: context,
+          useRootNavigator: false,
+          builder: (childContext) => CupertinoAlertDialog(
+            title: const Text("本次已安装如下依赖"),
+            content: Text(
+              "NodeJS:\n ${jsInstalled.join("\n").toString()} \n Python3:\n ${pyInstalled.join("\n").toString()}",
             ),
-          );
-        } else {
-          "暂未发现缺失的依赖".toast();
-        }
-      },
-    );
+            actions: [
+              CupertinoDialogAction(
+                child: Text(
+                  "知道了",
+                  style: TextStyle(
+                    color: ref.watch(themeProvider).primaryColor,
+                  ),
+                ),
+                onPressed: () {
+                  Navigator.of(childContext).pop();
+                },
+              ),
+            ],
+          ),
+        );
+      } else {
+        "暂未发现缺失的依赖".toast();
+      }
+    });
     setState(() {});
   }
 
@@ -173,9 +173,7 @@ class ScanPageState extends ConsumerState<ScanPage> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const SizedBox(
-            height: 15,
-          ),
+          const SizedBox(height: 15),
           Padding(
             padding: const EdgeInsets.all(10),
             child: Lottie.asset(
@@ -185,9 +183,7 @@ class ScanPageState extends ConsumerState<ScanPage> {
               height: MediaQuery.of(context).size.width,
             ),
           ),
-          const SizedBox(
-            height: 10,
-          ),
+          const SizedBox(height: 10),
           SizedBox(
             height: 50,
             child: Consumer(
@@ -205,9 +201,7 @@ class ScanPageState extends ConsumerState<ScanPage> {
               },
             ),
           ),
-          const SizedBox(
-            height: 20,
-          ),
+          const SizedBox(height: 20),
           SizedBox(
             width: MediaQuery.of(context).size.width / 2,
             child: ButtonWidget(
@@ -224,7 +218,7 @@ class ScanPageState extends ConsumerState<ScanPage> {
                 }
               },
             ),
-          )
+          ),
         ],
       ),
     );
@@ -235,7 +229,10 @@ class ScanPageState extends ConsumerState<ScanPage> {
   }
 
   static Future<bool> autoInstallFounded(
-      Api api, String found, String command) async {
+    Api api,
+    String found,
+    String command,
+  ) async {
     if (found.contains(".") || found.contains("/")) return false;
     if (command.endsWith(".py")) {
       List<DependencyBean> pyList = [];
@@ -244,17 +241,13 @@ class ScanPageState extends ConsumerState<ScanPage> {
         pyList.addAll(pyDep.bean ?? []);
       }
       DependencyBean bean = pyList.firstWhere(
-          (element) => element.name == found,
-          orElse: () => DependencyBean());
+        (element) => element.name == found,
+        orElse: () => DependencyBean(),
+      );
       if (bean.name == null || bean.name!.isEmpty) {
-        await api.addDependency(
-          [
-            {
-              "name": found,
-              "type": 1,
-            }
-          ],
-        );
+        await api.addDependency([
+          {"name": found, "type": 1},
+        ]);
         return true;
       }
     } else {
@@ -265,18 +258,14 @@ class ScanPageState extends ConsumerState<ScanPage> {
         jsList.addAll(jsDep.bean ?? []);
       }
       DependencyBean bean = jsList.firstWhere(
-          (element) => element.name == found,
-          orElse: () => DependencyBean());
+        (element) => element.name == found,
+        orElse: () => DependencyBean(),
+      );
 
       if (bean.name == null || bean.name!.isEmpty) {
-        await api.addDependency(
-          [
-            {
-              "name": found,
-              "type": 0,
-            }
-          ],
-        );
+        await api.addDependency([
+          {"name": found, "type": 0},
+        ]);
         return true;
       }
     }

@@ -50,14 +50,20 @@ class InTimeLogPageState extends ConsumerState<InTimeLogPage> with LazyLoadState
   Future<void> getLogData() async {
     if (!canRequest) return;
     if (isRequest) return;
-    if (!mounted) return;
+    if (!mounted) {
+      return;
+    }
     isRequest = true;
     HttpResponse<String> response = await SingleAccountPageState.ofApi(context).inTimeLog(widget.cronId);
 
-    if (!mounted) return;
+    if (!mounted) {
+      return;
+    }
     isRequest = false;
     if (response.success) {
-      if (!mounted) return;
+      if (!mounted) {
+        return;
+      }
       content = response.bean;
       if (content == null || content!.isEmpty) return;
 
@@ -74,15 +80,21 @@ class InTimeLogPageState extends ConsumerState<InTimeLogPage> with LazyLoadState
         }
       }
       if (alwaysAuthScroll) {
-        if (!mounted) return;
+        if (!mounted) {
+          return;
+        }
         WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-          if (!mounted) return;
+          if (!mounted) {
+            return;
+          }
           if ((controller?.hasClients ?? false)) {
             controller!.animateTo(controller!.position.maxScrollExtent, duration: const Duration(milliseconds: 200), curve: Curves.linear);
           }
         });
       }
-      if (!mounted) return;
+      if (!mounted) {
+        return;
+      }
       setState(() {});
     } else {
       if (!hasToastedFailed) {

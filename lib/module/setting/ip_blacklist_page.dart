@@ -46,7 +46,9 @@ class _IpBlacklistPageState extends ConsumerState<IpBlacklistPage> {
       context,
     ).getIpBlacklist();
 
-    if (!mounted) return;
+    if (!mounted) {
+      return;
+    }
 
     if (response.success) {
       try {
@@ -112,7 +114,9 @@ class _IpBlacklistPageState extends ConsumerState<IpBlacklistPage> {
 
     final response = await api.addIpBlacklist(ip);
 
-    if (!mounted) return;
+    if (!mounted) {
+      return;
+    }
 
     setState(() {
       operating = false;
@@ -132,7 +136,9 @@ class _IpBlacklistPageState extends ConsumerState<IpBlacklistPage> {
         .deleteIpBlacklist(ip);
     EasyLoading.dismiss();
 
-    if (!mounted) return;
+    if (!mounted) {
+      return;
+    }
 
     if (response.success) {
       "已移出黑名单".toast();

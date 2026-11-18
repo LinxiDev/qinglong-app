@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'dart:math';
+
 import 'package:file_picker/file_picker.dart';
 import 'package:cupertino_ui/cupertino_ui.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -19,9 +20,7 @@ import 'package:qinglong_app/utils/extension.dart';
 import '../others/scripts/script_code_detail_page.dart';
 
 class AddConfigPage extends ConsumerStatefulWidget {
-  const AddConfigPage({
-    super.key,
-  });
+  const AddConfigPage({super.key});
 
   @override
   ConsumerState<AddConfigPage> createState() => _AddConfigPageState();
@@ -61,34 +60,21 @@ class _AddConfigPageState extends ConsumerState<AddConfigPage> {
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 15,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 15),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const SizedBox(
-                    height: 15,
-                  ),
-                  const TitleWidget(
-                    "名称",
-                    required: true,
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
+                  const SizedBox(height: 15),
+                  const TitleWidget("名称", required: true),
+                  const SizedBox(height: 10),
                   TextField(
                     focusNode: focusNode,
                     controller: _nameController,
-                    decoration: const InputDecoration(
-                      hintText: "请输入配置文件名称",
-                    ),
+                    decoration: const InputDecoration(hintText: "请输入配置文件名称"),
                     autofocus: false,
                   ),
-                  const SizedBox(
-                    height: 5,
-                  ),
+                  const SizedBox(height: 5),
                   Text(
                     "如果该配置文件的名称已存在,那就会直接替换该内容",
                     style: TextStyle(
@@ -96,24 +82,17 @@ class _AddConfigPageState extends ConsumerState<AddConfigPage> {
                       fontSize: 12,
                     ),
                   ),
-                  const SizedBox(
-                    height: 30,
-                  ),
-                  const TitleWidget(
-                    "上传配置文件",
-                    required: true,
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
+                  const SizedBox(height: 30),
+                  const TitleWidget("上传配置文件", required: true),
+                  const SizedBox(height: 10),
                   Container(
                     height: 80,
                     alignment: Alignment.centerLeft,
-                    child: file == null ? addWidget(context) : addedWidget(context),
+                    child: file == null
+                        ? addWidget(context)
+                        : addedWidget(context),
                   ),
-                  const SizedBox(
-                    height: 5,
-                  ),
+                  const SizedBox(height: 5),
                 ],
               ),
             ),
@@ -135,40 +114,29 @@ class _AddConfigPageState extends ConsumerState<AddConfigPage> {
   Widget addWidget(BuildContext context) {
     return GestureDetector(
       onTap: () async {
-        showMoreOperate(
-          context,
-          [
-            CupertinoSheer(
-              title: "远程地址",
-              onTap: () {
-                fromRemote(context);
-              },
-            ),
-            addDivider(),
-            CupertinoSheer(
-              title: "本地上传",
-              onTap: () {
-                pickLocalFile();
-              },
-            )
-          ],
-        );
+        showMoreOperate(context, [
+          CupertinoSheer(
+            title: "远程地址",
+            onTap: () {
+              fromRemote(context);
+            },
+          ),
+          addDivider(),
+          CupertinoSheer(
+            title: "本地上传",
+            onTap: () {
+              pickLocalFile();
+            },
+          ),
+        ]);
       },
       child: Container(
-        margin: const EdgeInsets.only(
-          top: 10,
-        ),
+        margin: const EdgeInsets.only(top: 10),
         width: 70,
         height: 70,
-        decoration: const BoxDecoration(
-          color: Color(0xfff7f7f7),
-        ),
+        decoration: const BoxDecoration(color: Color(0xfff7f7f7)),
         child: const Center(
-          child: Icon(
-            CupertinoIcons.add,
-            size: 35,
-            color: Color(0xff6e6e6e),
-          ),
+          child: Icon(CupertinoIcons.add, size: 35, color: Color(0xff6e6e6e)),
         ),
       ),
     );
@@ -187,13 +155,17 @@ class _AddConfigPageState extends ConsumerState<AddConfigPage> {
     try {
       await EasyLoading.show(status: " 提交中");
       final contents = await file!.readAsString();
-      // ignore: use_build_context_synchronously
-      var response = await SingleAccountPageState.ofApi(context).saveFile(_nameController.text, contents);
+      if (!mounted) {
+        return;
+      }
+      var response = await SingleAccountPageState.ofApi(context)
+          .saveFile(_nameController.text, contents);
       await EasyLoading.dismiss();
       if (response.success) {
         "上传成功".toast();
-        // ignore: use_build_context_synchronously
-        Navigator.of(context).pop(true);
+        if (mounted) {
+          Navigator.of(context).pop(true);
+        }
       } else {
         response.message.toast();
       }
@@ -223,45 +195,47 @@ class _AddConfigPageState extends ConsumerState<AddConfigPage> {
   void fromRemote(BuildContext context) {
     Navigator.of(context)
         .push(
-      CupertinoPageRoute(
-        builder: (context) => const ScriptDownloadPage(),
-      ),
-    )
+          CupertinoPageRoute(builder: (context) => const ScriptDownloadPage()),
+        )
         .then((value) {
-      if (value != null) {
-        Map<String, String> data = value;
+          if (value != null) {
+            Map<String, String> data = value;
 
-        _nameController.text = data["name"] ?? "";
-        String path = data["path"] ?? "";
-        file = File(path);
-        if (file == null) return;
-        if (file!.lengthSync() > 5242880) {
-          file = null;
-          "最大支持上传5M的文件".toast();
-          return;
-        }
+            _nameController.text = data["name"] ?? "";
+            String path = data["path"] ?? "";
+            file = File(path);
+            if (file == null) return;
+            if (file!.lengthSync() > 5242880) {
+              file = null;
+              "最大支持上传5M的文件".toast();
+              return;
+            }
 
-        setState(() {});
-      } else {
-        _nameController.text = "";
-      }
-    });
+            setState(() {});
+          } else {
+            _nameController.text = "";
+          }
+        });
   }
 
   Widget addedWidget(BuildContext context) {
     return GestureDetector(
       onTap: () async {
+        if (!mounted) {
+          return;
+        }
         try {
           String content = await file!.readAsString();
-          // ignore: use_build_context_synchronously
-          Navigator.of(context).push(
-            CupertinoPageRoute(
-              builder: (context) => ScriptCodeDetailPage(
-                title: getFileName(),
-                content: content,
+          if (context.mounted) {
+            Navigator.of(context).push(
+              CupertinoPageRoute(
+                builder: (context) => ScriptCodeDetailPage(
+                  title: getFileName(),
+                  content: content,
+                ),
               ),
-            ),
-          );
+            );
+          }
         } catch (e) {
           e.toString().toast();
         }
@@ -269,19 +243,11 @@ class _AddConfigPageState extends ConsumerState<AddConfigPage> {
       behavior: HitTestBehavior.opaque,
       child: Container(
         height: 80,
-        padding: const EdgeInsets.symmetric(
-          vertical: 10,
-        ),
+        padding: const EdgeInsets.symmetric(vertical: 10),
         child: Row(
           children: [
-            Image.asset(
-              getIconBySuffix(),
-              width: 50,
-              fit: BoxFit.cover,
-            ),
-            const SizedBox(
-              width: 15,
-            ),
+            Image.asset(getIconBySuffix(), width: 50, fit: BoxFit.cover),
+            const SizedBox(width: 15),
             Expanded(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -294,9 +260,7 @@ class _AddConfigPageState extends ConsumerState<AddConfigPage> {
                       fontSize: 16,
                     ),
                   ),
-                  const SizedBox(
-                    height: 5,
-                  ),
+                  const SizedBox(height: 5),
                   Text(
                     getFileSize(file!.path, 2),
                     style: TextStyle(

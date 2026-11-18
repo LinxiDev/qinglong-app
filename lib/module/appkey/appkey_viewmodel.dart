@@ -19,8 +19,8 @@ class AppKeyViewModel extends BaseViewModel {
       loading(notify: true);
     }
 
-    HttpResponse<String> result =
-        await SingleAccountPageState.ofApi(context).appKeys();
+    HttpResponse<String> result = await SingleAccountPageState.ofApi(context)
+        .appKeys();
 
     if (result.success && result.bean != null) {
       list.clear();
@@ -46,24 +46,28 @@ class AppKeyViewModel extends BaseViewModel {
   }
 
   Future<void> delAppKey(BuildContext context, dynamic id) async {
-    HttpResponse<NullResponse> result =
-        await SingleAccountPageState.ofApi(context).deleteAppKey([id]);
+    HttpResponse<NullResponse> result = await SingleAccountPageState.ofApi(
+      context,
+    ).deleteAppKey([id]);
     if (result.success) {
       "删除成功".toast();
-      // ignore: use_build_context_synchronously
-      loadData(context, false);
+      if (context.mounted) {
+        loadData(context, false);
+      }
     } else {
       failToast(result.message, notify: true);
     }
   }
 
   Future<void> resetAppKey(BuildContext context, dynamic id) async {
-    HttpResponse<NullResponse> result =
-        await SingleAccountPageState.ofApi(context).resetAppKey(id);
+    HttpResponse<NullResponse> result = await SingleAccountPageState.ofApi(
+      context,
+    ).resetAppKey(id);
     if (result.success) {
       "重置成功".toast();
-      // ignore: use_build_context_synchronously
-      loadData(context, false);
+      if (context.mounted) {
+        loadData(context, false);
+      }
     } else {
       failToast(result.message, notify: true);
     }

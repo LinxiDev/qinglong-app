@@ -67,8 +67,11 @@ class OtherPageState extends ConsumerState<OtherPage>
 
   Future<void> scrollToTop() async {
     if (!_scrollController.hasClients) return;
-    _scrollController.animateTo(0,
-        duration: const Duration(milliseconds: 200), curve: Curves.linear);
+    _scrollController.animateTo(
+      0,
+      duration: const Duration(milliseconds: 200),
+      curve: Curves.linear,
+    );
   }
 
   @override
@@ -97,17 +100,16 @@ class OtherPageState extends ConsumerState<OtherPage>
                     image: (ref.watch(themeProvider).themeMode == modeDark)
                         ? null
                         : const DecorationImage(
-                            image:
-                                AssetImage('assets/images/icon_other_bg.png'),
+                            image: AssetImage(
+                              'assets/images/icon_other_bg.png',
+                            ),
                             fit: BoxFit.cover,
                           ),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const SizedBox(
-                        height: kToolbarHeight + 25,
-                      ),
+                      const SizedBox(height: kToolbarHeight + 25),
                       GestureDetector(
                         behavior: HitTestBehavior.opaque,
                         onTap: () {
@@ -115,22 +117,25 @@ class OtherPageState extends ConsumerState<OtherPage>
                               typeNormal) {
                             Navigator.of(context).push(
                               CupertinoPageRoute(
-                                builder: (context) => const InAppPurchasePage(
-                                  fromDirectly: true,
-                                ),
+                                builder: (context) =>
+                                    const InAppPurchasePage(fromDirectly: true),
                               ),
                             );
                             return;
                           } else {
-                            if (SpUtil.getBool(spSingleInstance,
-                                defValue: false)) {
+                            if (SpUtil.getBool(
+                              spSingleInstance,
+                              defValue: false,
+                            )) {
                               return;
                             }
                             Navigator.of(context).push(
                               PageRouteBuilder(
-                                pageBuilder:
-                                    (context, animation1, animation2) =>
-                                        const ChangeAccountPage(),
+                                pageBuilder: (
+                                  context,
+                                  animation1,
+                                  animation2,
+                                ) => const ChangeAccountPage(),
                                 transitionDuration: Duration.zero,
                                 reverseTransitionDuration: Duration.zero,
                               ),
@@ -140,9 +145,7 @@ class OtherPageState extends ConsumerState<OtherPage>
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const SizedBox(
-                              width: 15,
-                            ),
+                            const SizedBox(width: 15),
                             ClipRRect(
                               borderRadius: BorderRadius.circular(10),
                               child: (userIcon != null && userIcon!.isNotEmpty)
@@ -171,33 +174,28 @@ class OtherPageState extends ConsumerState<OtherPage>
                                       height: 60,
                                     ),
                             ),
-                            const SizedBox(
-                              width: 15,
-                            ),
+                            const SizedBox(width: 15),
                             Expanded(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  const SizedBox(
-                                    height: 5,
-                                  ),
+                                  const SizedBox(height: 5),
                                   Row(
                                     children: [
                                       Flexible(
                                         fit: FlexFit.loose,
                                         child: Text(
                                           (SingleAccountPageState.ofUserInfo(
-                                                              context)
-                                                          .alias ==
+                                                        context,
+                                                      ).alias ==
                                                       null ||
-                                                  SingleAccountPageState
-                                                          .ofUserInfo(context)
-                                                      .alias!
-                                                      .isEmpty)
+                                                  SingleAccountPageState.ofUserInfo(
+                                                    context,
+                                                  ).alias!.isEmpty)
                                               ? userName
-                                              : SingleAccountPageState
-                                                      .ofUserInfo(context)
-                                                  .alias!,
+                                              : SingleAccountPageState.ofUserInfo(
+                                                  context,
+                                                ).alias!,
                                           maxLines: 1,
                                           style: TextStyle(
                                             color: ref
@@ -209,21 +207,17 @@ class OtherPageState extends ConsumerState<OtherPage>
                                           ),
                                         ),
                                       ),
-
                                     ],
                                   ),
-                                  const SizedBox(
-                                    height: 5,
-                                  ),
+                                  const SizedBox(height: 5),
                                   GestureDetector(
                                     behavior: HitTestBehavior.opaque,
                                     onTap: () {
                                       if (poetData.isEmpty) return;
                                       Navigator.of(context).push(
                                         CupertinoPageRoute(
-                                          builder: (context) => PoetPage(
-                                            data: poetData,
-                                          ),
+                                          builder: (context) =>
+                                              PoetPage(data: poetData),
                                         ),
                                       );
                                     },
@@ -256,30 +250,26 @@ class OtherPageState extends ConsumerState<OtherPage>
                         ),
                         child: Row(
                           children: [
-                            const SizedBox(
-                              width: 20,
-                            ),
+                            const SizedBox(width: 20),
                             Expanded(
                               flex: 2,
                               child: Column(
                                 children: [
-                                  const SizedBox(
-                                    height: 10,
-                                  ),
+                                  const SizedBox(height: 10),
                                   CupertinoButton(
                                     padding: EdgeInsets.zero,
                                     onPressed: () {
                                       if (_systemBean.isUpperVersion2_13_0()) {
-                                        Navigator.of(context).pushNamed(
-                                          Routes.routeSubscribeList,
-                                        );
+                                        Navigator.of(
+                                          context,
+                                        ).pushNamed(Routes.routeSubscribeList);
                                       } else {
                                         Navigator.of(context).push(
                                           CupertinoPageRoute(
                                             builder: (context) =>
                                                 const TaskPage(
-                                              onlyShowPullRepo: true,
-                                            ),
+                                                  onlyShowPullRepo: true,
+                                                ),
                                           ),
                                         );
                                       }
@@ -296,9 +286,7 @@ class OtherPageState extends ConsumerState<OtherPage>
                                             width: 30,
                                             fit: BoxFit.cover,
                                           ),
-                                          const SizedBox(
-                                            height: 5,
-                                          ),
+                                          const SizedBox(height: 5),
                                           Text(
                                             _systemBean.isUpperVersion2_13_0()
                                                 ? "订阅管理"
@@ -315,9 +303,7 @@ class OtherPageState extends ConsumerState<OtherPage>
                                       ),
                                     ),
                                   ),
-                                  const SizedBox(
-                                    height: 10,
-                                  ),
+                                  const SizedBox(height: 10),
                                 ],
                               ),
                             ),
@@ -325,15 +311,12 @@ class OtherPageState extends ConsumerState<OtherPage>
                               flex: 2,
                               child: Column(
                                 children: [
-                                  const SizedBox(
-                                    height: 10,
-                                  ),
+                                  const SizedBox(height: 10),
                                   CupertinoButton(
                                     padding: EdgeInsets.zero,
                                     onPressed: () {
-                                      Navigator.of(context).pushNamed(
-                                        Routes.routeScript,
-                                      );
+                                      Navigator.of(context)
+                                          .pushNamed(Routes.routeScript);
                                     },
                                     child: Padding(
                                       padding: const EdgeInsets.symmetric(
@@ -347,9 +330,7 @@ class OtherPageState extends ConsumerState<OtherPage>
                                             width: 30,
                                             fit: BoxFit.cover,
                                           ),
-                                          const SizedBox(
-                                            height: 5,
-                                          ),
+                                          const SizedBox(height: 5),
                                           Text(
                                             "脚本管理",
                                             style: TextStyle(
@@ -364,9 +345,7 @@ class OtherPageState extends ConsumerState<OtherPage>
                                       ),
                                     ),
                                   ),
-                                  const SizedBox(
-                                    height: 10,
-                                  ),
+                                  const SizedBox(height: 10),
                                 ],
                               ),
                             ),
@@ -374,15 +353,12 @@ class OtherPageState extends ConsumerState<OtherPage>
                               flex: 2,
                               child: Column(
                                 children: [
-                                  const SizedBox(
-                                    height: 10,
-                                  ),
+                                  const SizedBox(height: 10),
                                   CupertinoButton(
                                     padding: EdgeInsets.zero,
                                     onPressed: () {
-                                      Navigator.of(context).pushNamed(
-                                        Routes.routeDependency,
-                                      );
+                                      Navigator.of(context)
+                                          .pushNamed(Routes.routeDependency);
                                     },
                                     child: Padding(
                                       padding: const EdgeInsets.symmetric(
@@ -396,9 +372,7 @@ class OtherPageState extends ConsumerState<OtherPage>
                                             width: 30,
                                             fit: BoxFit.cover,
                                           ),
-                                          const SizedBox(
-                                            height: 5,
-                                          ),
+                                          const SizedBox(height: 5),
                                           Text(
                                             "依赖管理",
                                             style: TextStyle(
@@ -413,15 +387,11 @@ class OtherPageState extends ConsumerState<OtherPage>
                                       ),
                                     ),
                                   ),
-                                  const SizedBox(
-                                    height: 10,
-                                  ),
+                                  const SizedBox(height: 10),
                                 ],
                               ),
                             ),
-                            const SizedBox(
-                              width: 20,
-                            ),
+                            const SizedBox(width: 20),
                           ],
                         ),
                       ),
@@ -429,27 +399,20 @@ class OtherPageState extends ConsumerState<OtherPage>
                   ),
                 ),
                 Container(
-                  margin: const EdgeInsets.only(
-                    left: 15,
-                    right: 15,
-                    top: 20,
-                  ),
+                  margin: const EdgeInsets.only(left: 15, right: 15, top: 20),
                   child: InkWell(
-                    borderRadius: const BorderRadius.all(
-                      Radius.circular(10),
-                    ),
+                    borderRadius: const BorderRadius.all(Radius.circular(10)),
                     onTap: () {
                       Navigator.of(context)
                           .push(
-                        CupertinoPageRoute(
-                          builder: (context) => const InAppPurchasePage(
-                            fromDirectly: true,
-                          ),
-                        ),
-                      )
+                            CupertinoPageRoute(
+                              builder: (context) =>
+                                  const InAppPurchasePage(fromDirectly: true),
+                            ),
+                          )
                           .then((value) {
-                        setState(() {});
-                      });
+                            setState(() {});
+                          });
                     },
                     child: Ink(
                       decoration: BoxDecoration(
@@ -488,9 +451,7 @@ class OtherPageState extends ConsumerState<OtherPage>
                     ),
                   ),
                 ),
-                const SizedBox(
-                  height: 20,
-                ),
+                const SizedBox(height: 20),
                 Container(
                   margin: const EdgeInsets.symmetric(horizontal: 15),
                   decoration: BoxDecoration(
@@ -508,9 +469,7 @@ class OtherPageState extends ConsumerState<OtherPage>
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const SizedBox(
-                        height: 5,
-                      ),
+                      const SizedBox(height: 5),
                       Text(
                         "多帐号设置",
                         style: TextStyle(
@@ -522,27 +481,30 @@ class OtherPageState extends ConsumerState<OtherPage>
                               .titleColor(),
                         ),
                       ),
-                      const SizedBox(
-                        height: 10,
-                      ),
+                      const SizedBox(height: 10),
                       Row(
                         children: [
                           Expanded(
                             child: buildOtherFun2(
-                                "多账号数", CupertinoIcons.infinite, () {
-                              if (SpUtil.getBool(spSingleInstance,
-                                  defValue: false)) {
-                                '请先进入 系统设置 关闭单实例模式'.toast();
-                                return;
-                              }
+                              "多账号数",
+                              CupertinoIcons.infinite,
+                              () {
+                                if (SpUtil.getBool(
+                                  spSingleInstance,
+                                  defValue: false,
+                                )) {
+                                  '请先进入 系统设置 关闭单实例模式'.toast();
+                                  return;
+                                }
 
-                              Navigator.of(context).push(
-                                CupertinoPageRoute(
-                                  builder: (context) =>
-                                      const UpdateMaxAccountPage(),
-                                ),
-                              );
-                            }),
+                                Navigator.of(context).push(
+                                  CupertinoPageRoute(
+                                    builder: (context) =>
+                                        const UpdateMaxAccountPage(),
+                                  ),
+                                );
+                              },
+                            ),
                           ),
                           const Spacer(),
                           const Spacer(),
@@ -552,9 +514,7 @@ class OtherPageState extends ConsumerState<OtherPage>
                     ],
                   ),
                 ),
-                const SizedBox(
-                  height: 20,
-                ),
+                const SizedBox(height: 20),
                 Container(
                   margin: const EdgeInsets.symmetric(horizontal: 15),
                   decoration: BoxDecoration(
@@ -572,21 +532,19 @@ class OtherPageState extends ConsumerState<OtherPage>
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const SizedBox(
-                        height: 5,
-                      ),
+                      const SizedBox(height: 5),
                       Text(
                         "面板运维",
                         style: TextStyle(
                           fontWeight: FontWeight.w600,
                           fontSize: 16,
-                          color:
-                              ref.watch(themeProvider).themeColor.titleColor(),
+                          color: ref
+                              .watch(themeProvider)
+                              .themeColor
+                              .titleColor(),
                         ),
                       ),
-                      const SizedBox(
-                        height: 10,
-                      ),
+                      const SizedBox(height: 10),
                       Row(
                         children: [
                           Expanded(
@@ -627,15 +585,11 @@ class OtherPageState extends ConsumerState<OtherPage>
                           ),
                         ],
                       ),
-                      const SizedBox(
-                        height: 10,
-                      ),
+                      const SizedBox(height: 10),
                     ],
                   ),
                 ),
-                const SizedBox(
-                  height: 20,
-                ),
+                const SizedBox(height: 20),
                 Container(
                   margin: const EdgeInsets.symmetric(horizontal: 15),
                   decoration: BoxDecoration(
@@ -653,9 +607,7 @@ class OtherPageState extends ConsumerState<OtherPage>
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const SizedBox(
-                        height: 5,
-                      ),
+                      const SizedBox(height: 5),
                       Text(
                         "高级功能",
                         style: TextStyle(
@@ -667,20 +619,21 @@ class OtherPageState extends ConsumerState<OtherPage>
                               .titleColor(),
                         ),
                       ),
-                      const SizedBox(
-                        height: 10,
-                      ),
+                      const SizedBox(height: 10),
                       Row(
                         children: [
                           Expanded(
                             child: buildOtherFun2(
-                                "扫描依赖", CupertinoIcons.doc_text_search, () {
-                              Navigator.of(context).push(
-                                CupertinoPageRoute(
-                                  builder: (context) => const ScanPage(),
-                                ),
-                              );
-                            }),
+                              "扫描依赖",
+                              CupertinoIcons.doc_text_search,
+                              () {
+                                Navigator.of(context).push(
+                                  CupertinoPageRoute(
+                                    builder: (context) => const ScanPage(),
+                                  ),
+                                );
+                              },
+                            ),
                           ),
                           Expanded(
                             child: buildOtherFun2(
@@ -689,44 +642,49 @@ class OtherPageState extends ConsumerState<OtherPage>
                               () {
                                 Navigator.of(context).push(
                                   CupertinoPageRoute(
-                                      builder: (context) =>
-                                          const TextSizePage()),
+                                    builder: (context) => const TextSizePage(),
+                                  ),
                                 );
                               },
                             ),
                           ),
                           Expanded(
                             child: buildOtherFun2(
-                                "文件备份", CupertinoIcons.cloud_upload, () {
-                              Navigator.of(context)
-                                  .pushNamed(Routes.routeICloud);
-                            }),
+                              "文件备份",
+                              CupertinoIcons.cloud_upload,
+                              () {
+                                Navigator.of(context)
+                                    .pushNamed(Routes.routeICloud);
+                              },
+                            ),
                           ),
                           Expanded(
-                            child: SpUtil.getBool(spSingleInstance,
-                                    defValue: false)
+                            child:
+                                SpUtil.getBool(
+                                  spSingleInstance,
+                                  defValue: false,
+                                )
                                 ? const SizedBox.shrink()
                                 : buildOtherFun2(
-                                    "账号排序", CupertinoIcons.arrow_swap, () {
-                                    Navigator.of(context).push(
-                                      CupertinoPageRoute(
-                                        builder: (context) =>
-                                            const SortAccountPage(),
-                                      ),
-                                    );
-                                  }),
+                                    "账号排序",
+                                    CupertinoIcons.arrow_swap,
+                                    () {
+                                      Navigator.of(context).push(
+                                        CupertinoPageRoute(
+                                          builder: (context) =>
+                                              const SortAccountPage(),
+                                        ),
+                                      );
+                                    },
+                                  ),
                           ),
                         ],
                       ),
-                      const SizedBox(
-                        height: 10,
-                      ),
+                      const SizedBox(height: 10),
                     ],
                   ),
                 ),
-                const SizedBox(
-                  height: 20,
-                ),
+                const SizedBox(height: 20),
                 Container(
                   margin: const EdgeInsets.symmetric(horizontal: 15),
                   decoration: BoxDecoration(
@@ -744,52 +702,56 @@ class OtherPageState extends ConsumerState<OtherPage>
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const SizedBox(
-                        height: 5,
-                      ),
+                      const SizedBox(height: 5),
                       Text(
                         "基础功能",
                         style: TextStyle(
                           fontWeight: FontWeight.w600,
                           fontSize: 16,
-                          color:
-                              ref.watch(themeProvider).themeColor.titleColor(),
+                          color: ref
+                              .watch(themeProvider)
+                              .themeColor
+                              .titleColor(),
                         ),
                       ),
-                      const SizedBox(
-                        height: 10,
-                      ),
+                      const SizedBox(height: 10),
                       Row(
                         children: [
                           Expanded(
                             child: buildOtherFun(
-                                "任务日志", "assets/images/icon_task_log.png", () {
-                              Navigator.of(context).pushNamed(
-                                Routes.routeTaskLog,
-                              );
-                            }),
+                              "任务日志",
+                              "assets/images/icon_task_log.png",
+                              () {
+                                Navigator.of(context)
+                                    .pushNamed(Routes.routeTaskLog);
+                              },
+                            ),
                           ),
                           Expanded(
                             child: buildOtherFun(
-                                "登录日志", "assets/images/icon_login_icon.png",
-                                () {
-                              if (SingleAccountPageState.ofUserInfo(context)
-                                  .useSecretLogined) {
-                                "使用client_id方式登录无法获取登录日志".toast();
-                              } else {
-                                Navigator.of(context).pushNamed(
-                                  Routes.routeLoginLog,
-                                );
-                              }
-                            }),
+                              "登录日志",
+                              "assets/images/icon_login_icon.png",
+                              () {
+                                if (SingleAccountPageState.ofUserInfo(context)
+                                    .useSecretLogined) {
+                                  "使用client_id方式登录无法获取登录日志".toast();
+                                } else {
+                                  Navigator.of(context)
+                                      .pushNamed(Routes.routeLoginLog);
+                                }
+                              },
+                            ),
                           ),
                           Expanded(
                             child: buildOtherFun2(
                               "应用设置",
                               CupertinoIcons.gear_alt,
                               () {
-                                Navigator.of(context).push(CupertinoPageRoute(
-                                    builder: (context) => const AppKeyPage()));
+                                Navigator.of(context).push(
+                                  CupertinoPageRoute(
+                                    builder: (context) => const AppKeyPage(),
+                                  ),
+                                );
                               },
                             ),
                           ),
@@ -798,46 +760,55 @@ class OtherPageState extends ConsumerState<OtherPage>
                               "通知设置",
                               CupertinoIcons.envelope,
                               () {
-                                Navigator.of(context).push(CupertinoPageRoute(
+                                Navigator.of(context).push(
+                                  CupertinoPageRoute(
                                     builder: (context) =>
-                                        const PushSettingPage()));
+                                        const PushSettingPage(),
+                                  ),
+                                );
                               },
                             ),
                           ),
                         ],
                       ),
-                      const SizedBox(
-                        height: 10,
-                      ),
+                      const SizedBox(height: 10),
                       Row(
                         children: [
                           Expanded(
                             child: buildOtherFun2(
-                                "修改密码", CupertinoIcons.lock_shield, () {
-                              if (SingleAccountPageState.ofUserInfo(context)
-                                  .useSecretLogined) {
-                                "使用client_id方式登录无法修改密码".toast();
-                              } else {
-                                Navigator.of(context).push(CupertinoPageRoute(
-                                    builder: (context) =>
-                                        const UpdatePasswordPage()));
-                              }
-                            }),
+                              "修改密码",
+                              CupertinoIcons.lock_shield,
+                              () {
+                                if (SingleAccountPageState.ofUserInfo(context)
+                                    .useSecretLogined) {
+                                  "使用client_id方式登录无法修改密码".toast();
+                                } else {
+                                  Navigator.of(context).push(
+                                    CupertinoPageRoute(
+                                      builder: (context) =>
+                                          const UpdatePasswordPage(),
+                                    ),
+                                  );
+                                }
+                              },
+                            ),
                           ),
                           Expanded(
                             child: buildOtherFun2(
-                                "日志设置", CupertinoIcons.gobackward_30, () {
-                              _delLog(context);
-                            }),
+                              "日志设置",
+                              CupertinoIcons.gobackward_30,
+                              () {
+                                _delLog(context);
+                              },
+                            ),
                           ),
                           Expanded(
                             child: buildOtherFun(
                               "系统设置",
                               "assets/images/icon_safety.png",
                               () {
-                                Navigator.of(context).pushNamed(
-                                  Routes.routeSetting,
-                                );
+                                Navigator.of(context)
+                                    .pushNamed(Routes.routeSetting);
                               },
                             ),
                           ),
@@ -846,9 +817,8 @@ class OtherPageState extends ConsumerState<OtherPage>
                               "关于软件",
                               "assets/images/icon_about.png",
                               () {
-                                Navigator.of(context).pushNamed(
-                                  Routes.routeAbout,
-                                );
+                                Navigator.of(context)
+                                    .pushNamed(Routes.routeAbout);
                               },
                             ),
                           ),
@@ -858,7 +828,8 @@ class OtherPageState extends ConsumerState<OtherPage>
                   ),
                 ),
                 SizedBox(
-                  height: kBottomNavigationBarHeight +
+                  height:
+                      kBottomNavigationBarHeight +
                       MediaQuery.of(context).viewPadding.bottom,
                 ),
               ],
@@ -869,12 +840,12 @@ class OtherPageState extends ConsumerState<OtherPage>
     );
   }
 
-
   /// 安全获取当前账号的 SystemBean：首页异步注册，未注册时降级为低版本
   SystemBean get _systemBean {
     try {
       return getIt<SystemBean>(
-        instanceName: (SingleAccountPageState.of(context)?.index ?? 0).toString(),
+        instanceName: (SingleAccountPageState.of(context)?.index ?? 0)
+            .toString(),
       );
     } catch (e) {
       return SystemBean(version: "2.10.13", fromAutoGet: false);
@@ -910,105 +881,91 @@ class OtherPageState extends ConsumerState<OtherPage>
     }
 
     TextEditingController controller = TextEditingController(text: day);
-    showCupertinoDialog(
-      useRootNavigator: false,
-      // ignore: use_build_context_synchronously
-      context: context,
-      builder: (context) => CupertinoAlertDialog(
-        title: const Text(
-          "日志删除频率:",
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w400,
+    if (context.mounted) {
+      showCupertinoDialog(
+        useRootNavigator: false,
+        context: context,
+        builder: (context) => CupertinoAlertDialog(
+          title: const Text(
+            "日志删除频率:",
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400),
           ),
-        ),
-        content: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(
-                vertical: 10,
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  const Text("每"),
-                  const SizedBox(
-                    width: 10,
-                  ),
-                  SizedBox(
-                    // 弹窗内容区宽度有限，这里用固定宽度避免大屏溢出
-                    width: 96,
-                    child: TextField(
-                      textAlign: TextAlign.center,
-                      controller: controller,
-                      keyboardType: TextInputType.number,
-                      decoration: InputDecoration(
-                        hintText: "",
-                        border: OutlineInputBorder(
-                          borderSide: BorderSide(
-                            color: ref
-                                .watch(themeProvider)
-                                .themeColor
-                                .title2Color(),
-                            width: 1,
+          content: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 10),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    const Text("每"),
+                    const SizedBox(width: 10),
+                    SizedBox(
+                      // 弹窗内容区宽度有限，这里用固定宽度避免大屏溢出
+                      width: 96,
+                      child: TextField(
+                        textAlign: TextAlign.center,
+                        controller: controller,
+                        keyboardType: TextInputType.number,
+                        decoration: InputDecoration(
+                          hintText: "",
+                          border: OutlineInputBorder(
+                            borderSide: BorderSide(
+                              color: ref
+                                  .watch(themeProvider)
+                                  .themeColor
+                                  .title2Color(),
+                              width: 1,
+                            ),
+                            borderRadius: BorderRadius.circular(4),
                           ),
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
-                            color: ref
-                                .watch(themeProvider)
-                                .themeColor
-                                .title2Color(),
-                            width: 1,
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: BorderSide(
+                              color: ref
+                                  .watch(themeProvider)
+                                  .themeColor
+                                  .title2Color(),
+                              width: 1,
+                            ),
+                            borderRadius: BorderRadius.circular(4),
                           ),
-                          borderRadius: BorderRadius.circular(4),
                         ),
+                        autofocus: false,
                       ),
-                      autofocus: false,
                     ),
-                  ),
-                  const SizedBox(
-                    width: 10,
-                  ),
-                  const Text("天"),
-                ],
+                    const SizedBox(width: 10),
+                    const Text("天"),
+                  ],
+                ),
               ),
+            ],
+          ),
+          actions: [
+            CupertinoDialogAction(
+              child: const Text(
+                "取消",
+                style: TextStyle(color: Color(0xff999999)),
+              ),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            CupertinoDialogAction(
+              child: Text(
+                "确定",
+                style: TextStyle(color: ref.watch(themeProvider).primaryColor),
+              ),
+              onPressed: () async {
+                Navigator.of(context).pop();
+                commitLogDel(int.tryParse(controller.text) ?? 1000);
+              },
             ),
           ],
         ),
-        actions: [
-          CupertinoDialogAction(
-            child: const Text(
-              "取消",
-              style: TextStyle(
-                color: Color(0xff999999),
-              ),
-            ),
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-          ),
-          CupertinoDialogAction(
-            child: Text(
-              "确定",
-              style: TextStyle(
-                color: ref.watch(themeProvider).primaryColor,
-              ),
-            ),
-            onPressed: () async {
-              Navigator.of(context).pop();
-              commitLogDel(
-                int.tryParse(controller.text) ?? 1000,
-              );
-            },
-          ),
-        ],
-      ),
-    );
+      );
+    }
   }
 
   void commitLogDel(int time) async {
@@ -1020,37 +977,24 @@ class OtherPageState extends ConsumerState<OtherPage>
     }
   }
 
-  Widget buildOtherFun(
-    String title,
-    String icon,
-    GestureTapCallback onTap,
-  ) {
+  Widget buildOtherFun(String title, String icon, GestureTapCallback onTap) {
     return Container(
-      margin: const EdgeInsets.symmetric(
-        horizontal: 2,
-      ),
+      margin: const EdgeInsets.symmetric(horizontal: 2),
       child: CupertinoButton(
         onPressed: onTap,
         padding: EdgeInsets.zero,
         child: Container(
-          padding: const EdgeInsets.symmetric(
-            vertical: 10,
-            horizontal: 3,
-          ),
+          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 3),
           child: Column(
             children: [
               ColorFiltered(
                 colorFilter: ColorFilter.mode(
-                    ref.watch(themeProvider).primaryColor, BlendMode.srcIn),
-                child: Image.asset(
-                  icon,
-                  width: 24,
-                  fit: BoxFit.cover,
+                  ref.watch(themeProvider).primaryColor,
+                  BlendMode.srcIn,
                 ),
+                child: Image.asset(icon, width: 24, fit: BoxFit.cover),
               ),
-              const SizedBox(
-                height: 5,
-              ),
+              const SizedBox(height: 5),
               Text(
                 title,
                 style: TextStyle(
@@ -1065,23 +1009,14 @@ class OtherPageState extends ConsumerState<OtherPage>
     );
   }
 
-  Widget buildOtherFun2(
-    String title,
-    IconData icon,
-    GestureTapCallback onTap,
-  ) {
+  Widget buildOtherFun2(String title, IconData icon, GestureTapCallback onTap) {
     return Container(
-      margin: const EdgeInsets.symmetric(
-        horizontal: 2,
-      ),
+      margin: const EdgeInsets.symmetric(horizontal: 2),
       child: CupertinoButton(
         padding: EdgeInsets.zero,
         onPressed: onTap,
         child: Container(
-          padding: const EdgeInsets.symmetric(
-            vertical: 10,
-            horizontal: 3,
-          ),
+          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 3),
           child: Column(
             children: [
               Icon(
@@ -1089,9 +1024,7 @@ class OtherPageState extends ConsumerState<OtherPage>
                 color: ref.watch(themeProvider).primaryColor,
                 size: 24,
               ),
-              const SizedBox(
-                height: 5,
-              ),
+              const SizedBox(height: 5),
               Text(
                 title,
                 style: TextStyle(
@@ -1124,9 +1057,10 @@ class OtherPageState extends ConsumerState<OtherPage>
       userIcon = response.bean?.avatar;
       userName = response.bean?.username ?? "青龙客户端";
       if (userIcon != null && userIcon!.isNotEmpty) {
-        userIcon =
-            // ignore: use_build_context_synchronously
-            "${SingleAccountPageState.ofUserInfo(context).host}/api/static/$userIcon";
+        if (mounted) {
+          userIcon =
+              "${SingleAccountPageState.ofUserInfo(context).host}/api/static/$userIcon";
+        }
       }
       setState(() {});
     }
@@ -1137,14 +1071,17 @@ class OtherPageState extends ConsumerState<OtherPage>
 
   void delLogsByExperiedDate() async {
     try {
-      int before = SpUtil.getInt(spLocalBackUpFileExperiedTime,
-          defValue: getDefaultLogExperiedTime());
+      int before = SpUtil.getInt(
+        spLocalBackUpFileExperiedTime,
+        defValue: getDefaultLogExperiedTime(),
+      );
       String now = DateFormat('yyyy-MM-dd').format(DateTime.now()); //获取多少天前的日期
 
       debugPrint("...$before天之前的文件全部删除");
 
       Directory directory = Directory(
-          "${await FileUtil(SingleAccountPageState.of(context)?.index ?? 0).localPath}/");
+        "${await FileUtil(SingleAccountPageState.of(context)?.index ?? 0).localPath}/",
+      );
 
       List<FileSystemEntity> list = directory.listSync();
 
@@ -1173,10 +1110,12 @@ class OtherPageState extends ConsumerState<OtherPage>
 
   Future<void> loadPoet() async {
     try {
-      Dio dio = Dio(BaseOptions(
-        receiveTimeout: const Duration(seconds: 10),
-        connectTimeout: const Duration(seconds: 10),
-      ));
+      Dio dio = Dio(
+        BaseOptions(
+          receiveTimeout: const Duration(seconds: 10),
+          connectTimeout: const Duration(seconds: 10),
+        ),
+      );
 
       if (!SpUtil.haveKey(spPoetToken)) {
         var tokenResponse = await dio.get("https://v2.jinrishici.com/token");
@@ -1189,12 +1128,14 @@ class OtherPageState extends ConsumerState<OtherPage>
         }
       }
 
-      var response = await dio.get("https://v2.jinrishici.com/one.json",
-          options: Options(
-            headers: {
-              "X-User-Token": SpUtil.getString(spPoetToken, defValue: ""),
-            },
-          ));
+      var response = await dio.get(
+        "https://v2.jinrishici.com/one.json",
+        options: Options(
+          headers: {
+            "X-User-Token": SpUtil.getString(spPoetToken, defValue: ""),
+          },
+        ),
+      );
       if (response.statusCode == 200) {
         poetData.clear();
         poetData.addAll(response.data as Map<String, dynamic>);

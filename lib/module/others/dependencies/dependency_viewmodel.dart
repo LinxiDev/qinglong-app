@@ -6,8 +6,6 @@ import 'package:qinglong_app/module/others/dependencies/dependency_bean.dart';
 import 'package:qinglong_app/module/others/dependencies/dependency_page.dart';
 import 'package:qinglong_app/utils/extension.dart';
 
-
-
 class DependencyViewModel extends BaseViewModel {
   List<DependencyBean> nodeJsList = [];
   List<DependencyBean> python3List = [];
@@ -16,13 +14,24 @@ class DependencyViewModel extends BaseViewModel {
   @override
   void retry(BuildContext context, {bool showLoading = true}) async {
     await loadData(
-        context, DepedencyEnum.nodeJs.name.toLowerCase().toString(), true);
-    await loadData(
-        // ignore: use_build_context_synchronously
-        context, DepedencyEnum.python3.name.toLowerCase().toString(), true);
-    await loadData(
-        // ignore: use_build_context_synchronously
-        context, DepedencyEnum.linux.name.toLowerCase().toString(), true);
+      context,
+      DepedencyEnum.nodeJs.name.toLowerCase().toString(),
+      true,
+    );
+    if (context.mounted) {
+      await loadData(
+        context,
+        DepedencyEnum.python3.name.toLowerCase().toString(),
+        true,
+      );
+    }
+    if (context.mounted) {
+      await loadData(
+        context,
+        DepedencyEnum.linux.name.toLowerCase().toString(),
+        true,
+      );
+    }
   }
 
   List<DependencyBean> getListByType(int index) {
@@ -36,8 +45,11 @@ class DependencyViewModel extends BaseViewModel {
     return linuxList;
   }
 
-  Future<void> loadData(BuildContext context, String type,
-      [bool showLoading = false]) async {
+  Future<void> loadData(
+    BuildContext context,
+    String type, [
+    bool showLoading = false,
+  ]) async {
     type = type.toLowerCase();
     if (showLoading &&
         ((type == "nodejs" && nodeJsList.isEmpty) ||
@@ -74,8 +86,9 @@ class DependencyViewModel extends BaseViewModel {
     List<int?>? id,
   ) async {
     await SingleAccountPageState.ofApi(context).dependencyReinstall(sId, id);
-    // ignore: use_build_context_synchronously
-    await loadData(context, type);
+    if (context.mounted) {
+      await loadData(context, type);
+    }
   }
 
   Future<void> del(

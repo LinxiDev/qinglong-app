@@ -21,8 +21,8 @@ class SubscribeViewModel extends BaseViewModel {
       loading(notify: true);
     }
 
-    HttpResponse<String> result =
-        await SingleAccountPageState.ofApi(context).subscribes();
+    HttpResponse<String> result = await SingleAccountPageState.ofApi(context)
+        .subscribes();
 
     if (result.success && result.bean != null) {
       list.clear();
@@ -35,8 +35,9 @@ class SubscribeViewModel extends BaseViewModel {
         }
       }
       if (list.isNotEmpty) {
-        // ignore: use_build_context_synchronously
-        notifyICloud(context, result.bean ?? "");
+        if (context.mounted) {
+          notifyICloud(context, result.bean ?? "");
+        }
       }
 
       success();
@@ -52,66 +53,78 @@ class SubscribeViewModel extends BaseViewModel {
 
   void notifyICloud(BuildContext context, String content) {
     getIt<ICloudUtils>(
-            instanceName:
-                SingleAccountPageState.of(context)?.index.toString() ?? "0")
-        .asyncSubscribe(content);
+      instanceName: SingleAccountPageState.of(context)?.index.toString() ?? "0",
+    ).asyncSubscribe(content);
   }
 
   Future<void> runCrons(BuildContext context, int cron) async {
-    HttpResponse<NullResponse> result =
-        await SingleAccountPageState.ofApi(context).startSubscribes([cron]);
+    HttpResponse<NullResponse> result = await SingleAccountPageState.ofApi(
+      context,
+    ).startSubscribes([cron]);
     if (result.success) {
-      // ignore: use_build_context_synchronously
-      loadData(context, false);
+      if (context.mounted) {
+        loadData(context, false);
+      }
     } else {
       failToast(result.message, notify: true);
     }
   }
 
   Future<void> stopCrons(BuildContext context, int cron) async {
-    HttpResponse<NullResponse> result =
-        await SingleAccountPageState.ofApi(context).stopSubscribes([cron]);
+    HttpResponse<NullResponse> result = await SingleAccountPageState.ofApi(
+      context,
+    ).stopSubscribes([cron]);
     if (result.success) {
-      // ignore: use_build_context_synchronously
-      loadData(context, false);
+      if (context.mounted) {
+        loadData(context, false);
+      }
     } else {
       failToast(result.message, notify: true);
     }
   }
 
   Future<void> delSubscribe(BuildContext context, int id) async {
-    HttpResponse<NullResponse> result =
-        await SingleAccountPageState.ofApi(context).delSubscribe(id);
+    HttpResponse<NullResponse> result = await SingleAccountPageState.ofApi(
+      context,
+    ).delSubscribe(id);
     if (result.success) {
       "删除成功".toast();
-      // ignore: use_build_context_synchronously
-      loadData(context, false);
+      if (context.mounted) {
+        loadData(context, false);
+      }
     } else {
       failToast(result.message, notify: true);
     }
   }
 
   Future<void> enableSubscribe(
-      BuildContext context, int sId, int isDisabled) async {
+    BuildContext context,
+    int sId,
+    int isDisabled,
+  ) async {
     if (isDisabled == 0) {
-      HttpResponse<NullResponse> response =
-          await SingleAccountPageState.ofApi(context).disableSubscribe(sId);
+      HttpResponse<NullResponse> response = await SingleAccountPageState.ofApi(
+        context,
+      ).disableSubscribe(sId);
 
       if (response.success) {
         "禁用成功".toast();
-        // ignore: use_build_context_synchronously
-        loadData(context, false);
+        if (context.mounted) {
+          loadData(context, false);
+        }
       } else {
         failToast(response.message, notify: true);
       }
     } else {
-      HttpResponse<NullResponse> response =
-          await SingleAccountPageState.ofApi(context).enableSubscribe(sId);
+      HttpResponse<NullResponse> response = await SingleAccountPageState.ofApi(
+        context,
+      ).enableSubscribe(sId);
 
       if (response.success) {
         "启用成功".toast();
-        // ignore: use_build_context_synchronously
-        loadData(context, false);
+        if (context.mounted) {
+          loadData(context, false);
+        }
       } else {
         failToast(response.message, notify: true);
       }

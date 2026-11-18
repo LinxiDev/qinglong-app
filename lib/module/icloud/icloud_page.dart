@@ -27,30 +27,23 @@ class IcloudPage extends ConsumerStatefulWidget {
   ConsumerState<IcloudPage> createState() => _IcloudPageState();
 }
 
-class _IcloudPageState extends ConsumerState<IcloudPage> with LazyLoadState<IcloudPage> {
+class _IcloudPageState extends ConsumerState<IcloudPage>
+    with LazyLoadState<IcloudPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: ref.watch(themeProvider).themeColor.bg2Color(),
-      appBar: QlAppBar(
-        title: "文件备份",
-      ),
+      appBar: QlAppBar(title: "文件备份"),
       body: SingleChildScrollView(
         primary: true,
         child: Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: 15,
-          ),
+          padding: const EdgeInsets.symmetric(horizontal: 15),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SizedBox(
-                height: 15,
-              ),
+              const SizedBox(height: 15),
               Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 15,
-                ),
+                padding: const EdgeInsets.symmetric(horizontal: 15),
                 child: Text(
                   "当你添加,修改,删除的时候,将会自动备份",
                   style: TextStyle(
@@ -59,15 +52,14 @@ class _IcloudPageState extends ConsumerState<IcloudPage> with LazyLoadState<Iclo
                   ),
                 ),
               ),
-              const SizedBox(
-                height: 5,
-              ),
+              const SizedBox(height: 5),
               Container(
                 decoration: BoxDecoration(
-                  color: ref.watch(themeProvider).themeColor.settingBordorColor(),
-                  borderRadius: const BorderRadius.all(
-                    Radius.circular(15),
-                  ),
+                  color: ref
+                      .watch(themeProvider)
+                      .themeColor
+                      .settingBordorColor(),
+                  borderRadius: const BorderRadius.all(Radius.circular(15)),
                 ),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -82,12 +74,7 @@ class _IcloudPageState extends ConsumerState<IcloudPage> with LazyLoadState<Iclo
                       ),
                       child: Row(
                         children: [
-                          const Text(
-                            "自动备份",
-                            style: TextStyle(
-                              fontSize: 16,
-                            ),
-                          ),
+                          const Text("自动备份", style: TextStyle(fontSize: 16)),
                           const Spacer(),
                           Transform.scale(
                             scale: 0.9,
@@ -102,10 +89,7 @@ class _IcloudPageState extends ConsumerState<IcloudPage> with LazyLoadState<Iclo
                         ],
                       ),
                     ),
-                    const Divider(
-                      height: 1,
-                      indent: 15,
-                    ),
+                    const Divider(height: 1, indent: 15),
                     Material(
                       color: Colors.transparent,
                       child: InkWell(
@@ -127,15 +111,16 @@ class _IcloudPageState extends ConsumerState<IcloudPage> with LazyLoadState<Iclo
                             children: [
                               const Text(
                                 "查看文件",
-                                style: TextStyle(
-                                  fontSize: 16,
-                                ),
+                                style: TextStyle(fontSize: 16),
                               ),
                               const Spacer(),
                               Icon(
                                 CupertinoIcons.right_chevron,
                                 size: 16,
-                                color: ref.watch(themeProvider).themeColor.descColor(),
+                                color: ref
+                                    .watch(themeProvider)
+                                    .themeColor
+                                    .descColor(),
                               ),
                             ],
                           ),
@@ -145,13 +130,9 @@ class _IcloudPageState extends ConsumerState<IcloudPage> with LazyLoadState<Iclo
                   ],
                 ),
               ),
-              const SizedBox(
-                height: 5,
-              ),
+              const SizedBox(height: 5),
               Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 15,
-                ),
+                padding: const EdgeInsets.symmetric(horizontal: 15),
                 child: Text(
                   "当前已有备份文件 $fileNum 个,共占用 $fileSizes 容量",
                   style: TextStyle(
@@ -160,13 +141,9 @@ class _IcloudPageState extends ConsumerState<IcloudPage> with LazyLoadState<Iclo
                   ),
                 ),
               ),
-              const SizedBox(
-                height: 15,
-              ),
+              const SizedBox(height: 15),
               Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 15,
-                ),
+                padding: const EdgeInsets.symmetric(horizontal: 15),
                 child: Text(
                   "环境变量",
                   style: TextStyle(
@@ -175,15 +152,14 @@ class _IcloudPageState extends ConsumerState<IcloudPage> with LazyLoadState<Iclo
                   ),
                 ),
               ),
-              const SizedBox(
-                height: 5,
-              ),
+              const SizedBox(height: 5),
               Container(
                 decoration: BoxDecoration(
-                  color: ref.watch(themeProvider).themeColor.settingBordorColor(),
-                  borderRadius: const BorderRadius.all(
-                    Radius.circular(15),
-                  ),
+                  color: ref
+                      .watch(themeProvider)
+                      .themeColor
+                      .settingBordorColor(),
+                  borderRadius: const BorderRadius.all(Radius.circular(15)),
                 ),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -197,13 +173,20 @@ class _IcloudPageState extends ConsumerState<IcloudPage> with LazyLoadState<Iclo
                           topRight: Radius.circular(15),
                         ),
                         onTap: () async {
+                          if (!mounted) {
+                            return;
+                          }
                           try {
-                            var result = await Api(SingleAccountPageState.of(context)!.index).envs("");
-                            // ignore: use_build_context_synchronously
-                            await getIt<ICloudUtils>(instanceName: SingleAccountPageState.of(context)!.index.toString()).asyncEnv(
-                              result.bean ?? [],
-                              focusUpdate: true,
-                            );
+                            var result = await Api(
+                              SingleAccountPageState.of(context)!.index,
+                            ).envs("");
+                            if (context.mounted) {
+                              await getIt<ICloudUtils>(
+                                instanceName: SingleAccountPageState.of(
+                                  context,
+                                )!.index.toString(),
+                              ).asyncEnv(result.bean ?? [], focusUpdate: true);
+                            }
                             SpUtil.putString(spEnvBackTime, ICloudUtils.now());
                             setState(() {});
                           } catch (e) {
@@ -221,9 +204,7 @@ class _IcloudPageState extends ConsumerState<IcloudPage> with LazyLoadState<Iclo
                             children: [
                               const Text(
                                 "同步环境变量",
-                                style: TextStyle(
-                                  fontSize: 16,
-                                ),
+                                style: TextStyle(fontSize: 16),
                               ),
                               Expanded(
                                 child: Align(
@@ -235,7 +216,10 @@ class _IcloudPageState extends ConsumerState<IcloudPage> with LazyLoadState<Iclo
                                     ),
                                     style: TextStyle(
                                       fontSize: 16,
-                                      color: ref.watch(themeProvider).themeColor.descColor(),
+                                      color: ref
+                                          .watch(themeProvider)
+                                          .themeColor
+                                          .descColor(),
                                     ),
                                   ),
                                 ),
@@ -243,17 +227,17 @@ class _IcloudPageState extends ConsumerState<IcloudPage> with LazyLoadState<Iclo
                               Icon(
                                 CupertinoIcons.right_chevron,
                                 size: 16,
-                                color: ref.watch(themeProvider).themeColor.descColor(),
+                                color: ref
+                                    .watch(themeProvider)
+                                    .themeColor
+                                    .descColor(),
                               ),
                             ],
                           ),
                         ),
                       ),
                     ),
-                    const Divider(
-                      height: 1,
-                      indent: 15,
-                    ),
+                    const Divider(height: 1, indent: 15),
                     Material(
                       color: Colors.transparent,
                       child: InkWell(
@@ -271,25 +255,23 @@ class _IcloudPageState extends ConsumerState<IcloudPage> with LazyLoadState<Iclo
                             children: [
                               const Text(
                                 "还原备份",
-                                style: TextStyle(
-                                  fontSize: 16,
-                                ),
+                                style: TextStyle(fontSize: 16),
                               ),
                               const Spacer(),
                               Icon(
                                 CupertinoIcons.right_chevron,
                                 size: 16,
-                                color: ref.watch(themeProvider).themeColor.descColor(),
+                                color: ref
+                                    .watch(themeProvider)
+                                    .themeColor
+                                    .descColor(),
                               ),
                             ],
                           ),
                         ),
                       ),
                     ),
-                    const Divider(
-                      height: 1,
-                      indent: 15,
-                    ),
+                    const Divider(height: 1, indent: 15),
                     Material(
                       color: Colors.transparent,
                       child: InkWell(
@@ -315,15 +297,16 @@ class _IcloudPageState extends ConsumerState<IcloudPage> with LazyLoadState<Iclo
                             children: [
                               const Text(
                                 "删除备份",
-                                style: TextStyle(
-                                  fontSize: 16,
-                                ),
+                                style: TextStyle(fontSize: 16),
                               ),
                               const Spacer(),
                               Icon(
                                 CupertinoIcons.right_chevron,
                                 size: 16,
-                                color: ref.watch(themeProvider).themeColor.descColor(),
+                                color: ref
+                                    .watch(themeProvider)
+                                    .themeColor
+                                    .descColor(),
                               ),
                             ],
                           ),
@@ -333,30 +316,27 @@ class _IcloudPageState extends ConsumerState<IcloudPage> with LazyLoadState<Iclo
                   ],
                 ),
               ),
-              const SizedBox(
-                height: 15,
-              ),
+              const SizedBox(height: 15),
               Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 15,
-                ),
+                padding: const EdgeInsets.symmetric(horizontal: 15),
                 child: Text(
-                  SpUtil.getInt(spVIP, defValue: typeNormal) == typeVIP ? "config.sh文件" : "配置文件",
+                  SpUtil.getInt(spVIP, defValue: typeNormal) == typeVIP
+                      ? "config.sh文件"
+                      : "配置文件",
                   style: TextStyle(
                     color: ref.watch(themeProvider).themeColor.descColor(),
                     fontSize: 12,
                   ),
                 ),
               ),
-              const SizedBox(
-                height: 5,
-              ),
+              const SizedBox(height: 5),
               Container(
                 decoration: BoxDecoration(
-                  color: ref.watch(themeProvider).themeColor.settingBordorColor(),
-                  borderRadius: const BorderRadius.all(
-                    Radius.circular(15),
-                  ),
+                  color: ref
+                      .watch(themeProvider)
+                      .themeColor
+                      .settingBordorColor(),
+                  borderRadius: const BorderRadius.all(Radius.circular(15)),
                 ),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -370,17 +350,28 @@ class _IcloudPageState extends ConsumerState<IcloudPage> with LazyLoadState<Iclo
                           topRight: Radius.circular(15),
                         ),
                         onTap: () async {
+                          if (!mounted) {
+                            return;
+                          }
                           String content;
-                          HttpResponse<String> result = await SingleAccountPageState.ofApi(context).content("config.sh");
+                          HttpResponse<String> result =
+                              await SingleAccountPageState.ofApi(context)
+                                  .content("config.sh");
                           if (result.success && result.bean != null) {
                             content = result.bean ?? "";
-                            // ignore: use_build_context_synchronously
-                            await ICloudUtils(SingleAccountPageState.of(context)!.index).asyncConfig(
-                              "config.sh",
-                              content,
-                              focusUpdate: true,
+                            if (context.mounted) {
+                              await ICloudUtils(
+                                SingleAccountPageState.of(context)!.index,
+                              ).asyncConfig(
+                                "config.sh",
+                                content,
+                                focusUpdate: true,
+                              );
+                            }
+                            SpUtil.putString(
+                              spConfigBackTime,
+                              ICloudUtils.now(),
                             );
-                            SpUtil.putString(spConfigBackTime, ICloudUtils.now());
                             setState(() {});
                           } else {
                             result.message!.toast();
@@ -397,9 +388,7 @@ class _IcloudPageState extends ConsumerState<IcloudPage> with LazyLoadState<Iclo
                             children: [
                               const Text(
                                 "同步config.sh文件",
-                                style: TextStyle(
-                                  fontSize: 16,
-                                ),
+                                style: TextStyle(fontSize: 16),
                               ),
                               Expanded(
                                 child: Align(
@@ -411,7 +400,10 @@ class _IcloudPageState extends ConsumerState<IcloudPage> with LazyLoadState<Iclo
                                     ),
                                     style: TextStyle(
                                       fontSize: 16,
-                                      color: ref.watch(themeProvider).themeColor.descColor(),
+                                      color: ref
+                                          .watch(themeProvider)
+                                          .themeColor
+                                          .descColor(),
                                     ),
                                   ),
                                 ),
@@ -419,17 +411,17 @@ class _IcloudPageState extends ConsumerState<IcloudPage> with LazyLoadState<Iclo
                               Icon(
                                 CupertinoIcons.right_chevron,
                                 size: 16,
-                                color: ref.watch(themeProvider).themeColor.descColor(),
+                                color: ref
+                                    .watch(themeProvider)
+                                    .themeColor
+                                    .descColor(),
                               ),
                             ],
                           ),
                         ),
                       ),
                     ),
-                    const Divider(
-                      height: 1,
-                      indent: 15,
-                    ),
+                    const Divider(height: 1, indent: 15),
                     Material(
                       color: Colors.transparent,
                       child: InkWell(
@@ -447,25 +439,23 @@ class _IcloudPageState extends ConsumerState<IcloudPage> with LazyLoadState<Iclo
                             children: [
                               const Text(
                                 "还原备份",
-                                style: TextStyle(
-                                  fontSize: 16,
-                                ),
+                                style: TextStyle(fontSize: 16),
                               ),
                               const Spacer(),
                               Icon(
                                 CupertinoIcons.right_chevron,
                                 size: 16,
-                                color: ref.watch(themeProvider).themeColor.descColor(),
+                                color: ref
+                                    .watch(themeProvider)
+                                    .themeColor
+                                    .descColor(),
                               ),
                             ],
                           ),
                         ),
                       ),
                     ),
-                    const Divider(
-                      height: 1,
-                      indent: 15,
-                    ),
+                    const Divider(height: 1, indent: 15),
                     Material(
                       color: Colors.transparent,
                       child: InkWell(
@@ -491,15 +481,16 @@ class _IcloudPageState extends ConsumerState<IcloudPage> with LazyLoadState<Iclo
                             children: [
                               const Text(
                                 "删除备份",
-                                style: TextStyle(
-                                  fontSize: 16,
-                                ),
+                                style: TextStyle(fontSize: 16),
                               ),
                               const Spacer(),
                               Icon(
                                 CupertinoIcons.right_chevron,
                                 size: 16,
-                                color: ref.watch(themeProvider).themeColor.descColor(),
+                                color: ref
+                                    .watch(themeProvider)
+                                    .themeColor
+                                    .descColor(),
                               ),
                             ],
                           ),
@@ -509,13 +500,9 @@ class _IcloudPageState extends ConsumerState<IcloudPage> with LazyLoadState<Iclo
                   ],
                 ),
               ),
-              const SizedBox(
-                height: 5,
-              ),
+              const SizedBox(height: 5),
               Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 15,
-                ),
+                padding: const EdgeInsets.symmetric(horizontal: 15),
                 child: Text(
                   "备份和还原配置文件",
                   style: TextStyle(
@@ -524,13 +511,9 @@ class _IcloudPageState extends ConsumerState<IcloudPage> with LazyLoadState<Iclo
                   ),
                 ),
               ),
-              const SizedBox(
-                height: 15,
-              ),
+              const SizedBox(height: 15),
               Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 15,
-                ),
+                padding: const EdgeInsets.symmetric(horizontal: 15),
                 child: Text(
                   "订阅管理",
                   style: TextStyle(
@@ -539,15 +522,14 @@ class _IcloudPageState extends ConsumerState<IcloudPage> with LazyLoadState<Iclo
                   ),
                 ),
               ),
-              const SizedBox(
-                height: 5,
-              ),
+              const SizedBox(height: 5),
               Container(
                 decoration: BoxDecoration(
-                  color: ref.watch(themeProvider).themeColor.settingBordorColor(),
-                  borderRadius: const BorderRadius.all(
-                    Radius.circular(15),
-                  ),
+                  color: ref
+                      .watch(themeProvider)
+                      .themeColor
+                      .settingBordorColor(),
+                  borderRadius: const BorderRadius.all(Radius.circular(15)),
                 ),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -561,14 +543,27 @@ class _IcloudPageState extends ConsumerState<IcloudPage> with LazyLoadState<Iclo
                           topRight: Radius.circular(15),
                         ),
                         onTap: () async {
+                          if (!mounted) {
+                            return;
+                          }
                           try {
-                            var result = await Api(SingleAccountPageState.of(context)!.index).subscribes();
-                            // ignore: use_build_context_synchronously
-                            await getIt<ICloudUtils>(instanceName: SingleAccountPageState.of(context)!.index.toString()).asyncSubscribe(
-                              result.bean ?? "",
-                              focusUpdate: true,
+                            var result = await Api(
+                              SingleAccountPageState.of(context)!.index,
+                            ).subscribes();
+                            if (context.mounted) {
+                              await getIt<ICloudUtils>(
+                                instanceName: SingleAccountPageState.of(
+                                  context,
+                                )!.index.toString(),
+                              ).asyncSubscribe(
+                                result.bean ?? "",
+                                focusUpdate: true,
+                              );
+                            }
+                            SpUtil.putString(
+                              spSubscribeBackTime,
+                              ICloudUtils.now(),
                             );
-                            SpUtil.putString(spSubscribeBackTime, ICloudUtils.now());
                             setState(() {});
                           } catch (e) {
                             // 忽略异常，保持原有行为
@@ -585,9 +580,7 @@ class _IcloudPageState extends ConsumerState<IcloudPage> with LazyLoadState<Iclo
                             children: [
                               const Text(
                                 "同步订阅管理",
-                                style: TextStyle(
-                                  fontSize: 16,
-                                ),
+                                style: TextStyle(fontSize: 16),
                               ),
                               Expanded(
                                 child: Align(
@@ -599,7 +592,10 @@ class _IcloudPageState extends ConsumerState<IcloudPage> with LazyLoadState<Iclo
                                     ),
                                     style: TextStyle(
                                       fontSize: 16,
-                                      color: ref.watch(themeProvider).themeColor.descColor(),
+                                      color: ref
+                                          .watch(themeProvider)
+                                          .themeColor
+                                          .descColor(),
                                     ),
                                   ),
                                 ),
@@ -607,17 +603,17 @@ class _IcloudPageState extends ConsumerState<IcloudPage> with LazyLoadState<Iclo
                               Icon(
                                 CupertinoIcons.right_chevron,
                                 size: 16,
-                                color: ref.watch(themeProvider).themeColor.descColor(),
+                                color: ref
+                                    .watch(themeProvider)
+                                    .themeColor
+                                    .descColor(),
                               ),
                             ],
                           ),
                         ),
                       ),
                     ),
-                    const Divider(
-                      height: 1,
-                      indent: 15,
-                    ),
+                    const Divider(height: 1, indent: 15),
                     Material(
                       color: Colors.transparent,
                       child: InkWell(
@@ -635,25 +631,23 @@ class _IcloudPageState extends ConsumerState<IcloudPage> with LazyLoadState<Iclo
                             children: [
                               const Text(
                                 "还原备份",
-                                style: TextStyle(
-                                  fontSize: 16,
-                                ),
+                                style: TextStyle(fontSize: 16),
                               ),
                               const Spacer(),
                               Icon(
                                 CupertinoIcons.right_chevron,
                                 size: 16,
-                                color: ref.watch(themeProvider).themeColor.descColor(),
+                                color: ref
+                                    .watch(themeProvider)
+                                    .themeColor
+                                    .descColor(),
                               ),
                             ],
                           ),
                         ),
                       ),
                     ),
-                    const Divider(
-                      height: 1,
-                      indent: 15,
-                    ),
+                    const Divider(height: 1, indent: 15),
                     Material(
                       color: Colors.transparent,
                       child: InkWell(
@@ -679,15 +673,16 @@ class _IcloudPageState extends ConsumerState<IcloudPage> with LazyLoadState<Iclo
                             children: [
                               const Text(
                                 "删除备份",
-                                style: TextStyle(
-                                  fontSize: 16,
-                                ),
+                                style: TextStyle(fontSize: 16),
                               ),
                               const Spacer(),
                               Icon(
                                 CupertinoIcons.right_chevron,
                                 size: 16,
-                                color: ref.watch(themeProvider).themeColor.descColor(),
+                                color: ref
+                                    .watch(themeProvider)
+                                    .themeColor
+                                    .descColor(),
                               ),
                             ],
                           ),
@@ -697,13 +692,9 @@ class _IcloudPageState extends ConsumerState<IcloudPage> with LazyLoadState<Iclo
                   ],
                 ),
               ),
-              const SizedBox(
-                height: 15,
-              ),
+              const SizedBox(height: 15),
               Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 15,
-                ),
+                padding: const EdgeInsets.symmetric(horizontal: 15),
                 child: Text(
                   "功能",
                   style: TextStyle(
@@ -712,22 +703,19 @@ class _IcloudPageState extends ConsumerState<IcloudPage> with LazyLoadState<Iclo
                   ),
                 ),
               ),
-              const SizedBox(
-                height: 5,
-              ),
+              const SizedBox(height: 5),
               InkWell(
-                borderRadius: const BorderRadius.all(
-                  Radius.circular(15),
-                ),
+                borderRadius: const BorderRadius.all(Radius.circular(15)),
                 onTap: () {
                   _delDuration();
                 },
                 child: Ink(
                   decoration: BoxDecoration(
-                    color: ref.watch(themeProvider).themeColor.settingBordorColor(),
-                    borderRadius: const BorderRadius.all(
-                      Radius.circular(15),
-                    ),
+                    color: ref
+                        .watch(themeProvider)
+                        .themeColor
+                        .settingBordorColor(),
+                    borderRadius: const BorderRadius.all(Radius.circular(15)),
                   ),
                   child: Padding(
                     padding: const EdgeInsets.symmetric(
@@ -741,7 +729,10 @@ class _IcloudPageState extends ConsumerState<IcloudPage> with LazyLoadState<Iclo
                         Text(
                           "备份文件删除频率",
                           style: TextStyle(
-                            color: ref.watch(themeProvider).themeColor.titleColor(),
+                            color: ref
+                                .watch(themeProvider)
+                                .themeColor
+                                .titleColor(),
                             fontSize: 16,
                           ),
                         ),
@@ -749,16 +740,17 @@ class _IcloudPageState extends ConsumerState<IcloudPage> with LazyLoadState<Iclo
                         Icon(
                           CupertinoIcons.right_chevron,
                           size: 16,
-                          color: ref.watch(themeProvider).themeColor.descColor(),
+                          color: ref
+                              .watch(themeProvider)
+                              .themeColor
+                              .descColor(),
                         ),
                       ],
                     ),
                   ),
                 ),
               ),
-              const SizedBox(
-                height: 20,
-              ),
+              const SizedBox(height: 20),
               Visibility(
                 visible: Platform.isAndroid,
                 child: Padding(
@@ -775,9 +767,7 @@ class _IcloudPageState extends ConsumerState<IcloudPage> with LazyLoadState<Iclo
                   ),
                 ),
               ),
-              const SizedBox(
-                height: 20,
-              ),
+              const SizedBox(height: 20),
             ],
           ),
         ),
@@ -787,7 +777,10 @@ class _IcloudPageState extends ConsumerState<IcloudPage> with LazyLoadState<Iclo
 
   void _delDuration() {
     TextEditingController controller = TextEditingController(
-      text: SpUtil.getInt(spLocalBackUpFileExperiedTime, defValue: getDefaultLogExperiedTime()).toString(),
+      text: SpUtil.getInt(
+        spLocalBackUpFileExperiedTime,
+        defValue: getDefaultLogExperiedTime(),
+      ).toString(),
     );
     showCupertinoDialog(
       useRootNavigator: false,
@@ -799,17 +792,13 @@ class _IcloudPageState extends ConsumerState<IcloudPage> with LazyLoadState<Iclo
           mainAxisSize: MainAxisSize.min,
           children: [
             Padding(
-              padding: const EdgeInsets.symmetric(
-                vertical: 10,
-              ),
+              padding: const EdgeInsets.symmetric(vertical: 10),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   const Text("每"),
-                  const SizedBox(
-                    width: 10,
-                  ),
+                  const SizedBox(width: 10),
                   SizedBox(
                     width: 96,
                     child: TextField(
@@ -820,14 +809,20 @@ class _IcloudPageState extends ConsumerState<IcloudPage> with LazyLoadState<Iclo
                         hintText: "",
                         border: OutlineInputBorder(
                           borderSide: BorderSide(
-                            color: ref.watch(themeProvider).themeColor.title2Color(),
+                            color: ref
+                                .watch(themeProvider)
+                                .themeColor
+                                .title2Color(),
                             width: 1,
                           ),
                           borderRadius: BorderRadius.circular(4),
                         ),
                         enabledBorder: OutlineInputBorder(
                           borderSide: BorderSide(
-                            color: ref.watch(themeProvider).themeColor.title2Color(),
+                            color: ref
+                                .watch(themeProvider)
+                                .themeColor
+                                .title2Color(),
                             width: 1,
                           ),
                           borderRadius: BorderRadius.circular(4),
@@ -836,9 +831,7 @@ class _IcloudPageState extends ConsumerState<IcloudPage> with LazyLoadState<Iclo
                       autofocus: false,
                     ),
                   ),
-                  const SizedBox(
-                    width: 10,
-                  ),
+                  const SizedBox(width: 10),
                   const Text("天"),
                 ],
               ),
@@ -847,12 +840,7 @@ class _IcloudPageState extends ConsumerState<IcloudPage> with LazyLoadState<Iclo
         ),
         actions: [
           CupertinoDialogAction(
-            child: const Text(
-              "取消",
-              style: TextStyle(
-                color: Color(0xff999999),
-              ),
-            ),
+            child: const Text("取消", style: TextStyle(color: Color(0xff999999))),
             onPressed: () {
               Navigator.of(context).pop();
             },
@@ -860,22 +848,25 @@ class _IcloudPageState extends ConsumerState<IcloudPage> with LazyLoadState<Iclo
           CupertinoDialogAction(
             child: Text(
               "确定",
-              style: TextStyle(
-                color: ref.watch(themeProvider).primaryColor,
-              ),
+              style: TextStyle(color: ref.watch(themeProvider).primaryColor),
             ),
             onPressed: () async {
               try {
-                if (int.tryParse(controller.text) == null || int.tryParse(controller.text)! > 100) {
+                if (int.tryParse(controller.text) == null ||
+                    int.tryParse(controller.text)! > 100) {
                   "最大可设置100天".toast();
                   return;
                 }
-                if (int.tryParse(controller.text) == null || int.tryParse(controller.text)! < 1) {
+                if (int.tryParse(controller.text) == null ||
+                    int.tryParse(controller.text)! < 1) {
                   "最小可设置1天".toast();
                   return;
                 }
 
-                SpUtil.putInt(spLocalBackUpFileExperiedTime, int.tryParse(controller.text)!);
+                SpUtil.putInt(
+                  spLocalBackUpFileExperiedTime,
+                  int.tryParse(controller.text)!,
+                );
                 Navigator.of(context).pop();
               } catch (e) {
                 // 忽略异常，保持原有行为
@@ -890,12 +881,13 @@ class _IcloudPageState extends ConsumerState<IcloudPage> with LazyLoadState<Iclo
   @override
   void onLazyLoad() async {
     try {
-      Map<String, int> result = await compute(dirStatSync, await FileUtil(SingleAccountPageState.of(context)?.index ?? 0).sourcePath);
-      fileNum = result["fileNum"].toString();
-      fileSizes = getFileSizeString(
-        result["size"] ?? 0,
-        2,
+      Map<String, int> result = await compute(
+        dirStatSync,
+        await FileUtil(SingleAccountPageState.of(context)?.index ?? 0)
+            .sourcePath,
       );
+      fileNum = result["fileNum"].toString();
+      fileSizes = getFileSizeString(result["size"] ?? 0, 2);
       setState(() {});
     } catch (e) {
       // 忽略异常，保持原有行为
@@ -913,15 +905,13 @@ class _IcloudPageState extends ConsumerState<IcloudPage> with LazyLoadState<Iclo
   }
 
   void lookUpFiles() async {
-    String path = await FileUtil(SingleAccountPageState.of(context)?.index ?? 0).sourcePath;
-    // ignore: use_build_context_synchronously
-    Navigator.of(context).push(
-      CupertinoPageRoute(
-        builder: (context) => FileDirectoryPage(
-          path: path,
-        ),
-      ),
-    );
+    String path = await FileUtil(SingleAccountPageState.of(context)?.index ?? 0)
+        .sourcePath;
+    if (mounted) {
+      Navigator.of(context).push(
+        CupertinoPageRoute(builder: (context) => FileDirectoryPage(path: path)),
+      );
+    }
   }
 }
 
@@ -931,7 +921,9 @@ Map<String, int> dirStatSync(String dirPath) {
   var dir = Directory(dirPath);
   try {
     if (dir.existsSync()) {
-      dir.listSync(recursive: true, followLinks: false).forEach((FileSystemEntity entity) {
+      dir.listSync(recursive: true, followLinks: false).forEach((
+        FileSystemEntity entity,
+      ) {
         if (entity is File) {
           fileNum++;
           totalSize += entity.lengthSync();

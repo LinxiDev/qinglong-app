@@ -22,7 +22,8 @@ class ConfigPage extends ConsumerStatefulWidget {
   ConfigPageState createState() => ConfigPageState();
 }
 
-class ConfigPageState extends ConsumerState<ConfigPage> with SingleTickerProviderStateMixin, WidgetsBindingObserver {
+class ConfigPageState extends ConsumerState<ConfigPage>
+    with SingleTickerProviderStateMixin, WidgetsBindingObserver {
   BuildContext? childContext;
   String? configContent;
   bool gotoConfigDetailed = false;
@@ -38,7 +39,8 @@ class ConfigPageState extends ConsumerState<ConfigPage> with SingleTickerProvide
   void didChangeAppLifecycleState(AppLifecycleState state) {
     super.didChangeAppLifecycleState(state);
     if (state == AppLifecycleState.resumed) {
-      if (MultiAccountPageState.actionEditConfig == MultiAccountPageState.useAction()) {
+      if (MultiAccountPageState.actionEditConfig ==
+          MultiAccountPageState.useAction()) {
         gotoConfigDetailed = false;
         loadConfigData(context);
       }
@@ -46,23 +48,27 @@ class ConfigPageState extends ConsumerState<ConfigPage> with SingleTickerProvide
   }
 
   Future<void> loadConfigData(BuildContext context) async {
-    HttpResponse<String> result = await SingleAccountPageState.ofApi(context).content("config.sh");
+    HttpResponse<String> result = await SingleAccountPageState.ofApi(context)
+        .content("config.sh");
     if (result.success && result.bean != null) {
       configContent = result.bean;
 
-      if (MultiAccountPageState.actionEditConfig == MultiAccountPageState.useAction() && !gotoConfigDetailed) {
+      if (MultiAccountPageState.actionEditConfig ==
+              MultiAccountPageState.useAction() &&
+          !gotoConfigDetailed) {
         gotoConfigDetailed = true;
-        // ignore: use_build_context_synchronously
-        Navigator.of(context).pushNamed(
-          Routes.routeConfigEdit,
-          arguments: {
-            "title": "config.sh",
-            "content": configContent,
-          },
-        ).then((value) {
-          // ignore: use_build_context_synchronously
-          loadConfigData(context);
-        });
+        if (context.mounted) {
+          Navigator.of(context)
+              .pushNamed(
+                Routes.routeConfigEdit,
+                arguments: {"title": "config.sh", "content": configContent},
+              )
+              .then((value) {
+                if (context.mounted) {
+                  loadConfigData(context);
+                }
+              });
+        }
       }
     }
   }
@@ -80,23 +86,29 @@ class ConfigPageState extends ConsumerState<ConfigPage> with SingleTickerProvide
             onPressed: () {
               Navigator.of(context)
                   .push(
-                CupertinoPageRoute(
-                  builder: (context) => const AddConfigPage(),
-                ),
-              )
-                  .then(
-                (value) {
-                  if (value != null && value == true) {
-                    // ignore: use_build_context_synchronously
-                    ref.read(SingleAccountPageState.ofConfigProvider(context)(getProviderName(context)).notifier).loadData(context, false);
-                  }
-                },
-              );
+                    CupertinoPageRoute(
+                      builder: (context) => const AddConfigPage(),
+                    ),
+                  )
+                  .then((value) {
+                    if (!mounted) {
+                      return;
+                    }
+                    if (value != null && value == true) {
+                      if (context.mounted) {
+                        ref
+                            .read(
+                              SingleAccountPageState.ofConfigProvider(context)(
+                                getProviderName(context),
+                              ).notifier,
+                            )
+                            .loadData(context, false);
+                      }
+                    }
+                  });
             },
             child: Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 15,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 15),
               child: Center(
                 child: Icon(
                   CupertinoIcons.add,
@@ -115,30 +127,31 @@ class ConfigPageState extends ConsumerState<ConfigPage> with SingleTickerProvide
             ConfigBean value = model.list[i];
 
             if (value.title?.toLowerCase() == "config.sh") {
-              list.add(GestureDetector(
-                behavior: HitTestBehavior.opaque,
-                onDoubleTap: () {
-                  Navigator.of(context).pushNamed(
-                    Routes.routeConfigEdit,
-                    arguments: {
-                      "title": value.title,
-                      "content": configContent,
-                    },
-                  ).then((value) {
-                    Future.delayed(const Duration(seconds: 1), () {
-                      // ignore: use_build_context_synchronously
-                      loadConfigData(context);
-                    });
-                  });
-                },
-                child: ConfigCell(
-                  bean: value,
+              list.add(
+                GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onDoubleTap: () {
+                    Navigator.of(context)
+                        .pushNamed(
+                          Routes.routeConfigEdit,
+                          arguments: {
+                            "title": value.title,
+                            "content": configContent,
+                          },
+                        )
+                        .then((value) {
+                          Future.delayed(const Duration(seconds: 1), () {
+                            if (context.mounted) {
+                              loadConfigData(context);
+                            }
+                          });
+                        });
+                  },
+                  child: ConfigCell(bean: value),
                 ),
-              ));
+              );
             } else {
-              list.add(ConfigCell(
-                bean: value,
-              ));
+              list.add(ConfigCell(bean: value));
             }
           }
 
@@ -147,21 +160,28 @@ class ConfigPageState extends ConsumerState<ConfigPage> with SingleTickerProvide
               : RefreshIndicator(
                   color: Theme.of(context).primaryColor,
                   onRefresh: () async {
+                    if (!mounted) {
+                      return;
+                    }
                     await loadConfigData(context);
-                    // ignore: use_build_context_synchronously
-                    return model.loadData(context, false);
+                    if (context.mounted) {
+                      return model.loadData(context, false);
+                    }
                   },
                   child: ListView(
                     primary: true,
                     padding: const EdgeInsets.only(
                       bottom: kBottomNavigationBarHeight + 50,
                     ),
-                    keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+                    keyboardDismissBehavior:
+                        ScrollViewKeyboardDismissBehavior.onDrag,
                     children: list,
                   ),
                 );
         },
-        model: SingleAccountPageState.ofConfigProvider(context)(getProviderName(context)),
+        model: SingleAccountPageState.ofConfigProvider(context)(
+          getProviderName(context),
+        ),
         onReady: (viewModel) {
           viewModel.loadData(context);
         },
@@ -179,18 +199,14 @@ class ConfigPageState extends ConsumerState<ConfigPage> with SingleTickerProvide
 class ConfigCell extends ConsumerWidget {
   final ConfigBean bean;
 
-  const ConfigCell({
-    super.key,
-    required this.bean,
-  });
+  const ConfigCell({super.key, required this.bean});
 
   @override
   Widget build(BuildContext context, ref) {
     return InkWell(
       onTap: () {
-        Navigator.of(context).pushNamed(Routes.routeConfigDetail, arguments: {
-          "bean": bean,
-        });
+        Navigator.of(context)
+            .pushNamed(Routes.routeConfigDetail, arguments: {"bean": bean});
       },
       child: SizedBox(
         width: MediaQuery.of(context).size.width,
@@ -199,10 +215,7 @@ class ConfigCell extends ConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 15,
-                vertical: 8,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
               child: Material(
                 color: Colors.transparent,
                 child: Container(
@@ -218,7 +231,10 @@ class ConfigCell extends ConsumerWidget {
                           maxLines: 1,
                           style: TextStyle(
                             overflow: TextOverflow.ellipsis,
-                            color: ref.watch(themeProvider).themeColor.titleColor(),
+                            color: ref
+                                .watch(themeProvider)
+                                .themeColor
+                                .titleColor(),
                             fontSize: 17,
                           ),
                         ),
@@ -233,10 +249,7 @@ class ConfigCell extends ConsumerWidget {
                 ),
               ),
             ),
-            const Divider(
-              height: 1,
-              indent: 15,
-            ),
+            const Divider(height: 1, indent: 15),
           ],
         ),
       ),

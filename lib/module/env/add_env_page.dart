@@ -21,7 +21,8 @@ class AddEnvPage extends ConsumerStatefulWidget {
   ConsumerState<AddEnvPage> createState() => _AddEnvPageState();
 }
 
-class _AddEnvPageState extends ConsumerState<AddEnvPage> with LazyLoadState<AddEnvPage> {
+class _AddEnvPageState extends ConsumerState<AddEnvPage>
+    with LazyLoadState<AddEnvPage> {
   late EnvBean envBean;
 
   final TextEditingController _nameController = TextEditingController();
@@ -65,91 +66,63 @@ class _AddEnvPageState extends ConsumerState<AddEnvPage> with LazyLoadState<AddE
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
               Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 15,
-                ),
+                padding: const EdgeInsets.symmetric(horizontal: 15),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const SizedBox(
-                      height: 15,
-                    ),
-                    const TitleWidget(
-                      "名称",
-                      required: true,
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
+                    const SizedBox(height: 15),
+                    const TitleWidget("名称", required: true),
+                    const SizedBox(height: 10),
                     TextField(
-                      focusNode: (envBean.sId == null || envBean.sId!.isEmpty) ? focusNode : null,
+                      focusNode: (envBean.sId == null || envBean.sId!.isEmpty)
+                          ? focusNode
+                          : null,
                       controller: _nameController,
                       maxLines: 3,
                       minLines: 1,
-                      decoration: const InputDecoration(
-                        hintText: "请输入名称",
-                      ),
+                      decoration: const InputDecoration(hintText: "请输入名称"),
                       autofocus: false,
                     ),
                   ],
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 15,
-                ),
+                padding: const EdgeInsets.symmetric(horizontal: 15),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const SizedBox(
-                      height: 15,
-                    ),
-                    const TitleWidget(
-                      "值",
-                      required: true,
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
+                    const SizedBox(height: 15),
+                    const TitleWidget("值", required: true),
+                    const SizedBox(height: 10),
                     TextField(
-                      focusNode: (envBean.sId == null || envBean.sId!.isEmpty) ? null : focusNode,
+                      focusNode: (envBean.sId == null || envBean.sId!.isEmpty)
+                          ? null
+                          : focusNode,
                       controller: _valueController,
                       maxLines: 8,
                       minLines: 1,
-                      decoration: const InputDecoration(
-                        hintText: "请输入值",
-                      ),
+                      decoration: const InputDecoration(hintText: "请输入值"),
                       autofocus: false,
                     ),
                   ],
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 15,
-                ),
+                padding: const EdgeInsets.symmetric(horizontal: 15),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const SizedBox(
-                      height: 15,
-                    ),
-                    const TitleWidget(
-                      "备注",
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
+                    const SizedBox(height: 15),
+                    const TitleWidget("备注"),
+                    const SizedBox(height: 10),
                     TextField(
                       maxLines: 3,
                       minLines: 1,
                       controller: _remarkController,
-                      decoration: const InputDecoration(
-                        hintText: "请输入备注",
-                      ),
+                      decoration: const InputDecoration(hintText: "请输入备注"),
                       autofocus: false,
                     ),
                   ],
@@ -179,26 +152,31 @@ class _AddEnvPageState extends ConsumerState<AddEnvPage> with LazyLoadState<AddE
       envBean.remarks = _remarkController.text;
 
       await EasyLoading.show(status: " 提交中");
-      // ignore: use_build_context_synchronously
-      HttpResponse<NullResponse> response = await SingleAccountPageState.ofApi(context).addEnv(
-        _nameController.text,
-        _valueController.text,
-        _remarkController.text,
-        id: envBean.id,
-        nId: envBean.nId,
-      );
+      if (!mounted) {
+        return;
+      }
+      HttpResponse<NullResponse> response =
+          await SingleAccountPageState.ofApi(context).addEnv(
+            _nameController.text,
+            _valueController.text,
+            _remarkController.text,
+            id: envBean.id,
+            nId: envBean.nId,
+          );
       await EasyLoading.show(status: " 提交中");
       if (envBean.sId != null && envBean.sId!.isNotEmpty) {
-        // ignore: use_build_context_synchronously
-        await SingleAccountPageState.ofApi(context).enableEnv(
-          [envBean.sId!],
-        );
+        if (mounted) {
+          await SingleAccountPageState.ofApi(context).enableEnv([envBean.sId!]);
+        }
       }
       await EasyLoading.dismiss();
       if (response.success) {
-        (envBean.sId == null || envBean.sId!.isEmpty) ? "新增成功" : "修改成功${envBean.status == 1?",并自动启用":""}".toast();
-        // ignore: use_build_context_synchronously
-        Navigator.of(context).pop();
+        (envBean.sId == null || envBean.sId!.isEmpty)
+            ? "新增成功"
+            : "修改成功${envBean.status == 1 ? ",并自动启用" : ""}".toast();
+        if (mounted) {
+          Navigator.of(context).pop();
+        }
       } else {
         (response.message ?? "").toast();
       }

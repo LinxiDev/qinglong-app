@@ -4,7 +4,6 @@ import 'package:qinglong_app/base/single_account_page.dart';
 import 'package:qinglong_app/module/login/login_bean.dart';
 import 'package:qinglong_app/utils/extension.dart';
 
-
 class LoginHelper {
   static int success = 0;
   static int failed = 1;
@@ -29,28 +28,30 @@ class LoginHelper {
     SingleAccountPageState.ofHttp(context)?.host = host;
 
     SingleAccountPageState.ofUserInfo(context).updateHost(host);
+    // 先取出 Api，避免 await 之后再使用 context
+    final api = SingleAccountPageState.ofApi(context);
     HttpResponse<LoginBean> response;
 
     if (loginByUserName()) {
-      response =
-          await SingleAccountPageState.ofApi(context).login(userName, password);
+      response = await api.login(userName, password);
     } else {
-      response = await SingleAccountPageState.ofApi(context)
-          .loginByClientId(userName, password);
+      response = await api.loginByClientId(userName, password);
     }
     if (response.success) {
-      // ignore: use_build_context_synchronously
-      loginSuccess(context, response, userName, password);
+      if (context.mounted) {
+        loginSuccess(context, response, userName, password);
+      }
       return success;
     } else if (loginByUserName() && response.code == 401) {
       //可能用户使用的是老版本qinglong
-      HttpResponse<LoginBean> oldResponse =
-          // ignore: use_build_context_synchronously
-          await SingleAccountPageState.ofApi(context)
-              .loginOld(userName, password);
+      HttpResponse<LoginBean> oldResponse = await api.loginOld(
+        userName,
+        password,
+      );
       if (oldResponse.success) {
-        // ignore: use_build_context_synchronously
-        loginSuccess(context, oldResponse, userName, password);
+        if (context.mounted) {
+          loginSuccess(context, oldResponse, userName, password);
+        }
         return success;
       } else {
         (oldResponse.message ?? "请检查网络情况").toast();
@@ -72,12 +73,13 @@ class LoginHelper {
   }
 
   Future<int> loginTwice(BuildContext context, String code) async {
-    HttpResponse<LoginBean> response =
-        await SingleAccountPageState.ofApi(context)
-            .loginTwo(userName, password, code);
+    HttpResponse<LoginBean> response = await SingleAccountPageState.ofApi(
+      context,
+    ).loginTwo(userName, password, code);
     if (response.success) {
-      // ignore: use_build_context_synchronously
-      loginSuccess(context, response, userName, password);
+      if (context.mounted) {
+        loginSuccess(context, response, userName, password);
+      }
       return success;
     } else {
       (response.message ?? "请检查网络情况").toast();
@@ -85,14 +87,19 @@ class LoginHelper {
     }
   }
 
-  void loginSuccess(BuildContext context, HttpResponse<LoginBean> response,
-      String userName, String password) {
+  void loginSuccess(
+    BuildContext context,
+    HttpResponse<LoginBean> response,
+    String userName,
+    String password,
+  ) {
     SingleAccountPageState.ofUserInfo(context).updateToken(
-        SingleAccountPageState.of(context)?.index ?? 0,
-        host,
-        response.bean?.token ?? "",
-        false,
-        alias);
+      SingleAccountPageState.of(context)?.index ?? 0,
+      host,
+      response.bean?.token ?? "",
+      false,
+      alias,
+    );
     if (rememberPassword) {
       SingleAccountPageState.ofUserInfo(context)
           .updateUserName(host, userName, password, !loginByUserName(), alias);
