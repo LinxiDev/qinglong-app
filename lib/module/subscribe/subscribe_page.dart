@@ -227,17 +227,9 @@ class TaskItemCell extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-      decoration: BoxDecoration(
-        color: ref.watch(themeProvider).themeColor.settingBgColor(),
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(
-          color: ref.watch(themeProvider).themeMode == modeDark
-              ? const Color(0xFF2E2E31)
-              : const Color(0xFFE6E8EC),
-        ),
-      ),
+    // 滑动时卡片圆角归零与方形菜单平直对接，关闭后恢复圆角
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       child: Slidable(
         key: ValueKey(bean["id"] as int),
         endActionPane: ActionPane(
@@ -286,10 +278,6 @@ class TaskItemCell extends StatelessWidget {
             ),
             SlidableAction(
               backgroundColor: const Color(0xffEA4D3E),
-              // 左滑菜单最右端一项：右侧两角与卡片圆角(14)一致，左端直角与卡片相接
-              borderRadius: const BorderRadius.horizontal(
-                right: Radius.circular(14),
-              ),
               onPressed: (_) {
                 WidgetsBinding.instance.endOfFrame.then((value) {
                   if (context.mounted) {
@@ -308,10 +296,6 @@ class TaskItemCell extends StatelessWidget {
           children: [
             SlidableAction(
               backgroundColor: const Color(0xffD25535),
-              // 右滑菜单最左端一项：左侧两角与卡片圆角(14)一致，右端直角与卡片相接
-              borderRadius: const BorderRadius.horizontal(
-                left: Radius.circular(14),
-              ),
               onPressed: (_) {
                 if (bean["status"] == 1) {
                   _startCron(context, ref, true);
@@ -338,115 +322,150 @@ class TaskItemCell extends StatelessWidget {
             ),
           ],
         ),
-        child: Material(
-          color: ref.watch(themeProvider).themeColor.settingBgColor(),
-          child: InkWell(
-            onTap: () {
-              Navigator.of(context)
-                  .pushNamed(Routes.routeSubscribeDetail, arguments: bean);
-            },
-            child: Container(
-              width: MediaQuery.of(context).size.width,
-              color: Colors.transparent,
-              padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      Expanded(
-                        child: Row(
-                          mainAxisSize: MainAxisSize.max,
+        child: Builder(
+          builder: (BuildContext itemContext) {
+            return ValueListenableBuilder<ActionPaneType>(
+              valueListenable: Slidable.of(itemContext)!.actionPaneType,
+              builder: (context, paneType, cardChild) {
+                final bool sliding = paneType != ActionPaneType.none;
+                return Container(
+                  decoration: BoxDecoration(
+                    color: ref.watch(themeProvider).themeColor.settingBgColor(),
+                    borderRadius: BorderRadius.circular(sliding ? 0 : 14),
+                    border: sliding
+                        ? null
+                        : Border.all(
+                            color:
+                                ref.watch(themeProvider).themeMode == modeDark
+                                ? const Color(0xFF2E2E31)
+                                : const Color(0xFFE6E8EC),
+                          ),
+                  ),
+                  child: cardChild,
+                );
+              },
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap: () {
+                    Navigator.of(
+                      context,
+                    ).pushNamed(Routes.routeSubscribeDetail, arguments: bean);
+                  },
+                  child: Container(
+                    width: MediaQuery.of(context).size.width,
+                    color: Colors.transparent,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 15,
+                      vertical: 8,
+                    ),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
-                            ConstrainedBox(
-                              constraints: BoxConstraints.loose(
-                                Size.fromWidth(
-                                  MediaQuery.of(context).size.width / 2,
-                                ),
-                              ),
-                              child: Material(
-                                color: Colors.transparent,
-                                child: Text(
-                                  bean["name"] ?? "",
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: TextStyle(
-                                    overflow: TextOverflow.ellipsis,
-                                    color: ref
-                                        .watch(themeProvider)
-                                        .themeColor
-                                        .titleColor(),
-                                    fontSize: 16,
+                            Expanded(
+                              child: Row(
+                                mainAxisSize: MainAxisSize.max,
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  ConstrainedBox(
+                                    constraints: BoxConstraints.loose(
+                                      Size.fromWidth(
+                                        MediaQuery.of(context).size.width / 2,
+                                      ),
+                                    ),
+                                    child: Material(
+                                      color: Colors.transparent,
+                                      child: Text(
+                                        bean["name"] ?? "",
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: TextStyle(
+                                          overflow: TextOverflow.ellipsis,
+                                          color: ref
+                                              .watch(themeProvider)
+                                              .themeColor
+                                              .titleColor(),
+                                          fontSize: 16,
+                                        ),
+                                      ),
+                                    ),
                                   ),
+                                  const SizedBox(width: 7),
+                                  bean["status"] == 0
+                                      ? const RunningWidget()
+                                      : const SizedBox.shrink(),
+                                  const SizedBox(width: 7),
+                                  (bean["is_disabled"] ?? 0) == 1
+                                      ? const StatusWidget(
+                                          title: "已禁用",
+                                          color: Color(0xffFB5858),
+                                        )
+                                      : const SizedBox.shrink(),
+                                ],
+                              ),
+                            ),
+                            Material(
+                              color: Colors.transparent,
+                              child: Text(
+                                "",
+                                maxLines: 1,
+                                style: TextStyle(
+                                  overflow: TextOverflow.ellipsis,
+                                  color: ref
+                                      .watch(themeProvider)
+                                      .themeColor
+                                      .descColor(),
+                                  fontSize: 12,
                                 ),
                               ),
                             ),
-                            const SizedBox(width: 7),
-                            bean["status"] == 0
-                                ? const RunningWidget()
-                                : const SizedBox.shrink(),
-                            const SizedBox(width: 7),
-                            (bean["is_disabled"] ?? 0) == 1
-                                ? const StatusWidget(
-                                    title: "已禁用",
-                                    color: Color(0xffFB5858),
-                                  )
-                                : const SizedBox.shrink(),
                           ],
                         ),
-                      ),
-                      Material(
-                        color: Colors.transparent,
-                        child: Text(
-                          "",
-                          maxLines: 1,
-                          style: TextStyle(
-                            overflow: TextOverflow.ellipsis,
-                            color: ref
-                                .watch(themeProvider)
-                                .themeColor
-                                .descColor(),
-                            fontSize: 12,
+                        const SizedBox(height: 5),
+                        Material(
+                          color: Colors.transparent,
+                          child: Text(
+                            bean["schedule"] ?? "",
+                            maxLines: 1,
+                            style: TextStyle(
+                              overflow: TextOverflow.ellipsis,
+                              color: ref
+                                  .watch(themeProvider)
+                                  .themeColor
+                                  .descColor(),
+                              fontSize: 12,
+                            ),
                           ),
                         ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 5),
-                  Material(
-                    color: Colors.transparent,
-                    child: Text(
-                      bean["schedule"] ?? "",
-                      maxLines: 1,
-                      style: TextStyle(
-                        overflow: TextOverflow.ellipsis,
-                        color: ref.watch(themeProvider).themeColor.descColor(),
-                        fontSize: 12,
-                      ),
+                        const SizedBox(height: 5),
+                        Material(
+                          color: Colors.transparent,
+                          child: Text(
+                            bean["url"] ?? "",
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              overflow: TextOverflow.ellipsis,
+                              color: ref
+                                  .watch(themeProvider)
+                                  .themeColor
+                                  .descColor(),
+                              fontSize: 12,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                  const SizedBox(height: 5),
-                  Material(
-                    color: Colors.transparent,
-                    child: Text(
-                      bean["url"] ?? "",
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        overflow: TextOverflow.ellipsis,
-                        color: ref.watch(themeProvider).themeColor.descColor(),
-                        fontSize: 12,
-                      ),
-                    ),
-                  ),
-                ],
+                ),
               ),
-            ),
-          ),
+            );
+          },
         ),
       ),
     );

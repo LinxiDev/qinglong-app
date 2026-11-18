@@ -201,17 +201,9 @@ class AppKeyItemCell extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-      decoration: BoxDecoration(
-        color: ref.watch(themeProvider).themeColor.settingBgColor(),
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(
-          color: ref.watch(themeProvider).themeMode == modeDark
-              ? const Color(0xFF2E2E31)
-              : const Color(0xFFE6E8EC),
-        ),
-      ),
+    // 滑动时卡片圆角归零与方形菜单平直对接，关闭后恢复圆角
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       child: Slidable(
         key: ValueKey(getAppKeyId(bean)),
         endActionPane: ActionPane(
@@ -258,10 +250,6 @@ class AppKeyItemCell extends StatelessWidget {
             ),
             SlidableAction(
               backgroundColor: const Color(0xffEA4D3E),
-              // 左滑菜单最右端一项：右侧两角与卡片圆角(14)一致，左端直角与卡片相接
-              borderRadius: const BorderRadius.horizontal(
-                right: Radius.circular(14),
-              ),
               onPressed: (_) {
                 WidgetsBinding.instance.endOfFrame.then((value) {
                   if (context.mounted) {
@@ -274,92 +262,122 @@ class AppKeyItemCell extends StatelessWidget {
             ),
           ],
         ),
-        child: Material(
-          color: ref.watch(themeProvider).themeColor.settingBgColor(),
-          child: InkWell(
-            onTap: () {
-              Navigator.of(context).push(
-                CupertinoPageRoute(
-                  builder: (context) => AppKeyDetailDetailPage(bean),
-                ),
-              );
-            },
-            child: Container(
-              width: MediaQuery.of(context).size.width,
-              color: Colors.transparent,
-              padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 5,
-                      vertical: 5,
-                    ),
-                    child: Material(
-                      color: Colors.transparent,
-                      child: Text(
-                        bean["name"] ?? "",
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          overflow: TextOverflow.ellipsis,
-                          color: ref
-                              .watch(themeProvider)
-                              .themeColor
-                              .titleColor(),
-                          fontSize: 16,
-                        ),
+        child: Builder(
+          builder: (BuildContext itemContext) {
+            return ValueListenableBuilder<ActionPaneType>(
+              valueListenable: Slidable.of(itemContext)!.actionPaneType,
+              builder: (context, paneType, cardChild) {
+                final bool sliding = paneType != ActionPaneType.none;
+                return Container(
+                  decoration: BoxDecoration(
+                    color: ref.watch(themeProvider).themeColor.settingBgColor(),
+                    borderRadius: BorderRadius.circular(sliding ? 0 : 14),
+                    border: sliding
+                        ? null
+                        : Border.all(
+                            color:
+                                ref.watch(themeProvider).themeMode == modeDark
+                                ? const Color(0xFF2E2E31)
+                                : const Color(0xFFE6E8EC),
+                          ),
+                  ),
+                  child: cardChild,
+                );
+              },
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap: () {
+                    Navigator.of(context).push(
+                      CupertinoPageRoute(
+                        builder: (context) => AppKeyDetailDetailPage(bean),
                       ),
-                    ),
-                  ),
-                  const SizedBox(height: 5),
-                  Material(
+                    );
+                  },
+                  child: Container(
+                    width: MediaQuery.of(context).size.width,
                     color: Colors.transparent,
-                    child: Wrap(
-                      runSpacing: 5,
-                      spacing: 5,
-                      children:
-                          AppKeyViewModel.getScopeNames(
-                                (bean["scopes"] as List<dynamic>?),
-                              )
-                              .map(
-                                (e) => Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    vertical: 3,
-                                    horizontal: 5,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: ref
-                                        .watch(themeProvider)
-                                        .themeColor
-                                        .descColor(),
-                                    borderRadius: BorderRadius.circular(5),
-                                  ),
-                                  child: Text(
-                                    e,
-                                    maxLines: 1,
-                                    style: TextStyle(
-                                      overflow: TextOverflow.ellipsis,
-                                      color: ref
-                                          .watch(themeProvider)
-                                          .themeColor
-                                          .blackAndWhite(),
-                                      fontSize: 12,
-                                    ),
-                                  ),
-                                ),
-                              )
-                              .toList(),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 15,
+                      vertical: 8,
+                    ),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 5,
+                            vertical: 5,
+                          ),
+                          child: Material(
+                            color: Colors.transparent,
+                            child: Text(
+                              bean["name"] ?? "",
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                overflow: TextOverflow.ellipsis,
+                                color: ref
+                                    .watch(themeProvider)
+                                    .themeColor
+                                    .titleColor(),
+                                fontSize: 16,
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 5),
+                        Material(
+                          color: Colors.transparent,
+                          child: Wrap(
+                            runSpacing: 5,
+                            spacing: 5,
+                            children:
+                                AppKeyViewModel.getScopeNames(
+                                      (bean["scopes"] as List<dynamic>?),
+                                    )
+                                    .map(
+                                      (e) => Container(
+                                        padding: const EdgeInsets.symmetric(
+                                          vertical: 3,
+                                          horizontal: 5,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          color: ref
+                                              .watch(themeProvider)
+                                              .themeColor
+                                              .descColor(),
+                                          borderRadius: BorderRadius.circular(
+                                            5,
+                                          ),
+                                        ),
+                                        child: Text(
+                                          e,
+                                          maxLines: 1,
+                                          style: TextStyle(
+                                            overflow: TextOverflow.ellipsis,
+                                            color: ref
+                                                .watch(themeProvider)
+                                                .themeColor
+                                                .blackAndWhite(),
+                                            fontSize: 12,
+                                          ),
+                                        ),
+                                      ),
+                                    )
+                                    .toList(),
+                          ),
+                        ),
+                        const SizedBox(height: 5),
+                      ],
                     ),
                   ),
-                  const SizedBox(height: 5),
-                ],
+                ),
               ),
-            ),
-          ),
+            );
+          },
         ),
       ),
     );

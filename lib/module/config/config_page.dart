@@ -45,8 +45,7 @@ class ConfigPageState extends ConsumerState<ConfigPage>
       if (MultiAccountPageState.actionEditConfig ==
           MultiAccountPageState.useAction()) {
         // 注册表未就绪时（测试 teardown、登出瞬间）跳过刷新
-        final int accountIndex =
-            SingleAccountPageState.of(context)?.index ?? 0;
+        final int accountIndex = SingleAccountPageState.of(context)?.index ?? 0;
         if (!getIt.isRegistered<SystemBean>(
           instanceName: accountIndex.toString(),
         )) {

@@ -105,6 +105,9 @@ class _PushSettingPageState extends ConsumerState<PushSettingPage> {
                           CupertinoIcons.chevron_up_chevron_down,
                           size: 16,
                         ),
+                        // key 绑定当前渠道：读取回填/切换时重建表单字段，
+                        // 保证 initialValue 正确显示当前配置
+                        key: ValueKey<String?>(current?.key),
                         initialValue: current,
                         onChanged: (value) {
                           current = value!;
@@ -314,9 +317,8 @@ class _PushSettingPageState extends ConsumerState<PushSettingPage> {
 
   void onLazyLoad() async {
     try {
-      var response = await SingleAccountPageState.ofApi(
-        context,
-      ).getNotifcation();
+      var response = await SingleAccountPageState.ofApi(context)
+          .getNotifcation();
 
       if (!response.success) {
         // 读取失败不能让页面永远卡在 loading

@@ -70,9 +70,8 @@ class _UpdatePasswordPageState extends ConsumerState<UpdatePasswordPage>
       _avatarPath = path;
     });
     EasyLoading.show(status: "上传中");
-    var response = await SingleAccountPageState.ofApi(context).updateAvatar(
-      path,
-    );
+    var response = await SingleAccountPageState.ofApi(context)
+        .updateAvatar(path);
     EasyLoading.dismiss();
     if (!mounted) {
       return;
@@ -137,10 +136,7 @@ class _UpdatePasswordPageState extends ConsumerState<UpdatePasswordPage>
                                     .themeColor
                                     .descColor(),
                               )
-                            : Image.file(
-                                File(_avatarPath!),
-                                fit: BoxFit.cover,
-                              ),
+                            : Image.file(File(_avatarPath!), fit: BoxFit.cover),
                       ),
                       Positioned(
                         right: 0,

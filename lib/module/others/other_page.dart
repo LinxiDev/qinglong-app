@@ -875,8 +875,8 @@ class OtherPageState extends ConsumerState<OtherPage>
                           border: OutlineInputBorder(
                             borderSide: BorderSide(
                               // 深浅模式都用柔和描边，避免弹窗内出现刺眼黑边框
-                              color: ref.watch(themeProvider).themeMode ==
-                                      modeDark
+                              color:
+                                  ref.watch(themeProvider).themeMode == modeDark
                                   ? const Color(0xff666666)
                                   : const Color(0xffe4e4e4),
                               width: 1,
@@ -885,8 +885,8 @@ class OtherPageState extends ConsumerState<OtherPage>
                           ),
                           enabledBorder: OutlineInputBorder(
                             borderSide: BorderSide(
-                              color: ref.watch(themeProvider).themeMode ==
-                                      modeDark
+                              color:
+                                  ref.watch(themeProvider).themeMode == modeDark
                                   ? const Color(0xff666666)
                                   : const Color(0xffe4e4e4),
                               width: 1,

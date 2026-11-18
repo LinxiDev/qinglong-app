@@ -701,171 +701,188 @@ class DependencyCell extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return Slidable(
-      key: ValueKey(bean.mustId),
-      enabled: !editMode,
-      endActionPane: ActionPane(
-        motion: const StretchMotion(),
-        extentRatio: 0.5,
-        children: [
-          SlidableAction(
-            backgroundColor: const Color(0xff5D5E70),
-            onPressed: (_) {
-              reInstall(bean.name ?? "", context, ref, bean.sId, bean.id);
-            },
-            foregroundColor: Colors.white,
-            icon: CupertinoIcons.memories,
-          ),
-          SlidableAction(
-            backgroundColor: const Color(0xffA356D6),
-            onPressed: (_) {
-              showLog(context, bean.name ?? "", ref, bean.sId, bean.id);
-            },
-            foregroundColor: Colors.white,
-            icon: CupertinoIcons.text_justifyleft,
-          ),
-          SlidableAction(
-            backgroundColor: const Color(0xffEA4D3E),
-            // 左滑菜单最右端一项：右侧两角与卡片圆角(14)一致，左端直角与卡片相接
-            borderRadius: const BorderRadius.horizontal(
-              right: Radius.circular(14),
+    // 滑动时卡片圆角归零与方形菜单平直对接，关闭后恢复圆角
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      child: Slidable(
+        key: ValueKey(bean.mustId),
+        enabled: !editMode,
+        endActionPane: ActionPane(
+          motion: const StretchMotion(),
+          extentRatio: 0.5,
+          children: [
+            SlidableAction(
+              backgroundColor: const Color(0xff5D5E70),
+              onPressed: (_) {
+                reInstall(bean.name ?? "", context, ref, bean.sId, bean.id);
+              },
+              foregroundColor: Colors.white,
+              icon: CupertinoIcons.memories,
             ),
-            onPressed: (_) {
-              del(context, ref, bean, bean.sId, bean.id);
-            },
-            foregroundColor: Colors.white,
-            icon: CupertinoIcons.delete,
-          ),
-        ],
-      ),
-      child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-        decoration: BoxDecoration(
-          color: ref.watch(themeProvider).themeColor.settingBgColor(),
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(
-            color: ref.watch(themeProvider).themeMode == modeDark
-                ? const Color(0xFF2E2E31)
-                : const Color(0xFFE6E8EC),
-          ),
-        ),
-        child: Material(
-          color: Colors.transparent,
-          child: InkWell(
-            onTap: () {
-              if (editMode) {
-                checkedCallback(bean.mustId ?? "");
-              } else {
+            SlidableAction(
+              backgroundColor: const Color(0xffA356D6),
+              onPressed: (_) {
                 showLog(context, bean.name ?? "", ref, bean.sId, bean.id);
-              }
-            },
-            child: Row(
-              children: [
-                AnimatedSize(
-                  duration: const Duration(milliseconds: 250),
-                  child: SizedBox(
-                    width: editMode ? 40 : 0,
-                    height: 40,
-                    child: Visibility(
-                      visible: editMode,
-                      child: Padding(
-                        padding: const EdgeInsets.only(left: 15),
-                        child: Icon(
-                          checked
-                              ? CupertinoIcons.checkmark_alt_circle
-                              : CupertinoIcons.circle,
-                          size: 25,
-                          color: checked
-                              ? ref.watch(themeProvider).primaryColor
-                              : ref.watch(themeProvider).themeColor.descColor(),
-                        ),
-                      ),
-                    ),
+              },
+              foregroundColor: Colors.white,
+              icon: CupertinoIcons.text_justifyleft,
+            ),
+            SlidableAction(
+              backgroundColor: const Color(0xffEA4D3E),
+              onPressed: (_) {
+                del(context, ref, bean, bean.sId, bean.id);
+              },
+              foregroundColor: Colors.white,
+              icon: CupertinoIcons.delete,
+            ),
+          ],
+        ),
+        child: Builder(
+          builder: (BuildContext itemContext) {
+            return ValueListenableBuilder<ActionPaneType>(
+              valueListenable: Slidable.of(itemContext)!.actionPaneType,
+              builder: (context, paneType, cardChild) {
+                final bool sliding = paneType != ActionPaneType.none;
+                return Container(
+                  decoration: BoxDecoration(
+                    color: ref.watch(themeProvider).themeColor.settingBgColor(),
+                    borderRadius: BorderRadius.circular(sliding ? 0 : 14),
+                    border: sliding
+                        ? null
+                        : Border.all(
+                            color:
+                                ref.watch(themeProvider).themeMode == modeDark
+                                ? const Color(0xFF2E2E31)
+                                : const Color(0xFFE6E8EC),
+                          ),
                   ),
-                ),
-                Expanded(
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 15,
-                      vertical: 10,
-                    ),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            Material(
-                              color: Colors.transparent,
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 10,
-                                ),
-                                child: Text(
-                                  bean.name ?? "",
-                                  maxLines: 1,
-                                  style: TextStyle(
-                                    overflow: TextOverflow.ellipsis,
-                                    color: ref
-                                        .watch(themeProvider)
-                                        .themeColor
-                                        .titleColor(),
-                                    fontSize: 17,
-                                  ),
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 5),
-                            bean.status == 1
-                                ? StatusWidget(
-                                    title: "已安装",
-                                    color: ref
-                                        .watch(themeProvider)
-                                        .primaryColor,
-                                  )
-                                : (bean.status == 2
-                                      ? const StatusWidget(
-                                          title: "安装失败",
-                                          color: Color(0xffFB5858),
-                                        )
-                                      : const RunningWidget()),
-                            Expanded(
-                              child: Align(
-                                alignment: Alignment.centerRight,
-                                child: Material(
-                                  color: Colors.transparent,
-                                  child: Text(
-                                    (bean.created == null || bean.created == 0)
-                                        ? (Utils.formatGMTTime(
-                                            bean.timestamp ?? "",
-                                          ))
-                                        : Utils.formatMessageTime(
-                                            bean.created!,
-                                          ),
-                                    maxLines: 1,
-                                    style: TextStyle(
-                                      overflow: TextOverflow.ellipsis,
-                                      color: ref
+                  child: cardChild,
+                );
+              },
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap: () {
+                    if (editMode) {
+                      checkedCallback(bean.mustId ?? "");
+                    } else {
+                      showLog(context, bean.name ?? "", ref, bean.sId, bean.id);
+                    }
+                  },
+                  child: Row(
+                    children: [
+                      AnimatedSize(
+                        duration: const Duration(milliseconds: 250),
+                        child: SizedBox(
+                          width: editMode ? 40 : 0,
+                          height: 40,
+                          child: Visibility(
+                            visible: editMode,
+                            child: Padding(
+                              padding: const EdgeInsets.only(left: 15),
+                              child: Icon(
+                                checked
+                                    ? CupertinoIcons.checkmark_alt_circle
+                                    : CupertinoIcons.circle,
+                                size: 25,
+                                color: checked
+                                    ? ref.watch(themeProvider).primaryColor
+                                    : ref
                                           .watch(themeProvider)
                                           .themeColor
                                           .descColor(),
-                                      fontSize: 12,
-                                    ),
-                                  ),
-                                ),
                               ),
                             ),
-                          ],
+                          ),
                         ),
-                      ],
-                    ),
+                      ),
+                      Expanded(
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 15,
+                            vertical: 10,
+                          ),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  Material(
+                                    color: Colors.transparent,
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                        vertical: 10,
+                                      ),
+                                      child: Text(
+                                        bean.name ?? "",
+                                        maxLines: 1,
+                                        style: TextStyle(
+                                          overflow: TextOverflow.ellipsis,
+                                          color: ref
+                                              .watch(themeProvider)
+                                              .themeColor
+                                              .titleColor(),
+                                          fontSize: 17,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 5),
+                                  bean.status == 1
+                                      ? StatusWidget(
+                                          title: "已安装",
+                                          color: ref
+                                              .watch(themeProvider)
+                                              .primaryColor,
+                                        )
+                                      : (bean.status == 2
+                                            ? const StatusWidget(
+                                                title: "安装失败",
+                                                color: Color(0xffFB5858),
+                                              )
+                                            : const RunningWidget()),
+                                  Expanded(
+                                    child: Align(
+                                      alignment: Alignment.centerRight,
+                                      child: Material(
+                                        color: Colors.transparent,
+                                        child: Text(
+                                          (bean.created == null ||
+                                                  bean.created == 0)
+                                              ? (Utils.formatGMTTime(
+                                                  bean.timestamp ?? "",
+                                                ))
+                                              : Utils.formatMessageTime(
+                                                  bean.created!,
+                                                ),
+                                          maxLines: 1,
+                                          style: TextStyle(
+                                            overflow: TextOverflow.ellipsis,
+                                            color: ref
+                                                .watch(themeProvider)
+                                                .themeColor
+                                                .descColor(),
+                                            fontSize: 12,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-              ],
-            ),
-          ),
+              ),
+            );
+          },
         ),
       ),
     );

@@ -137,19 +137,9 @@ class ChangeAccountPageState extends ConsumerState<ChangeAccountPage> {
         : "未命名面板";
     final String host = model.host ?? "";
 
+    // 卡片内容（装饰由外层动态容器负责：滑动时方形、静止时圆角）
     Widget child = Container(
-      margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-      decoration: BoxDecoration(
-        color: themeColor.settingBgColor(),
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(
-          color: isCurrent
-              ? primary
-              : (dark ? const Color(0xFF2E2E31) : const Color(0xFFE6E8EC)),
-          width: isCurrent ? 1.5 : 1,
-        ),
-      ),
       child: Row(
         children: [
           // 头像：取别名的第一个字符
@@ -242,69 +232,109 @@ class ChangeAccountPageState extends ConsumerState<ChangeAccountPage> {
       ),
     );
     if (model.host == null || model.host!.isEmpty) {
-      return child;
+      return Container(
+        margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+        decoration: BoxDecoration(
+          color: themeColor.settingBgColor(),
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(
+            color: isCurrent
+                ? primary
+                : (dark ? const Color(0xFF2E2E31) : const Color(0xFFE6E8EC)),
+            width: isCurrent ? 1.5 : 1,
+          ),
+        ),
+        child: child,
+      );
     }
 
-    return Slidable(
-      key: ValueKey(model.host),
-      endActionPane: ActionPane(
-        motion: const StretchMotion(),
-        extentRatio: 0.2,
-        children: [
-          SlidableAction(
-            backgroundColor: const Color(0xffEA4D3E),
-            // 左滑菜单最右端一项：右侧两角与卡片圆角(14)一致，左端直角与卡片相接
-            borderRadius: const BorderRadius.horizontal(
-              right: Radius.circular(14),
-            ),
-            onPressed: (_) {
-              if (model.token != null && model.token!.isNotEmpty) {
-                "请先退出登录，再删除".toast();
-                return;
-              }
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      child: Slidable(
+        key: ValueKey(model.host),
+        endActionPane: ActionPane(
+          motion: const StretchMotion(),
+          extentRatio: 0.2,
+          children: [
+            SlidableAction(
+              backgroundColor: const Color(0xffEA4D3E),
+              onPressed: (_) {
+                if (model.token != null && model.token!.isNotEmpty) {
+                  "请先退出登录，再删除".toast();
+                  return;
+                }
 
-              showCupertinoDialog(
-                context: context,
-                useRootNavigator: false,
-                builder: (childContext) => CupertinoAlertDialog(
-                  title: const Text("温馨提示"),
-                  content: const Text("确定删除吗?"),
-                  actions: [
-                    CupertinoDialogAction(
-                      child: const Text(
-                        "取消",
-                        style: TextStyle(color: Color(0xff999999)),
-                      ),
-                      onPressed: () {
-                        Navigator.of(childContext).pop();
-                      },
-                    ),
-                    CupertinoDialogAction(
-                      child: Text(
-                        "确定",
-                        style: TextStyle(
-                          color: ref.watch(themeProvider).primaryColor,
+                showCupertinoDialog(
+                  context: context,
+                  useRootNavigator: false,
+                  builder: (childContext) => CupertinoAlertDialog(
+                    title: const Text("温馨提示"),
+                    content: const Text("确定删除吗?"),
+                    actions: [
+                      CupertinoDialogAction(
+                        child: const Text(
+                          "取消",
+                          style: TextStyle(color: Color(0xff999999)),
                         ),
+                        onPressed: () {
+                          Navigator.of(childContext).pop();
+                        },
                       ),
-                      onPressed: () {
-                        Navigator.of(childContext).pop();
-                        getIt<MultiAccountUserInfoViewModel>()
-                            .removeHistoryAccount(model.host);
-                        getIt<UserInfoViewModel>(instanceName: index.toString())
-                            .clearCurrentInfo(index);
-                        setState(() {});
-                      },
-                    ),
-                  ],
-                ),
-              );
-            },
-            foregroundColor: Colors.white,
-            icon: CupertinoIcons.delete,
-          ),
-        ],
+                      CupertinoDialogAction(
+                        child: Text(
+                          "确定",
+                          style: TextStyle(
+                            color: ref.watch(themeProvider).primaryColor,
+                          ),
+                        ),
+                        onPressed: () {
+                          Navigator.of(childContext).pop();
+                          getIt<MultiAccountUserInfoViewModel>()
+                              .removeHistoryAccount(model.host);
+                          getIt<UserInfoViewModel>(
+                            instanceName: index.toString(),
+                          ).clearCurrentInfo(index);
+                          setState(() {});
+                        },
+                      ),
+                    ],
+                  ),
+                );
+              },
+              foregroundColor: Colors.white,
+              icon: CupertinoIcons.delete,
+            ),
+          ],
+        ),
+        child: Builder(
+          builder: (BuildContext itemContext) {
+            return ValueListenableBuilder<ActionPaneType>(
+              valueListenable: Slidable.of(itemContext)!.actionPaneType,
+              builder: (context, paneType, cardChild) {
+                final bool sliding = paneType != ActionPaneType.none;
+                return Container(
+                  decoration: BoxDecoration(
+                    color: themeColor.settingBgColor(),
+                    borderRadius: BorderRadius.circular(sliding ? 0 : 14),
+                    border: sliding
+                        ? null
+                        : Border.all(
+                            color: isCurrent
+                                ? primary
+                                : (dark
+                                      ? const Color(0xFF2E2E31)
+                                      : const Color(0xFFE6E8EC)),
+                            width: isCurrent ? 1.5 : 1,
+                          ),
+                  ),
+                  child: cardChild,
+                );
+              },
+              child: child,
+            );
+          },
+        ),
       ),
-      child: child,
     );
   }
 

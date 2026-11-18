@@ -126,284 +126,338 @@ class TaskLogPageState extends ConsumerState<TaskLogPage>
                     }
 
                     if ((item.isDir ?? false)) {
-                      return Slidable(
-                        key: ValueKey(item.name ?? ""),
-                        endActionPane: ActionPane(
-                          motion: const StretchMotion(),
-                          extentRatio: 0.2,
-                          children: [
-                            SlidableAction(
-                              backgroundColor: const Color(0xffEA4D3E),
-                              // 左滑菜单最右端一项：右侧两角与卡片圆角(14)一致
-                              borderRadius: const BorderRadius.horizontal(
-                                right: Radius.circular(14),
-                              ),
-                              onPressed: (_) {
-                                showCupertinoDialog(
-                                  context: context,
-                                  useRootNavigator: false,
-                                  builder: (context) => CupertinoAlertDialog(
-                                    title: const Text("确认删除"),
-                                    content: const Text("确定删除这个文件夹吗"),
-                                    actions: [
-                                      CupertinoDialogAction(
-                                        child: const Text(
-                                          "取消",
-                                          style: TextStyle(
-                                            color: Color(0xff999999),
-                                          ),
-                                        ),
-                                        onPressed: () {
-                                          Navigator.of(context).pop();
-                                        },
-                                      ),
-                                      CupertinoDialogAction(
-                                        child: Text(
-                                          "确定",
-                                          style: TextStyle(
-                                            color: ref
-                                                .watch(themeProvider)
-                                                .primaryColor,
-                                          ),
-                                        ),
-                                        onPressed: () {
-                                          Navigator.of(context).pop();
-                                          deleteFold(item);
-                                        },
-                                      ),
-                                    ],
-                                  ),
-                                );
-                              },
-                              foregroundColor: Colors.white,
-                              icon: CupertinoIcons.delete,
-                            ),
-                          ],
+                      // 滑动时卡片圆角归零与方形菜单平直对接，关闭后恢复圆角
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 5,
                         ),
-                        child: Container(
-                          margin: const EdgeInsets.symmetric(
-                            horizontal: 10,
-                            vertical: 5,
+                        child: Slidable(
+                          key: ValueKey(item.name ?? ""),
+                          endActionPane: ActionPane(
+                            motion: const StretchMotion(),
+                            extentRatio: 0.2,
+                            children: [
+                              SlidableAction(
+                                backgroundColor: const Color(0xffEA4D3E),
+                                onPressed: (_) {
+                                  showCupertinoDialog(
+                                    context: context,
+                                    useRootNavigator: false,
+                                    builder: (context) => CupertinoAlertDialog(
+                                      title: const Text("确认删除"),
+                                      content: const Text("确定删除这个文件夹吗"),
+                                      actions: [
+                                        CupertinoDialogAction(
+                                          child: const Text(
+                                            "取消",
+                                            style: TextStyle(
+                                              color: Color(0xff999999),
+                                            ),
+                                          ),
+                                          onPressed: () {
+                                            Navigator.of(context).pop();
+                                          },
+                                        ),
+                                        CupertinoDialogAction(
+                                          child: Text(
+                                            "确定",
+                                            style: TextStyle(
+                                              color: ref
+                                                  .watch(themeProvider)
+                                                  .primaryColor,
+                                            ),
+                                          ),
+                                          onPressed: () {
+                                            Navigator.of(context).pop();
+                                            deleteFold(item);
+                                          },
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                },
+                                foregroundColor: Colors.white,
+                                icon: CupertinoIcons.delete,
+                              ),
+                            ],
                           ),
-                          decoration: BoxDecoration(
-                            color: ref
-                                .watch(themeProvider)
-                                .themeColor
-                                .settingBgColor(),
-                            borderRadius: BorderRadius.circular(14),
-                            border: Border.all(
-                              color:
-                                  ref.watch(themeProvider).themeMode == modeDark
-                                  ? const Color(0xFF2E2E31)
-                                  : const Color(0xFFE6E8EC),
-                            ),
-                          ),
-                          child: Material(
-                            color: Colors.transparent,
-                            child: Theme(
-                              data: Theme.of(context)
-                                  .copyWith(dividerColor: Colors.transparent),
-                              child: ExpansionTile(
-                                leading: Icon(
-                                  CupertinoIcons.folder,
-                                  size: 20,
-                                  color: ref.watch(themeProvider).primaryColor,
-                                ),
-                                iconColor: ref
-                                    .watch(themeProvider)
-                                    .primaryColor,
-                                collapsedIconColor: ref
-                                    .watch(themeProvider)
-                                    .primaryColor,
-                                title: Text(
-                                  item.name ?? "",
-                                  style: TextStyle(
-                                    color: ref
-                                        .watch(themeProvider)
-                                        .themeColor
-                                        .titleColor(),
-                                    fontSize: 15.5,
-                                    fontWeight: FontWeight.w600,
+                          child: Builder(
+                            builder: (BuildContext itemContext) {
+                              return ValueListenableBuilder<ActionPaneType>(
+                                valueListenable: Slidable.of(itemContext)!
+                                    .actionPaneType,
+                                builder: (context, paneType, cardChild) {
+                                  final bool sliding =
+                                      paneType != ActionPaneType.none;
+                                  return Container(
+                                    decoration: BoxDecoration(
+                                      color: ref
+                                          .watch(themeProvider)
+                                          .themeColor
+                                          .settingBgColor(),
+                                      borderRadius: BorderRadius.circular(
+                                        sliding ? 0 : 14,
+                                      ),
+                                      border: sliding
+                                          ? null
+                                          : Border.all(
+                                              color:
+                                                  ref
+                                                          .watch(themeProvider)
+                                                          .themeMode ==
+                                                      modeDark
+                                                  ? const Color(0xFF2E2E31)
+                                                  : const Color(0xFFE6E8EC),
+                                            ),
+                                    ),
+                                    child: cardChild,
+                                  );
+                                },
+                                child: Material(
+                                  color: Colors.transparent,
+                                  child: Theme(
+                                    data: Theme.of(context).copyWith(
+                                      dividerColor: Colors.transparent,
+                                    ),
+                                    child: ExpansionTile(
+                                      leading: Icon(
+                                        CupertinoIcons.folder,
+                                        size: 20,
+                                        color: ref
+                                            .watch(themeProvider)
+                                            .primaryColor,
+                                      ),
+                                      iconColor: ref
+                                          .watch(themeProvider)
+                                          .primaryColor,
+                                      collapsedIconColor: ref
+                                          .watch(themeProvider)
+                                          .primaryColor,
+                                      title: Text(
+                                        item.name ?? "",
+                                        style: TextStyle(
+                                          color: ref
+                                              .watch(themeProvider)
+                                              .themeColor
+                                              .titleColor(),
+                                          fontSize: 15.5,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                      children:
+                                          (item.files?.isNotEmpty ?? false)
+                                          ? item.files!
+                                                .map(
+                                                  (e) => ListTile(
+                                                    onTap: () {
+                                                      Navigator.of(
+                                                        context,
+                                                      ).push(
+                                                        CupertinoPageRoute(
+                                                          builder: (context) =>
+                                                              InTimeHistoryLogPage(
+                                                                path:
+                                                                    item.name ??
+                                                                    "",
+                                                                title: e,
+                                                              ),
+                                                        ),
+                                                      );
+                                                    },
+                                                    title: Text(
+                                                      e,
+                                                      style: TextStyle(
+                                                        color: ref
+                                                            .watch(
+                                                              themeProvider,
+                                                            )
+                                                            .themeColor
+                                                            .titleColor(),
+                                                        fontSize: 14,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                )
+                                                .toList()
+                                          : (item.children ?? [])
+                                                .map(
+                                                  (e) => ListTile(
+                                                    onTap: () {
+                                                      Navigator.of(context)
+                                                          .push(
+                                                            CupertinoPageRoute(
+                                                              builder: (context) =>
+                                                                  InTimeHistoryLogPage(
+                                                                    path:
+                                                                        item.name ??
+                                                                        "",
+                                                                    title:
+                                                                        e.title ??
+                                                                        "",
+                                                                  ),
+                                                            ),
+                                                          )
+                                                          .then((value) {
+                                                            if (value != null &&
+                                                                value == true) {
+                                                              loadData();
+                                                            }
+                                                          });
+                                                    },
+                                                    title: Text(
+                                                      e.title ?? "",
+                                                      style: TextStyle(
+                                                        color: ref
+                                                            .watch(
+                                                              themeProvider,
+                                                            )
+                                                            .themeColor
+                                                            .titleColor(),
+                                                        fontSize: 14,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                )
+                                                .toList(),
+                                    ),
                                   ),
                                 ),
-                                children: (item.files?.isNotEmpty ?? false)
-                                    ? item.files!
-                                          .map(
-                                            (e) => ListTile(
-                                              onTap: () {
-                                                Navigator.of(context).push(
-                                                  CupertinoPageRoute(
-                                                    builder: (context) =>
-                                                        InTimeHistoryLogPage(
-                                                          path: item.name ?? "",
-                                                          title: e,
-                                                        ),
-                                                  ),
-                                                );
-                                              },
-                                              title: Text(
-                                                e,
-                                                style: TextStyle(
-                                                  color: ref
-                                                      .watch(themeProvider)
-                                                      .themeColor
-                                                      .titleColor(),
-                                                  fontSize: 14,
-                                                ),
-                                              ),
-                                            ),
-                                          )
-                                          .toList()
-                                    : (item.children ?? [])
-                                          .map(
-                                            (e) => ListTile(
-                                              onTap: () {
-                                                Navigator.of(context)
-                                                    .push(
-                                                      CupertinoPageRoute(
-                                                        builder: (context) =>
-                                                            InTimeHistoryLogPage(
-                                                              path:
-                                                                  item.name ??
-                                                                  "",
-                                                              title:
-                                                                  e.title ?? "",
-                                                            ),
-                                                      ),
-                                                    )
-                                                    .then((value) {
-                                                      if (value != null &&
-                                                          value == true) {
-                                                        loadData();
-                                                      }
-                                                    });
-                                              },
-                                              title: Text(
-                                                e.title ?? "",
-                                                style: TextStyle(
-                                                  color: ref
-                                                      .watch(themeProvider)
-                                                      .themeColor
-                                                      .titleColor(),
-                                                  fontSize: 14,
-                                                ),
-                                              ),
-                                            ),
-                                          )
-                                          .toList(),
-                              ),
-                            ),
+                              );
+                            },
                           ),
                         ),
                       );
                     } else {
-                      return Slidable(
-                        key: ValueKey(item.name ?? ""),
-                        endActionPane: ActionPane(
-                          motion: const StretchMotion(),
-                          extentRatio: 0.2,
-                          children: [
-                            SlidableAction(
-                              backgroundColor: const Color(0xffEA4D3E),
-                              // 左滑菜单最右端一项：右侧两角与卡片圆角(14)一致
-                              borderRadius: const BorderRadius.horizontal(
-                                right: Radius.circular(14),
-                              ),
-                              onPressed: (_) {
-                                showCupertinoDialog(
-                                  context: context,
-                                  useRootNavigator: false,
-                                  builder: (context) => CupertinoAlertDialog(
-                                    title: const Text("确认删除"),
-                                    content: const Text("确定删除这个文件吗"),
-                                    actions: [
-                                      CupertinoDialogAction(
-                                        child: const Text(
-                                          "取消",
-                                          style: TextStyle(
-                                            color: Color(0xff999999),
-                                          ),
-                                        ),
-                                        onPressed: () {
-                                          Navigator.of(context).pop();
-                                        },
-                                      ),
-                                      CupertinoDialogAction(
-                                        child: Text(
-                                          "确定",
-                                          style: TextStyle(
-                                            color: ref
-                                                .watch(themeProvider)
-                                                .primaryColor,
-                                          ),
-                                        ),
-                                        onPressed: () {
-                                          Navigator.of(context).pop();
-                                          deleteFold(item);
-                                        },
-                                      ),
-                                    ],
-                                  ),
-                                );
-                              },
-                              foregroundColor: Colors.white,
-                              icon: CupertinoIcons.delete,
-                            ),
-                          ],
+                      // 滑动时卡片圆角归零与方形菜单平直对接，关闭后恢复圆角
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 5,
                         ),
-                        child: Container(
-                          margin: const EdgeInsets.symmetric(
-                            horizontal: 10,
-                            vertical: 5,
+                        child: Slidable(
+                          key: ValueKey(item.name ?? ""),
+                          endActionPane: ActionPane(
+                            motion: const StretchMotion(),
+                            extentRatio: 0.2,
+                            children: [
+                              SlidableAction(
+                                backgroundColor: const Color(0xffEA4D3E),
+                                onPressed: (_) {
+                                  showCupertinoDialog(
+                                    context: context,
+                                    useRootNavigator: false,
+                                    builder: (context) => CupertinoAlertDialog(
+                                      title: const Text("确认删除"),
+                                      content: const Text("确定删除这个文件吗"),
+                                      actions: [
+                                        CupertinoDialogAction(
+                                          child: const Text(
+                                            "取消",
+                                            style: TextStyle(
+                                              color: Color(0xff999999),
+                                            ),
+                                          ),
+                                          onPressed: () {
+                                            Navigator.of(context).pop();
+                                          },
+                                        ),
+                                        CupertinoDialogAction(
+                                          child: Text(
+                                            "确定",
+                                            style: TextStyle(
+                                              color: ref
+                                                  .watch(themeProvider)
+                                                  .primaryColor,
+                                            ),
+                                          ),
+                                          onPressed: () {
+                                            Navigator.of(context).pop();
+                                            deleteFold(item);
+                                          },
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                },
+                                foregroundColor: Colors.white,
+                                icon: CupertinoIcons.delete,
+                              ),
+                            ],
                           ),
-                          decoration: BoxDecoration(
-                            color: ref
-                                .watch(themeProvider)
-                                .themeColor
-                                .settingBgColor(),
-                            borderRadius: BorderRadius.circular(14),
-                            border: Border.all(
-                              color:
-                                  ref.watch(themeProvider).themeMode == modeDark
-                                  ? const Color(0xFF2E2E31)
-                                  : const Color(0xFFE6E8EC),
-                            ),
-                          ),
-                          child: Material(
-                            color: Colors.transparent,
-                            child: ListTile(
-                              onTap: () {
-                                if (item.isDir ?? false) {
-                                  "该文件夹为空".toast();
-                                  return;
-                                }
+                          child: Builder(
+                            builder: (BuildContext itemContext) {
+                              return ValueListenableBuilder<ActionPaneType>(
+                                valueListenable: Slidable.of(itemContext)!
+                                    .actionPaneType,
+                                builder: (context, paneType, cardChild) {
+                                  final bool sliding =
+                                      paneType != ActionPaneType.none;
+                                  return Container(
+                                    decoration: BoxDecoration(
+                                      color: ref
+                                          .watch(themeProvider)
+                                          .themeColor
+                                          .settingBgColor(),
+                                      borderRadius: BorderRadius.circular(
+                                        sliding ? 0 : 14,
+                                      ),
+                                      border: sliding
+                                          ? null
+                                          : Border.all(
+                                              color:
+                                                  ref
+                                                          .watch(themeProvider)
+                                                          .themeMode ==
+                                                      modeDark
+                                                  ? const Color(0xFF2E2E31)
+                                                  : const Color(0xFFE6E8EC),
+                                            ),
+                                    ),
+                                    child: cardChild,
+                                  );
+                                },
+                                child: Material(
+                                  color: Colors.transparent,
+                                  child: ListTile(
+                                    onTap: () {
+                                      if (item.isDir ?? false) {
+                                        "该文件夹为空".toast();
+                                        return;
+                                      }
 
-                                Navigator.of(context).push(
-                                  CupertinoPageRoute(
-                                    builder: (context) => InTimeHistoryLogPage(
-                                      path: "",
-                                      title: item.name ?? "",
+                                      Navigator.of(context).push(
+                                        CupertinoPageRoute(
+                                          builder: (context) =>
+                                              InTimeHistoryLogPage(
+                                                path: "",
+                                                title: item.name ?? "",
+                                              ),
+                                        ),
+                                      );
+                                    },
+                                    leading: Icon(
+                                      CupertinoIcons.doc_text,
+                                      size: 20,
+                                      color: ref
+                                          .watch(themeProvider)
+                                          .primaryColor,
+                                    ),
+                                    title: Text(
+                                      item.name ?? "",
+                                      style: TextStyle(
+                                        color: ref
+                                            .watch(themeProvider)
+                                            .themeColor
+                                            .titleColor(),
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.w600,
+                                      ),
                                     ),
                                   ),
-                                );
-                              },
-                              leading: Icon(
-                                CupertinoIcons.doc_text,
-                                size: 20,
-                                color: ref.watch(themeProvider).primaryColor,
-                              ),
-                              title: Text(
-                                item.name ?? "",
-                                style: TextStyle(
-                                  color: ref
-                                      .watch(themeProvider)
-                                      .themeColor
-                                      .titleColor(),
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.w600,
                                 ),
-                              ),
-                            ),
+                              );
+                            },
                           ),
                         ),
                       );
