@@ -57,6 +57,7 @@ class TaskPageState extends ConsumerState<TaskPage>
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     super.didChangeAppLifecycleState(state);
+    if (!mounted) return;
     if (state == AppLifecycleState.resumed) {
       ref
           .read(

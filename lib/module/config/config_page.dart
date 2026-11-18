@@ -11,6 +11,7 @@ import 'package:qinglong_app/base/ui/list_card.dart';
 import 'package:qinglong_app/main.dart';
 import 'package:qinglong_app/module/config/add_config_page.dart';
 import 'package:qinglong_app/module/config/config_bean.dart';
+import 'package:qinglong_app/module/home/system_bean.dart';
 import 'package:qinglong_app/utils/extension.dart';
 import 'package:qinglong_app/utils/utils.dart';
 
@@ -39,9 +40,18 @@ class ConfigPageState extends ConsumerState<ConfigPage>
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     super.didChangeAppLifecycleState(state);
+    if (!mounted) return;
     if (state == AppLifecycleState.resumed) {
       if (MultiAccountPageState.actionEditConfig ==
           MultiAccountPageState.useAction()) {
+        // 注册表未就绪时（测试 teardown、登出瞬间）跳过刷新
+        final int accountIndex =
+            SingleAccountPageState.of(context)?.index ?? 0;
+        if (!getIt.isRegistered<SystemBean>(
+          instanceName: accountIndex.toString(),
+        )) {
+          return;
+        }
         gotoConfigDetailed = false;
         loadConfigData(context);
       }

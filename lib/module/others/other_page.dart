@@ -1044,6 +1044,12 @@ class OtherPageState extends ConsumerState<OtherPage>
         "${await FileUtil(SingleAccountPageState.of(context)?.index ?? 0).localPath}/",
       );
 
+      // 目录可能尚未创建（新环境首次启动），直接跳过
+      if (!directory.existsSync()) {
+        debugPrint("日志目录不存在，跳过清理${directory.path}");
+        return;
+      }
+
       List<FileSystemEntity> list = directory.listSync();
 
       for (FileSystemEntity file in list) {

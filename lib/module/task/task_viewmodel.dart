@@ -31,6 +31,13 @@ class TaskViewModel extends BaseViewModel {
   bool runAllTasked = false;
 
   Future<void> loadData(BuildContext context, [isLoading = true]) async {
+    // 生命周期回调可能在注册表未就绪时到达（测试 teardown、登出瞬间等）
+    final int accountIndex = SingleAccountPageState.of(context)?.index ?? 0;
+    if (!getIt.isRegistered<SystemBean>(
+      instanceName: accountIndex.toString(),
+    )) {
+      return;
+    }
     if (isLoading && list.isEmpty) {
       loading(notify: true);
     }
@@ -301,6 +308,13 @@ class TaskViewModel extends BaseViewModel {
   }
 
   void runAllTasks(BuildContext context) {
+    // 与 loadData 同理：注册表未就绪时跳过（生命周期回调路径）
+    final int accountIndex = SingleAccountPageState.of(context)?.index ?? 0;
+    if (!getIt.isRegistered<SystemBean>(
+      instanceName: accountIndex.toString(),
+    )) {
+      return;
+    }
     runAllTasked = true;
     List<String> ids = list
         .where((element) => element.isDisabled != 1)
