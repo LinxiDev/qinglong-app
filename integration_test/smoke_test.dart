@@ -84,6 +84,22 @@ void main() {
     }
   }
 
+  Future<void> goBack(WidgetTester tester) async {
+    final Finder backIcon = find.byIcon(CupertinoIcons.left_chevron);
+    if (backIcon.evaluate().isEmpty) return;
+    await tester.tap(backIcon.first, warnIfMissed: false);
+    await settle(tester, 2);
+    await capture(tester, '<返回>');
+  }
+
+  Future<void> scrollDown(WidgetTester tester) async {
+    // 回到我的页后滚动位置会重置，这里用大步长确保能触达底部条目
+    final Finder scrollable = find.byType(Scrollable);
+    if (scrollable.evaluate().isEmpty) return;
+    await tester.drag(scrollable.first, const Offset(0, -600));
+    await settle(tester, 1);
+  }
+
   Future<bool> tapText(WidgetTester tester, String text) async {
     final Finder finder = find.text(text);
     if (finder.evaluate().isEmpty) return false;
@@ -101,8 +117,11 @@ void main() {
     // 确认真的进入了二级页面（有返回箭头）；偶发点击落空时重试一次
     if (find.byIcon(CupertinoIcons.left_chevron).evaluate().isEmpty) {
       await ensureVisible(tester, finder);
-      await tester.tap(finder.last, warnIfMissed: false);
-      await settle(tester, 4);
+      // 滚动过程中元素可能被销毁/重建，重试前先确认仍然存在
+      if (finder.evaluate().isNotEmpty) {
+        await tester.tap(finder.last, warnIfMissed: false);
+        await settle(tester, 4);
+      }
       if (find.byIcon(CupertinoIcons.left_chevron).evaluate().isEmpty) {
         // 打印目标位置，判断是否被悬浮按钮等遮挡
         String rectInfo = '';
@@ -123,28 +142,12 @@ void main() {
           print('DIAG $text rect=[$rectInfo]');
           failed.add('$text -> 未进入页面');
         }
+        // 若实际已进入页面，返回列表页，保证后续入口定位正确
+        await goBack(tester);
         return false;
       }
     }
     return true;
-  }
-
-  Future<void> goBack(WidgetTester tester) async {
-    final Finder backIcon = find.byIcon(CupertinoIcons.left_chevron);
-    if (backIcon.evaluate().isEmpty) return;
-    await tester.tap(backIcon.first, warnIfMissed: false);
-    await settle(tester, 2);
-    await capture(tester, '<返回>');
-  }
-
-  Future<void> scrollDown(WidgetTester tester) async {
-    // 从页面中部发起拖拽，避免命中顶部工具条或底部导航
-    final Size size = tester.getSize(find.byType(MaterialApp).first);
-    await tester.dragFrom(
-      Offset(size.width / 2, size.height * 0.62),
-      const Offset(0, -240),
-    );
-    await settle(tester, 2);
   }
 
   testWidgets('遍历主要页面', (WidgetTester tester) async {
@@ -194,13 +197,25 @@ void main() {
 
     for (final String page in pages) {
       bool found = false;
-      for (int i = 0; i < 4 && !found; i++) {
+      for (int i = 0; i < 10 && !found; i++) {
         found = await tapText(tester, page);
         if (!found) {
           await scrollDown(tester);
         }
       }
       if (!found) {
+        if (page == '账号排序') {
+          final List<String> texts = find
+              .byType(Text)
+              .evaluate()
+              .map((Element e) => (e.widget as Text).data)
+              .where((String? d) => d != null && d.trim().isNotEmpty)
+              .take(12)
+              .cast<String>()
+              .toList();
+          // ignore: avoid_print
+          print('DIAG 账号排序未找到 -> ${texts.join(' | ')}');
+        }
         failed.add('$page -> 入口未找到');
         continue;
       }
