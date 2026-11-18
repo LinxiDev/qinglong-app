@@ -97,6 +97,7 @@ jobs:
           set -o pipefail
           for f in integration_test/*_test.dart; do
             echo "::group::$f"
-            xvfb-run -a flutter test "$f" -d linux || exit 1
+            xvfb-run -a --server-args="-screen 0 1280x800x24" \
+              flutter test "$f" -d linux || exit 1
             echo "::endgroup::"
           done
