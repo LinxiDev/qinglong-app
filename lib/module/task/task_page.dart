@@ -1154,9 +1154,10 @@ class TaskItemCell extends StatelessWidget {
                       Expanded(
                         child: Container(
                           color: Colors.transparent,
+                          // 行高对齐环境变量卡片（上下内边距 8 + 行间距 15 的结构）
                           padding: const EdgeInsets.symmetric(
                             horizontal: 15,
-                            vertical: 6,
+                            vertical: 10,
                           ),
                           child: Column(
                             mainAxisSize: MainAxisSize.min,
@@ -1230,7 +1231,7 @@ class TaskItemCell extends StatelessWidget {
                                   ),
                                 ],
                               ),
-                              const SizedBox(height: 4),
+                              const SizedBox(height: 8),
                               // 第二行：定时规则在左，命令在右
                               Row(
                                 children: [
