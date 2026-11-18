@@ -35,7 +35,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  FLUTTER_VERSION: "3.3.10"
+  FLUTTER_VERSION: "3.50.0"
 
 jobs:
   build-apk:
@@ -51,7 +51,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: "11"
+          java-version: "17"
 
       - name: 安装 Flutter 环境
         uses: subosito/flutter-action@v2
@@ -62,6 +62,12 @@ jobs:
 
       - name: 安装 Flutter 依赖
         run: flutter pub get
+
+      - name: 静态检查
+        run: flutter analyze --no-fatal-infos --no-fatal-warnings
+
+      - name: 单元测试
+        run: flutter test
 
       - name: 构建 Release APK
         run: flutter build apk --release
