@@ -84,400 +84,346 @@ class LoginPageState extends ConsumerState<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
+    final bool dark = ref.watch(themeProvider).themeMode == modeDark;
+    final ThemeColors themeColor = ref.watch(themeProvider).themeColor;
+    final Color primary = ref.watch(themeProvider).primaryColor;
+    // 大屏（桌面/平板）把表单列限制在 420 宽并居中，手机端保持 24 边距
+    final double screenWidth = MediaQuery.of(context).size.width;
+    final double hPad = screenWidth > 480 ? (screenWidth - 420) / 2 : 24;
+
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: AnnotatedRegion<SystemUiOverlayStyle>(
-        value: ref.watch(themeProvider).themeMode == modeDark
-            ? SystemUiOverlayStyle.light
-            : SystemUiOverlayStyle.dark,
-        child: SizedBox(
+        value: dark ? SystemUiOverlayStyle.light : SystemUiOverlayStyle.dark,
+        child: Container(
           height: MediaQuery.of(context).size.height,
-          child: SingleChildScrollView(
-            primary: true,
-            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 40),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SizedBox(height: MediaQuery.of(context).size.height / 8),
-                      GestureDetector(
-                        onTap: () {
-                          if (SpUtil.getInt(spVIP, defValue: typeNormal) ==
-                              typeNormal) {
-                            Navigator.of(context).push(
-                              CupertinoPageRoute(
-                                builder: (context) =>
-                                    const InAppPurchasePage(fromDirectly: true),
-                              ),
-                            );
-                            return;
-                          } else {
-                            if (SpUtil.getBool(
-                              spSingleInstance,
-                              defValue: false,
-                            )) {
-                              Navigator.pop(context);
-                              return;
-                            }
-                            Navigator.of(context).push(
-                              PageRouteBuilder(
-                                pageBuilder: (
-                                  context,
-                                  animation1,
-                                  animation2,
-                                ) => const ChangeAccountPage(),
-                                transitionDuration: Duration.zero,
-                                reverseTransitionDuration: Duration.zero,
-                              ),
-                            );
-                          }
-                        },
-                        child: Row(
-                          children: [
-                            Visibility(
-                              visible: SpUtil.getBool(
-                                spSingleInstance,
-                                defValue: false,
-                              ),
-                              child: CupertinoButton(
-                                padding: EdgeInsets.zero,
-                                onPressed: () {
-                                  Navigator.of(context).pop();
-                                },
-                                child: Icon(
-                                  CupertinoIcons.chevron_back,
-                                  color: ref.watch(themeProvider).primaryColor,
-                                  size: 26,
-                                ),
-                              ),
-                            ),
-                            Expanded(
-                              child: Align(
-                                alignment: Alignment.centerLeft,
-                                child: Text(
-                                  "账号登录",
-                                  style: TextStyle(
-                                    fontSize: 26,
-                                    fontWeight: FontWeight.bold,
-                                    color: ref
-                                        .watch(themeProvider)
-                                        .themeColor
-                                        .title2Color(),
-                                  ),
-                                ),
-                              ),
-                            ),
-                            GestureDetector(
-                              onLongPress: () {
-                                "青龙客户端".toast();
-                              },
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(5),
-                                child: const AppLogo(height: 45),
-                              ),
-                            ),
-                          ],
+          decoration: BoxDecoration(
+            // 顶部主色微光的柔和渐变背景
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: dark
+                  ? const [Color(0xFF15241A), Color(0xFF111111)]
+                  : const [Color(0xFFEAF8EE), Color(0xFFF7F9FA)],
+            ),
+          ),
+          child: SafeArea(
+            child: SingleChildScrollView(
+              primary: true,
+              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  // 顶部返回（单实例模式）
+                  SizedBox(
+                    height: 44,
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Visibility(
+                        visible: SpUtil.getBool(
+                          spSingleInstance,
+                          defValue: false,
                         ),
-                      ),
-                      SizedBox(height: MediaQuery.of(context).size.height / 15),
-                      Row(
-                        children: [
-                          const SizedBox(
-                            width: 40,
-                            child: Text("域名", style: TextStyle(fontSize: 16)),
-                          ),
-                          const SizedBox(width: 30),
-                          Expanded(
-                            child: TextField(
-                              onChanged: (_) {
-                                setState(() {});
-                              },
-                              controller: _hostController,
-                              decoration: InputDecoration(
-                                border: InputBorder.none,
-                                enabledBorder: InputBorder.none,
-                                focusedBorder: InputBorder.none,
-                                isDense: true,
-                                contentPadding: const EdgeInsets.all(4),
-                                hintText: "http://1.1.1.1:5700",
-                                hintStyle: TextStyle(
-                                  fontSize: 16,
-                                  color: ref
-                                      .watch(themeProvider)
-                                      .themeColor
-                                      .hintColor(),
-                                ),
-                              ),
-                              autofocus: false,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const Divider(color: Color(0xff999999)),
-                      const SizedBox(height: 10),
-                      Column(
-                        mainAxisSize: MainAxisSize.min,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              const SizedBox(
-                                width: 40,
-                                child: Text(
-                                  "账户",
-                                  style: TextStyle(fontSize: 16),
-                                ),
-                              ),
-                              const SizedBox(width: 30),
-                              Expanded(
-                                child: TextField(
-                                  onChanged: (_) {
-                                    setState(() {});
-                                  },
-                                  controller: _userNameController,
-                                  decoration: InputDecoration(
-                                    border: InputBorder.none,
-                                    enabledBorder: InputBorder.none,
-                                    focusedBorder: InputBorder.none,
-                                    isDense: true,
-                                    contentPadding: const EdgeInsets.all(4),
-                                    hintText: "请输入账户",
-                                    hintStyle: TextStyle(
-                                      fontSize: 16,
-                                      color: ref
-                                          .watch(themeProvider)
-                                          .themeColor
-                                          .hintColor(),
-                                    ),
-                                  ),
-                                  autofocus: false,
-                                ),
-                              ),
-                            ],
-                          ),
-                          const Divider(color: Color(0xff999999)),
-                          const SizedBox(height: 10),
-                          Row(
-                            children: [
-                              const SizedBox(
-                                width: 40,
-                                child: Text(
-                                  "密码",
-                                  style: TextStyle(fontSize: 16),
-                                ),
-                              ),
-                              const SizedBox(width: 30),
-                              Expanded(
-                                child: TextField(
-                                  onChanged: (_) {
-                                    setState(() {});
-                                  },
-                                  controller: _passwordController,
-                                  obscureText: true,
-                                  decoration: InputDecoration(
-                                    border: InputBorder.none,
-                                    enabledBorder: InputBorder.none,
-                                    focusedBorder: InputBorder.none,
-                                    isDense: true,
-                                    contentPadding: const EdgeInsets.all(4),
-                                    hintText: "请输入密码",
-                                    hintStyle: TextStyle(
-                                      fontSize: 16,
-                                      color: ref
-                                          .watch(themeProvider)
-                                          .themeColor
-                                          .hintColor(),
-                                    ),
-                                  ),
-                                  autofocus: false,
-                                ),
-                              ),
-                            ],
-                          ),
-                          const Divider(color: Color(0xff999999)),
-                        ],
-                      ),
-                      Row(
-                        children: [
-                          const SizedBox(
-                            width: 40,
-                            child: Text("别名", style: TextStyle(fontSize: 16)),
-                          ),
-                          const SizedBox(width: 30),
-                          Expanded(
-                            child: TextField(
-                              inputFormatters: [
-                                LengthLimitingTextInputFormatter(10),
-                              ],
-                              controller: _aliasController,
-                              decoration: InputDecoration(
-                                border: InputBorder.none,
-                                enabledBorder: InputBorder.none,
-                                focusedBorder: InputBorder.none,
-                                isDense: true,
-                                contentPadding: const EdgeInsets.all(4),
-                                hintText: "请输入别名(选填),仅用于展示",
-                                hintStyle: TextStyle(
-                                  fontSize: 16,
-                                  color: ref
-                                      .watch(themeProvider)
-                                      .themeColor
-                                      .hintColor(),
-                                ),
-                              ),
-                              autofocus: false,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const Divider(color: Color(0xff999999)),
-                      const SizedBox(height: 10),
-                    ],
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 25),
-                  child: Row(
-                    children: [
-                      Checkbox(
-                        value: rememberPassword,
-                        onChanged: (checked) {
-                          rememberPassword = checked ?? false;
-                          setState(() {});
-                        },
-                      ),
-                      const Text(
-                        "记住密码",
-                        style: TextStyle(
-                          color: Color(0xff555555),
-                          fontSize: 14,
-                        ),
-                      ),
-                      const SizedBox(width: 10),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 30),
-                ShakeWidget(
-                  key: loginKey,
-                  child: Center(
-                    child: Container(
-                      alignment: Alignment.center,
-                      width: MediaQuery.of(context).size.width * 0.8,
-                      padding: const EdgeInsets.symmetric(horizontal: 40),
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: canClickLoginBtn()
-                              ? [
-                                  const Color(0xff5DD16F),
-                                  const Color(0xff089556),
-                                ]
-                              : [
-                                  const Color(0xff5DD16F)
-                                      .withValues(alpha: 0.6),
-                                  const Color(0xff089556)
-                                      .withValues(alpha: 0.6),
-                                ],
-                        ),
-                        borderRadius: const BorderRadius.all(
-                          Radius.circular(10),
-                        ),
-                      ),
-                      child: SizedBox(
-                        width: MediaQuery.of(context).size.width - 80,
-                        child: IgnorePointer(
-                          ignoring: !canClickLoginBtn(),
-                          child: Builder(
-                            builder: (context) {
-                              return CupertinoButton(
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 5,
-                                ),
-                                child: isLoading
-                                    ? const LoadingWidget(color: Colors.white)
-                                    : const Text(
-                                        "登 录",
-                                        style: TextStyle(
-                                          fontSize: 16,
-                                          color: Colors.white,
-                                        ),
-                                      ),
-                                onPressed: () async {
-                                  //检测是否已经存在host登录
-
-                                  if (!_hostController.text.startsWith(
-                                        "http://",
-                                      ) &&
-                                      !_hostController.text.startsWith(
-                                        "https://",
-                                      )) {
-                                    "域名必须以http://或者https://开头".toast();
-                                    return;
-                                  }
-                                  // 中文等非 ASCII 域名转成 punycode，否则无法解析
-                                  final String normalizedHost =
-                                      normalizeUrlHost(_hostController.text);
-                                  if (normalizedHost != _hostController.text) {
-                                    _hostController.text = normalizedHost;
-                                  }
-                                  SingleAccountPageState.of(context)
-                                      ?.registerHttp(normalizedHost);
-                                  SingleAccountPageState.ofHttp(context)
-                                          ?.pushedLoginPage =
-                                      false;
-                                  Utils.hideKeyBoard(context);
-                                  if (loginByUserName()) {
-                                    login(
-                                      _userNameController.text,
-                                      _passwordController.text,
-                                    );
-                                  } else {
-                                    login(
-                                      _cIdController.text,
-                                      _cSecretController.text,
-                                    );
-                                  }
-                                },
-                              );
-                            },
+                        child: CupertinoButton(
+                          padding: const EdgeInsets.only(left: 8),
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                          child: Icon(
+                            CupertinoIcons.chevron_back,
+                            color: primary,
+                            size: 26,
                           ),
                         ),
                       ),
                     ),
                   ),
-                ),
-                const SizedBox(height: 30),
-                (getIt<MultiAccountUserInfoViewModel>().historyAccounts.isEmpty)
-                    ? const SizedBox.shrink()
-                    : SafeArea(
-                        top: false,
-                        child: SizedBox(
-                          width: MediaQuery.of(context).size.width,
-                          child: Center(
-                            child: Material(
-                              color: Colors.transparent,
-                              child: PopupMenuButton<UserInfoBean>(
-                                onSelected: (UserInfoBean result) {
-                                  selected(result);
-                                },
-                                itemBuilder: (BuildContext context) =>
-                                    <PopupMenuEntry<UserInfoBean>>[
-                                      ...getIt<MultiAccountUserInfoViewModel>()
-                                          .historyAccounts
-                                          .map(
-                                            (e) => PopupMenuItem<UserInfoBean>(
-                                              value: e,
-                                              child: buildCell(context, e),
-                                            ),
+                  const SizedBox(height: 8),
+                  // Logo + 标题（点击切换账号/VIP，长按提示品牌）
+                  GestureDetector(
+                    behavior: HitTestBehavior.opaque,
+                    onTap: () {
+                      if (SpUtil.getInt(spVIP, defValue: typeNormal) ==
+                          typeNormal) {
+                        Navigator.of(context).push(
+                          CupertinoPageRoute(
+                            builder: (context) =>
+                                const InAppPurchasePage(fromDirectly: true),
+                          ),
+                        );
+                        return;
+                      } else {
+                        if (SpUtil.getBool(spSingleInstance, defValue: false)) {
+                          Navigator.pop(context);
+                          return;
+                        }
+                        Navigator.of(context).push(
+                          PageRouteBuilder(
+                            pageBuilder: (context, animation1, animation2) =>
+                                const ChangeAccountPage(),
+                            transitionDuration: Duration.zero,
+                            reverseTransitionDuration: Duration.zero,
+                          ),
+                        );
+                      }
+                    },
+                    child: Column(
+                      children: [
+                        GestureDetector(
+                          onLongPress: () {
+                            "青龙客户端".toast();
+                          },
+                          child: Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(20),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: primary.withValues(
+                                    alpha: dark ? 0.15 : 0.22,
+                                  ),
+                                  blurRadius: 24,
+                                  offset: const Offset(0, 8),
+                                ),
+                              ],
+                            ),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(20),
+                              child: const AppLogo(height: 72),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                        Text(
+                          "账号登录",
+                          style: TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                            color: themeColor.title2Color(),
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          "登录你的青龙面板，随时管理定时任务",
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: themeColor.descColor(),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 32),
+                  // 表单卡片：图标输入行 + 细分隔线
+                  Container(
+                    margin: EdgeInsets.symmetric(horizontal: hPad),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: themeColor.settingBgColor(),
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(
+                        color: dark
+                            ? const Color(0xFF2E2E31)
+                            : const Color(0xFFE6E8EC),
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: dark
+                              ? const Color(0x33000000)
+                              : const Color(0x0F000000),
+                          blurRadius: 16,
+                          offset: const Offset(0, 6),
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      children: [
+                        _buildField(
+                          icon: CupertinoIcons.globe,
+                          hint: "面板地址，如 http://1.1.1.1:5700",
+                          controller: _hostController,
+                        ),
+                        _fieldDivider(dark),
+                        _buildField(
+                          icon: CupertinoIcons.person,
+                          hint: "请输入账户",
+                          controller: _userNameController,
+                        ),
+                        _fieldDivider(dark),
+                        _buildField(
+                          icon: CupertinoIcons.lock,
+                          hint: "请输入密码",
+                          controller: _passwordController,
+                          obscure: true,
+                        ),
+                        _fieldDivider(dark),
+                        _buildField(
+                          icon: CupertinoIcons.tag,
+                          hint: "别名（选填，仅用于展示）",
+                          controller: _aliasController,
+                          formatters: [LengthLimitingTextInputFormatter(10)],
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  // 记住密码
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: hPad),
+                    child: Row(
+                      children: [
+                        SizedBox(
+                          width: 22,
+                          height: 22,
+                          child: Checkbox(
+                            value: rememberPassword,
+                            onChanged: (checked) {
+                              rememberPassword = checked ?? false;
+                              setState(() {});
+                            },
+                          ),
+                        ),
+                        const SizedBox(width: 6),
+                        GestureDetector(
+                          onTap: () {
+                            rememberPassword = !rememberPassword;
+                            setState(() {});
+                          },
+                          child: Text(
+                            "记住密码",
+                            style: TextStyle(
+                              fontSize: 13,
+                              color: themeColor.descColor(),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 18),
+                  // 登录按钮
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: hPad),
+                    child: ShakeWidget(
+                      key: loginKey,
+                      child: IgnorePointer(
+                        ignoring: !canClickLoginBtn(),
+                        child: GestureDetector(
+                          onTap: () async {
+                            if (!_hostController.text.startsWith("http://") &&
+                                !_hostController.text.startsWith("https://")) {
+                              "域名必须以http://或者https://开头".toast();
+                              return;
+                            }
+                            // 中文等非 ASCII 域名转成 punycode，否则无法解析
+                            final String normalizedHost = normalizeUrlHost(
+                              _hostController.text,
+                            );
+                            if (normalizedHost != _hostController.text) {
+                              _hostController.text = normalizedHost;
+                            }
+                            SingleAccountPageState.of(context)
+                                ?.registerHttp(normalizedHost);
+                            SingleAccountPageState.ofHttp(context)
+                                    ?.pushedLoginPage =
+                                false;
+                            Utils.hideKeyBoard(context);
+                            if (loginByUserName()) {
+                              login(
+                                _userNameController.text,
+                                _passwordController.text,
+                              );
+                            } else {
+                              login(
+                                _cIdController.text,
+                                _cSecretController.text,
+                              );
+                            }
+                          },
+                          child: Container(
+                            height: 50,
+                            alignment: Alignment.center,
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                begin: Alignment.centerLeft,
+                                end: Alignment.centerRight,
+                                stops: const [0.0, 1.0],
+                                colors: canClickLoginBtn()
+                                    ? const [
+                                        Color(0xff5DD16F),
+                                        Color(0xff089556),
+                                      ]
+                                    : [
+                                        const Color(0xff5DD16F)
+                                            .withValues(alpha: 0.5),
+                                        const Color(0xff089556)
+                                            .withValues(alpha: 0.5),
+                                      ],
+                              ),
+                              borderRadius: BorderRadius.circular(12),
+                              boxShadow: canClickLoginBtn()
+                                  ? [
+                                      BoxShadow(
+                                        color: const Color(0xff089556)
+                                            .withValues(alpha: 0.3),
+                                        blurRadius: 12,
+                                        offset: const Offset(0, 6),
+                                      ),
+                                    ]
+                                  : null,
+                            ),
+                            child: isLoading
+                                ? const LoadingWidget(color: Colors.white)
+                                : const Text(
+                                    "登 录",
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 18),
+                  // 历史账号
+                  (getIt<MultiAccountUserInfoViewModel>()
+                          .historyAccounts
+                          .isEmpty)
+                      ? const SizedBox(height: 24)
+                      : Center(
+                          child: Material(
+                            color: Colors.transparent,
+                            child: PopupMenuButton<UserInfoBean>(
+                              onSelected: (UserInfoBean result) {
+                                selected(result);
+                              },
+                              itemBuilder: (BuildContext context) =>
+                                  <PopupMenuEntry<UserInfoBean>>[
+                                    ...getIt<MultiAccountUserInfoViewModel>()
+                                        .historyAccounts
+                                        .map(
+                                          (e) => PopupMenuItem<UserInfoBean>(
+                                            value: e,
+                                            child: buildCell(context, e),
                                           ),
-                                    ],
+                                        ),
+                                  ],
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 14,
+                                  vertical: 8,
+                                ),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(20),
+                                  border: Border.all(
+                                    color: primary.withValues(alpha: 0.35),
+                                  ),
+                                ),
                                 child: Row(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
@@ -486,12 +432,12 @@ class LoginPageState extends ConsumerState<LoginPage> {
                                       fit: BoxFit.cover,
                                       width: 16,
                                     ),
-                                    const SizedBox(width: 5),
-                                    const Text(
+                                    const SizedBox(width: 6),
+                                    Text(
                                       "历史账号",
                                       style: TextStyle(
-                                        color: Color(0xff555555),
-                                        fontSize: 14,
+                                        color: primary,
+                                        fontSize: 13,
                                       ),
                                     ),
                                   ],
@@ -500,12 +446,64 @@ class LoginPageState extends ConsumerState<LoginPage> {
                             ),
                           ),
                         ),
-                      ),
-              ],
+                  const SizedBox(height: 24),
+                ],
+              ),
             ),
           ),
         ),
       ),
+    );
+  }
+
+  /// 登录表单的单个输入行：图标 + 无边框输入框
+  Widget _buildField({
+    required IconData icon,
+    required String hint,
+    required TextEditingController controller,
+    bool obscure = false,
+    List<TextInputFormatter>? formatters,
+  }) {
+    final ThemeColors themeColor = ref.watch(themeProvider).themeColor;
+    return Row(
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(left: 8, right: 12),
+          child: Icon(icon, size: 19, color: themeColor.descColor()),
+        ),
+        Expanded(
+          child: TextField(
+            controller: controller,
+            obscureText: obscure,
+            inputFormatters: formatters,
+            onChanged: (_) {
+              setState(() {});
+            },
+            style: TextStyle(fontSize: 15, color: themeColor.titleColor()),
+            decoration: InputDecoration(
+              border: InputBorder.none,
+              enabledBorder: InputBorder.none,
+              focusedBorder: InputBorder.none,
+              isDense: true,
+              contentPadding: const EdgeInsets.symmetric(vertical: 14),
+              hintText: hint,
+              hintStyle: TextStyle(fontSize: 14, color: themeColor.hintColor()),
+            ),
+            autofocus: false,
+          ),
+        ),
+      ],
+    );
+  }
+
+  /// 表单行之间的细分隔线
+  Widget _fieldDivider(bool dark) {
+    return Divider(
+      height: 1,
+      thickness: 0.5,
+      indent: 39,
+      endIndent: 8,
+      color: dark ? const Color(0xFF2E2E31) : const Color(0xFFECEEF1),
     );
   }
 
