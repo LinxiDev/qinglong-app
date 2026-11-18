@@ -5,20 +5,20 @@ void main() {
   group('normalizeUrlHost（IDN → punycode）', () {
     test('中文域名带 http 前缀', () {
       expect(
-        normalizeUrlHost('http://www.林夕.eu.org'),
-        'http://www.xn--6rs905a.eu.org',
+        normalizeUrlHost('http://www.中文.com'),
+        'http://www.xn--fiq228c.com',
       );
     });
 
     test('中文域名带端口与路径', () {
       expect(
-        normalizeUrlHost('http://青龙.林夕.eu.org:5700/path'),
-        'http://xn--fs5a06n.xn--6rs905a.eu.org:5700/path',
+        normalizeUrlHost('http://abc.中文.com:5700/path'),
+        'http://abc.xn--fiq228c.com:5700/path',
       );
     });
 
     test('纯中文域名（无协议）', () {
-      expect(normalizeUrlHost('林夕.eu.org'), 'xn--6rs905a.eu.org');
+      expect(normalizeUrlHost('中文.com'), 'xn--fiq228c.com');
     });
 
     test('纯 ASCII 域名保持不变', () {
@@ -30,8 +30,8 @@ void main() {
 
     test('已转换的 punycode 幂等', () {
       expect(
-        normalizeUrlHost('http://www.xn--6rs905a.eu.org'),
-        'http://www.xn--6rs905a.eu.org',
+        normalizeUrlHost('http://www.xn--fiq228c.com'),
+        'http://www.xn--fiq228c.com',
       );
     });
   });
