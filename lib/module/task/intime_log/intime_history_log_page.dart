@@ -65,6 +65,7 @@ class InTimeHistoryLogPageState extends State<InTimeHistoryLogPage>
               showMoreOperate(context, [
                 CupertinoSheer(
                   title: "分享",
+                  icon: CupertinoIcons.share,
                   onTap: () async {
                     SharePlus.instance.share(ShareParams(text: content ?? ""));
                   },
@@ -72,6 +73,8 @@ class InTimeHistoryLogPageState extends State<InTimeHistoryLogPage>
                 addDivider(),
                 CupertinoSheer(
                   title: "删除",
+                  icon: CupertinoIcons.delete,
+                  destructive: true,
                   onTap: () {
                     HapticFeedback.mediumImpact();
                     deleteFold(widget.title, widget.path);

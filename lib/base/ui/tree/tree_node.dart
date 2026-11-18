@@ -164,15 +164,44 @@ class TreeNodeState extends ConsumerState<TreeNode>
       child: widget.node.isParent
           ? Icon(
               widget.node.expanded
-                  ? CupertinoIcons.folder_badge_minus
-                  : CupertinoIcons.folder_badge_plus,
+                  ? CupertinoIcons.folder_fill
+                  : CupertinoIcons.folder,
               size: theme.iconTheme.size,
               color: isSelected
                   ? ref.watch(themeProvider).primaryColor
                   : ref.watch(themeProvider).themeColor.titleColor(),
             )
-          : const SizedBox.shrink(),
+          : Icon(
+              _fileIcon(widget.node.key),
+              size: theme.iconTheme.size,
+              color: isSelected
+                  ? ref.watch(themeProvider).primaryColor
+                  : ref.watch(themeProvider).themeColor.titleColor(),
+            ),
     );
+  }
+
+  /// 按扩展名返回文件类型图标
+  IconData _fileIcon(String key) {
+    final String lower = key.toLowerCase();
+    if (lower.endsWith('.js')) {
+      return CupertinoIcons.link; // JS 脚本
+    }
+    if (lower.endsWith('.py')) {
+      return CupertinoIcons.chevron_left_slash_chevron_right;
+    }
+    if (lower.endsWith('.sh')) {
+      return CupertinoIcons.chevron_left_slash_chevron_right;
+    }
+    if (lower.endsWith('.json') || lower.endsWith('.yaml')) {
+      return CupertinoIcons.doc_plaintext;
+    }
+    if (lower.endsWith('.png') ||
+        lower.endsWith('.jpg') ||
+        lower.endsWith('.gif')) {
+      return CupertinoIcons.photo;
+    }
+    return CupertinoIcons.doc_text;
   }
 
   Widget _buildNodeLabel() {

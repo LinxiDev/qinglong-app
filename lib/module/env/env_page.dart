@@ -640,6 +640,7 @@ class EnvItemCell extends StatelessWidget {
                       addDivider(),
                       CupertinoSheer(
                         title: "重命名变量名",
+                        icon: CupertinoIcons.pencil,
                         onTap: () => renameEnvName(context, ref),
                       ),
                     ]);

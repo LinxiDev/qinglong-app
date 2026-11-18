@@ -835,13 +835,18 @@ class OtherPageState extends ConsumerState<OtherPage>
         context: context,
         builder: (context) => CupertinoAlertDialog(
           title: const Text(
-            "日志删除频率:",
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400),
+            "日志设置",
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
           ),
           content: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisSize: MainAxisSize.min,
             children: [
+              const SizedBox(height: 4),
+              Text(
+                "超过保留天数的运行日志将被自动删除",
+                style: TextStyle(fontSize: 13, color: Color(0xff8A8F99)),
+              ),
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 10),
                 child: Row(
@@ -858,7 +863,15 @@ class OtherPageState extends ConsumerState<OtherPage>
                         controller: controller,
                         keyboardType: TextInputType.number,
                         decoration: InputDecoration(
-                          hintText: "",
+                          isDense: true,
+                          filled: true,
+                          fillColor: ref
+                              .watch(themeProvider)
+                              .themeColor
+                              .settingBgColor(),
+                          contentPadding: const EdgeInsets.symmetric(
+                            vertical: 10,
+                          ),
                           border: OutlineInputBorder(
                             borderSide: BorderSide(
                               color: ref
@@ -867,7 +880,7 @@ class OtherPageState extends ConsumerState<OtherPage>
                                   .title2Color(),
                               width: 1,
                             ),
-                            borderRadius: BorderRadius.circular(4),
+                            borderRadius: BorderRadius.circular(8),
                           ),
                           enabledBorder: OutlineInputBorder(
                             borderSide: BorderSide(
@@ -877,7 +890,7 @@ class OtherPageState extends ConsumerState<OtherPage>
                                   .title2Color(),
                               width: 1,
                             ),
-                            borderRadius: BorderRadius.circular(4),
+                            borderRadius: BorderRadius.circular(8),
                           ),
                         ),
                         autofocus: false,

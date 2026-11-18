@@ -72,8 +72,13 @@ class _SettingPageState extends ConsumerState<SettingPage> {
                       color: ref
                           .watch(themeProvider)
                           .themeColor
-                          .settingBordorColor(),
-                      borderRadius: BorderRadius.circular(10),
+                          .settingBgColor(),
+                      borderRadius: BorderRadius.circular(14),
+                      border: Border.all(
+                        color: ref.watch(themeProvider).themeMode == modeDark
+                            ? const Color(0xFF2E2E31)
+                            : const Color(0xFFE6E8EC),
+                      ),
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -283,8 +288,13 @@ class _SettingPageState extends ConsumerState<SettingPage> {
             Container(
               margin: const EdgeInsets.symmetric(horizontal: 15),
               decoration: BoxDecoration(
-                color: ref.watch(themeProvider).themeColor.settingBordorColor(),
-                borderRadius: BorderRadius.circular(10),
+                color: ref.watch(themeProvider).themeColor.settingBgColor(),
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(
+                  color: ref.watch(themeProvider).themeMode == modeDark
+                      ? const Color(0xFF2E2E31)
+                      : const Color(0xFFE6E8EC),
+                ),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,

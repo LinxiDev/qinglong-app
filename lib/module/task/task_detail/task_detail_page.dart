@@ -373,6 +373,9 @@ class TaskDetailPageState extends ConsumerState<TaskDetailPage>
               showMoreOperate(context, [
                 CupertinoSheer(
                   title: widget.taskBean.status! == 1 ? "运行" : "停止运行",
+                  icon: widget.taskBean.status! == 1
+                      ? CupertinoIcons.play_arrow_solid
+                      : CupertinoIcons.stop_fill,
                   onTap: () async {
                     if (widget.taskBean.status! == 1) {
                       await startCron(context, ref);
@@ -384,6 +387,7 @@ class TaskDetailPageState extends ConsumerState<TaskDetailPage>
                 addDivider(),
                 CupertinoSheer(
                   title: "编辑",
+                  icon: CupertinoIcons.pencil,
                   onTap: () {
                     Navigator.of(context).push(
                       CupertinoPageRoute(
@@ -398,6 +402,7 @@ class TaskDetailPageState extends ConsumerState<TaskDetailPage>
                 addDivider(),
                 CupertinoSheer(
                   title: "运行实例",
+                  icon: CupertinoIcons.doc_on_doc,
                   onTap: () {
                     Navigator.of(context).push(
                       CupertinoPageRoute(
@@ -412,6 +417,9 @@ class TaskDetailPageState extends ConsumerState<TaskDetailPage>
                 addDivider(),
                 CupertinoSheer(
                   title: widget.taskBean.isDisabled! == 0 ? "禁用" : "启用",
+                  icon: widget.taskBean.isDisabled! == 0
+                      ? CupertinoIcons.eye_slash
+                      : CupertinoIcons.eye,
                   onTap: () {
                     enableTask();
                   },

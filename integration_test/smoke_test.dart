@@ -64,14 +64,18 @@ void main() {
 
   /// 把目标带回可视区：先回滚到顶部，再逐步下滚
   Future<void> ensureVisible(WidgetTester tester, Finder finder) async {
-    for (int i = 0; i < 4; i++) {
-      if (onScreen(tester, finder)) return;
-      final Size size = tester.getSize(find.byType(MaterialApp).first);
-      await tester.dragFrom(
-        Offset(size.width / 2, size.height * 0.62),
-        const Offset(0, 800),
-      );
-      await settle(tester, 1);
+    final bool exists = finder.evaluate().isNotEmpty;
+    if (exists) {
+      // 已构建但不在可视区（在上方）：先回滚到顶部
+      for (int i = 0; i < 4; i++) {
+        if (onScreen(tester, finder)) return;
+        final Size size = tester.getSize(find.byType(MaterialApp).first);
+        await tester.dragFrom(
+          Offset(size.width / 2, size.height * 0.62),
+          const Offset(0, 800),
+        );
+        await settle(tester, 1);
+      }
     }
     for (int i = 0; i < 12; i++) {
       if (onScreen(tester, finder)) return;
@@ -93,10 +97,12 @@ void main() {
   }
 
   Future<void> scrollDown(WidgetTester tester) async {
-    // 回到我的页后滚动位置会重置，这里用大步长确保能触达底部条目
-    final Finder scrollable = find.byType(Scrollable);
-    if (scrollable.evaluate().isEmpty) return;
-    await tester.drag(scrollable.first, const Offset(0, -600));
+    // 从页面中部发起拖拽，命中主列表；步长加大以触达底部条目
+    final Size size = tester.getSize(find.byType(MaterialApp).first);
+    await tester.dragFrom(
+      Offset(size.width / 2, size.height * 0.62),
+      const Offset(0, -600),
+    );
     await settle(tester, 1);
   }
 
@@ -158,6 +164,7 @@ void main() {
     if (find.text('账号登录').evaluate().isNotEmpty) {
       // ignore: avoid_print
       print('APP_SMOKE: 未登录（token 失效），仅验证登录页可渲染');
+      ErrorWidget.builder = originalErrorBuilder;
       return;
     }
 
@@ -180,6 +187,10 @@ void main() {
     const List<String> pages = <String>[
       '任务日志',
       '登录日志',
+      '运行概览',
+      '通知日志',
+      '数据清理',
+      'IP黑名单',
       '应用设置',
       '通知设置',
       '修改密码',
@@ -189,10 +200,6 @@ void main() {
       '扫描依赖',
       '字体大小',
       '账号排序',
-      '运行概览',
-      '通知日志',
-      '数据清理',
-      'IP黑名单',
     ];
 
     for (final String page in pages) {

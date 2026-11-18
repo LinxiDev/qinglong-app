@@ -78,6 +78,7 @@ class ScriptDetailPageState extends ConsumerState<ScriptDetailPage>
     actions.addAll([
       CupertinoSheer(
         title: "添加到任务",
+        icon: CupertinoIcons.add_circled,
         onTap: () {
           if (content == null || content!.isEmpty) {
             "未获取到脚本内容,请稍候重试".toast();
@@ -107,6 +108,7 @@ class ScriptDetailPageState extends ConsumerState<ScriptDetailPage>
       addDivider(),
       CupertinoSheer(
         title: "运行脚本",
+        icon: CupertinoIcons.play_arrow_solid,
         onTap: () async {
           EasyLoading.show(status: "运行中");
           final response = await SingleAccountPageState.ofApi(context)
@@ -125,6 +127,7 @@ class ScriptDetailPageState extends ConsumerState<ScriptDetailPage>
       addDivider(),
       CupertinoSheer(
         title: "停止脚本",
+        icon: CupertinoIcons.stop_fill,
         onTap: () async {
           final response = await SingleAccountPageState.ofApi(context)
               .stopScript(widget.title, widget.path ?? "");
@@ -138,6 +141,7 @@ class ScriptDetailPageState extends ConsumerState<ScriptDetailPage>
       addDivider(),
       CupertinoSheer(
         title: "历史版本",
+        icon: CupertinoIcons.time,
         onTap: () {
           Navigator.of(context)
               .push(
@@ -158,6 +162,7 @@ class ScriptDetailPageState extends ConsumerState<ScriptDetailPage>
       addDivider(),
       CupertinoSheer(
         title: "编辑",
+        icon: CupertinoIcons.pencil,
         onTap: () {
           if (content == null || content!.isEmpty) {
             "未获取到脚本内容,请稍候重试".toast();
@@ -184,6 +189,7 @@ class ScriptDetailPageState extends ConsumerState<ScriptDetailPage>
       addDivider(),
       CupertinoSheer(
         title: "分享",
+        icon: CupertinoIcons.share,
         onTap: () {
           SharePlus.instance.share(ShareParams(text: content ?? ""));
         },
@@ -191,6 +197,7 @@ class ScriptDetailPageState extends ConsumerState<ScriptDetailPage>
       addDivider(),
       CupertinoSheer(
         title: "下载",
+        icon: CupertinoIcons.cloud_download,
         onTap: () async {
           try {
             String name = "${Random().nextInt(40000)}_${widget.title}";
@@ -204,6 +211,8 @@ class ScriptDetailPageState extends ConsumerState<ScriptDetailPage>
       addDivider(),
       CupertinoSheer(
         title: "删除",
+        icon: CupertinoIcons.delete,
+        destructive: true,
         onTap: () async {
           HapticFeedback.mediumImpact();
           showCupertinoDialog(

@@ -105,6 +105,7 @@ class ScriptPageState extends ConsumerState<ScriptPage>
                 showMoreOperate(context, [
                   CupertinoSheer(
                     title: "新增文件",
+                    icon: CupertinoIcons.doc_text,
                     onTap: () {
                       addScript();
                     },
@@ -112,6 +113,7 @@ class ScriptPageState extends ConsumerState<ScriptPage>
                   addDivider(),
                   CupertinoSheer(
                     title: "新增文件夹",
+                    icon: CupertinoIcons.folder_badge_plus,
                     onTap: () {
                       SystemBean? systemBean;
                       try {

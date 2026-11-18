@@ -38,7 +38,17 @@ class TaskDetailPageState extends ConsumerState<AppKeyDetailDetailPage> {
         title: widget.bean["name"] ?? "",
       ),
       body: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+        margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 10),
+        decoration: BoxDecoration(
+          color: ref.watch(themeProvider).themeColor.settingBgColor(),
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(
+            color: ref.watch(themeProvider).themeMode == modeDark
+                ? const Color(0xFF2E2E31)
+                : const Color(0xFFE6E8EC),
+          ),
+        ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,

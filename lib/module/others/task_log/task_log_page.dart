@@ -8,6 +8,7 @@ import 'package:qinglong_app/base/ql_app_bar.dart';
 import 'package:qinglong_app/base/single_account_page.dart';
 import 'package:qinglong_app/base/theme.dart';
 import 'package:qinglong_app/base/ui/lazy_load_state.dart';
+import 'package:qinglong_app/base/ui/empty_widget.dart';
 import 'package:qinglong_app/base/ui/loading_widget.dart';
 import 'package:qinglong_app/base/ui/search_cell.dart';
 import 'package:qinglong_app/module/others/task_log/task_log_bean.dart';
@@ -29,6 +30,7 @@ class TaskLogPage extends ConsumerStatefulWidget {
 class TaskLogPageState extends ConsumerState<TaskLogPage>
     with LazyLoadState<TaskLogPage> {
   List<TaskLogBean> list = [];
+  bool loaded = false;
 
   TextEditingController searchText = TextEditingController();
 
@@ -103,7 +105,9 @@ class TaskLogPageState extends ConsumerState<TaskLogPage>
           title: "任务日志",
         ),
         body: list.isEmpty
-            ? const Center(child: LoadingWidget())
+            ? (loaded
+                  ? const Center(child: EmptyWidget())
+                  : const Center(child: LoadingWidget()))
             : SlidableAutoCloseBehavior(
                 child: ListView.builder(
                   padding: const EdgeInsets.only(bottom: 50),
@@ -172,79 +176,120 @@ class TaskLogPageState extends ConsumerState<TaskLogPage>
                             ),
                           ],
                         ),
-                        child: ExpansionTile(
-                          title: Text(
-                            item.name ?? "",
-                            style: TextStyle(
-                              color: ref
-                                  .watch(themeProvider)
-                                  .themeColor
-                                  .titleColor(),
-                              fontSize: 16,
+                        child: Container(
+                          margin: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 5,
+                          ),
+                          decoration: BoxDecoration(
+                            color: ref
+                                .watch(themeProvider)
+                                .themeColor
+                                .settingBgColor(),
+                            borderRadius: BorderRadius.circular(14),
+                            border: Border.all(
+                              color:
+                                  ref.watch(themeProvider).themeMode == modeDark
+                                  ? const Color(0xFF2E2E31)
+                                  : const Color(0xFFE6E8EC),
                             ),
                           ),
-                          children: (item.files?.isNotEmpty ?? false)
-                              ? item.files!
-                                    .map(
-                                      (e) => ListTile(
-                                        onTap: () {
-                                          Navigator.of(context).push(
-                                            CupertinoPageRoute(
-                                              builder: (context) =>
-                                                  InTimeHistoryLogPage(
-                                                    path: item.name ?? "",
-                                                    title: e,
+                          child: Material(
+                            color: Colors.transparent,
+                            child: Theme(
+                              data: Theme.of(context)
+                                  .copyWith(dividerColor: Colors.transparent),
+                              child: ExpansionTile(
+                                leading: Icon(
+                                  CupertinoIcons.folder,
+                                  size: 20,
+                                  color: ref.watch(themeProvider).primaryColor,
+                                ),
+                                iconColor: ref
+                                    .watch(themeProvider)
+                                    .primaryColor,
+                                collapsedIconColor: ref
+                                    .watch(themeProvider)
+                                    .primaryColor,
+                                title: Text(
+                                  item.name ?? "",
+                                  style: TextStyle(
+                                    color: ref
+                                        .watch(themeProvider)
+                                        .themeColor
+                                        .titleColor(),
+                                    fontSize: 15.5,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                                children: (item.files?.isNotEmpty ?? false)
+                                    ? item.files!
+                                          .map(
+                                            (e) => ListTile(
+                                              onTap: () {
+                                                Navigator.of(context).push(
+                                                  CupertinoPageRoute(
+                                                    builder: (context) =>
+                                                        InTimeHistoryLogPage(
+                                                          path: item.name ?? "",
+                                                          title: e,
+                                                        ),
                                                   ),
-                                            ),
-                                          );
-                                        },
-                                        title: Text(
-                                          e,
-                                          style: TextStyle(
-                                            color: ref
-                                                .watch(themeProvider)
-                                                .themeColor
-                                                .titleColor(),
-                                            fontSize: 14,
-                                          ),
-                                        ),
-                                      ),
-                                    )
-                                    .toList()
-                              : (item.children ?? [])
-                                    .map(
-                                      (e) => ListTile(
-                                        onTap: () {
-                                          Navigator.of(context)
-                                              .push(
-                                                CupertinoPageRoute(
-                                                  builder: (context) =>
-                                                      InTimeHistoryLogPage(
-                                                        path: item.name ?? "",
-                                                        title: e.title ?? "",
-                                                      ),
+                                                );
+                                              },
+                                              title: Text(
+                                                e,
+                                                style: TextStyle(
+                                                  color: ref
+                                                      .watch(themeProvider)
+                                                      .themeColor
+                                                      .titleColor(),
+                                                  fontSize: 14,
                                                 ),
-                                              )
-                                              .then((value) {
-                                                if (value != null &&
-                                                    value == true) {
-                                                  loadData();
-                                                }
-                                              });
-                                        },
-                                        title: Text(
-                                          e.title ?? "",
-                                          style: TextStyle(
-                                            color: ref
-                                                .watch(themeProvider)
-                                                .themeColor
-                                                .titleColor(),
-                                            fontSize: 14,
-                                          ),
-                                        ),
-                                      ),
-                                    )
-                                    .toList(),
+                                              ),
+                                            ),
+                                          )
+                                          .toList()
+                                    : (item.children ?? [])
+                                          .map(
+                                            (e) => ListTile(
+                                              onTap: () {
+                                                Navigator.of(context)
+                                                    .push(
+                                                      CupertinoPageRoute(
+                                                        builder: (context) =>
+                                                            InTimeHistoryLogPage(
+                                                              path:
+                                                                  item.name ??
+                                                                  "",
+                                                              title:
+                                                                  e.title ?? "",
+                                                            ),
+                                                      ),
+                                                    )
+                                                    .then((value) {
+                                                      if (value != null &&
+                                                          value == true) {
+                                                        loadData();
+                                                      }
+                                                    });
+                                              },
+                                              title: Text(
+                                                e.title ?? "",
+                                                style: TextStyle(
+                                                  color: ref
+                                                      .watch(themeProvider)
+                                                      .themeColor
+                                                      .titleColor(),
+                                                  fontSize: 14,
+                                                ),
+                                              ),
+                                            ),
+                                          )
+                                          .toList(),
+                              ),
+                            ),
+                          ),
                         ),
                       );
                     } else {
@@ -298,30 +343,58 @@ class TaskLogPageState extends ConsumerState<TaskLogPage>
                             ),
                           ],
                         ),
-                        child: ListTile(
-                          onTap: () {
-                            if (item.isDir ?? false) {
-                              "该文件夹为空".toast();
-                              return;
-                            }
+                        child: Container(
+                          margin: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 5,
+                          ),
+                          decoration: BoxDecoration(
+                            color: ref
+                                .watch(themeProvider)
+                                .themeColor
+                                .settingBgColor(),
+                            borderRadius: BorderRadius.circular(14),
+                            border: Border.all(
+                              color:
+                                  ref.watch(themeProvider).themeMode == modeDark
+                                  ? const Color(0xFF2E2E31)
+                                  : const Color(0xFFE6E8EC),
+                            ),
+                          ),
+                          child: Material(
+                            color: Colors.transparent,
+                            child: ListTile(
+                              onTap: () {
+                                if (item.isDir ?? false) {
+                                  "该文件夹为空".toast();
+                                  return;
+                                }
 
-                            Navigator.of(context).push(
-                              CupertinoPageRoute(
-                                builder: (context) => InTimeHistoryLogPage(
-                                  path: "",
-                                  title: item.name ?? "",
+                                Navigator.of(context).push(
+                                  CupertinoPageRoute(
+                                    builder: (context) => InTimeHistoryLogPage(
+                                      path: "",
+                                      title: item.name ?? "",
+                                    ),
+                                  ),
+                                );
+                              },
+                              leading: Icon(
+                                CupertinoIcons.doc_text,
+                                size: 20,
+                                color: ref.watch(themeProvider).primaryColor,
+                              ),
+                              title: Text(
+                                item.name ?? "",
+                                style: TextStyle(
+                                  color: ref
+                                      .watch(themeProvider)
+                                      .themeColor
+                                      .titleColor(),
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w600,
                                 ),
                               ),
-                            );
-                          },
-                          title: Text(
-                            item.name ?? "",
-                            style: TextStyle(
-                              color: ref
-                                  .watch(themeProvider)
-                                  .themeColor
-                                  .titleColor(),
-                              fontSize: 16,
                             ),
                           ),
                         ),
@@ -345,14 +418,17 @@ class TaskLogPageState extends ConsumerState<TaskLogPage>
       }
       list.clear();
       list.addAll(response.bean ?? []);
+      loaded = true;
       if (widget.searchText != null) {
         WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
           searchText.text = widget.searchText!;
         });
       }
       setState(() {});
+      loaded = true;
     } else {
       response.message?.toast();
+      loaded = true;
     }
   }
 

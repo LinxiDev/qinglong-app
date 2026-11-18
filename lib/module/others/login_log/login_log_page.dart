@@ -8,6 +8,7 @@ import 'package:qinglong_app/base/single_account_page.dart';
 import 'package:qinglong_app/base/theme.dart';
 import 'package:qinglong_app/base/ui/enable_widget.dart';
 import 'package:qinglong_app/base/ui/lazy_load_state.dart';
+import 'package:qinglong_app/base/ui/empty_widget.dart';
 import 'package:qinglong_app/base/ui/loading_widget.dart';
 import 'package:qinglong_app/utils/extension.dart';
 import 'package:qinglong_app/utils/utils.dart';
@@ -24,6 +25,7 @@ class LoginLogPage extends ConsumerStatefulWidget {
 class LoginLogPageState extends ConsumerState<LoginLogPage>
     with LazyLoadState<LoginLogPage> {
   List<LoginLogBean> list = [];
+  bool _loaded = false;
 
   @override
   Widget build(BuildContext context) {
@@ -36,89 +38,109 @@ class LoginLogPageState extends ConsumerState<LoginLogPage>
         title: "登录日志",
       ),
       body: list.isEmpty
-          ? const Center(child: LoadingWidget())
+          ? (_loaded
+                ? const Center(child: EmptyWidget())
+                : const Center(child: LoadingWidget()))
           : ListView.separated(
               primary: true,
               itemBuilder: (context, index) {
                 LoginLogBean item = list[index];
 
-                return Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(width: 15),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const SizedBox(height: 10),
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            ConstrainedBox(
-                              constraints: BoxConstraints.loose(
-                                Size.fromWidth(
-                                  MediaQuery.of(context).size.width / 1.8,
+                return Container(
+                  margin: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 5,
+                  ),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 10,
+                  ),
+                  decoration: BoxDecoration(
+                    color: ref.watch(themeProvider).themeColor.settingBgColor(),
+                    borderRadius: BorderRadius.circular(14),
+                    border: Border.all(
+                      color: ref.watch(themeProvider).themeMode == modeDark
+                          ? const Color(0xFF2E2E31)
+                          : const Color(0xFFE6E8EC),
+                    ),
+                  ),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const SizedBox(height: 2),
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              ConstrainedBox(
+                                constraints: BoxConstraints.loose(
+                                  Size.fromWidth(
+                                    MediaQuery.of(context).size.width / 1.8,
+                                  ),
+                                ),
+                                child: Text(
+                                  "${item.address}",
+                                  style: TextStyle(
+                                    color: ref
+                                        .watch(themeProvider)
+                                        .themeColor
+                                        .titleColor(),
+                                    fontSize: 14,
+                                  ),
                                 ),
                               ),
-                              child: Text(
-                                "${item.address}",
-                                style: TextStyle(
-                                  color: ref
-                                      .watch(themeProvider)
-                                      .themeColor
-                                      .titleColor(),
-                                  fontSize: 14,
+                              const SizedBox(width: 5),
+                              Padding(
+                                padding: const EdgeInsets.only(top: 2),
+                                child: StatusWidget(
+                                  title: item.status == 0 ? "成功" : "失败",
+                                  color: item.status == 0
+                                      ? ref.watch(themeProvider).primaryColor
+                                      : const Color(0xffFB5858),
                                 ),
                               ),
+                            ],
+                          ),
+                          const SizedBox(height: 10),
+                          SelectableText(
+                            "${item.ip}",
+                            selectionWidthStyle: BoxWidthStyle.max,
+                            selectionHeightStyle: BoxHeightStyle.max,
+                            style: TextStyle(
+                              color: ref
+                                  .watch(themeProvider)
+                                  .themeColor
+                                  .descColor(),
+                              fontSize: 14,
                             ),
-                            const SizedBox(width: 5),
-                            Padding(
-                              padding: const EdgeInsets.only(top: 2),
-                              child: StatusWidget(
-                                title: item.status == 0 ? "成功" : "失败",
-                                color: item.status == 0
-                                    ? ref.watch(themeProvider).primaryColor
-                                    : const Color(0xffFB5858),
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 10),
-                        SelectableText(
-                          "${item.ip}",
-                          selectionWidthStyle: BoxWidthStyle.max,
-                          selectionHeightStyle: BoxHeightStyle.max,
+                          ),
+                          const SizedBox(height: 10),
+                        ],
+                      ),
+                      const Spacer(),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 10),
+                        child: Text(
+                          Utils.formatMessageTime(item.timestamp ?? 0),
                           style: TextStyle(
+                            fontSize: 12,
                             color: ref
                                 .watch(themeProvider)
                                 .themeColor
                                 .descColor(),
-                            fontSize: 14,
                           ),
                         ),
-                        const SizedBox(height: 10),
-                      ],
-                    ),
-                    const Spacer(),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 10),
-                      child: Text(
-                        Utils.formatMessageTime(item.timestamp ?? 0),
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: ref
-                              .watch(themeProvider)
-                              .themeColor
-                              .descColor(),
-                        ),
                       ),
-                    ),
-                    const SizedBox(width: 15),
-                  ],
+                      const SizedBox(width: 4),
+                    ],
+                  ),
                 );
               },
               itemCount: list.length,
               separatorBuilder: (BuildContext context, int index) {
-                return const Divider(indent: 15, height: 1);
+                return const SizedBox.shrink();
               },
             ),
     );
@@ -134,9 +156,11 @@ class LoginLogPageState extends ConsumerState<LoginLogPage>
       }
       list.clear();
       list.addAll(response.bean ?? []);
+      _loaded = true;
       setState(() {});
     } else {
       response.message?.toast();
+      _loaded = true;
     }
   }
 

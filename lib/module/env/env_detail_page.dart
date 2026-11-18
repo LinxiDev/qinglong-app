@@ -39,8 +39,17 @@ class TaskDetailPageState extends ConsumerState<EnvDetailPage> {
         child: Column(
           children: [
             Container(
-              margin: const EdgeInsets.only(left: 15, bottom: 15),
-              padding: const EdgeInsets.only(top: 10, bottom: 10),
+              margin: const EdgeInsets.all(15),
+              padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 4),
+              decoration: BoxDecoration(
+                color: ref.watch(themeProvider).themeColor.settingBgColor(),
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(
+                  color: ref.watch(themeProvider).themeMode == modeDark
+                      ? const Color(0xFF2E2E31)
+                      : const Color(0xFFE6E8EC),
+                ),
+              ),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -228,7 +237,17 @@ class EnvDetailCell extends ConsumerWidget {
             ],
           ),
         ),
-        hideDivide ? const SizedBox.shrink() : const Divider(indent: 15),
+        hideDivide
+            ? const SizedBox.shrink()
+            : Divider(
+                indent: 15,
+                endIndent: 15,
+                height: 0.5,
+                thickness: 0.5,
+                color: ref.watch(themeProvider).themeMode == modeDark
+                    ? const Color(0xFF2E2E31)
+                    : const Color(0xFFECEEF1),
+              ),
       ],
     );
   }

@@ -78,6 +78,7 @@ class _ConfigDetailPageState extends ConsumerState<ConfigDetailPage>
               showMoreOperate(context, [
                 CupertinoSheer(
                   title: "编辑",
+                  icon: CupertinoIcons.pencil,
                   onTap: () async {
                     Navigator.of(context)
                         .pushNamed(
@@ -99,6 +100,7 @@ class _ConfigDetailPageState extends ConsumerState<ConfigDetailPage>
                 addDivider(),
                 CupertinoSheer(
                   title: "分享",
+                  icon: CupertinoIcons.share,
                   onTap: () {
                     SharePlus.instance.share(
                       ShareParams(text: sourceContent ?? ""),

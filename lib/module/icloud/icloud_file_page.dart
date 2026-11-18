@@ -1,43 +1,86 @@
+import 'package:cupertino_ui/cupertino_ui.dart';
 import 'package:material_ui/material_ui.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:icloud_storage_plus/icloud_storage.dart';
 import 'package:qinglong_app/base/ql_app_bar.dart';
+import 'package:qinglong_app/base/theme.dart';
+import 'package:qinglong_app/base/ui/empty_widget.dart';
+import 'package:qinglong_app/base/ui/loading_widget.dart';
 import 'package:qinglong_app/utils/extension.dart';
 import 'package:qinglong_app/utils/icloud_utils.dart';
 
-class IcloudFilePage extends StatefulWidget {
+class IcloudFilePage extends ConsumerStatefulWidget {
   const IcloudFilePage({super.key});
 
   @override
-  IcloudFilePageState createState() => IcloudFilePageState();
+  ConsumerState<IcloudFilePage> createState() => IcloudFilePageState();
 }
 
-class IcloudFilePageState extends State<IcloudFilePage> {
+class IcloudFilePageState extends ConsumerState<IcloudFilePage> {
   List<ICloudFile> list = [];
   bool loading = true;
 
   @override
-  void initState() {
-    super.initState();
-    getFiles();
-  }
-
-  @override
   Widget build(BuildContext context) {
+    final bool dark = ref.watch(themeProvider).themeMode == modeDark;
+    final ThemeColors themeColor = ref.watch(themeProvider).themeColor;
+    final Color borderColor = dark
+        ? const Color(0xFF2E2E31)
+        : const Color(0xFFE6E8EC);
+
     return Scaffold(
+      backgroundColor: themeColor.bg2Color(),
       appBar: QlAppBar(title: "iCloud文件"),
       body: loading
-          ? const Center(child: CircularProgressIndicator())
+          ? const Center(child: LoadingWidget())
+          : list.isEmpty
+          ? const Center(child: EmptyWidget())
           : ListView.builder(
+              padding: const EdgeInsets.symmetric(vertical: 8),
               itemBuilder: (c, index) {
                 final file = list[index];
-                return ListTile(
-                  title: Text(
-                    file.relativePath,
-                    style: const TextStyle(fontSize: 16),
+                return Container(
+                  margin: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 5,
                   ),
-                  subtitle: file.isDirectory
-                      ? const Text("文件夹")
-                      : Text(formatSize(file.sizeInBytes)),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 10,
+                  ),
+                  decoration: BoxDecoration(
+                    color: themeColor.settingBgColor(),
+                    borderRadius: BorderRadius.circular(14),
+                    border: Border.all(color: borderColor),
+                  ),
+                  child: ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    dense: true,
+                    leading: Icon(
+                      file.isDirectory
+                          ? CupertinoIcons.folder
+                          : CupertinoIcons.doc_text,
+                      size: 22,
+                      color: ref.watch(themeProvider).primaryColor,
+                    ),
+                    title: Text(
+                      file.relativePath,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w600,
+                        color: themeColor.titleColor(),
+                      ),
+                    ),
+                    subtitle: Text(
+                      file.isDirectory ? "文件夹" : formatSize(file.sizeInBytes),
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: themeColor.descColor(),
+                      ),
+                    ),
+                  ),
                 );
               },
               itemCount: list.length,
