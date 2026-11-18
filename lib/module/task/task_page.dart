@@ -959,8 +959,8 @@ class _ListBodyState extends ConsumerState<ListBodyWidget>
                 false) ||
             (item.schedule?.contains(widget.searchText.toLowerCase()) ??
                 false)) {
-          // 卡片之间改用固定垂直间距，避免分隔线在圆角卡片间形成黑线
-          return const SizedBox(height: 8);
+          // 与环境变量列表一致：不加额外间隔，靠卡片自身 margin 形成间距
+          return const SizedBox.shrink();
         } else {
           return const SizedBox.shrink();
         }
