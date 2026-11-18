@@ -990,293 +990,311 @@ class TaskItemCell extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Slidable(
-      enabled: !editMode,
-      key: ValueKey(bean.sId),
-      endActionPane: ActionPane(
-        motion: const StretchMotion(),
-        extentRatio: 0.7,
-        children: [
-          SlidableAction(
-            backgroundColor: const Color(0xff5D5E70),
-            onPressed: (_) {
-              Navigator.of(context).push(
-                CupertinoPageRoute(
-                  builder: (context) =>
-                      AddTaskPage(taskBean: bean, hideUploadFile: true),
-                ),
-              );
-            },
-            foregroundColor: Colors.white,
-            icon: CupertinoIcons.pencil_outline,
-          ),
-          SlidableAction(
-            backgroundColor: const Color(0xffF19A39),
-            onPressed: (_) {
-              WidgetsBinding.instance.endOfFrame.then((timeStamp) {
-                if (context.mounted) {
-                  pinTask(context);
-                }
-              });
-            },
-            foregroundColor: Colors.white,
-            icon: (bean.isPinned ?? 0) == 0
-                ? CupertinoIcons.pin
-                : CupertinoIcons.pin_slash,
-          ),
-          SlidableAction(
-            backgroundColor: const Color(0xffA356D6),
-            onPressed: (_) {
-              WidgetsBinding.instance.endOfFrame.then((timeStamp) {
-                if (context.mounted) {
-                  enableTask(context);
-                }
-              });
-            },
-            foregroundColor: Colors.white,
-            icon: bean.isDisabled! == 0
-                ? Icons.dnd_forwardslash
-                : Icons.check_circle_outline_sharp,
-          ),
-          SlidableAction(
-            backgroundColor: const Color(0xffEA4D3E),
-            // 左滑菜单最右端一项：右侧两角与卡片圆角(14)一致，左端直角与卡片相接
-            borderRadius: const BorderRadius.horizontal(
-              right: Radius.circular(14),
-            ),
-            onPressed: (_) {
-              WidgetsBinding.instance.endOfFrame.then((timeStamp) {
-                if (context.mounted) {
-                  delTask(context, ref);
-                }
-              });
-            },
-            foregroundColor: Colors.white,
-            icon: CupertinoIcons.delete,
-          ),
-        ],
-      ),
-      startActionPane: ActionPane(
-        motion: const StretchMotion(),
-        extentRatio: 0.4,
-        children: [
-          SlidableAction(
-            backgroundColor: const Color(0xffD25535),
-            // 右滑菜单最左端一项：左侧两角与卡片圆角(14)一致，右端直角与卡片相接
-            borderRadius: const BorderRadius.horizontal(
-              left: Radius.circular(14),
-            ),
-            onPressed: (_) {
-              if (bean.status! == 1) {
-                startCron(
-                  context,
-                  ref,
-                  SpUtil.getBool(spAutoShowLog, defValue: true),
+    // 滑动时卡片圆角归零与方形菜单平直对接，关闭后恢复圆角；
+    // 边距放 Slidable 外层，保证菜单与卡片同宽、不贴屏幕边缘
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      child: Slidable(
+        enabled: !editMode,
+        key: ValueKey(bean.sId),
+        endActionPane: ActionPane(
+          motion: const StretchMotion(),
+          extentRatio: 0.7,
+          children: [
+            SlidableAction(
+              backgroundColor: const Color(0xff5D5E70),
+              onPressed: (_) {
+                Navigator.of(context).push(
+                  CupertinoPageRoute(
+                    builder: (context) =>
+                        AddTaskPage(taskBean: bean, hideUploadFile: true),
+                  ),
                 );
-              } else {
-                stopCron(context, ref);
-              }
-            },
-            foregroundColor: Colors.white,
-            icon: bean.status! == 1
-                ? CupertinoIcons.memories
-                : CupertinoIcons.stop_circle,
-          ),
-          SlidableAction(
-            backgroundColor: const Color(0xff606467),
-            onPressed: (_) {
-              logCron(context, ref);
-            },
-            foregroundColor: Colors.white,
-            icon: CupertinoIcons.text_justifyleft,
-          ),
-        ],
-      ),
-      child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-        decoration: BoxDecoration(
-          color: bean.isPinned == 1
-              ? ref.watch(themeProvider).themeColor.pinColor()
-              : ref.watch(themeProvider).themeColor.settingBgColor(),
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(
-            color: ref.watch(themeProvider).themeMode == modeDark
-                ? const Color(0xFF2E2E31)
-                : const Color(0xFFE6E8EC),
-          ),
+              },
+              foregroundColor: Colors.white,
+              icon: CupertinoIcons.pencil_outline,
+            ),
+            SlidableAction(
+              backgroundColor: const Color(0xffF19A39),
+              onPressed: (_) {
+                WidgetsBinding.instance.endOfFrame.then((timeStamp) {
+                  if (context.mounted) {
+                    pinTask(context);
+                  }
+                });
+              },
+              foregroundColor: Colors.white,
+              icon: (bean.isPinned ?? 0) == 0
+                  ? CupertinoIcons.pin
+                  : CupertinoIcons.pin_slash,
+            ),
+            SlidableAction(
+              backgroundColor: const Color(0xffA356D6),
+              onPressed: (_) {
+                WidgetsBinding.instance.endOfFrame.then((timeStamp) {
+                  if (context.mounted) {
+                    enableTask(context);
+                  }
+                });
+              },
+              foregroundColor: Colors.white,
+              icon: bean.isDisabled! == 0
+                  ? Icons.dnd_forwardslash
+                  : Icons.check_circle_outline_sharp,
+            ),
+            SlidableAction(
+              backgroundColor: const Color(0xffEA4D3E),
+              onPressed: (_) {
+                WidgetsBinding.instance.endOfFrame.then((timeStamp) {
+                  if (context.mounted) {
+                    delTask(context, ref);
+                  }
+                });
+              },
+              foregroundColor: Colors.white,
+              icon: CupertinoIcons.delete,
+            ),
+          ],
         ),
-        child: Material(
-          color: Colors.transparent,
-          child: InkWell(
-            onTap: () {
-              if (editMode) {
-                checkedCallback(bean.sId ?? "");
-              } else {
-                Navigator.of(context)
-                    .pushNamed(Routes.routeTaskDetail, arguments: bean);
-              }
-            },
-            child: Row(
-              children: [
-                AnimatedSize(
-                  duration: const Duration(milliseconds: 250),
-                  child: SizedBox(
-                    width: editMode ? 40 : 0,
-                    height: 40,
-                    child: Visibility(
-                      visible: editMode,
-                      child: Padding(
-                        padding: const EdgeInsets.only(left: 15),
-                        child: Icon(
-                          checked
-                              ? CupertinoIcons.checkmark_alt_circle
-                              : CupertinoIcons.circle,
-                          size: 25,
-                          color: checked
-                              ? ref.watch(themeProvider).primaryColor
-                              : ref.watch(themeProvider).themeColor.descColor(),
+        startActionPane: ActionPane(
+          motion: const StretchMotion(),
+          extentRatio: 0.4,
+          children: [
+            SlidableAction(
+              backgroundColor: const Color(0xffD25535),
+              onPressed: (_) {
+                if (bean.status! == 1) {
+                  startCron(
+                    context,
+                    ref,
+                    SpUtil.getBool(spAutoShowLog, defValue: true),
+                  );
+                } else {
+                  stopCron(context, ref);
+                }
+              },
+              foregroundColor: Colors.white,
+              icon: bean.status! == 1
+                  ? CupertinoIcons.memories
+                  : CupertinoIcons.stop_circle,
+            ),
+            SlidableAction(
+              backgroundColor: const Color(0xff606467),
+              onPressed: (_) {
+                logCron(context, ref);
+              },
+              foregroundColor: Colors.white,
+              icon: CupertinoIcons.text_justifyleft,
+            ),
+          ],
+        ),
+        child: Builder(
+          builder: (BuildContext itemContext) {
+            // 监听滑动状态：滑出菜单时卡片变方形、边框消失，与菜单平直拼接
+            return ValueListenableBuilder<ActionPaneType>(
+              valueListenable: Slidable.of(itemContext)!.actionPaneType,
+              builder: (context, paneType, cardChild) {
+                final bool sliding = paneType != ActionPaneType.none;
+                return Container(
+                  decoration: BoxDecoration(
+                    color: bean.isPinned == 1
+                        ? ref.watch(themeProvider).themeColor.pinColor()
+                        : ref.watch(themeProvider).themeColor.settingBgColor(),
+                    borderRadius: BorderRadius.circular(sliding ? 0 : 14),
+                    border: sliding
+                        ? null
+                        : Border.all(
+                            color:
+                                ref.watch(themeProvider).themeMode == modeDark
+                                ? const Color(0xFF2E2E31)
+                                : const Color(0xFFE6E8EC),
+                          ),
+                  ),
+                  child: cardChild,
+                );
+              },
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap: () {
+                    if (editMode) {
+                      checkedCallback(bean.sId ?? "");
+                    } else {
+                      Navigator.of(context)
+                          .pushNamed(Routes.routeTaskDetail, arguments: bean);
+                    }
+                  },
+                  child: Row(
+                    children: [
+                      AnimatedSize(
+                        duration: const Duration(milliseconds: 250),
+                        child: SizedBox(
+                          width: editMode ? 40 : 0,
+                          height: 40,
+                          child: Visibility(
+                            visible: editMode,
+                            child: Padding(
+                              padding: const EdgeInsets.only(left: 15),
+                              child: Icon(
+                                checked
+                                    ? CupertinoIcons.checkmark_alt_circle
+                                    : CupertinoIcons.circle,
+                                size: 25,
+                                color: checked
+                                    ? ref.watch(themeProvider).primaryColor
+                                    : ref
+                                          .watch(themeProvider)
+                                          .themeColor
+                                          .descColor(),
+                              ),
+                            ),
+                          ),
                         ),
                       ),
-                    ),
-                  ),
-                ),
-                Expanded(
-                  child: Container(
-                    color: Colors.transparent,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 15,
-                      vertical: 6,
-                    ),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // 第一行：任务名称 + 状态；右侧最近执行时间
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            Expanded(
-                              child: Row(
-                                mainAxisSize: MainAxisSize.max,
+                      Expanded(
+                        child: Container(
+                          color: Colors.transparent,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 15,
+                            vertical: 6,
+                          ),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              // 第一行：任务名称 + 状态；右侧最近执行时间
+                              Row(
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 children: [
-                                  Flexible(
+                                  Expanded(
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.max,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      children: [
+                                        Flexible(
+                                          child: Material(
+                                            color: Colors.transparent,
+                                            child: Text(
+                                              bean.name ?? "",
+                                              maxLines: 1,
+                                              overflow: TextOverflow.ellipsis,
+                                              style: TextStyle(
+                                                color: ref
+                                                    .watch(themeProvider)
+                                                    .themeColor
+                                                    .titleColor(),
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.w600,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                        SizedBox(
+                                          width: bean.status == 0 ? 7 : 0,
+                                        ),
+                                        bean.status == 0
+                                            ? const RunningWidget()
+                                            : const SizedBox.shrink(),
+                                        const SizedBox(width: 7),
+                                        bean.isDisabled == 1
+                                            ? const StatusWidget(
+                                                title: "已禁用",
+                                                color: Color(0xffFB5858),
+                                              )
+                                            : const SizedBox.shrink(),
+                                      ],
+                                    ),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Material(
+                                    color: Colors.transparent,
+                                    child: Text(
+                                      (bean.lastExecutionTime == null ||
+                                              bean.lastExecutionTime == 0)
+                                          ? "-"
+                                          : Utils.formatMessageTime(
+                                              bean.lastExecutionTime!,
+                                            ),
+                                      maxLines: 1,
+                                      style: TextStyle(
+                                        overflow: TextOverflow.ellipsis,
+                                        color: ref
+                                            .watch(themeProvider)
+                                            .themeColor
+                                            .descColor(),
+                                        fontSize: 12,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 4),
+                              // 第二行：定时规则在左，命令在右
+                              Row(
+                                children: [
+                                  Text(
+                                    "定时",
+                                    style: TextStyle(
+                                      color: ref
+                                          .watch(themeProvider)
+                                          .themeColor
+                                          .descColor(),
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 6),
+                                  Expanded(
                                     child: Material(
                                       color: Colors.transparent,
                                       child: Text(
-                                        bean.name ?? "",
+                                        bean.schedule ?? "",
                                         maxLines: 1,
                                         overflow: TextOverflow.ellipsis,
                                         style: TextStyle(
                                           color: ref
                                               .watch(themeProvider)
                                               .themeColor
-                                              .titleColor(),
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w600,
+                                              .descColor(),
+                                          fontSize: 13,
                                         ),
                                       ),
                                     ),
                                   ),
-                                  SizedBox(width: bean.status == 0 ? 7 : 0),
-                                  bean.status == 0
-                                      ? const RunningWidget()
-                                      : const SizedBox.shrink(),
-                                  const SizedBox(width: 7),
-                                  bean.isDisabled == 1
-                                      ? const StatusWidget(
-                                          title: "已禁用",
-                                          color: Color(0xffFB5858),
-                                        )
-                                      : const SizedBox.shrink(),
+                                  const SizedBox(width: 8),
+                                  // Expanded（tight）保证命令真正右对齐
+                                  Expanded(
+                                    flex: 2,
+                                    child: Material(
+                                      color: Colors.transparent,
+                                      child: Text(
+                                        bean.command ?? "",
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                        textAlign: TextAlign.right,
+                                        style: TextStyle(
+                                          color: ref
+                                              .watch(themeProvider)
+                                              .themeColor
+                                              .descColor(),
+                                          fontSize: 13,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
                                 ],
                               ),
-                            ),
-                            const SizedBox(width: 8),
-                            Material(
-                              color: Colors.transparent,
-                              child: Text(
-                                (bean.lastExecutionTime == null ||
-                                        bean.lastExecutionTime == 0)
-                                    ? "-"
-                                    : Utils.formatMessageTime(
-                                        bean.lastExecutionTime!,
-                                      ),
-                                maxLines: 1,
-                                style: TextStyle(
-                                  overflow: TextOverflow.ellipsis,
-                                  color: ref
-                                      .watch(themeProvider)
-                                      .themeColor
-                                      .descColor(),
-                                  fontSize: 12,
-                                ),
-                              ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
-                        const SizedBox(height: 4),
-                        // 第二行：定时规则在左，命令在右
-                        Row(
-                          children: [
-                            Text(
-                              "定时",
-                              style: TextStyle(
-                                color: ref
-                                    .watch(themeProvider)
-                                    .themeColor
-                                    .descColor(),
-                                fontSize: 12,
-                              ),
-                            ),
-                            const SizedBox(width: 6),
-                            Expanded(
-                              child: Material(
-                                color: Colors.transparent,
-                                child: Text(
-                                  bean.schedule ?? "",
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: TextStyle(
-                                    color: ref
-                                        .watch(themeProvider)
-                                        .themeColor
-                                        .descColor(),
-                                    fontSize: 13,
-                                  ),
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 8),
-                            Flexible(
-                              flex: 2,
-                              child: Material(
-                                color: Colors.transparent,
-                                child: Text(
-                                  bean.command ?? "",
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  textAlign: TextAlign.right,
-                                  style: TextStyle(
-                                    color: ref
-                                        .watch(themeProvider)
-                                        .themeColor
-                                        .descColor(),
-                                    fontSize: 13,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ),
-              ],
-            ),
-          ),
+              ),
+            );
+          },
         ),
       ),
     );

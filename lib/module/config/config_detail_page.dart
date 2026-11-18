@@ -110,6 +110,7 @@ class _ConfigDetailPageState extends ConsumerState<ConfigDetailPage>
                 addDivider(),
                 CupertinoSheer(
                   title: "下载",
+                  icon: CupertinoIcons.arrow_down_doc,
                   onTap: () async {
                     try {
                       String name =
