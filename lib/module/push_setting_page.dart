@@ -26,9 +26,6 @@ class _PushSettingPageState extends ConsumerState<PushSettingPage> {
   PushBean? current;
   bool loading = true;
 
-  /// 服务端当前已开启的通知渠道 type，null 或空表示通知已关闭
-  String? serverType;
-
   @override
   void initState() {
     initData();
@@ -64,19 +61,6 @@ class _PushSettingPageState extends ConsumerState<PushSettingPage> {
                     children: [
                       const SizedBox(height: 10),
                       const Text("通知设置", style: TextStyle(fontSize: 14)),
-                      const SizedBox(height: 6),
-                      Text(
-                        (serverType == null || serverType!.isEmpty)
-                            ? "当前状态：通知推送已关闭"
-                            : "当前状态：已开启 ${getNameByKey(serverType!)}",
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: ref
-                              .watch(themeProvider)
-                              .themeColor
-                              .descColor(),
-                        ),
-                      ),
                       const SizedBox(height: 10),
                       DropdownButtonFormField<PushBean>(
                         items: list
@@ -340,7 +324,6 @@ class _PushSettingPageState extends ConsumerState<PushSettingPage> {
       }
 
       if (json.isEmpty) {
-        serverType = null;
         current = list.last;
         setState(() {
           loading = false;
@@ -349,14 +332,12 @@ class _PushSettingPageState extends ConsumerState<PushSettingPage> {
       }
       String? type = json["type"]?.toString();
       if (type == null || type.isEmpty) {
-        serverType = null;
         current = list.last;
         setState(() {
           loading = false;
         });
         return;
       }
-      serverType = type;
 
       int index = list.indexWhere((element) => element.key == type);
       if (index < 0) {
