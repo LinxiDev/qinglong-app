@@ -53,3 +53,6 @@ wiki/
 
 # 本地文档截图（不提交到 GitHub）
 docs/
+
+# 本地截图（不提交到 GitHub）
+screenshots/
