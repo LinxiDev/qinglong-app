@@ -277,7 +277,8 @@ class _PushSettingPageState extends ConsumerState<PushSettingPage> {
         {"label": 'emailUser', "tip": '邮箱地址', "required": true},
         {"label": 'emailPass', "tip": '邮箱SMTP授权码', "required": true},
       ],
-      "已关闭": [],
+      // 与青龙官方前端哨兵值一致，提交后端时改写为 {"type": ""}
+      "closed": [],
     };
 
     for (var entry in pushSetting.entries) {
@@ -305,10 +306,11 @@ class _PushSettingPageState extends ConsumerState<PushSettingPage> {
           .getNotifcation();
 
       if (!response.success) {
-        // 读取失败不能让页面永远卡在 loading
+        // 读取失败不能让页面永远卡在 loading；下拉框回落「已关闭」
         if (mounted) {
           response.message?.toast();
           setState(() {
+            current ??= list.isNotEmpty ? list.last : null;
             loading = false;
           });
         }
@@ -331,7 +333,8 @@ class _PushSettingPageState extends ConsumerState<PushSettingPage> {
         return;
       }
       String? type = json["type"]?.toString();
-      if (type == null || type.isEmpty) {
+      // 官方用空字符串表示关闭；兼容个别版本返回的 closed 哨兵值
+      if (type == null || type.isEmpty || type == "closed") {
         current = list.last;
         setState(() {
           loading = false;
@@ -341,6 +344,8 @@ class _PushSettingPageState extends ConsumerState<PushSettingPage> {
 
       int index = list.indexWhere((element) => element.key == type);
       if (index < 0) {
+        // 未知渠道类型：回落到「已关闭」，保证下拉框始终有值
+        current = list.last;
         setState(() {
           loading = false;
         });
@@ -355,9 +360,10 @@ class _PushSettingPageState extends ConsumerState<PushSettingPage> {
         loading = false;
       });
     } catch (e) {
-      // 网络等异常时降级展示，不阻塞页面
+      // 网络等异常时降级展示，不阻塞页面；下拉框回落到「已关闭」
       if (mounted) {
         setState(() {
+          current ??= list.isNotEmpty ? list.last : null;
           loading = false;
         });
       }
@@ -365,11 +371,12 @@ class _PushSettingPageState extends ConsumerState<PushSettingPage> {
   }
 
   void commit() async {
-    if (current == null || current!.key == "已关闭") {
+    if (current == null || current!.key == "closed") {
       EasyLoading.show(status: "提交中");
 
+      // 与青龙官方一致：关闭通知提交 {"type": ""}
       var response = await SingleAccountPageState.ofApi(context)
-          .updateNotifcation({});
+          .updateNotifcation({"type": ""});
       EasyLoading.dismiss();
       if (response.success) {
         "设置成功".toast();
