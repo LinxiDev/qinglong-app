@@ -27,6 +27,8 @@ import '../home/system_bean.dart';
 import '../poet_page.dart';
 import '../push_setting_page.dart';
 import '../scan_page.dart';
+import '../setting/panel_upgrade_page.dart';
+import '../setting/system_config_page.dart';
 import '../task/task_page.dart';
 import '../update_max_account_page.dart';
 
@@ -419,7 +421,7 @@ class OtherPageState extends ConsumerState<OtherPage>
                     children: [
                       const SizedBox(height: 5),
                       Text(
-                        "多帐号设置",
+                        "账号与面板",
                         style: TextStyle(
                           fontWeight: FontWeight.w600,
                           fontSize: 16,
@@ -454,8 +456,43 @@ class OtherPageState extends ConsumerState<OtherPage>
                               },
                             ),
                           ),
-                          const Spacer(),
-                          const Spacer(),
+                          // client_id（Open API）登录不支持面板维护接口
+                          Expanded(
+                            child:
+                                SingleAccountPageState.ofUserInfo(context)
+                                    .useSecretLogined
+                                ? const SizedBox.shrink()
+                                : buildOtherFun2(
+                                    "面板升级",
+                                    CupertinoIcons.arrow_up_circle,
+                                    () {
+                                      Navigator.of(context).push(
+                                        CupertinoPageRoute(
+                                          builder: (context) =>
+                                              const PanelUpgradePage(),
+                                        ),
+                                      );
+                                    },
+                                  ),
+                          ),
+                          Expanded(
+                            child:
+                                SingleAccountPageState.ofUserInfo(context)
+                                    .useSecretLogined
+                                ? const SizedBox.shrink()
+                                : buildOtherFun2(
+                                    "系统配置",
+                                    CupertinoIcons.slider_horizontal_3,
+                                    () {
+                                      Navigator.of(context).push(
+                                        CupertinoPageRoute(
+                                          builder: (context) =>
+                                              const SystemConfigPage(),
+                                        ),
+                                      );
+                                    },
+                                  ),
+                          ),
                           const Spacer(),
                         ],
                       ),
