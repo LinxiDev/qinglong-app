@@ -10,6 +10,7 @@ import 'package:qinglong_app/base/theme.dart';
 import 'package:qinglong_app/base/ui/app_logo.dart';
 import 'package:qinglong_app/base/ui/loading_widget.dart';
 import 'package:qinglong_app/base/ui/shake.dart';
+import 'package:qinglong_app/utils/idn.dart';
 import 'package:qinglong_app/base/userinfo_viewmodel.dart';
 import 'package:qinglong_app/main.dart';
 import 'package:qinglong_app/module/in_app_purchase_page.dart';
@@ -420,8 +421,14 @@ class LoginPageState extends ConsumerState<LoginPage> {
                                     "域名必须以http://或者https://开头".toast();
                                     return;
                                   }
+                                  // 中文等非 ASCII 域名转成 punycode，否则无法解析
+                                  final String normalizedHost =
+                                      normalizeUrlHost(_hostController.text);
+                                  if (normalizedHost != _hostController.text) {
+                                    _hostController.text = normalizedHost;
+                                  }
                                   SingleAccountPageState.of(context)
-                                      ?.registerHttp(_hostController.text);
+                                      ?.registerHttp(normalizedHost);
                                   SingleAccountPageState.ofHttp(context)
                                           ?.pushedLoginPage =
                                       false;

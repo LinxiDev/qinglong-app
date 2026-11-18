@@ -235,6 +235,13 @@ class _PushSettingPageState extends ConsumerState<PushSettingPage> {
           "required": true,
         },
       ],
+      "feishu": [
+        {
+          "label": 'feishuWebhook',
+          "tip": '飞书机器人的 Webhook 地址（飞书群 -> 设置 -> 群机器人 -> 添加自定义机器人），例如：https://open.feishu.cn/open-apis/bot/v2/hook/XXXXXXXX',
+          "required": true,
+        },
+      ],
       "iGot": [
         {
           "label": 'iGotPushKey',
@@ -423,6 +430,8 @@ String getNameByKey(String key) {
     return "企业微信机器人";
   } else if (key == "weWorkApp") {
     return "企业微信应用";
+  } else if (key == "feishu") {
+    return "飞书机器人";
   } else if (key == "iGot") {
     return "IGot";
   } else if (key == "pushPlus") {

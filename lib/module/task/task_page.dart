@@ -1087,163 +1087,175 @@ class TaskItemCell extends StatelessWidget {
           ),
         ],
       ),
-      child: Material(
-        color: bean.isPinned == 1
-            ? ref.watch(themeProvider).themeColor.pinColor()
-            : ref.watch(themeProvider).themeColor.settingBgColor(),
-        child: InkWell(
-          onTap: () {
-            if (editMode) {
-              checkedCallback(bean.sId ?? "");
-            } else {
-              Navigator.of(context)
-                  .pushNamed(Routes.routeTaskDetail, arguments: bean);
-            }
-          },
-          child: Row(
-            children: [
-              AnimatedSize(
-                duration: const Duration(milliseconds: 250),
-                child: SizedBox(
-                  width: editMode ? 40 : 0,
-                  height: 40,
-                  child: Visibility(
-                    visible: editMode,
-                    child: Padding(
-                      padding: const EdgeInsets.only(left: 15),
-                      child: Icon(
-                        checked
-                            ? CupertinoIcons.checkmark_alt_circle
-                            : CupertinoIcons.circle,
-                        size: 25,
-                        color: checked
-                            ? ref.watch(themeProvider).primaryColor
-                            : ref.watch(themeProvider).themeColor.descColor(),
+      child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+        decoration: BoxDecoration(
+          color: bean.isPinned == 1
+              ? ref.watch(themeProvider).themeColor.pinColor()
+              : ref.watch(themeProvider).themeColor.settingBgColor(),
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(
+            color: ref.watch(themeProvider).themeMode == modeDark
+                ? const Color(0xFF2E2E31)
+                : const Color(0xFFE6E8EC),
+          ),
+        ),
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: () {
+              if (editMode) {
+                checkedCallback(bean.sId ?? "");
+              } else {
+                Navigator.of(context)
+                    .pushNamed(Routes.routeTaskDetail, arguments: bean);
+              }
+            },
+            child: Row(
+              children: [
+                AnimatedSize(
+                  duration: const Duration(milliseconds: 250),
+                  child: SizedBox(
+                    width: editMode ? 40 : 0,
+                    height: 40,
+                    child: Visibility(
+                      visible: editMode,
+                      child: Padding(
+                        padding: const EdgeInsets.only(left: 15),
+                        child: Icon(
+                          checked
+                              ? CupertinoIcons.checkmark_alt_circle
+                              : CupertinoIcons.circle,
+                          size: 25,
+                          color: checked
+                              ? ref.watch(themeProvider).primaryColor
+                              : ref.watch(themeProvider).themeColor.descColor(),
+                        ),
                       ),
                     ),
                   ),
                 ),
-              ),
-              Expanded(
-                child: Container(
-                  color: Colors.transparent,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 15,
-                    vertical: 8,
-                  ),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          Expanded(
-                            child: Row(
-                              mainAxisSize: MainAxisSize.max,
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                ConstrainedBox(
-                                  constraints: BoxConstraints.loose(
-                                    Size.fromWidth(
-                                      MediaQuery.of(context).size.width *
-                                          (((bean.isDisabled ?? 0) == 1)
-                                              ? 0.45
-                                              : 0.55),
+                Expanded(
+                  child: Container(
+                    color: Colors.transparent,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 15,
+                      vertical: 8,
+                    ),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Expanded(
+                              child: Row(
+                                mainAxisSize: MainAxisSize.max,
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  ConstrainedBox(
+                                    constraints: BoxConstraints.loose(
+                                      Size.fromWidth(
+                                        MediaQuery.of(context).size.width *
+                                            (((bean.isDisabled ?? 0) == 1)
+                                                ? 0.45
+                                                : 0.55),
+                                      ),
                                     ),
-                                  ),
-                                  child: Material(
-                                    color: Colors.transparent,
-                                    child: Text(
-                                      bean.name ?? "",
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: TextStyle(
+                                    child: Material(
+                                      color: Colors.transparent,
+                                      child: Text(
+                                        bean.name ?? "",
+                                        maxLines: 1,
                                         overflow: TextOverflow.ellipsis,
-                                        color: ref
-                                            .watch(themeProvider)
-                                            .themeColor
-                                            .titleColor(),
-                                        fontSize: 17,
+                                        style: TextStyle(
+                                          overflow: TextOverflow.ellipsis,
+                                          color: ref
+                                              .watch(themeProvider)
+                                              .themeColor
+                                              .titleColor(),
+                                          fontSize: 17,
+                                        ),
                                       ),
                                     ),
                                   ),
-                                ),
-                                SizedBox(width: bean.status == 0 ? 7 : 0),
-                                bean.status == 0
-                                    ? const RunningWidget()
-                                    : const SizedBox.shrink(),
-                                const SizedBox(width: 7),
-                                bean.isDisabled == 1
-                                    ? const StatusWidget(
-                                        title: "已禁用",
-                                        color: Color(0xffFB5858),
-                                      )
-                                    : const SizedBox.shrink(),
-                              ],
-                            ),
-                          ),
-                          Material(
-                            color: Colors.transparent,
-                            child: Text(
-                              (bean.lastExecutionTime == null ||
-                                      bean.lastExecutionTime == 0)
-                                  ? "-"
-                                  : Utils.formatMessageTime(
-                                      bean.lastExecutionTime!,
-                                    ),
-                              maxLines: 1,
-                              style: TextStyle(
-                                overflow: TextOverflow.ellipsis,
-                                color: ref
-                                    .watch(themeProvider)
-                                    .themeColor
-                                    .descColor(),
-                                fontSize: 12,
+                                  SizedBox(width: bean.status == 0 ? 7 : 0),
+                                  bean.status == 0
+                                      ? const RunningWidget()
+                                      : const SizedBox.shrink(),
+                                  const SizedBox(width: 7),
+                                  bean.isDisabled == 1
+                                      ? const StatusWidget(
+                                          title: "已禁用",
+                                          color: Color(0xffFB5858),
+                                        )
+                                      : const SizedBox.shrink(),
+                                ],
                               ),
                             ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 5),
-                      Material(
-                        color: Colors.transparent,
-                        child: Text(
-                          bean.schedule ?? "",
-                          maxLines: 1,
-                          style: TextStyle(
-                            overflow: TextOverflow.ellipsis,
-                            color: ref
-                                .watch(themeProvider)
-                                .themeColor
-                                .descColor(),
-                            fontSize: 14,
+                            Material(
+                              color: Colors.transparent,
+                              child: Text(
+                                (bean.lastExecutionTime == null ||
+                                        bean.lastExecutionTime == 0)
+                                    ? "-"
+                                    : Utils.formatMessageTime(
+                                        bean.lastExecutionTime!,
+                                      ),
+                                maxLines: 1,
+                                style: TextStyle(
+                                  overflow: TextOverflow.ellipsis,
+                                  color: ref
+                                      .watch(themeProvider)
+                                      .themeColor
+                                      .descColor(),
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 5),
+                        Material(
+                          color: Colors.transparent,
+                          child: Text(
+                            bean.schedule ?? "",
+                            maxLines: 1,
+                            style: TextStyle(
+                              overflow: TextOverflow.ellipsis,
+                              color: ref
+                                  .watch(themeProvider)
+                                  .themeColor
+                                  .descColor(),
+                              fontSize: 14,
+                            ),
                           ),
                         ),
-                      ),
-                      const SizedBox(height: 5),
-                      Material(
-                        color: Colors.transparent,
-                        child: Text(
-                          bean.command ?? "",
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
+                        const SizedBox(height: 5),
+                        Material(
+                          color: Colors.transparent,
+                          child: Text(
+                            bean.command ?? "",
+                            maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            color: ref
-                                .watch(themeProvider)
-                                .themeColor
-                                .descColor(),
-                            fontSize: 14,
+                            style: TextStyle(
+                              overflow: TextOverflow.ellipsis,
+                              color: ref
+                                  .watch(themeProvider)
+                                  .themeColor
+                                  .descColor(),
+                              fontSize: 14,
+                            ),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

@@ -398,59 +398,7 @@ class OtherPageState extends ConsumerState<OtherPage>
                     ],
                   ),
                 ),
-                Container(
-                  margin: const EdgeInsets.only(left: 15, right: 15, top: 20),
-                  child: InkWell(
-                    borderRadius: const BorderRadius.all(Radius.circular(10)),
-                    onTap: () {
-                      Navigator.of(context)
-                          .push(
-                            CupertinoPageRoute(
-                              builder: (context) =>
-                                  const InAppPurchasePage(fromDirectly: true),
-                            ),
-                          )
-                          .then((value) {
-                            setState(() {});
-                          });
-                    },
-                    child: Ink(
-                      decoration: BoxDecoration(
-                        color: ref
-                            .watch(themeProvider)
-                            .themeColor
-                            .settingBordorColor(),
-                        borderRadius: const BorderRadius.all(
-                          Radius.circular(10),
-                        ),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.only(
-                          top: 12,
-                          bottom: 12,
-                          left: 15,
-                          right: 15,
-                        ),
-                        child: Row(
-                          children: [
-                            Text(
-                              "APP功能介绍",
-                              style: TextStyle(
-                                fontWeight: FontWeight.w600,
-                                fontSize: 16,
-                                color: ref
-                                    .watch(themeProvider)
-                                    .themeColor
-                                    .titleColor(),
-                              ),
-                            ),
-                            const Spacer(),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
+                SizedBox.shrink(),
                 const SizedBox(height: 20),
                 Container(
                   margin: const EdgeInsets.symmetric(horizontal: 15),

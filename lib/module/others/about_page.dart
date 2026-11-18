@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:cupertino_ui/cupertino_ui.dart';
@@ -10,13 +11,20 @@ import 'package:qinglong_app/base/single_account_page.dart';
 import 'package:qinglong_app/base/theme.dart';
 import 'package:qinglong_app/base/ui/app_logo.dart';
 import 'package:qinglong_app/base/ui/lazy_load_state.dart';
-import 'package:qinglong_app/base/ui/qlvisible.dart';
 import 'package:qinglong_app/module/home/system_bean.dart';
+import 'package:qinglong_app/module/in_app_purchase_page.dart';
 import 'package:qinglong_app/utils/extension.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../main.dart';
+
+const String kRepoUrl = "https://github.com/LinxiDev/qinglong-app";
+const String kGithubApiLatest =
+    "https://api.github.com/repos/LinxiDev/qinglong-app/releases/latest";
+const String kReleaseUrl = "$kRepoUrl/releases";
+const String kWikiUrl = "$kRepoUrl/wiki";
+const String kAuthor = "林夕";
 
 class AboutPage extends ConsumerStatefulWidget {
   const AboutPage({super.key});
@@ -30,15 +38,19 @@ class _AboutPageState extends ConsumerState<AboutPage>
   String desc = "";
   String versionCode = "";
 
+  /// GitHub 最新 Release 的版本号（如 4.0.1）
+  String? latestVersion;
+
   @override
   void initState() {
     super.initState();
     getInfo();
+    checkGithubRelease();
   }
 
   @override
   Widget build(BuildContext context) {
-    SystemBean? systemBean;
+    SystemBean systemBean;
 
     try {
       systemBean = getIt<SystemBean>(
@@ -79,7 +91,7 @@ class _AboutPageState extends ConsumerState<AboutPage>
               const SizedBox(height: 5),
               Center(
                 child: Text(
-                  "基于青龙开源项目打造的第三方${getPlatformName()}客户端",
+                  "基于青龙开源项目打造的第三方${getPlatformName()}客户端 · 作者 $kAuthor",
                   style: TextStyle(
                     color: ref.watch(themeProvider).themeColor.descColor(),
                     fontSize: 12,
@@ -87,104 +99,12 @@ class _AboutPageState extends ConsumerState<AboutPage>
                 ),
               ),
               const SizedBox(height: 30),
-              Container(
-                margin: const EdgeInsets.symmetric(horizontal: 15),
-                decoration: BoxDecoration(
-                  color: ref
-                      .watch(themeProvider)
-                      .themeColor
-                      .settingBordorColor(),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Column(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(
-                        left: 15,
-                        right: 15,
-                        top: 10,
-                        bottom: 10,
-                      ),
-                      child: Row(
-                        children: [
-                          Text(
-                            "版本",
-                            style: TextStyle(
-                              color: ref
-                                  .watch(themeProvider)
-                                  .themeColor
-                                  .titleColor(),
-                              fontSize: 16,
-                            ),
-                          ),
-                          const Spacer(),
-                          Text(
-                            "$desc ($versionCode)",
-                            style: TextStyle(
-                              color: ref
-                                  .watch(themeProvider)
-                                  .themeColor
-                                  .descColor(),
-                              fontSize: 16,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const Divider(indent: 15, height: 1),
-                    Material(
-                      color: Colors.transparent,
-                      child: InkWell(
-                        borderRadius: const BorderRadius.only(
-                          bottomLeft: Radius.circular(10),
-                          bottomRight: Radius.circular(10),
-                        ),
-                        onTap: () {
-                          _checkUpdate();
-                        },
-                        child: Padding(
-                          padding: const EdgeInsets.only(
-                            left: 15,
-                            right: 15,
-                            bottom: 10,
-                            top: 10,
-                          ),
-                          child: Row(
-                            children: [
-                              Text(
-                                "青龙服务端",
-                                style: TextStyle(
-                                  color: ref
-                                      .watch(themeProvider)
-                                      .themeColor
-                                      .titleColor(),
-                                  fontSize: 16,
-                                ),
-                              ),
-                              const Spacer(),
-                              Text(
-                                "${systemBean.version}",
-                                style: TextStyle(
-                                  color: ref
-                                      .watch(themeProvider)
-                                      .themeColor
-                                      .descColor(),
-                                  fontSize: 16,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 30),
+              _buildInfoCard(systemBean),
+              const SizedBox(height: 20),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 30),
                 child: Text(
-                  "反馈",
+                  "功能与链接",
                   style: TextStyle(
                     color: ref.watch(themeProvider).themeColor.descColor(),
                     fontSize: 12,
@@ -192,281 +112,7 @@ class _AboutPageState extends ConsumerState<AboutPage>
                 ),
               ),
               const SizedBox(height: 10),
-              Container(
-                margin: const EdgeInsets.symmetric(horizontal: 15),
-                decoration: BoxDecoration(
-                  color: ref
-                      .watch(themeProvider)
-                      .themeColor
-                      .settingBordorColor(),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Column(
-                  children: [
-                    QlVisible(
-                      childReplace: Material(
-                        color: Colors.transparent,
-                        child: InkWell(
-                          borderRadius: const BorderRadius.only(
-                            topLeft: Radius.circular(10),
-                            topRight: Radius.circular(10),
-                          ),
-                          onTap: () async {
-                            try {
-                              await launchUrl(
-                                Uri.tryParse(
-                                  "https://github.com/LinxiDev/qinglong-app/wiki/qinglong-app%E2%80%90Wiki",
-                                )!,
-                              );
-                            } catch (e) {
-                              logger.e(e);
-                            }
-                          },
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                              vertical: 10,
-                              horizontal: 15,
-                            ),
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(
-                                  CupertinoIcons.cloud_download,
-                                  color: ref.watch(themeProvider).primaryColor,
-                                  size: 20,
-                                ),
-                                const SizedBox(width: 15),
-                                Text(
-                                  "下载地址",
-                                  style: TextStyle(
-                                    color: ref
-                                        .watch(themeProvider)
-                                        .themeColor
-                                        .titleColor(),
-                                    fontSize: 16,
-                                  ),
-                                ),
-                                const Spacer(),
-                                const SizedBox(width: 5),
-                                Icon(
-                                  CupertinoIcons.right_chevron,
-                                  size: 16,
-                                  color: ref
-                                      .watch(themeProvider)
-                                      .themeColor
-                                      .descColor(),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                      child: Material(
-                        color: Colors.transparent,
-                        child: InkWell(
-                          borderRadius: const BorderRadius.only(
-                            topLeft: Radius.circular(10),
-                            topRight: Radius.circular(10),
-                          ),
-                          onTap: () async {
-                            InAppReview.instance.openStoreListing(
-                              appStoreId: "1625871665",
-                            );
-                          },
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                              vertical: 10,
-                              horizontal: 15,
-                            ),
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(
-                                  CupertinoIcons.heart,
-                                  color: ref.watch(themeProvider).primaryColor,
-                                  size: 20,
-                                ),
-                                const SizedBox(width: 15),
-                                Text(
-                                  "在 App Store 评分",
-                                  style: TextStyle(
-                                    color: ref
-                                        .watch(themeProvider)
-                                        .themeColor
-                                        .titleColor(),
-                                    fontSize: 16,
-                                  ),
-                                ),
-                                const Spacer(),
-                                Icon(
-                                  CupertinoIcons.right_chevron,
-                                  size: 16,
-                                  color: ref
-                                      .watch(themeProvider)
-                                      .themeColor
-                                      .descColor(),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    const Divider(indent: 50, height: 1),
-                    Material(
-                      color: Colors.transparent,
-                      child: InkWell(
-                        onTap: () {
-                          _launchURL("https://newtab.work/PrivacyPolicy.html");
-                        },
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                            vertical: 10,
-                            horizontal: 15,
-                          ),
-                          child: Row(
-                            children: [
-                              Icon(
-                                CupertinoIcons.shield,
-                                color: ref.watch(themeProvider).primaryColor,
-                                size: 20,
-                              ),
-                              const SizedBox(width: 15),
-                              Text(
-                                "用户协议",
-                                style: TextStyle(
-                                  color: ref
-                                      .watch(themeProvider)
-                                      .themeColor
-                                      .titleColor(),
-                                  fontSize: 16,
-                                ),
-                              ),
-                              const Spacer(),
-                              Icon(
-                                CupertinoIcons.right_chevron,
-                                size: 16,
-                                color: ref
-                                    .watch(themeProvider)
-                                    .themeColor
-                                    .descColor(),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                    const Divider(indent: 50, height: 1),
-                    Material(
-                      color: Colors.transparent,
-                      child: InkWell(
-                        onTap: () {
-                          _launchURL(
-                            "https://github.com/LinxiDev/qinglong-app/wiki/qinglong-app%E2%80%90Wiki",
-                          );
-                        },
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                            vertical: 10,
-                            horizontal: 15,
-                          ),
-                          child: Row(
-                            children: [
-                              Icon(
-                                CupertinoIcons.paperplane,
-                                color: ref.watch(themeProvider).primaryColor,
-                                size: 20,
-                              ),
-                              const SizedBox(width: 15),
-                              Text(
-                                "App更新通知",
-                                style: TextStyle(
-                                  color: ref
-                                      .watch(themeProvider)
-                                      .themeColor
-                                      .titleColor(),
-                                  fontSize: 16,
-                                ),
-                              ),
-                              const Spacer(),
-                              Icon(
-                                CupertinoIcons.right_chevron,
-                                size: 16,
-                                color: ref
-                                    .watch(themeProvider)
-                                    .themeColor
-                                    .descColor(),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                    const Divider(indent: 50, height: 1),
-                    Material(
-                      color: Colors.transparent,
-                      child: InkWell(
-                        borderRadius: const BorderRadius.only(
-                          bottomLeft: Radius.circular(10),
-                          bottomRight: Radius.circular(10),
-                        ),
-                        onTap: () {
-                          if (Platform.isAndroid) {
-                            SharePlus.instance.share(
-                              ShareParams(
-                                text: "分享一款好用的青龙客户端，快去点击下面的链接地址下载吧 https://github.com/LinxiDev/qinglong-app/wiki/qinglong-app%E2%80%90Wiki",
-                              ),
-                            );
-                          } else {
-                            SharePlus.instance.share(
-                              ShareParams(
-                                text: "分享一款好用的青龙客户端，快去美区 AppStore 搜索『青龙客户端』或者点击下面的链接地址下载吧 https://apps.apple.com/us/app/id1625871665",
-                              ),
-                            );
-                          }
-                        },
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                            vertical: 10,
-                            horizontal: 15,
-                          ),
-                          child: Row(
-                            children: [
-                              Icon(
-                                CupertinoIcons.share,
-                                color: ref.watch(themeProvider).primaryColor,
-                                size: 20,
-                              ),
-                              const SizedBox(width: 15),
-                              Text(
-                                "分享App",
-                                style: TextStyle(
-                                  color: ref
-                                      .watch(themeProvider)
-                                      .themeColor
-                                      .titleColor(),
-                                  fontSize: 16,
-                                ),
-                              ),
-                              const Spacer(),
-                              Icon(
-                                CupertinoIcons.right_chevron,
-                                size: 16,
-                                color: ref
-                                    .watch(themeProvider)
-                                    .themeColor
-                                    .descColor(),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+              _buildLinkCard(),
               const SizedBox(height: 30),
               Center(
                 child: Text(
@@ -485,6 +131,232 @@ class _AboutPageState extends ConsumerState<AboutPage>
     );
   }
 
+  Widget _buildInfoCard(SystemBean systemBean) {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 15),
+      decoration: BoxDecoration(
+        color: ref.watch(themeProvider).themeColor.settingBgColor(),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(
+          color: ref.watch(themeProvider).themeMode == modeDark
+              ? const Color(0xFF2E2E31)
+              : const Color(0xFFE6E8EC),
+        ),
+      ),
+      child: Column(
+        children: [
+          _buildRow(
+            label: "版本",
+            valueWidget: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  "$desc ($versionCode)",
+                  style: TextStyle(
+                    color: ref.watch(themeProvider).themeColor.descColor(),
+                    fontSize: 15,
+                  ),
+                ),
+                if (latestVersion != null) ...[
+                  const SizedBox(width: 8),
+                  GestureDetector(
+                    onTap: _openReleases,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 3,
+                      ),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFEA4D3E),
+                        borderRadius: BorderRadius.circular(7),
+                      ),
+                      child: Text(
+                        "有新版本 v$latestVersion",
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 11,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ),
+          _divider(),
+          _buildRow(
+            label: "作者",
+            valueWidget: Text(
+              kAuthor,
+              style: TextStyle(
+                color: ref.watch(themeProvider).themeColor.descColor(),
+                fontSize: 15,
+              ),
+            ),
+          ),
+          _divider(),
+          Material(
+            color: Colors.transparent,
+            child: InkWell(
+              onTap: _checkUpdate,
+              child: _buildRow(
+                label: "青龙服务端",
+                valueWidget: Text(
+                  "${systemBean.version}",
+                  style: TextStyle(
+                    color: ref.watch(themeProvider).themeColor.descColor(),
+                    fontSize: 15,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildLinkCard() {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 15),
+      decoration: BoxDecoration(
+        color: ref.watch(themeProvider).themeColor.settingBgColor(),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(
+          color: ref.watch(themeProvider).themeMode == modeDark
+              ? const Color(0xFF2E2E31)
+              : const Color(0xFFE6E8EC),
+        ),
+      ),
+      child: Column(
+        children: [
+          _buildLinkRow(
+            icon: CupertinoIcons.cloud_download,
+            label: "下载地址",
+            onTap: _openReleases,
+          ),
+          _divider(indent: 50),
+          _buildLinkRow(
+            icon: CupertinoIcons.doc_text,
+            label: "功能介绍",
+            onTap: () {
+              Navigator.of(context).push(
+                CupertinoPageRoute(
+                  builder: (context) =>
+                      const InAppPurchasePage(fromDirectly: true),
+                ),
+              );
+            },
+          ),
+          _divider(indent: 50),
+          _buildLinkRow(
+            icon: CupertinoIcons.book,
+            label: "用户协议",
+            onTap: () => _launchURL(kWikiUrl),
+          ),
+          _divider(indent: 50),
+          _buildLinkRow(
+            icon: CupertinoIcons.paperplane,
+            label: "APP更新通知",
+            onTap: () => _launchURL(kWikiUrl),
+          ),
+          _divider(indent: 50),
+          if (Platform.isIOS) ...[
+            _buildLinkRow(
+              icon: CupertinoIcons.heart,
+              label: "在 App Store 评分",
+              onTap: () {
+                InAppReview.instance.openStoreListing(appStoreId: "1625871665");
+              },
+            ),
+            _divider(indent: 50),
+          ],
+          _buildLinkRow(
+            icon: CupertinoIcons.share,
+            label: "分享App",
+            onTap: () {
+              const String shareText = "分享一款好用的青龙客户端，下载地址：$kReleaseUrl";
+              SharePlus.instance.share(ShareParams(text: shareText));
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _divider({double indent = 18}) {
+    final bool dark = ref.watch(themeProvider).themeMode == modeDark;
+    return Divider(
+      height: 0.5,
+      thickness: 0.5,
+      indent: indent,
+      endIndent: indent,
+      color: dark ? const Color(0xFF2E2E31) : const Color(0xFFECEEF1),
+    );
+  }
+
+  Widget _buildRow({required String label, required Widget valueWidget}) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 12),
+      child: Row(
+        children: [
+          Text(
+            label,
+            style: TextStyle(
+              color: ref.watch(themeProvider).themeColor.titleColor(),
+              fontSize: 15.5,
+            ),
+          ),
+          const Spacer(),
+          valueWidget,
+        ],
+      ),
+    );
+  }
+
+  Widget _buildLinkRow({
+    required IconData icon,
+    required String label,
+    required VoidCallback onTap,
+  }) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 15),
+          child: Row(
+            children: [
+              Icon(
+                icon,
+                color: ref.watch(themeProvider).primaryColor,
+                size: 20,
+              ),
+              const SizedBox(width: 15),
+              Text(
+                label,
+                style: TextStyle(
+                  color: ref.watch(themeProvider).themeColor.titleColor(),
+                  fontSize: 15.5,
+                ),
+              ),
+              const Spacer(),
+              Icon(
+                CupertinoIcons.right_chevron,
+                size: 16,
+                color: ref.watch(themeProvider).themeColor.descColor(),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _openReleases() {
+    _launchURL(kReleaseUrl);
+  }
+
   void _launchURL(String url) async {
     try {
       await launchUrl(Uri.tryParse(url.trimLeft())!);
@@ -499,7 +371,42 @@ class _AboutPageState extends ConsumerState<AboutPage>
     String version = packageInfo.version;
     versionCode = packageInfo.buildNumber;
     desc = version;
-    setState(() {});
+    if (mounted) {
+      setState(() {});
+    }
+  }
+
+  /// 通过 GitHub API 检测 App 新版本
+  Future<void> checkGithubRelease() async {
+    try {
+      final HttpClient client = HttpClient();
+      final HttpClientRequest request = await client.getUrl(
+        Uri.parse(kGithubApiLatest),
+      );
+      request.headers.set("User-Agent", "qinglong-app");
+      request.headers.set("Accept", "application/vnd.github+json");
+      final HttpClientResponse response = await request.close().timeout(
+        const Duration(seconds: 15),
+      );
+      if (response.statusCode != 200) {
+        return;
+      }
+      final String body = await response.transform(utf8.decoder).join();
+      final dynamic data = jsonDecode(body);
+      final String tag = (data["tag_name"] ?? "").toString();
+      if (tag.isEmpty) {
+        return;
+      }
+      final String normalized = tag.replaceFirst(RegExp(r'^[vV]'), "");
+      if (mounted && normalized != desc) {
+        setState(() {
+          latestVersion = normalized;
+        });
+      }
+    } catch (e) {
+      // 网络异常时静默忽略，不打扰用户
+      logger.i("检查 APP 更新失败: $e");
+    }
   }
 
   @override

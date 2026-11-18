@@ -1,170 +1,123 @@
-# qinglong-app — 青龙面板客户端
+# 青龙客户端 (qinglong-app)
 
-> 基于 **Flutter** 开发的青龙面板第三方移动客户端，支持 Android / iOS 双端，可在手机上完整管理青龙面板的任务、订阅、环境变量、脚本、依赖、配置、日志等核心功能。
+基于 [青龙面板](https://github.com/whyour/qinglong) 打造的第三方跨平台客户端，支持 **Android / iOS / Linux 桌面**。
 
-| 项目性质 | 上游依赖 | 维护者 |
-|:---:|:---:|:---:|
-| 客户端 App（非服务端） | [whyour/qinglong](https://github.com/whyour/qinglong) | yanyu |
-
----
-
-## 技术栈
-
-| 分类 | 选型 |
-|---|---|
-| 框架 | Flutter 3.50 / Dart 3.14 |
-| UI | `material_ui` + `cupertino_ui`（Flutter 3.47+ 官方新包） |
-| 状态管理 | Riverpod 3 |
-| 网络 | Dio 5 + 自定义 Token 拦截器 |
-| 本地存储 | SharedPreferences |
-| 代码编辑器 | CodeMirror（WebView 4） |
-| 依赖注入 | get_it 9 |
-| 构建 | Gradle 9.5 / AGP 9.3 / Kotlin 2.4（Kotlin DSL）、Java 17 |
-
-> 接口文档参考：[青龙 OpenAPI](https://qinglong.online/api/index)。面板侧能力以 v2.24 ~ v2.25 为基准，
-> 旧版本面板会自动降级提示。
-
----
+> 作者：**林夕** · 下载：[GitHub Releases](https://github.com/LinxiDev/qinglong-app/releases) · 文档：[GitHub Wiki](https://github.com/LinxiDev/qinglong-app/wiki)
 
 ## 功能特性
 
-### 账号与登录
+- 🔐 **多账号与多面板**：支持同时管理多个青龙面板，一键切换身份、长按删除、拖拽排序
+- ⏰ **定时任务**：任务列表（置顶/状态/筛选）、任务详情、日志查看、批量启停与运行
+- 🔑 **环境变量**：变量增删改查、置顶排序、启用禁用、批量操作
+- 📄 **配置文件**：查看与编辑（桌面端提供只读降级视图）、新增配置
+- 📜 **脚本管理**：树形文件浏览、脚本编辑、历史版本对比与恢复
+- 📦 **订阅与依赖**：订阅管理、依赖安装/卸载/重装
+- 🧾 **任务日志 / 登录日志 / 通知日志**：运行记录一站式查看
+- 📊 **运行概览（Dashboard）**：面板状态一目了然
+- 🔔 **通知设置**：支持 Bark / Telegram / 钉钉 / 飞书 / 企业微信 / PushPlus 等主流渠道
+- ☁️ **iCloud 文件备份**（iOS）：配置与环境变量云备份
+- 🌙 **深色模式**：全量适配，跟随系统或手动切换
+- 🆕 **版本检测**：基于 GitHub Releases 的 APP 更新提示
 
-- **多账号管理**：支持同时添加多个青龙面板账号，账号间数据与会话完全隔离，一键切换
-- **账号密码登录**：对接常规 `/api/*` 接口，支持两步验证
-- **OpenAPI 登录**：使用 `client_id / client_secret` 对接 `/open/*` 接口（部分功能需在面板侧分配对应 scope 权限）
-- **扫码登录 / 生物识别解锁**
+## 界面预览
 
-### 核心管理功能
+| 环境变量 | 配置文件 | 订阅管理 |
+| --- | --- | --- |
+| ![环境变量](docs/images/envs.png) | ![配置文件](docs/images/configs.png) | ![订阅](docs/images/subs.png) |
 
-| 模块 | 功能说明 |
-|---|---|
-| **定时任务** | 查看、搜索、启停、置顶、手动运行、编辑；定时规则预览、运行实例与强制停止 |
-| **订阅管理** | 订阅列表、运行/停止、启用/禁用、日志查看 |
-| **环境变量** | 增删改查、批量操作、启用/禁用、搜索、排序移动、置顶、重命名 |
-| **配置文件** | 文件列表、内容查看、在线编辑与保存、JSON 表格视图 |
-| **脚本管理** | 目录浏览、查看、在线编辑、上传/新增/删除、运行/停止、**历史版本对比与还原** |
-| **依赖管理** | 依赖列表、安装/卸载/重装、刷新与取消、查看安装日志 |
-| **日志中心** | 任务运行日志、登录日志、系统日志、**通知审计日志** |
-| **运行概览** | 今日运行数/成功率/平均耗时、近 7 日趋势、耗时与次数排行 |
-| **数据清理** | 运行实例与统计数据保留策略、依赖缓存清理、数据库压缩，支持预览后再执行 |
-| **安全设置** | 修改密码、IP 黑名单、应用（AppKey）管理 |
-| **系统信息** | 面板版本、系统状态、更新检测 |
+## 系统要求
 
-### 其他
-
-- 主题切换（亮色 / 暗色 / 纯白），Logo 与启动图自动适配暗色
-- 文字缩放与基础显示设置
-- 内置代码编辑器（CodeMirror）
-- iCloud 数据同步支持（iOS）
-- 应用内购与赞助页面
-
----
-
-## 接口说明
-
-本项目对接青龙面板两套接口体系：
-
-```
-常规登录  →  /api/*
-OpenAPI   →  /open/*
-```
-
-> 面板侧通过 `rewrite('/open/*', '/api/$1')` 将 `/open` 映射到同一套路由，因此两套前缀能力一致，
-> 差别仅在鉴权方式与 scope 校验。使用 OpenAPI 登录时若返回 `401`，通常是面板未为该应用分配对应权限，
-> 请在「应用管理」中检查授权。
-
-新增能力对应的接口：
-
-| 功能 | 接口 |
-|---|---|
-| 脚本运行/停止/重命名 | `PUT /scripts/run`、`PUT /scripts/stop`、`PUT /scripts/rename` |
-| 脚本历史版本 | `GET /scripts/history`、`GET /scripts/history/detail`、`PUT /scripts/history/restore` |
-| 定时规则预览 | `GET /crons/preview` |
-| 任务运行实例 | `GET /crons/:id/instances`、`POST /crons/:id/instances/:instanceId/stop` |
-| 运行概览 | `GET /dashboard/overview`、`/trend`、`/top-time`、`/top-count` |
-| 通知审计日志 | `GET /system/notify-log` |
-| 数据清理 | `PUT /system/storage-retention/config`、`POST /preview`、`POST /cleanup` |
-| IP 黑名单 | `GET/PUT/DELETE /user/ip-blacklist` |
-| 环境变量置顶 | `PUT /envs/pin`、`PUT /envs/unpin`、`PUT /envs/name` |
-
----
-
-## 代码结构
-
-```
-lib/
-├── main.dart                  # 应用入口，多账号容器与全局初始化
-├── base/                      # 基础设施层
-│   ├── http/                  # HTTP 封装、Token 拦截器、接口与路由定义
-│   ├── theme.dart             # 主题配置
-│   ├── routes.dart            # 路由管理
-│   └── ui/                    # 通用 UI 组件（含 JSON 表格、抖动动画、Logo 等）
-├── utils/
-│   ├── diff_util.dart         # 行级文本差异（脚本历史对比）
-│   └── ...                    # 存储、iCloud、格式化等
-└── module/                    # 业务模块
-    ├── home/                  # 首页 & 系统信息
-    ├── task/                  # 定时任务、运行实例、任务日志
-    ├── subscribe/             # 订阅管理
-    ├── env/                   # 环境变量
-    ├── config/                # 配置文件
-    ├── dashboard/             # 运行概览
-    ├── setting/               # 数据清理、IP 黑名单
-    ├── others/                # 脚本、依赖、日志、通知日志、关于等
-    ├── appkey/                # 应用管理（Apps / AppKeys）
-    ├── login/                 # 登录页面
-    ├── code_editor/           # 内置代码编辑器
-    └── ...                    # 设置、订阅、推送、扫描等页面
-```
-
----
+| 平台 | 要求 |
+| --- | --- |
+| Android | 7.0（API 24）及以上 |
+| iOS | 15.0 及以上 |
+| Linux 桌面 | GTK 3.24+（用于开发与集成测试） |
+| Flutter | 3.50.0（Dart SDK ^3.14.0） |
+| 青龙面板 | 建议 v2.20+（部分功能要求 v2.22/v2.23+，App 内有版本提示） |
 
 ## 快速开始
 
-### 环境要求
-
-- Flutter SDK **3.50.0 及以上**（Dart 3.14）
-- Android：Android SDK 36、JDK 17
-- iOS：Xcode 15+，最低部署版本 15.0
-
-### 运行
-
 ```bash
-# 获取依赖
+# 1. 克隆
+git clone https://github.com/LinxiDev/qinglong-app.git
+cd qinglong-app
+
+# 2. 安装依赖
 flutter pub get
 
-# 代码检查与测试
-flutter analyze
-flutter test
-
-# 连接设备后运行
+# 3. 运行（Android / iOS / Linux 桌面）
 flutter run
 ```
 
-### 构建发布包
+打包发布：
 
 ```bash
-# Android APK
-flutter build apk --release
-
-# iOS（需 macOS + Xcode）
-flutter build ios --release
+flutter build apk --release      # Android APK
+flutter build ipa --release      # iOS IPA（需签名配置）
+flutter build linux --debug      # Linux 桌面
 ```
 
-### 图标与启动图
+## 下载安装
+
+前往 [Releases](https://github.com/LinxiDev/qinglong-app/releases) 下载对应平台的安装包：
+
+- `qinglong_app-x.y.z.apk` —— Android 直接安装
+- `qinglong_app-x.y.z.ipa` —— iOS 需自签（TrollStore / AltStore / Xcode）或 TestFlight
+
+## 集成测试
+
+项目内置 7 个真实面板集成测试（页面遍历、空态、增删改流程），默认使用青龙官方演示面板，无需任何配置：
 
 ```bash
-# 重新生成应用图标（基于 assets/images/ic_launcher.png）
-dart run flutter_launcher_icons
-
-# 重新生成原生启动图（含暗色）
-dart run flutter_native_splash:create
+flutter test integration_test/smoke_test.dart -d linux
 ```
 
----
+指向自己的面板：
 
-## 致谢
+```bash
+export QL_HOST=http://your-panel:5700
+export QL_USER=admin
+export QL_PASS=your-password
+```
 
-- 青龙面板：[whyour/qinglong](https://github.com/whyour/qinglong)
-- 原项目参考：[ayoulx/qinglong-app](https://github.com/ayoulx/qinglong-app)
+测试结束后会自动清理以 `TEST_UI_VAR_*` / `UI_TEST_TASK_*` 命名的测试数据。
+
+## CI/CD
+
+| 工作流 | 触发 | 产物 |
+| --- | --- | --- |
+| `android-ci` | push / PR | APK 构建校验 + analyze/test |
+| `android-release` | 推送 `v*` 标签 | `qinglong_app-x.y.z.apk` → GitHub Release |
+| `ios-ci` | push / PR | 未签名 IPA 构建校验 |
+| `ios-release` | 推送 `v*` 标签 / 手动 | `qinglong_app-x.y.z.ipa` → GitHub Release + dSYM |
+| `integration-test` | push / PR / 手动 | Linux 桌面真面板集成测试 |
+
+完整文档见 [GitHub Wiki](https://github.com/LinxiDev/qinglong-app/wiki)（本地副本在 [`wiki/`](wiki/) 目录）。
+
+## 项目结构
+
+```
+lib/
+├── base/           # 基础设施：HTTP、主题、路由、多账号、通用组件
+├── module/         # 业务页面（task/env/config/scripts/subscribe/...）
+└── utils/          # 工具类（IDN、SP、日志等）
+test/               # 单元测试
+integration_test/   # 真实面板集成测试
+.github/workflows/  # CI/CD 流水线
+wiki/               # 文档源文件
+```
+
+## 常见问题
+
+- **中文域名登录失败？** v4.1.0 起已支持，App 会自动把中文域名转换为 Punycode（xn--）格式；旧版本请手动填写解析后的域名。
+- **键盘无法弹出（Android）？** 长按文本框即可唤起软键盘（详见 App 内提示）。
+- **多账号有上限吗？** 普通用户 5 个，VIP 不限。
+- 更多问题见 [Wiki 常见问题](https://github.com/LinxiDev/qinglong-app/wiki)。
+
+## 免责声明
+
+本项目为青龙面板的第三方客户端，与青龙官方无关。请合理使用脚本功能，遵守目标站点的服务条款。
+
+## 许可证
+
+[LICENSE](LICENSE)

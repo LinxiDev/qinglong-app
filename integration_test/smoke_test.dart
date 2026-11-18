@@ -112,7 +112,8 @@ void main() {
             rectInfo += '${ro.localToGlobal(Offset.zero)} ${ro.size} ';
           }
         }
-        final bool stillOnMine = find.text('扫描依赖').evaluate().isNotEmpty ||
+        final bool stillOnMine =
+            find.text('扫描依赖').evaluate().isNotEmpty ||
             find.text('高级功能').evaluate().isNotEmpty;
         if (stillOnMine) {
           // 面板无任务等场景下部分入口（如任务日志）不可达，不算失败
@@ -207,8 +208,10 @@ void main() {
     }
 
     // ignore: avoid_print
-    print('APP_SMOKE visited=${visited.length} '
-        'skipped=${skipped.length} failed=${failed.length}');
+    print(
+      'APP_SMOKE visited=${visited.length} '
+      'skipped=${skipped.length} failed=${failed.length}',
+    );
     for (final String item in skipped) {
       // ignore: avoid_print
       print('  SKIP $item');

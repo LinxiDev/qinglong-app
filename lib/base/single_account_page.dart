@@ -14,6 +14,7 @@ import 'package:qinglong_app/module/others/dependencies/dependency_viewmodel.dar
 import 'package:qinglong_app/module/subscribe/subscribe_viewmodel.dart';
 import 'package:qinglong_app/module/task/task_viewmodel.dart';
 import 'package:qinglong_app/utils/icloud_utils.dart';
+import 'package:qinglong_app/utils/idn.dart';
 import 'package:qinglong_app/utils/utils.dart';
 
 import 'routes.dart';
@@ -267,6 +268,8 @@ class SingleAccountPageState extends State<SingleAccountPage> {
   }
 
   void registerHttp(String host) {
+    // 兼容历史数据里的中文域名：统一转成 punycode 再交给 Dio
+    host = normalizeUrlHost(host);
     if (getIt.isRegistered<Http>(instanceName: widget.index.toString())) {
       getIt.unregister<Http>(instanceName: widget.index.toString());
     }
