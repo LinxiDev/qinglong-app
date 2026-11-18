@@ -91,7 +91,7 @@ class _AboutPageState extends ConsumerState<AboutPage>
               const SizedBox(height: 5),
               Center(
                 child: Text(
-                  "基于青龙开源项目打造的第三方${getPlatformName()}客户端 · 作者 $kAuthor",
+                  "基于青龙开源项目打造的第三方${getPlatformName()}客户端",
                   style: TextStyle(
                     color: ref.watch(themeProvider).themeColor.descColor(),
                     fontSize: 12,
