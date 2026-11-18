@@ -50,3 +50,6 @@ app.*.map.json
 /android/app/qinglong.keystore
 # 本地 Wiki 文档（不提交到 GitHub）
 wiki/
+
+# 本地文档截图（不提交到 GitHub）
+docs/
