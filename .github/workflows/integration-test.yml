@@ -30,6 +30,9 @@ concurrency:
 
 env:
   FLUTTER_VERSION: "3.50.0"
+  # 未配置 secret 时为空，后续步骤自动跳过登录态写入
+  QL_HOST: ${{ secrets.QL_HOST }}
+  QL_TOKEN: ${{ secrets.QL_TOKEN }}
 
 jobs:
   integration:
@@ -60,10 +63,7 @@ jobs:
         run: flutter pub get
 
       - name: 写入面板登录态
-        if: ${{ secrets.QL_HOST != '' && secrets.QL_TOKEN != '' }}
-        env:
-          QL_HOST: ${{ secrets.QL_HOST }}
-          QL_TOKEN: ${{ secrets.QL_TOKEN }}
+        if: env.QL_HOST != '' && env.QL_TOKEN != ''
         run: |
           python3 - <<'PY'
           import json, os
