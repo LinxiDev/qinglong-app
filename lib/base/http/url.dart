@@ -217,6 +217,21 @@ class Url {
       ? "/open/system/update-check"
       : "/api/system/update-check";
 
+  // ---------------- 面板升级 / 重启 / 系统配置 ----------------
+  // 注意：这些能力仅 /api 路由提供（open api 无对应端点）
+
+  /// 启动升级下载任务（PUT /system/update）
+  String get systemUpdate => "/api/system/update";
+
+  /// 升级任务状态（GET /system/update-status）
+  String get systemUpdateStatus => "/api/system/update-status";
+
+  /// 重启/重载面板（PUT /system/reload，body.type: system|data|空）
+  String get systemReload => "/api/system/reload";
+
+  /// 单项系统配置更新（PUT /system/config/{key}）
+  String systemConfigItem(String key) => "/api/system/config/$key";
+
   String get appkeys =>
       getIt<UserInfoViewModel>(instanceName: index.toString()).useSecretLogined
       ? "/open/apps"

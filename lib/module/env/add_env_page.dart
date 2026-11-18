@@ -103,7 +103,9 @@ class _AddEnvPageState extends ConsumerState<AddEnvPage>
                       controller: _valueController,
                       maxLines: 8,
                       minLines: 1,
-                      decoration: const InputDecoration(hintText: "请输入值"),
+                      decoration: const InputDecoration(
+                        hintText: "请输入值（支持多行，换行即多个值）",
+                      ),
                       autofocus: false,
                     ),
                   ],

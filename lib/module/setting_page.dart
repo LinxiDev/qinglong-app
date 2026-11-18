@@ -17,6 +17,8 @@ import 'package:qinglong_app/utils/extension.dart';
 import 'package:qinglong_app/utils/sp_utils.dart';
 
 import '../base/ql_app_bar.dart';
+import 'setting/panel_upgrade_page.dart';
+import 'setting/system_config_page.dart';
 
 class SettingPage extends ConsumerStatefulWidget {
   const SettingPage({super.key});
@@ -26,6 +28,115 @@ class SettingPage extends ConsumerStatefulWidget {
 }
 
 class _SettingPageState extends ConsumerState<SettingPage> {
+  /// 面板管理区块：升级 / 系统配置（client_id 登录的面板不支持这些接口）
+  Widget _buildPanelManageSection() {
+    if (SingleAccountPageState.ofUserInfo(context).useSecretLogined) {
+      return const SizedBox.shrink();
+    }
+    final bool dark = ref.watch(themeProvider).themeMode == modeDark;
+    final ThemeColors themeColor = ref.watch(themeProvider).themeColor;
+    final Color primary = ref.watch(themeProvider).primaryColor;
+
+    Widget row({
+      required IconData icon,
+      required String title,
+      required VoidCallback onTap,
+      bool last = false,
+    }) {
+      return Column(
+        children: [
+          InkWell(
+            onTap: onTap,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 15),
+              child: Row(
+                children: [
+                  Icon(icon, size: 20, color: primary),
+                  const SizedBox(width: 12),
+                  Text(
+                    title,
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: themeColor.titleColor(),
+                    ),
+                  ),
+                  const Spacer(),
+                  Icon(
+                    CupertinoIcons.chevron_right,
+                    size: 18,
+                    color: themeColor.descColor(),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          last
+              ? const SizedBox.shrink()
+              : Divider(
+                  height: 0.5,
+                  thickness: 0.5,
+                  indent: 47,
+                  endIndent: 15,
+                  color: dark
+                      ? const Color(0xFF2E2E31)
+                      : const Color(0xFFECEEF1),
+                ),
+        ],
+      );
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(left: 30),
+          child: Text(
+            "面板管理",
+            style: TextStyle(color: themeColor.descColor(), fontSize: 12),
+          ),
+        ),
+        const SizedBox(height: 10),
+        Container(
+          margin: const EdgeInsets.symmetric(horizontal: 15),
+          decoration: BoxDecoration(
+            color: themeColor.settingBgColor(),
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(
+              color: dark ? const Color(0xFF2E2E31) : const Color(0xFFE6E8EC),
+            ),
+          ),
+          child: Column(
+            children: [
+              row(
+                icon: CupertinoIcons.arrow_up_circle,
+                title: "面板升级",
+                onTap: () {
+                  Navigator.of(context).push(
+                    CupertinoPageRoute(
+                      builder: (context) => const PanelUpgradePage(),
+                    ),
+                  );
+                },
+              ),
+              row(
+                icon: CupertinoIcons.slider_horizontal_3,
+                title: "系统配置",
+                last: true,
+                onTap: () {
+                  Navigator.of(context).push(
+                    CupertinoPageRoute(
+                      builder: (context) => const SystemConfigPage(),
+                    ),
+                  );
+                },
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     SystemBean? systemBean;
@@ -609,6 +720,8 @@ class _SettingPageState extends ConsumerState<SettingPage> {
                 ],
               ),
             ),
+            const SizedBox(height: 20),
+            _buildPanelManageSection(),
             const SizedBox(height: 30),
             Center(
               child: SizedBox(

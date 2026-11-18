@@ -850,6 +850,41 @@ class Api {
 
   // ==================== 系统 ====================
 
+  /// 启动面板升级（下载更新包），随后用 [panelUpgradeStatus] 轮询进度
+  Future<HttpResponse<NullResponse>> startPanelUpgrade() async {
+    return await getIt<Http>(instanceName: index.toString()).put<NullResponse>(
+      getIt<Url>(instanceName: index.toString()).systemUpdate,
+      <String, dynamic>{},
+    );
+  }
+
+  /// 升级任务状态：status 取值 idle/starting/running/restarting/ready/completed/failed
+  Future<HttpResponse<String>> panelUpgradeStatus() async {
+    return await getIt<Http>(instanceName: index.toString()).get<String>(
+      getIt<Url>(instanceName: index.toString()).systemUpdateStatus,
+      null,
+    );
+  }
+
+  /// 重启/重载面板：type='system' 应用已下载的升级、'data' 仅重载数据、null 普通重启
+  Future<HttpResponse<NullResponse>> reloadPanel([String? type]) async {
+    return await getIt<Http>(instanceName: index.toString()).put<NullResponse>(
+      getIt<Url>(instanceName: index.toString()).systemReload,
+      type == null ? <String, dynamic>{} : <String, dynamic>{"type": type},
+    );
+  }
+
+  /// 更新单项系统配置（body 字段名须与官方一致，如 cronConcurrency/panelTitle）
+  Future<HttpResponse<NullResponse>> updateSystemConfig(
+    String key,
+    Map<String, dynamic> body,
+  ) async {
+    return await getIt<Http>(instanceName: index.toString()).put<NullResponse>(
+      getIt<Url>(instanceName: index.toString()).systemConfigItem(key),
+      body,
+    );
+  }
+
   Future<HttpResponse<String>> systemConfig() async {
     return await getIt<Http>(instanceName: index.toString()).get<String>(
       getIt<Url>(instanceName: index.toString()).systemConfig,
