@@ -1,10 +1,15 @@
 name: 集成测试（真实面板）
 
 # 说明：
-# 1. 需要配置仓库 secret：QL_HOST / QL_TOKEN。
-#    QL_HOST 形如 http://1.2.3.4:5700，QL_TOKEN 为面板登录后拿到的 token。
-# 2. 未配置 secret 时，用例会打印「未登录，跳过」并直接通过，不会阻塞构建。
-# 3. 每个测试文件单独起进程执行：应用启动时用 GetIt 注册单例，
+# 1. 默认使用青龙官方演示面板 http://demo.qinglong.online:4433（admin/123），
+#    无需任何 secret 即可运行真实回归。
+# 2. 若要指向自己的面板，配置以下 secrets（均可选）：
+#      QL_HOST   面板地址，如 http://1.2.3.4:5700
+#      QL_TOKEN  面板 token（配了则免登录）
+#      QL_USER / QL_PASS  面板账号密码（未配 QL_TOKEN 时用于自动登录）
+# 3. 测试结束后自动清理用例创建的数据（仅按测试前缀匹配，不会误删真实数据）：
+#      环境变量 TEST_UI_VAR_* / 定时任务 UI_TEST_TASK_* / IP 黑名单 10.0.0.3
+# 4. 每个测试文件单独起进程执行：应用启动时用 GetIt 注册单例，
 #    同一进程内多次 app.main() 会重复注册而失败。
 
 on:
@@ -30,8 +35,10 @@ concurrency:
 
 env:
   FLUTTER_VERSION: "3.50.0"
-  # 未配置 secret 时为空，后续步骤自动跳过登录态写入
-  QL_HOST: ${{ secrets.QL_HOST }}
+  # 未配置 secret 时回落到官方演示面板与默认账号
+  QL_HOST: ${{ secrets.QL_HOST || 'http://demo.qinglong.online:4433' }}
+  QL_USER: ${{ secrets.QL_USER || 'admin' }}
+  QL_PASS: ${{ secrets.QL_PASS || '123' }}
   QL_TOKEN: ${{ secrets.QL_TOKEN }}
 
 jobs:
@@ -62,34 +69,59 @@ jobs:
       - name: 安装依赖
         run: flutter pub get
 
-      - name: 写入面板登录态
-        if: env.QL_HOST != '' && env.QL_TOKEN != ''
+      - name: 获取面板 Token 并写入登录态
         run: |
           python3 - <<'PY'
-          import json, os
+          import json
+          import os
+          import urllib.request
 
           host = os.environ["QL_HOST"].rstrip("/")
-          token = os.environ["QL_TOKEN"]
+          token = os.environ.get("QL_TOKEN", "").strip()
+
+          if not token:
+              body = json.dumps({
+                  "username": os.environ["QL_USER"],
+                  "password": os.environ["QL_PASS"],
+              }).encode()
+              req = urllib.request.Request(
+                  host + "/api/user/login",
+                  data=body,
+                  headers={"Content-Type": "application/json"},
+                  method="POST",
+              )
+              with urllib.request.urlopen(req, timeout=30) as resp:
+                  data = json.load(resp)
+              if data.get("code") != 200:
+                  raise SystemExit(f"面板登录失败：{host} -> {data}")
+              token = data["data"]["token"]
+              print("已通过账号密码登录面板并获取 token")
+
+          # 写入应用登录态（与 Linux 端 shared_preferences 路径一致）
           path = os.path.expanduser(
               "~/.local/share/work.master.qinglong_app/shared_preferences.json"
           )
           os.makedirs(os.path.dirname(path), exist_ok=True)
-          data = {}
+          store = {}
           if os.path.exists(path):
               with open(path, encoding="utf-8") as f:
-                  data = json.load(f)
-          data["flutter.spAccountCount"] = 1
-          data["flutter.spTokenBeanList"] = json.dumps([
+                  store = json.load(f)
+          store["flutter.spAccountCount"] = 1
+          store["flutter.spTokenBeanList"] = json.dumps([
               {"token": token, "useSecretLogined": False,
                "host": host, "alias": "CI 面板"}
           ], ensure_ascii=False)
-          data["flutter.loginHistory"] = json.dumps([
-              {"userName": "", "password": "", "useSecretLogined": False,
-               "host": host, "alias": "CI 面板"}
+          store["flutter.loginHistory"] = json.dumps([
+              {"userName": os.environ["QL_USER"], "password": "",
+               "useSecretLogined": False, "host": host, "alias": "CI 面板"}
           ], ensure_ascii=False)
           with open(path, "w", encoding="utf-8") as f:
-              json.dump(data, f, ensure_ascii=False)
-          print("已写入登录态:", host)
+              json.dump(store, f, ensure_ascii=False)
+
+          # 供清理步骤复用
+          with open(os.environ["GITHUB_ENV"], "a") as f:
+              f.write(f"QL_TOKEN_EARNED={token}\n")
+          print("登录态已写入：", host)
           PY
 
       - name: 运行集成测试
@@ -101,3 +133,62 @@ jobs:
               flutter test "$f" -d linux || exit 1
             echo "::endgroup::"
           done
+
+      - name: 清理测试创建的数据
+        if: always()
+        run: |
+          python3 - <<'PY'
+          import json
+          import os
+          import urllib.request
+          import urllib.error
+
+          host = os.environ["QL_HOST"].rstrip("/")
+          token = os.environ.get("QL_TOKEN_EARNED", "").strip()
+          if not token:
+              print("无 token，跳过清理")
+              raise SystemExit(0)
+
+          headers = {"Authorization": f"Bearer {token}",
+                     "Content-Type": "application/json"}
+
+          def req(path, method="GET", body=None):
+              data = json.dumps(body).encode() if body is not None else None
+              r = urllib.request.Request(host + path, data=data,
+                                         headers=headers, method=method)
+              try:
+                  with urllib.request.urlopen(r, timeout=30) as resp:
+                      return json.load(resp)
+              except urllib.error.HTTPError as e:
+                  print(f"  {method} {path} -> HTTP {e.code}")
+                  return {}
+
+          # 环境变量：仅删除测试前缀
+          envs = req("/api/envs").get("data") or []
+          ids = [e["id"] for e in envs
+                 if str(e.get("name", "")).startswith("TEST_UI_VAR")]
+          if ids:
+              print("删除测试环境变量:", ids)
+              req("/api/envs", "DELETE", ids)
+
+          # 定时任务：仅删除测试前缀
+          crons = (req("/api/crons?page=1&size=50&searchText=")
+                   .get("data", {}).get("data") or [])
+          ids = [c["id"] for c in crons
+                 if str(c.get("name", "")).startswith("UI_TEST_TASK")]
+          if ids:
+              print("删除测试定时任务:", ids)
+              req("/api/crons", "DELETE", ids)
+
+          # IP 黑名单：仅删除测试写入的固定 IP
+          ips = req("/api/user/ip-blacklist").get("data") or []
+          if "10.0.0.3" in ips:
+              print("移出测试 IP: 10.0.0.3")
+              req("/api/user/ip-blacklist", "DELETE", {"ip": "10.0.0.3"})
+
+          print("清理完成：envs=",
+                len(req("/api/envs").get("data") or []),
+                "crons=",
+                len((req("/api/crons?page=1&size=50&searchText=")
+                     .get("data", {}).get("data") or [])))
+          PY
