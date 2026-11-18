@@ -1,0 +1,252 @@
+name: iOS 正式发布
+
+# 需要的仓库 secrets（缺任意一项都会自动降级为“未签名 IPA”，不会中断流水线）：
+#   IOS_CERTIFICATE_BASE64          p12 证书的 base64
+#   IOS_CERTIFICATE_PASSWORD        p12 证书密码
+#   IOS_PROVISIONING_PROFILE_BASE64 mobileprovision 的 base64
+#   IOS_TEAM_ID                     Apple Developer Team ID（可选，填了会写入 ExportOptions）
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "发布版本号，例如 1.0.1 或 v1.0.1；填写 auto 会自动递增 Patch 版本"
+        required: true
+        default: auto
+      export_method:
+        description: "导出方式（未配置签名时忽略）"
+        required: true
+        default: app-store
+        type: choice
+        options:
+          - app-store
+          - ad-hoc
+          - development
+          - enterprise
+
+permissions:
+  contents: write
+
+env:
+  FLUTTER_VERSION: "3.50.0"
+  BUNDLE_ID: "work.newtab.ql"
+
+jobs:
+  release-ipa:
+    name: 构建并发布 iOS IPA
+    runs-on: macos-latest
+    timeout-minutes: 90
+
+    steps:
+      - name: 拉取代码
+        uses: actions/checkout@v4
+        with:
+          # 手动发布 auto 版本时需要读取完整 tag 历史。
+          fetch-depth: 0
+
+      - name: 计算发布版本
+        id: version
+        run: |
+          INPUT_VERSION="${{ github.event.inputs.version }}"
+
+          # 统一去掉 v/V 前缀，内部版本号使用纯数字三段式。
+          clean_version() { echo "$1" | sed 's/^[vV]//'; }
+
+          if [[ "${GITHUB_REF}" == refs/tags/v* ]]; then
+            # 推荐方式：推送 v1.2.3 标签后，直接按标签版本发布。
+            VERSION=$(clean_version "${GITHUB_REF_NAME}")
+          elif [[ -n "$INPUT_VERSION" && "$INPUT_VERSION" != "auto" ]]; then
+            # 手动发布：使用输入的版本号。
+            VERSION=$(clean_version "$INPUT_VERSION")
+          else
+            # 手动发布 auto：读取最新 v* 稳定版本标签，并递增 Patch。
+            git fetch --tags --force
+            LATEST_VERSION=$(git tag -l "v*" | sed 's/^[vV]//' | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' | sort -V | tail -n1)
+            if [[ "$LATEST_VERSION" =~ ^([0-9]+)\.([0-9]+)\.([0-9]+)$ ]]; then
+              VERSION="${BASH_REMATCH[1]}.${BASH_REMATCH[2]}.$((BASH_REMATCH[3] + 1))"
+            else
+              VERSION="1.0.0"
+            fi
+          fi
+
+          if [[ ! "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "版本号格式不正确：$VERSION"
+            echo "请使用 1.2.3 或 v1.2.3 这类三段式版本号。"
+            exit 1
+          fi
+
+          EXPORT_METHOD="${{ github.event.inputs.export_method }}"
+          if [ -z "$EXPORT_METHOD" ]; then
+            EXPORT_METHOD="app-store"
+          fi
+
+          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+          echo "tag=v${VERSION}" >> "$GITHUB_OUTPUT"
+          echo "ipa_file=qinglong_app-${VERSION}.ipa" >> "$GITHUB_OUTPUT"
+          echo "export_method=${EXPORT_METHOD}" >> "$GITHUB_OUTPUT"
+          echo "本次发布版本：v${VERSION}（导出方式：${EXPORT_METHOD}）"
+
+      - name: 选择 Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest-stable
+
+      - name: 安装 Flutter 环境
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+
+      - name: 缓存 CocoaPods
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/Library/Caches/CocoaPods
+            ios/Pods
+          key: pods-${{ runner.os }}-${{ hashFiles('ios/Podfile.lock') }}
+          restore-keys: |
+            pods-${{ runner.os }}-
+
+      - name: 安装 Flutter 依赖
+        run: flutter pub get
+
+      - name: 安装 Pods
+        working-directory: ios
+        run: pod install --repo-update
+
+      - name: 解码签名证书与描述文件
+        id: signing
+        env:
+          IOS_CERTIFICATE_BASE64: ${{ secrets.IOS_CERTIFICATE_BASE64 }}
+          IOS_CERTIFICATE_PASSWORD: ${{ secrets.IOS_CERTIFICATE_PASSWORD }}
+          IOS_PROVISIONING_PROFILE_BASE64: ${{ secrets.IOS_PROVISIONING_PROFILE_BASE64 }}
+          KEYCHAIN_PASSWORD: ${{ github.run_id }}-${{ github.run_attempt }}
+        run: |
+          if [ -z "${IOS_CERTIFICATE_BASE64}" ] || \
+             [ -z "${IOS_PROVISIONING_PROFILE_BASE64}" ] || \
+             [ -z "${IOS_CERTIFICATE_PASSWORD}" ]; then
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+            echo "未配置 iOS 签名证书/描述文件，将构建未签名 IPA。"
+            exit 0
+          fi
+
+          CERT_PATH="${RUNNER_TEMP}/cert.p12"
+          PP_PATH="${RUNNER_TEMP}/profile.mobileprovision"
+          KEYCHAIN="${RUNNER_TEMP}/app-signing.keychain-db"
+
+          echo "${IOS_CERTIFICATE_BASE64}" | base64 -d > "${CERT_PATH}"
+          echo "${IOS_PROVISIONING_PROFILE_BASE64}" | base64 -d > "${PP_PATH}"
+
+          security create-keychain -p "${KEYCHAIN_PASSWORD}" "${KEYCHAIN}"
+          security set-keychain-settings -lut 21600 "${KEYCHAIN}"
+          security unlock-keychain -p "${KEYCHAIN_PASSWORD}" "${KEYCHAIN}"
+          security import "${CERT_PATH}" -P "${IOS_CERTIFICATE_PASSWORD}" \
+            -A -t cert -f pkcs12 -k "${KEYCHAIN}"
+          security set-key-partition-list -S apple-tool:,apple:,codesign: \
+            -k "${KEYCHAIN_PASSWORD}" "${KEYCHAIN}" > /dev/null
+          # 保留原有钥匙串，同时把临时钥匙串加入搜索列表
+          security list-keychains -d user -s "${KEYCHAIN}" $(security list-keychains -d user | tr -d '"')
+
+          PP_DIR="${HOME}/Library/MobileDevice/Provisioning Profiles"
+          mkdir -p "${PP_DIR}"
+          cp "${PP_PATH}" "${PP_DIR}/$(uuidgen).mobileprovision"
+
+          PP_NAME=$(security cms -D -i "${PP_PATH}" \
+            | /usr/libexec/PlistBuddy -c "Print :Name" /dev/stdin)
+
+          echo "pp_name=${PP_NAME}" >> "$GITHUB_OUTPUT"
+          echo "enabled=true" >> "$GITHUB_OUTPUT"
+          echo "签名环境已就绪，描述文件：${PP_NAME}"
+
+      - name: 生成 ExportOptions.plist
+        if: steps.signing.outputs.enabled == 'true'
+        env:
+          PP_NAME: ${{ steps.signing.outputs.pp_name }}
+          TEAM_ID: ${{ secrets.IOS_TEAM_ID }}
+          EXPORT_METHOD: ${{ steps.version.outputs.export_method }}
+        run: |
+          python3 - <<'PY'
+          import os
+          import plistlib
+
+          data = {
+              "method": os.environ["EXPORT_METHOD"],
+              "signingStyle": "manual",
+              "stripSwiftSymbols": True,
+              "compileBitcode": False,
+              "provisioningProfiles": {
+                  os.environ["BUNDLE_ID"]: os.environ["PP_NAME"],
+              },
+          }
+          team_id = os.environ.get("TEAM_ID", "").strip()
+          if team_id:
+              data["teamID"] = team_id
+
+          path = os.path.join(os.environ["RUNNER_TEMP"], "ExportOptions.plist")
+          with open(path, "wb") as f:
+              plistlib.dump(data, f)
+          print("已生成 ExportOptions.plist:", path)
+          print(data)
+          PY
+
+      - name: 构建并导出签名 IPA
+        if: steps.signing.outputs.enabled == 'true'
+        env:
+          EXPORT_PLIST: ${{ runner.temp }}/ExportOptions.plist
+        run: |
+          flutter build ipa --release \
+            --build-name "${{ steps.version.outputs.version }}" \
+            --build-number "${{ github.run_number }}" \
+            --export-options-plist "${EXPORT_PLIST}"
+
+          IPA_PATH=$(ls -1 build/ios/ipa/*.ipa | head -n1)
+          cp "${IPA_PATH}" "${{ steps.version.outputs.ipa_file }}"
+          ls -lh "${{ steps.version.outputs.ipa_file }}"
+
+      - name: 构建未签名 IPA（兜底）
+        if: steps.signing.outputs.enabled != 'true'
+        run: |
+          set -euo pipefail
+          flutter build ios --release --no-codesign \
+            --build-name "${{ steps.version.outputs.version }}" \
+            --build-number "${{ github.run_number }}"
+
+          APP_PATH="build/ios/iphoneos/Runner.app"
+          if [ ! -d "$APP_PATH" ]; then
+            echo "未找到构建产物：$APP_PATH"
+            exit 1
+          fi
+          rm -rf Payload
+          mkdir -p Payload
+          cp -R "$APP_PATH" Payload/Runner.app
+          zip -qry "${{ steps.version.outputs.ipa_file }}" Payload -x "*.DS_Store"
+          ls -lh "${{ steps.version.outputs.ipa_file }}"
+
+      - name: 上传 dSYM（崩溃符号化用）
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-dsym-${{ steps.version.outputs.version }}
+          path: build/ios/archive/Runner.xcarchive/dSYMs
+          if-no-files-found: ignore
+
+      - name: 发布到 GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.version.outputs.tag }}
+          name: ${{ steps.version.outputs.tag }}
+          prerelease: false
+          make_latest: true
+          generate_release_notes: true
+          append_body: true
+          body: |
+            自动构建来源：`${{ github.ref_name }}`
+            提交：`${{ github.sha }}`
+            版本：`${{ steps.version.outputs.tag }}`
+            签名：${{ steps.signing.outputs.enabled == 'true' && '已签名' || '未签名（未配置证书）' }}
+            导出方式：${{ steps.version.outputs.export_method }}
+          files: ${{ steps.version.outputs.ipa_file }}

@@ -1,0 +1,119 @@
+name: iOS 日常构建
+
+on:
+  push:
+    branches:
+      - "**"
+    tags-ignore:
+      - "v*"
+    paths:
+      - "lib/**"
+      - "assets/**"
+      - "ios/**"
+      - "test/**"
+      - "pubspec.yaml"
+      - "pubspec.lock"
+      - "analysis_options.yaml"
+      - ".github/workflows/ios-ci.yml"
+      - ".github/workflows/ios-release.yml"
+  pull_request:
+    paths:
+      - "lib/**"
+      - "assets/**"
+      - "ios/**"
+      - "test/**"
+      - "pubspec.yaml"
+      - "pubspec.lock"
+      - "analysis_options.yaml"
+      - ".github/workflows/ios-ci.yml"
+      - ".github/workflows/ios-release.yml"
+  workflow_dispatch:
+
+# 同一分支重复触发时，自动取消还在运行的旧构建，减少排队和资源浪费。
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  FLUTTER_VERSION: "3.50.0"
+  BUNDLE_ID: "work.newtab.ql"
+
+jobs:
+  build-ios:
+    name: 构建未签名 IPA
+    # 必须是 macOS runner 才能跑 Xcode 工具链
+    runs-on: macos-latest
+    timeout-minutes: 60
+
+    steps:
+      - name: 拉取代码
+        uses: actions/checkout@v4
+
+      - name: 选择 Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest-stable
+
+      - name: 打印构建环境
+        run: |
+          xcodebuild -version
+          xcrun --sdk iphoneos --show-sdk-version
+          pod --version
+
+      - name: 安装 Flutter 环境
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+
+      - name: 缓存 CocoaPods
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/Library/Caches/CocoaPods
+            ios/Pods
+          key: pods-${{ runner.os }}-${{ hashFiles('ios/Podfile.lock') }}
+          restore-keys: |
+            pods-${{ runner.os }}-
+
+      - name: 安装 Flutter 依赖
+        run: flutter pub get
+
+      - name: 安装 Pods
+        working-directory: ios
+        run: pod install --repo-update
+
+      - name: 构建 Release（不签名）
+        run: flutter build ios --release --no-codesign
+
+      - name: 打包未签名 IPA
+        run: |
+          set -euo pipefail
+          APP_PATH="build/ios/iphoneos/Runner.app"
+          if [ ! -d "$APP_PATH" ]; then
+            echo "未找到构建产物：$APP_PATH"
+            exit 1
+          fi
+          rm -rf Payload
+          mkdir -p Payload
+          cp -R "$APP_PATH" Payload/Runner.app
+          zip -qry qinglong_app-unsigned.ipa Payload -x "*.DS_Store"
+          ls -lh qinglong_app-unsigned.ipa
+
+      - name: 上传 IPA 构建产物
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-unsigned-ipa
+          path: qinglong_app-unsigned.ipa
+          if-no-files-found: error
+
+      - name: 上传构建日志
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-build-logs
+          path: |
+            build/ios/**/xcactivitylog
+            ~/Library/Logs/gym
+          if-no-files-found: ignore
