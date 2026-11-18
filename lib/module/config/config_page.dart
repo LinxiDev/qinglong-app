@@ -6,8 +6,8 @@ import 'package:qinglong_app/base/http/http.dart';
 import 'package:qinglong_app/base/ql_app_bar.dart';
 import 'package:qinglong_app/base/routes.dart';
 import 'package:qinglong_app/base/single_account_page.dart';
-import 'package:qinglong_app/base/theme.dart';
 import 'package:qinglong_app/base/ui/empty_widget.dart';
+import 'package:qinglong_app/base/ui/list_card.dart';
 import 'package:qinglong_app/main.dart';
 import 'package:qinglong_app/module/config/add_config_page.dart';
 import 'package:qinglong_app/module/config/config_bean.dart';
@@ -126,39 +126,37 @@ class ConfigPageState extends ConsumerState<ConfigPage>
           List<Widget> list = [];
           for (int i = 0; i < model.list.length; i++) {
             ConfigBean value = model.list[i];
+            final bool isMainConfig = value.title?.toLowerCase() == "config.sh";
 
-            if (value.title?.toLowerCase() == "config.sh") {
-              list.add(
-                GestureDetector(
-                  behavior: HitTestBehavior.opaque,
-                  onDoubleTap: () {
-                    if (configContent == null) {
-                      "配置内容加载中，请稍候".toast();
-                      loadConfigData(context);
-                      return;
-                    }
-                    Navigator.of(context)
-                        .pushNamed(
-                          Routes.routeConfigEdit,
-                          arguments: {
-                            "title": value.title,
-                            "content": configContent,
-                          },
-                        )
-                        .then((value) {
-                          Future.delayed(const Duration(seconds: 1), () {
-                            if (context.mounted) {
-                              loadConfigData(context);
-                            }
-                          });
-                        });
-                  },
-                  child: ConfigCell(bean: value),
-                ),
-              );
-            } else {
-              list.add(ConfigCell(bean: value));
-            }
+            list.add(
+              ConfigCell(
+                bean: value,
+                onDoubleTap: isMainConfig
+                    ? () {
+                        if (configContent == null) {
+                          "配置内容加载中，请稍候".toast();
+                          loadConfigData(context);
+                          return;
+                        }
+                        Navigator.of(context)
+                            .pushNamed(
+                              Routes.routeConfigEdit,
+                              arguments: {
+                                "title": value.title,
+                                "content": configContent,
+                              },
+                            )
+                            .then((value) {
+                              Future.delayed(const Duration(seconds: 1), () {
+                                if (context.mounted) {
+                                  loadConfigData(context);
+                                }
+                              });
+                            });
+                      }
+                    : null,
+              ),
+            );
           }
 
           return model.list.isEmpty
@@ -177,6 +175,7 @@ class ConfigPageState extends ConsumerState<ConfigPage>
                   child: ListView(
                     primary: true,
                     padding: const EdgeInsets.only(
+                      top: 8,
                       bottom: kBottomNavigationBarHeight + 50,
                     ),
                     keyboardDismissBehavior:
@@ -204,61 +203,35 @@ class ConfigPageState extends ConsumerState<ConfigPage>
 
 class ConfigCell extends ConsumerWidget {
   final ConfigBean bean;
+  final VoidCallback? onDoubleTap;
 
-  const ConfigCell({super.key, required this.bean});
+  const ConfigCell({super.key, required this.bean, this.onDoubleTap});
+
+  static String _fileKind(String? name) {
+    final String lower = (name ?? "").toLowerCase();
+    if (lower.endsWith(".sh")) return "Shell 脚本";
+    if (lower.endsWith(".js")) return "JavaScript";
+    if (lower.endsWith(".py")) return "Python";
+    if (lower.endsWith(".json")) return "JSON";
+    if (lower.endsWith(".yaml") || lower.endsWith(".yml")) return "YAML";
+    if (lower.endsWith(".conf") || lower.endsWith(".ini")) return "配置文件";
+    return "文件";
+  }
 
   @override
   Widget build(BuildContext context, ref) {
-    return InkWell(
+    final bool isMainConfig = bean.title?.toLowerCase() == "config.sh";
+    return QlListCard(
+      title: bean.title ?? "",
+      subtitle: isMainConfig
+          ? "主配置文件 · 双击可编辑"
+          : "${_fileKind(bean.title)} · 点击查看",
+      leading: const QlListCardLeading(icon: CupertinoIcons.doc_text),
       onTap: () {
         Navigator.of(context)
             .pushNamed(Routes.routeConfigDetail, arguments: {"bean": bean});
       },
-      child: SizedBox(
-        width: MediaQuery.of(context).size.width,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
-              child: Material(
-                color: Colors.transparent,
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 10,
-                    horizontal: 15,
-                  ),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          bean.title ?? "",
-                          maxLines: 1,
-                          style: TextStyle(
-                            overflow: TextOverflow.ellipsis,
-                            color: ref
-                                .watch(themeProvider)
-                                .themeColor
-                                .titleColor(),
-                            fontSize: 17,
-                          ),
-                        ),
-                      ),
-                      Image.asset(
-                        "assets/images/icon_right.png",
-                        fit: BoxFit.cover,
-                        width: 18,
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-            const Divider(height: 1, indent: 15),
-          ],
-        ),
-      ),
+      onDoubleTap: onDoubleTap,
     );
   }
 }

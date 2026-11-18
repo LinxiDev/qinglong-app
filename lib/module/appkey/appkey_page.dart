@@ -166,10 +166,7 @@ class AppKeyPageState extends ConsumerState<AppKeyPage> {
                         searchText.text.toLowerCase(),
                       ) ??
                       false)) {
-                return Container(
-                  color: ref.watch(themeProvider).themeColor.settingBgColor(),
-                  child: const Divider(height: 1, indent: 15),
-                );
+                return const SizedBox.shrink();
               } else {
                 return const SizedBox.shrink();
               }
@@ -204,8 +201,17 @@ class AppKeyItemCell extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ColoredBox(
-      color: ref.watch(themeProvider).themeColor.settingBgColor(),
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      decoration: BoxDecoration(
+        color: ref.watch(themeProvider).themeColor.settingBgColor(),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(
+          color: ref.watch(themeProvider).themeMode == modeDark
+              ? const Color(0xFF2E2E31)
+              : const Color(0xFFE6E8EC),
+        ),
+      ),
       child: Slidable(
         key: ValueKey(getAppKeyId(bean)),
         endActionPane: ActionPane(
