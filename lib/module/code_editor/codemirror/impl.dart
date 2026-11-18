@@ -4,10 +4,7 @@ import 'package:qinglong_app/base/theme.dart';
 import 'package:qinglong_app/utils/sp_utils.dart';
 
 class CodeMirrorOptions {
-  CodeMirrorOptions({
-    this.mode = 'shell',
-    this.readOnly = false,
-  }) {
+  CodeMirrorOptions({this.mode = 'shell', this.readOnly = false}) {
     theme = (SpUtil.getInt(spThemeStyle, defValue: modeWhite) == modeDark)
         ? "3024-night"
         : "neat";
@@ -19,11 +16,7 @@ class CodeMirrorOptions {
   late final String theme;
   final bool readOnly;
 
-  CodeMirrorOptions copyWith({
-    String? mode,
-    String? theme,
-    bool? readOnly,
-  }) {
+  CodeMirrorOptions copyWith({String? mode, String? theme, bool? readOnly}) {
     return CodeMirrorOptions(
       mode: mode ?? this.mode,
       readOnly: readOnly ?? this.readOnly,

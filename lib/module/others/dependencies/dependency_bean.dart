@@ -1,5 +1,3 @@
-
-
 class DependencyBean {
   String? sId;
   String? mustId;
@@ -13,15 +11,16 @@ class DependencyBean {
   List<String>? log;
   String? remark;
 
-  DependencyBean(
-      {this.sId,
-      this.created,
-      this.status,
-      this.type,
-      this.timestamp,
-      this.name,
-      this.log,
-      this.remark});
+  DependencyBean({
+    this.sId,
+    this.created,
+    this.status,
+    this.type,
+    this.timestamp,
+    this.name,
+    this.log,
+    this.remark,
+  });
 
   DependencyBean.fromJson(Map<String, dynamic> json) {
     sId = json['_id'];

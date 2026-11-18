@@ -1,7 +1,5 @@
 import 'package:material_ui/material_ui.dart';
 
-
-
 mixin LazyLoadState<T extends StatefulWidget> on State<T> {
   @override
   void initState() {

@@ -5,6 +5,7 @@ import 'package:qinglong_app/base/theme.dart';
 import 'package:qinglong_app/base/ui/lazy_load_state.dart';
 import 'package:qinglong_app/base/ui/loading_widget.dart';
 import 'package:qinglong_app/utils/extension.dart';
+
 import 'base_viewmodel.dart';
 import 'ui/button.dart';
 
@@ -60,9 +61,7 @@ class BaseStateWidgetState<T extends BaseViewModel>
           mainAxisSize: MainAxisSize.min,
           children: [
             Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 15,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 15),
               child: Text(
                 viewModel.failReason ?? "",
                 style: TextStyle(
@@ -71,17 +70,12 @@ class BaseStateWidgetState<T extends BaseViewModel>
                 ),
               ),
             ),
-            const SizedBox(
-              height: 15,
-            ),
+            const SizedBox(height: 15),
             SizedBox(
               width: 100,
               child: ButtonWidget(
                 onTap: () {
-                  viewModel.retry(
-                    context,
-                    showLoading: true,
-                  );
+                  viewModel.retry(context, showLoading: true);
                 },
                 title: "重试",
               ),
@@ -98,9 +92,7 @@ class BaseStateWidgetState<T extends BaseViewModel>
           mainAxisSize: MainAxisSize.min,
           children: [
             Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 15,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 15),
               child: Text(
                 "暂无数据",
                 style: TextStyle(
@@ -109,17 +101,12 @@ class BaseStateWidgetState<T extends BaseViewModel>
                 ),
               ),
             ),
-            const SizedBox(
-              height: 5,
-            ),
+            const SizedBox(height: 5),
             SizedBox(
               width: 100,
               child: ButtonWidget(
                 onTap: () {
-                  viewModel.retry(
-                    context,
-                    showLoading: true,
-                  );
+                  viewModel.retry(context, showLoading: true);
                 },
                 title: "重试",
               ),

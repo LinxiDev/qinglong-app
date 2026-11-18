@@ -10,13 +10,14 @@ class UserInfoViewModel {
   String? _passWord;
   bool _useSecertLogined = false;
 
-  UserInfoViewModel(
-      {String? token,
-      String? alias,
-      String? host,
-      String? password,
-      String? name,
-      bool? useSecret}) {
+  UserInfoViewModel({
+    String? token,
+    String? alias,
+    String? host,
+    String? password,
+    String? name,
+    bool? useSecret,
+  }) {
     _token = token;
     _alias = alias;
     _host = host;
@@ -41,32 +42,49 @@ class UserInfoViewModel {
   }
 
   void updateToken(
-      int index, String? host, String? token, bool useSecret, String? alias) {
+    int index,
+    String? host,
+    String? token,
+    bool useSecret,
+    String? alias,
+  ) {
     if (host != null) {
       _host = host;
     }
     _token = token;
     _alias = alias;
     _useSecertLogined = useSecret;
-    getIt<MultiAccountUserInfoViewModel>()
-        .updateToken(index, _host, _token, _useSecertLogined, alias);
+    getIt<MultiAccountUserInfoViewModel>().updateToken(
+      index,
+      _host,
+      _token,
+      _useSecertLogined,
+      alias,
+    );
   }
 
-  void updateUserName(String host, String userName, String password,
-      bool secretLogin, String? alias) {
+  void updateUserName(
+    String host,
+    String userName,
+    String password,
+    bool secretLogin,
+    String? alias,
+  ) {
     _host = host;
     _useSecertLogined = secretLogin;
     _userName = userName;
     _passWord = password;
     _alias = alias;
 
-    getIt<MultiAccountUserInfoViewModel>().save2HistoryAccount(UserInfoBean(
-      userName: _userName,
-      host: _host,
-      useSecretLogined: _useSecertLogined,
-      password: _passWord,
-      alias: _alias,
-    ));
+    getIt<MultiAccountUserInfoViewModel>().save2HistoryAccount(
+      UserInfoBean(
+        userName: _userName,
+        host: _host,
+        useSecretLogined: _useSecertLogined,
+        password: _passWord,
+        alias: _alias,
+      ),
+    );
   }
 
   String? get token => _token;
@@ -130,12 +148,7 @@ class TokenBean {
   String? host;
   String? alias;
 
-  TokenBean({
-    this.token,
-    this.useSecretLogined = false,
-    this.host,
-    this.alias,
-  });
+  TokenBean({this.token, this.useSecretLogined = false, this.host, this.alias});
 
   TokenBean.fromJson(Map<String, dynamic> json) {
     token = json['token'];

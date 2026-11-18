@@ -1,4 +1,3 @@
-
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/legacy.dart';
 import 'package:qinglong_app/base/http/api.dart';
@@ -19,15 +18,10 @@ import 'package:qinglong_app/utils/utils.dart';
 
 import 'routes.dart';
 
-
-
 class SingleAccountPage extends StatefulWidget {
   final int index;
 
-  const SingleAccountPage({
-    super.key,
-    required this.index,
-  });
+  const SingleAccountPage({super.key, required this.index});
 
   @override
   State<SingleAccountPage> createState() => SingleAccountPageState();
@@ -37,10 +31,12 @@ class SingleAccountPageState extends State<SingleAccountPage> {
   late int index;
 
   late ChangeNotifierProviderFamily<ConfigViewModel, String?> configProvider;
-  late ChangeNotifierProviderFamily<DependencyViewModel, String?> dependencyProvider;
+  late ChangeNotifierProviderFamily<DependencyViewModel, String?>
+  dependencyProvider;
   late ChangeNotifierProviderFamily<EnvViewModel, String?> envProvider;
   late ChangeNotifierProviderFamily<TaskViewModel, String?> taskProvider;
-  late ChangeNotifierProviderFamily<SubscribeViewModel, String?> subscribeProvider;
+  late ChangeNotifierProviderFamily<SubscribeViewModel, String?>
+  subscribeProvider;
   late ChangeNotifierProviderFamily<AppKeyViewModel, String?> appKeyProvider;
   late StateProviderFamily<int, String?> homeIndexProvider;
   late StateProviderFamily<String, String?> codeSearchProvider;
@@ -54,46 +50,98 @@ class SingleAccountPageState extends State<SingleAccountPage> {
   }
 
   void registerProvider() {
-    configProvider = ChangeNotifierProvider.family((ref, _) => ConfigViewModel(), name: getProviderName(context));
-    dependencyProvider = ChangeNotifierProvider.family((ref, _) => DependencyViewModel(), name: getProviderName(context));
-    envProvider = ChangeNotifierProvider.family((ref, _) => EnvViewModel(), name: getProviderName(context));
-    taskProvider = ChangeNotifierProvider.family((ref, _) => TaskViewModel(), name: getProviderName(context));
-    subscribeProvider = ChangeNotifierProvider.family((ref, _) => SubscribeViewModel(), name: getProviderName(context));
-    appKeyProvider = ChangeNotifierProvider.family((ref, _) => AppKeyViewModel(), name: getProviderName(context));
-    homeIndexProvider = StateProvider.family((ref, _) => 0, name: getProviderName(context));
-    codeSearchProvider = StateProvider.family((ref, _) => "", name: getProviderName(context));
+    configProvider = ChangeNotifierProvider.family(
+      (ref, _) => ConfigViewModel(),
+      name: getProviderName(context),
+    );
+    dependencyProvider = ChangeNotifierProvider.family(
+      (ref, _) => DependencyViewModel(),
+      name: getProviderName(context),
+    );
+    envProvider = ChangeNotifierProvider.family(
+      (ref, _) => EnvViewModel(),
+      name: getProviderName(context),
+    );
+    taskProvider = ChangeNotifierProvider.family(
+      (ref, _) => TaskViewModel(),
+      name: getProviderName(context),
+    );
+    subscribeProvider = ChangeNotifierProvider.family(
+      (ref, _) => SubscribeViewModel(),
+      name: getProviderName(context),
+    );
+    appKeyProvider = ChangeNotifierProvider.family(
+      (ref, _) => AppKeyViewModel(),
+      name: getProviderName(context),
+    );
+    homeIndexProvider = StateProvider.family(
+      (ref, _) => 0,
+      name: getProviderName(context),
+    );
+    codeSearchProvider = StateProvider.family(
+      (ref, _) => "",
+      name: getProviderName(context),
+    );
   }
 
-  static StateProviderFamily<String, String?> ofCodeSearchProvider(BuildContext context) {
-    return context.findAncestorStateOfType<SingleAccountPageState>()!.codeSearchProvider;
+  static StateProviderFamily<String, String?> ofCodeSearchProvider(
+    BuildContext context,
+  ) {
+    return context
+        .findAncestorStateOfType<SingleAccountPageState>()!
+        .codeSearchProvider;
   }
 
-  static StateProviderFamily<int, String?> ofHomeIndexProvider(BuildContext context) {
-    return context.findAncestorStateOfType<SingleAccountPageState>()!.homeIndexProvider;
+  static StateProviderFamily<int, String?> ofHomeIndexProvider(
+    BuildContext context,
+  ) {
+    return context
+        .findAncestorStateOfType<SingleAccountPageState>()!
+        .homeIndexProvider;
   }
 
-  static ChangeNotifierProviderFamily<SubscribeViewModel, String?> ofSubscribeProvider(BuildContext context) {
-    return context.findAncestorStateOfType<SingleAccountPageState>()!.subscribeProvider;
+  static ChangeNotifierProviderFamily<SubscribeViewModel, String?>
+  ofSubscribeProvider(BuildContext context) {
+    return context
+        .findAncestorStateOfType<SingleAccountPageState>()!
+        .subscribeProvider;
   }
 
-  static ChangeNotifierProviderFamily<TaskViewModel, String?> ofTaskProvider(BuildContext context) {
-    return context.findAncestorStateOfType<SingleAccountPageState>()!.taskProvider;
+  static ChangeNotifierProviderFamily<TaskViewModel, String?> ofTaskProvider(
+    BuildContext context,
+  ) {
+    return context
+        .findAncestorStateOfType<SingleAccountPageState>()!
+        .taskProvider;
   }
 
-  static ChangeNotifierProviderFamily<AppKeyViewModel, String?> ofAppKeyProvider(BuildContext context) {
-    return context.findAncestorStateOfType<SingleAccountPageState>()!.appKeyProvider;
+  static ChangeNotifierProviderFamily<AppKeyViewModel, String?>
+  ofAppKeyProvider(BuildContext context) {
+    return context
+        .findAncestorStateOfType<SingleAccountPageState>()!
+        .appKeyProvider;
   }
 
-  static ChangeNotifierProviderFamily<EnvViewModel, String?> ofEnvProvider(BuildContext context) {
-    return context.findAncestorStateOfType<SingleAccountPageState>()!.envProvider;
+  static ChangeNotifierProviderFamily<EnvViewModel, String?> ofEnvProvider(
+    BuildContext context,
+  ) {
+    return context
+        .findAncestorStateOfType<SingleAccountPageState>()!
+        .envProvider;
   }
 
-  static ChangeNotifierProviderFamily<ConfigViewModel, String?> ofConfigProvider(BuildContext context) {
-    return context.findAncestorStateOfType<SingleAccountPageState>()!.configProvider;
+  static ChangeNotifierProviderFamily<ConfigViewModel, String?>
+  ofConfigProvider(BuildContext context) {
+    return context
+        .findAncestorStateOfType<SingleAccountPageState>()!
+        .configProvider;
   }
 
-  static ChangeNotifierProviderFamily<DependencyViewModel, String?> ofDependencyProvider(BuildContext context) {
-    return context.findAncestorStateOfType<SingleAccountPageState>()!.dependencyProvider;
+  static ChangeNotifierProviderFamily<DependencyViewModel, String?>
+  ofDependencyProvider(BuildContext context) {
+    return context
+        .findAncestorStateOfType<SingleAccountPageState>()!
+        .dependencyProvider;
   }
 
   static SingleAccountPageState? of(BuildContext context) {
@@ -101,7 +149,9 @@ class SingleAccountPageState extends State<SingleAccountPage> {
   }
 
   static UserInfoViewModel ofUserInfo(BuildContext context) {
-    int? index = context.findAncestorStateOfType<SingleAccountPageState>()?.index;
+    int? index = context
+        .findAncestorStateOfType<SingleAccountPageState>()
+        ?.index;
 
     if (index == null) return UserInfoViewModel();
 
@@ -109,7 +159,9 @@ class SingleAccountPageState extends State<SingleAccountPage> {
   }
 
   static Http? ofHttp(BuildContext context) {
-    int? index = context.findAncestorStateOfType<SingleAccountPageState>()?.index;
+    int? index = context
+        .findAncestorStateOfType<SingleAccountPageState>()
+        ?.index;
 
     if (index == null) return null;
 
@@ -117,7 +169,9 @@ class SingleAccountPageState extends State<SingleAccountPage> {
   }
 
   static Api ofApi(BuildContext context) {
-    int? index = context.findAncestorStateOfType<SingleAccountPageState>()?.index;
+    int? index = context
+        .findAncestorStateOfType<SingleAccountPageState>()
+        ?.index;
 
     if (index == null) return Api(0);
 
@@ -128,26 +182,37 @@ class SingleAccountPageState extends State<SingleAccountPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Builder(builder: (context) {
-      return Navigator(
-        key: navigator,
-        restorationScopeId: index.toString(),
-        onGenerateRoute: (setting) {
-          return Routes.generateRoute(setting);
-        },
-        reportsRouteUpdateToEngine: true,
-        initialRoute: ofUserInfo(context).isLogined() ? Routes.routeHomePage : Routes.routeLogin,
-      );
-    });
+    return Builder(
+      builder: (context) {
+        return Navigator(
+          key: navigator,
+          restorationScopeId: index.toString(),
+          onGenerateRoute: (setting) {
+            return Routes.generateRoute(setting);
+          },
+          reportsRouteUpdateToEngine: true,
+          initialRoute: ofUserInfo(context).isLogined()
+              ? Routes.routeHomePage
+              : Routes.routeLogin,
+        );
+      },
+    );
   }
 
   void findLoginInfo() {
     registerProvider();
-    if (getIt<MultiAccountUserInfoViewModel>().tokenBeans.isNotEmpty && getIt<MultiAccountUserInfoViewModel>().tokenBeans.length > widget.index) {
+    if (getIt<MultiAccountUserInfoViewModel>().tokenBeans.isNotEmpty &&
+        getIt<MultiAccountUserInfoViewModel>().tokenBeans.length >
+            widget.index) {
       var bean = getIt<MultiAccountUserInfoViewModel>().tokenBeans[index];
-      UserInfoBean history = getIt<MultiAccountUserInfoViewModel>().historyAccounts.firstWhere((element) => element.host == bean.host, orElse: () {
-        return UserInfoBean();
-      });
+      UserInfoBean history = getIt<MultiAccountUserInfoViewModel>()
+          .historyAccounts
+          .firstWhere(
+            (element) => element.host == bean.host,
+            orElse: () {
+              return UserInfoBean();
+            },
+          );
       UserInfoViewModel userInfoViewModel = UserInfoViewModel(
         token: bean.token,
         useSecret: bean.useSecretLogined,
@@ -161,9 +226,13 @@ class SingleAccountPageState extends State<SingleAccountPage> {
         userInfoViewModel,
         instanceName: widget.index.toString(),
       );
-    } else if (getIt<MultiAccountUserInfoViewModel>().historyAccounts.isNotEmpty &&
-        getIt<MultiAccountUserInfoViewModel>().historyAccounts.length > widget.index) {
-      var history = getIt<MultiAccountUserInfoViewModel>().historyAccounts[index];
+    } else if (getIt<MultiAccountUserInfoViewModel>()
+            .historyAccounts
+            .isNotEmpty &&
+        getIt<MultiAccountUserInfoViewModel>().historyAccounts.length >
+            widget.index) {
+      var history =
+          getIt<MultiAccountUserInfoViewModel>().historyAccounts[index];
       UserInfoViewModel userInfoViewModel = UserInfoViewModel(
         host: history.host,
         useSecret: history.useSecretLogined,
@@ -181,7 +250,10 @@ class SingleAccountPageState extends State<SingleAccountPage> {
         instanceName: widget.index.toString(),
       );
     }
-    getIt.registerSingleton(Url(widget.index), instanceName: widget.index.toString());
+    getIt.registerSingleton(
+      Url(widget.index),
+      instanceName: widget.index.toString(),
+    );
   }
 
   void registerSystemBean(String version, bool autoGet) {
@@ -189,11 +261,9 @@ class SingleAccountPageState extends State<SingleAccountPage> {
       getIt.unregister<SystemBean>(instanceName: widget.index.toString());
     }
     getIt.registerSingleton(
-        SystemBean(
-          version: version,
-          fromAutoGet: autoGet,
-        ),
-        instanceName: widget.index.toString());
+      SystemBean(version: version, fromAutoGet: autoGet),
+      instanceName: widget.index.toString(),
+    );
   }
 
   void registerHttp(String host) {
@@ -201,24 +271,34 @@ class SingleAccountPageState extends State<SingleAccountPage> {
       getIt.unregister<Http>(instanceName: widget.index.toString());
     }
     getIt.registerSingleton(
-        Http(
-          host,
-          widget.index,
-        ),
-        instanceName: widget.index.toString());
+      Http(host, widget.index),
+      instanceName: widget.index.toString(),
+    );
   }
 
   void registerGlobalKey() {
-    if (getIt.isRegistered<GlobalKey<NavigatorState>>(instanceName: widget.index.toString())) {
-      getIt.unregister<GlobalKey<NavigatorState>>(instanceName: widget.index.toString());
+    if (getIt.isRegistered<GlobalKey<NavigatorState>>(
+      instanceName: widget.index.toString(),
+    )) {
+      getIt.unregister<GlobalKey<NavigatorState>>(
+        instanceName: widget.index.toString(),
+      );
     }
-    getIt.registerSingleton<GlobalKey<NavigatorState>>(navigator, instanceName: widget.index.toString());
+    getIt.registerSingleton<GlobalKey<NavigatorState>>(
+      navigator,
+      instanceName: widget.index.toString(),
+    );
   }
 
   void registerICloud() {
-    if (getIt.isRegistered<ICloudUtils>(instanceName: widget.index.toString())) {
+    if (getIt.isRegistered<ICloudUtils>(
+      instanceName: widget.index.toString(),
+    )) {
       getIt.unregister<ICloudUtils>(instanceName: widget.index.toString());
     }
-    getIt.registerSingleton<ICloudUtils>(ICloudUtils(widget.index), instanceName: widget.index.toString());
+    getIt.registerSingleton<ICloudUtils>(
+      ICloudUtils(widget.index),
+      instanceName: widget.index.toString(),
+    );
   }
 }

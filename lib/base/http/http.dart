@@ -23,18 +23,13 @@ class Http {
   String host;
   int index;
 
-  Http(
-    this.host,
-    this.index,
-  ) {
+  Http(this.host, this.index) {
     _init();
   }
 
   static const Duration _timeout = Duration(seconds: 50);
 
-  void initDioConfig(
-    String host,
-  ) {
+  void initDioConfig(String host) {
     _dio = Dio(
       BaseOptions(
         baseUrl: host,
@@ -56,16 +51,16 @@ class Http {
       );
     }
 
-    _dio?.interceptors.add(TokenInterceptor(
-      host,
-      index,
-    ));
+    _dio?.interceptors.add(TokenInterceptor(host, index));
     _dio?.httpClientAdapter = IOHttpClientAdapter(
       createHttpClient: () {
         final HttpClient client = HttpClient();
         // 青龙面板常使用自签名证书，客户端需要放开校验
-        client.badCertificateCallback =
-            (X509Certificate cert, String host, int port) => true;
+        client.badCertificateCallback = (
+          X509Certificate cert,
+          String host,
+          int port,
+        ) => true;
         return client;
       },
     );
@@ -106,11 +101,7 @@ class Http {
       _init();
       var response = await _dio!.post(uri, data: json);
 
-      return decodeResponse<T>(
-        response,
-        serializationName,
-        compute,
-      );
+      return decodeResponse<T>(response, serializationName, compute);
     } on DioException catch (e) {
       return exceptionHandler<T>(e, uri);
     }
@@ -126,11 +117,7 @@ class Http {
       _init();
       var response = await _dio!.delete(uri, data: json);
 
-      return decodeResponse<T>(
-        response,
-        serializationName,
-        compute,
-      );
+      return decodeResponse<T>(response, serializationName, compute);
     } on DioException catch (e) {
       return exceptionHandler<T>(e, uri);
     }
@@ -145,11 +132,7 @@ class Http {
     try {
       _init();
       var response = await _dio!.put(uri, data: json);
-      return decodeResponse<T>(
-        response,
-        serializationName,
-        compute,
-      );
+      return decodeResponse<T>(response, serializationName, compute);
     } on DioException catch (e) {
       return exceptionHandler<T>(e, uri);
     }
@@ -160,9 +143,12 @@ class Http {
       "身份已过期,请重新登录".toast();
       pushedLoginPage = true;
 
-      getIt<UserInfoViewModel>(instanceName: index.toString()).exitLoginFocus(index);
+      getIt<UserInfoViewModel>(instanceName: index.toString())
+          .exitLoginFocus(index);
 
-      getIt<GlobalKey<NavigatorState>>(instanceName: index.toString()).currentState?.pushNamedAndRemoveUntil(Routes.routeLogin, (route) => false);
+      getIt<GlobalKey<NavigatorState>>(instanceName: index.toString())
+          .currentState
+          ?.pushNamedAndRemoveUntil(Routes.routeLogin, (route) => false);
     }
   }
 
@@ -170,16 +156,25 @@ class Http {
     try {
       logger.e(e);
       if (e.response?.statusCode == 401 && !Url.inWhiteList(path)) {
-        if (!getIt<UserInfoViewModel>(instanceName: index.toString()).useSecretLogined) {
+        if (!getIt<UserInfoViewModel>(instanceName: index.toString())
+            .useSecretLogined) {
           exitLogin();
         }
         return HttpResponse(success: false, message: "没有该模块的访问权限", code: 401);
       }
 
       if (e.response != null && e.response!.data != null) {
-        return HttpResponse(success: false, message: e.response?.data["message"] ?? e.message, code: e.response?.data["code"] ?? 0);
+        return HttpResponse(
+          success: false,
+          message: e.response?.data["message"] ?? e.message,
+          code: e.response?.data["code"] ?? 0,
+        );
       } else {
-        return HttpResponse(success: false, message: e.message, code: e.response?.statusCode ?? 0);
+        return HttpResponse(
+          success: false,
+          message: e.message,
+          code: e.response?.statusCode ?? 0,
+        );
       }
     } catch (e) {
       return HttpResponse(success: false, message: e.toString(), code: 400);
@@ -197,10 +192,7 @@ class Http {
         if (response.data["code"] == 200) {
           if (response.data[serializationName] != null) {
             if (T == NullResponse) {
-              return HttpResponse<T>(
-                success: true,
-                code: 200,
-              );
+              return HttpResponse<T>(success: true, code: 200);
             }
 
             dynamic data = response.data[serializationName];
@@ -211,11 +203,7 @@ class Http {
               } else {
                 t = jsonEncode(data) as T;
               }
-              return HttpResponse<T>(
-                success: true,
-                code: 200,
-                bean: t,
-              );
+              return HttpResponse<T>(success: true, code: 200, bean: t);
             } else {
               T bean;
               if (compute) {
@@ -223,17 +211,10 @@ class Http {
               } else {
                 bean = JsonConversion$Json.fromJson<T>(data);
               }
-              return HttpResponse<T>(
-                success: true,
-                code: 200,
-                bean: bean,
-              );
+              return HttpResponse<T>(success: true, code: 200, bean: bean);
             }
           } else {
-            return HttpResponse<T>(
-              success: true,
-              code: 200,
-            );
+            return HttpResponse<T>(success: true, code: 200);
           }
         } else {
           return HttpResponse<T>(
@@ -267,7 +248,12 @@ class HttpResponse<T> {
   late int code;
   T? bean;
 
-  HttpResponse({required this.success, this.message, required this.code, this.bean});
+  HttpResponse({
+    required this.success,
+    this.message,
+    required this.code,
+    this.bean,
+  });
 }
 
 class DeserializeAction<T> {

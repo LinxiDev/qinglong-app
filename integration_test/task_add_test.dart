@@ -50,8 +50,10 @@ void main() {
       }
     }
     if (best == null) return false;
-    await tester.tap(find.byElementPredicate((Element e) => identical(e, best)),
-        warnIfMissed: false);
+    await tester.tap(
+      find.byElementPredicate((Element e) => identical(e, best)),
+      warnIfMissed: false,
+    );
     await settle(tester, 4);
     return true;
   }
@@ -69,10 +71,16 @@ void main() {
     }
 
     await tapTab(tester, '定时任务');
-    expect(find.byIcon(CupertinoIcons.add), findsWidgets,
-        reason: '定时任务页应有新增按钮');
+    expect(
+      find.byIcon(CupertinoIcons.add),
+      findsWidgets,
+      reason: '定时任务页应有新增按钮',
+    );
 
-    await tester.tap(find.byIcon(CupertinoIcons.add).first, warnIfMissed: false);
+    await tester.tap(
+      find.byIcon(CupertinoIcons.add).first,
+      warnIfMissed: false,
+    );
     await settle(tester, 4);
     expect(find.text('新增任务'), findsOneWidget, reason: '应进入新增任务页');
 

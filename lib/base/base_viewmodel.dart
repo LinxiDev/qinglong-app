@@ -59,9 +59,4 @@ class BaseViewModel extends ViewModel {
   void retry(BuildContext context, {bool showLoading = true}) {}
 }
 
-enum PageState {
-  loading,
-  empty,
-  content,
-  failed,
-}
+enum PageState { loading, empty, content, failed }

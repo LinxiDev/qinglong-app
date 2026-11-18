@@ -88,7 +88,8 @@ class JsonConversion$Json {
 
   static M _getListChildType<M>(List<dynamic> data) {
     if (<ConfigBean>[] is M) {
-      return data.map<ConfigBean>((e) => ConfigBean.jsonConversion(e)).toList() as M;
+      return data.map<ConfigBean>((e) => ConfigBean.jsonConversion(e)).toList()
+          as M;
     }
 
     if (<EnvBean>[] is M) {
@@ -96,46 +97,65 @@ class JsonConversion$Json {
     }
 
     if (<SystemBean>[] is M) {
-      return data.map<SystemBean>((e) => SystemBean.jsonConversion(e)).toList() as M;
+      return data.map<SystemBean>((e) => SystemBean.jsonConversion(e)).toList()
+          as M;
     }
 
     if (<LoginBean>[] is M) {
-      return data.map<LoginBean>((e) => LoginBean.jsonConversion(e)).toList() as M;
+      return data.map<LoginBean>((e) => LoginBean.jsonConversion(e)).toList()
+          as M;
     }
 
     if (<UserBean>[] is M) {
-      return data.map<UserBean>((e) => UserBean.jsonConversion(e)).toList() as M;
+      return data.map<UserBean>((e) => UserBean.jsonConversion(e)).toList()
+          as M;
     }
 
     if (<LogDelBean>[] is M) {
-      return data.map<LogDelBean>((e) => LogDelBean.jsonConversion(e)).toList() as M;
+      return data.map<LogDelBean>((e) => LogDelBean.jsonConversion(e)).toList()
+          as M;
     }
 
     if (<DependencyBean>[] is M) {
-      return data.map<DependencyBean>((e) => DependencyBean.jsonConversion(e)).toList() as M;
+      return data
+              .map<DependencyBean>((e) => DependencyBean.jsonConversion(e))
+              .toList()
+          as M;
     }
 
     if (<LoginLogBean>[] is M) {
-      return data.map<LoginLogBean>((e) => LoginLogBean.jsonConversion(e)).toList() as M;
+      return data
+              .map<LoginLogBean>((e) => LoginLogBean.jsonConversion(e))
+              .toList()
+          as M;
     }
     if (<ScriptData>[] is M) {
-      return data.map<ScriptData>((e) => ScriptData.jsonConversion(e)).toList() as M;
+      return data.map<ScriptData>((e) => ScriptData.jsonConversion(e)).toList()
+          as M;
     }
 
     if (<ScriptBean>[] is M) {
-      return data.map<ScriptBean>((e) => ScriptBean.jsonConversion(e)).toList() as M;
+      return data.map<ScriptBean>((e) => ScriptBean.jsonConversion(e)).toList()
+          as M;
     }
 
     if (<TaskLogBean>[] is M) {
-      return data.map<TaskLogBean>((e) => TaskLogBean.jsonConversion(e)).toList() as M;
+      return data
+              .map<TaskLogBean>((e) => TaskLogBean.jsonConversion(e))
+              .toList()
+          as M;
     }
 
     if (<CheckUpdateBean>[] is M) {
-      return data.map<CheckUpdateBean>((e) => CheckUpdateBean.jsonConversion(e)).toList() as M;
+      return data
+              .map<CheckUpdateBean>((e) => CheckUpdateBean.jsonConversion(e))
+              .toList()
+          as M;
     }
 
     if (<TaskBean2>[] is M) {
-      return data.map<TaskBean2>((e) => TaskBean2.jsonConversion(e)).toList() as M;
+      return data.map<TaskBean2>((e) => TaskBean2.jsonConversion(e)).toList()
+          as M;
     }
 
     if ((TaskBean2).toString() == M.toString()) {
@@ -143,7 +163,8 @@ class JsonConversion$Json {
     }
 
     if (<TaskBean>[] is M) {
-      return data.map<TaskBean>((e) => TaskBean.jsonConversion(e)).toList() as M;
+      return data.map<TaskBean>((e) => TaskBean.jsonConversion(e)).toList()
+          as M;
     }
 
     throw Exception("not found");

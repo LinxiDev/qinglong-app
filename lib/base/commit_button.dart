@@ -1,17 +1,13 @@
-
 import 'package:cupertino_ui/cupertino_ui.dart';
 import 'package:material_ui/material_ui.dart';
+
 import '../module/in_app_purchase_page.dart';
 
 class CommitButton extends StatefulWidget {
   final GestureTapCallback onTap;
   final String? title;
 
-  const CommitButton({
-    super.key,
-    required this.onTap,
-    this.title,
-  });
+  const CommitButton({super.key, required this.onTap, this.title});
 
   @override
   State<CommitButton> createState() => _CommitButtonState();
@@ -25,9 +21,7 @@ class _CommitButtonState extends State<CommitButton> {
       padding: EdgeInsets.zero,
       onPressed: widget.onTap,
       child: Padding(
-        padding: const EdgeInsets.symmetric(
-          horizontal: 15,
-        ),
+        padding: const EdgeInsets.symmetric(horizontal: 15),
         child: Center(
           child: Text(
             widget.title ?? "提交",
@@ -45,9 +39,7 @@ class _CommitButtonState extends State<CommitButton> {
 void gotoInAppPurchase(BuildContext context) {
   Navigator.of(context).push(
     CupertinoPageRoute(
-      builder: (context) => const InAppPurchasePage(
-        fromDirectly: true,
-      ),
+      builder: (context) => const InAppPurchasePage(fromDirectly: true),
     ),
   );
 }

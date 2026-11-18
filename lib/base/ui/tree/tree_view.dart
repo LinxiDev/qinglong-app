@@ -91,17 +91,18 @@ class TreeView extends InheritedWidget {
     this.primary = true,
     this.nodeBuilder,
     TreeViewTheme? theme,
-  })  : theme = theme ?? const TreeViewTheme(),
-        super(
-          child: _TreeViewData(
-            controller,
-            shrinkWrap: shrinkWrap,
-            primary: primary,
-            physics: physics,
-          ),
-        );
+  }) : theme = theme ?? const TreeViewTheme(),
+       super(
+         child: _TreeViewData(
+           controller,
+           shrinkWrap: shrinkWrap,
+           primary: primary,
+           physics: physics,
+         ),
+       );
 
-  static TreeView? of(BuildContext context) => context.dependOnInheritedWidgetOfExactType(aspect: TreeView);
+  static TreeView? of(BuildContext context) =>
+      context.dependOnInheritedWidgetOfExactType(aspect: TreeView);
 
   @override
   bool updateShouldNotify(TreeView oldWidget) {
@@ -120,7 +121,12 @@ class _TreeViewData extends StatelessWidget {
   final bool? primary;
   final ScrollPhysics? physics;
 
-  const _TreeViewData(this._controller, {this.shrinkWrap, this.primary, this.physics});
+  const _TreeViewData(
+    this._controller, {
+    this.shrinkWrap,
+    this.primary,
+    this.physics,
+  });
 
   @override
   Widget build(BuildContext context) {

@@ -32,35 +32,31 @@ class _SettingPageState extends ConsumerState<SettingPage> {
 
     try {
       systemBean = getIt<SystemBean>(
-          instanceName:
-              (SingleAccountPageState.of(context)?.index ?? 0).toString());
+        instanceName: (SingleAccountPageState.of(context)?.index ?? 0)
+            .toString(),
+      );
     } catch (e) {
       systemBean = SystemBean(version: "2.10.13", fromAutoGet: false);
     }
 
     return Scaffold(
       backgroundColor: ref.watch(themeProvider).themeColor.bg2Color(),
-      appBar: QlAppBar(
-        title: "系统设置",
-      ),
+      appBar: QlAppBar(title: "系统设置"),
       body: SingleChildScrollView(
         primary: true,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Visibility(
-              visible: Platform.isIOS ||
+              visible:
+                  Platform.isIOS ||
                   SpUtil.getInt(spVIP, defValue: typeNormal) != typeNormal,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const SizedBox(
-                    height: 15,
-                  ),
+                  const SizedBox(height: 15),
                   Padding(
-                    padding: const EdgeInsets.only(
-                      left: 30,
-                    ),
+                    padding: const EdgeInsets.only(left: 30),
                     child: Text(
                       "VIP功能",
                       style: TextStyle(
@@ -69,13 +65,9 @@ class _SettingPageState extends ConsumerState<SettingPage> {
                       ),
                     ),
                   ),
-                  const SizedBox(
-                    height: 10,
-                  ),
+                  const SizedBox(height: 10),
                   Container(
-                    margin: const EdgeInsets.symmetric(
-                      horizontal: 15,
-                    ),
+                    margin: const EdgeInsets.symmetric(horizontal: 15),
                     decoration: BoxDecoration(
                       color: ref
                           .watch(themeProvider)
@@ -100,9 +92,7 @@ class _SettingPageState extends ConsumerState<SettingPage> {
                                 color: ref.watch(themeProvider).primaryColor,
                                 size: 20,
                               ),
-                              const SizedBox(
-                                width: 15,
-                              ),
+                              const SizedBox(width: 15),
                               Text(
                                 "使用Face ID解锁",
                                 style: TextStyle(
@@ -117,10 +107,13 @@ class _SettingPageState extends ConsumerState<SettingPage> {
                               Transform.scale(
                                 scale: 0.9,
                                 child: CupertinoSwitch(
-                                  activeTrackColor:
-                                      ref.watch(themeProvider).primaryColor,
-                                  value: SpUtil.getBool(spOpenAuth,
-                                      defValue: false),
+                                  activeTrackColor: ref
+                                      .watch(themeProvider)
+                                      .primaryColor,
+                                  value: SpUtil.getBool(
+                                    spOpenAuth,
+                                    defValue: false,
+                                  ),
                                   onChanged: (open) async {
                                     await SpUtil.putBool(spOpenAuth, open);
                                     setState(() {});
@@ -130,10 +123,7 @@ class _SettingPageState extends ConsumerState<SettingPage> {
                             ],
                           ),
                         ),
-                        const Divider(
-                          indent: 55,
-                          height: 1,
-                        ),
+                        const Divider(indent: 55, height: 1),
                         Padding(
                           padding: const EdgeInsets.symmetric(
                             vertical: 3,
@@ -148,9 +138,7 @@ class _SettingPageState extends ConsumerState<SettingPage> {
                                 color: ref.watch(themeProvider).primaryColor,
                                 size: 20,
                               ),
-                              const SizedBox(
-                                width: 15,
-                              ),
+                              const SizedBox(width: 15),
                               Text(
                                 "单实例模式",
                                 style: TextStyle(
@@ -161,51 +149,53 @@ class _SettingPageState extends ConsumerState<SettingPage> {
                                   fontSize: 16,
                                 ),
                               ),
-                              const SizedBox(
-                                width: 5,
-                              ),
+                              const SizedBox(width: 5),
                               GestureDetector(
-                                  behavior: HitTestBehavior.opaque,
-                                  onTap: () {
-                                    showCupertinoDialog(
-                                      useRootNavigator: false,
-                                      context: context,
-                                      builder: (context1) =>
-                                          CupertinoAlertDialog(
-                                        content: const Text(
-                                            "开启后可关闭多容器同时在线功能，减少APP对系统内存的消耗，通过长按首页 我的 切换账号"),
-                                        title: const Text("温馨提示"),
-                                        actions: [
-                                          CupertinoDialogAction(
-                                            child: Text(
-                                              "确定",
-                                              style: TextStyle(
-                                                color: ref
-                                                    .watch(themeProvider)
-                                                    .primaryColor,
-                                              ),
-                                            ),
-                                            onPressed: () {
-                                              Navigator.of(context1).pop();
-                                            },
-                                          ),
-                                        ],
+                                behavior: HitTestBehavior.opaque,
+                                onTap: () {
+                                  showCupertinoDialog(
+                                    useRootNavigator: false,
+                                    context: context,
+                                    builder: (context1) => CupertinoAlertDialog(
+                                      content: const Text(
+                                        "开启后可关闭多容器同时在线功能，减少APP对系统内存的消耗，通过长按首页 我的 切换账号",
                                       ),
-                                    );
-                                  },
-                                  child: const Icon(
-                                    CupertinoIcons.question_circle,
-                                    size: 16,
-                                    color: Colors.grey,
-                                  )),
+                                      title: const Text("温馨提示"),
+                                      actions: [
+                                        CupertinoDialogAction(
+                                          child: Text(
+                                            "确定",
+                                            style: TextStyle(
+                                              color: ref
+                                                  .watch(themeProvider)
+                                                  .primaryColor,
+                                            ),
+                                          ),
+                                          onPressed: () {
+                                            Navigator.of(context1).pop();
+                                          },
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                },
+                                child: const Icon(
+                                  CupertinoIcons.question_circle,
+                                  size: 16,
+                                  color: Colors.grey,
+                                ),
+                              ),
                               const Spacer(),
                               Transform.scale(
                                 scale: 0.9,
                                 child: CupertinoSwitch(
-                                  activeTrackColor:
-                                      ref.watch(themeProvider).primaryColor,
-                                  value: SpUtil.getBool(spSingleInstance,
-                                      defValue: false),
+                                  activeTrackColor: ref
+                                      .watch(themeProvider)
+                                      .primaryColor,
+                                  value: SpUtil.getBool(
+                                    spSingleInstance,
+                                    defValue: false,
+                                  ),
                                   onChanged: (open) async {
                                     SpUtil.putBool(spSingleInstance, open);
                                     setState(() {});
@@ -215,10 +205,7 @@ class _SettingPageState extends ConsumerState<SettingPage> {
                             ],
                           ),
                         ),
-                        const Divider(
-                          indent: 55,
-                          height: 1,
-                        ),
+                        const Divider(indent: 55, height: 1),
                         Padding(
                           padding: const EdgeInsets.symmetric(
                             vertical: 3,
@@ -233,9 +220,7 @@ class _SettingPageState extends ConsumerState<SettingPage> {
                                 color: ref.watch(themeProvider).primaryColor,
                                 size: 20,
                               ),
-                              const SizedBox(
-                                width: 15,
-                              ),
+                              const SizedBox(width: 15),
                               Text(
                                 "白色主题",
                                 style: TextStyle(
@@ -250,10 +235,14 @@ class _SettingPageState extends ConsumerState<SettingPage> {
                               Transform.scale(
                                 scale: 0.9,
                                 child: CupertinoSwitch(
-                                  activeTrackColor:
-                                      ref.watch(themeProvider).primaryColor,
-                                  value: SpUtil.getInt(spThemeStyle,
-                                          defValue: modeLight) ==
+                                  activeTrackColor: ref
+                                      .watch(themeProvider)
+                                      .primaryColor,
+                                  value:
+                                      SpUtil.getInt(
+                                        spThemeStyle,
+                                        defValue: modeLight,
+                                      ) ==
                                       modeWhite,
                                   onChanged: (open) async {
                                     SpUtil.putBool(spThemeFollowSystem, false);
@@ -279,13 +268,9 @@ class _SettingPageState extends ConsumerState<SettingPage> {
                 ],
               ),
             ),
-            const SizedBox(
-              height: 15,
-            ),
+            const SizedBox(height: 15),
             Padding(
-              padding: const EdgeInsets.only(
-                left: 30,
-              ),
+              padding: const EdgeInsets.only(left: 30),
               child: Text(
                 "通用功能",
                 style: TextStyle(
@@ -294,13 +279,9 @@ class _SettingPageState extends ConsumerState<SettingPage> {
                 ),
               ),
             ),
-            const SizedBox(
-              height: 10,
-            ),
+            const SizedBox(height: 10),
             Container(
-              margin: const EdgeInsets.symmetric(
-                horizontal: 15,
-              ),
+              margin: const EdgeInsets.symmetric(horizontal: 15),
               decoration: BoxDecoration(
                 color: ref.watch(themeProvider).themeColor.settingBordorColor(),
                 borderRadius: BorderRadius.circular(10),
@@ -322,9 +303,7 @@ class _SettingPageState extends ConsumerState<SettingPage> {
                           color: ref.watch(themeProvider).primaryColor,
                           size: 20,
                         ),
-                        const SizedBox(
-                          width: 15,
-                        ),
+                        const SizedBox(width: 15),
                         Text(
                           "任务自动弹出日志",
                           style: TextStyle(
@@ -339,9 +318,13 @@ class _SettingPageState extends ConsumerState<SettingPage> {
                         Transform.scale(
                           scale: 0.9,
                           child: CupertinoSwitch(
-                            activeTrackColor: ref.watch(themeProvider).primaryColor,
-                            value:
-                                SpUtil.getBool(spAutoShowLog, defValue: true),
+                            activeTrackColor: ref
+                                .watch(themeProvider)
+                                .primaryColor,
+                            value: SpUtil.getBool(
+                              spAutoShowLog,
+                              defValue: true,
+                            ),
                             onChanged: (open) async {
                               await SpUtil.putBool(spAutoShowLog, open);
                               setState(() {});
@@ -351,10 +334,7 @@ class _SettingPageState extends ConsumerState<SettingPage> {
                       ],
                     ),
                   ),
-                  const Divider(
-                    indent: 55,
-                    height: 1,
-                  ),
+                  const Divider(indent: 55, height: 1),
                   Padding(
                     padding: const EdgeInsets.symmetric(
                       vertical: 3,
@@ -369,9 +349,7 @@ class _SettingPageState extends ConsumerState<SettingPage> {
                           color: ref.watch(themeProvider).primaryColor,
                           size: 20,
                         ),
-                        const SizedBox(
-                          width: 15,
-                        ),
+                        const SizedBox(width: 15),
                         Text(
                           "代码显示行号",
                           style: TextStyle(
@@ -386,7 +364,9 @@ class _SettingPageState extends ConsumerState<SettingPage> {
                         Transform.scale(
                           scale: 0.9,
                           child: CupertinoSwitch(
-                            activeTrackColor: ref.watch(themeProvider).primaryColor,
+                            activeTrackColor: ref
+                                .watch(themeProvider)
+                                .primaryColor,
                             value: SpUtil.getBool(spShowLine, defValue: false),
                             onChanged: (open) async {
                               await SpUtil.putBool(spShowLine, open);
@@ -397,10 +377,7 @@ class _SettingPageState extends ConsumerState<SettingPage> {
                       ],
                     ),
                   ),
-                  const Divider(
-                    indent: 55,
-                    height: 1,
-                  ),
+                  const Divider(indent: 55, height: 1),
                   Padding(
                     padding: const EdgeInsets.symmetric(
                       vertical: 3,
@@ -415,9 +392,7 @@ class _SettingPageState extends ConsumerState<SettingPage> {
                           color: ref.watch(themeProvider).primaryColor,
                           size: 20,
                         ),
-                        const SizedBox(
-                          width: 15,
-                        ),
+                        const SizedBox(width: 15),
                         Text(
                           "日志内容自动滚动",
                           style: TextStyle(
@@ -432,9 +407,13 @@ class _SettingPageState extends ConsumerState<SettingPage> {
                         Transform.scale(
                           scale: 0.9,
                           child: CupertinoSwitch(
-                            activeTrackColor: ref.watch(themeProvider).primaryColor,
-                            value: SpUtil.getBool(spLogAutoJump2Bottom,
-                                defValue: false),
+                            activeTrackColor: ref
+                                .watch(themeProvider)
+                                .primaryColor,
+                            value: SpUtil.getBool(
+                              spLogAutoJump2Bottom,
+                              defValue: false,
+                            ),
                             onChanged: (open) async {
                               await SpUtil.putBool(spLogAutoJump2Bottom, open);
                               setState(() {});
@@ -444,10 +423,7 @@ class _SettingPageState extends ConsumerState<SettingPage> {
                       ],
                     ),
                   ),
-                  const Divider(
-                    indent: 55,
-                    height: 1,
-                  ),
+                  const Divider(indent: 55, height: 1),
                   Padding(
                     padding: const EdgeInsets.symmetric(
                       vertical: 3,
@@ -462,9 +438,7 @@ class _SettingPageState extends ConsumerState<SettingPage> {
                           color: ref.watch(themeProvider).primaryColor,
                           size: 20,
                         ),
-                        const SizedBox(
-                          width: 15,
-                        ),
+                        const SizedBox(width: 15),
                         Text(
                           "黑色主题",
                           style: TextStyle(
@@ -479,9 +453,14 @@ class _SettingPageState extends ConsumerState<SettingPage> {
                         Transform.scale(
                           scale: 0.9,
                           child: CupertinoSwitch(
-                            activeTrackColor: ref.watch(themeProvider).primaryColor,
-                            value: SpUtil.getInt(spThemeStyle,
-                                    defValue: modeLight) ==
+                            activeTrackColor: ref
+                                .watch(themeProvider)
+                                .primaryColor,
+                            value:
+                                SpUtil.getInt(
+                                  spThemeStyle,
+                                  defValue: modeLight,
+                                ) ==
                                 modeDark,
                             onChanged: (open) async {
                               SpUtil.putBool(spThemeFollowSystem, false);
@@ -501,10 +480,7 @@ class _SettingPageState extends ConsumerState<SettingPage> {
                       ],
                     ),
                   ),
-                  const Divider(
-                    indent: 55,
-                    height: 1,
-                  ),
+                  const Divider(indent: 55, height: 1),
                   Padding(
                     padding: const EdgeInsets.symmetric(
                       vertical: 3,
@@ -515,16 +491,17 @@ class _SettingPageState extends ConsumerState<SettingPage> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Icon(
-                          WidgetsBinding.instance.platformDispatcher.platformBrightness ==
+                          WidgetsBinding
+                                      .instance
+                                      .platformDispatcher
+                                      .platformBrightness ==
                                   Brightness.dark
                               ? CupertinoIcons.moon_circle
                               : CupertinoIcons.sun_max,
                           color: ref.watch(themeProvider).primaryColor,
                           size: 20,
                         ),
-                        const SizedBox(
-                          width: 15,
-                        ),
+                        const SizedBox(width: 15),
                         Text(
                           "跟随系统",
                           style: TextStyle(
@@ -539,9 +516,13 @@ class _SettingPageState extends ConsumerState<SettingPage> {
                         Transform.scale(
                           scale: 0.9,
                           child: CupertinoSwitch(
-                            activeTrackColor: ref.watch(themeProvider).primaryColor,
-                            value: SpUtil.getBool(spThemeFollowSystem,
-                                defValue: false),
+                            activeTrackColor: ref
+                                .watch(themeProvider)
+                                .primaryColor,
+                            value: SpUtil.getBool(
+                              spThemeFollowSystem,
+                              defValue: false,
+                            ),
                             onChanged: (open) async {
                               SpUtil.putBool(spThemeFollowSystem, open);
                               ref
@@ -556,10 +537,7 @@ class _SettingPageState extends ConsumerState<SettingPage> {
                   ),
                   Visibility(
                     visible: !(systemBean.fromAutoGet ?? false),
-                    child: const Divider(
-                      indent: 55,
-                      height: 1,
-                    ),
+                    child: const Divider(indent: 55, height: 1),
                   ),
                   Visibility(
                     visible: !(systemBean.fromAutoGet ?? false),
@@ -582,9 +560,7 @@ class _SettingPageState extends ConsumerState<SettingPage> {
                               color: ref.watch(themeProvider).primaryColor,
                               size: 20,
                             ),
-                            const SizedBox(
-                              width: 15,
-                            ),
+                            const SizedBox(width: 15),
                             Text(
                               "变更服务器版本号",
                               style: TextStyle(
@@ -606,9 +582,7 @@ class _SettingPageState extends ConsumerState<SettingPage> {
                                 fontSize: 12,
                               ),
                             ),
-                            const SizedBox(
-                              width: 5,
-                            ),
+                            const SizedBox(width: 5),
                             Icon(
                               CupertinoIcons.right_chevron,
                               size: 16,
@@ -625,118 +599,109 @@ class _SettingPageState extends ConsumerState<SettingPage> {
                 ],
               ),
             ),
-            const SizedBox(
-              height: 30,
-            ),
+            const SizedBox(height: 30),
             Center(
               child: SizedBox(
                 width: MediaQuery.of(context).size.width - 40,
                 child: ButtonWidget(
-                    title: "退出登录",
-                    onTap: () {
-                      showCupertinoDialog(
-                        useRootNavigator: false,
-                        context: context,
-                        builder: (context1) => CupertinoAlertDialog(
-                          title: const Text("确认退出登录吗?"),
-                          actions: [
-                            CupertinoDialogAction(
-                              child: const Text(
-                                "取消",
-                                style: TextStyle(
-                                  color: Color(0xff999999),
-                                ),
-                              ),
-                              onPressed: () {
-                                Navigator.of(context1).pop();
-                              },
+                  title: "退出登录",
+                  onTap: () {
+                    showCupertinoDialog(
+                      useRootNavigator: false,
+                      context: context,
+                      builder: (context1) => CupertinoAlertDialog(
+                        title: const Text("确认退出登录吗?"),
+                        actions: [
+                          CupertinoDialogAction(
+                            child: const Text(
+                              "取消",
+                              style: TextStyle(color: Color(0xff999999)),
                             ),
-                            CupertinoDialogAction(
-                              child: Text(
-                                "确定",
-                                style: TextStyle(
-                                  color: ref.watch(themeProvider).primaryColor,
-                                ),
+                            onPressed: () {
+                              Navigator.of(context1).pop();
+                            },
+                          ),
+                          CupertinoDialogAction(
+                            child: Text(
+                              "确定",
+                              style: TextStyle(
+                                color: ref.watch(themeProvider).primaryColor,
                               ),
-                              onPressed: () {
-                                Navigator.of(context1).pop();
+                            ),
+                            onPressed: () {
+                              Navigator.of(context1).pop();
+                              SingleAccountPageState.ofUserInfo(
+                                context,
+                              ).updateToken(
+                                SingleAccountPageState.of(context)?.index ?? 0,
+                                SingleAccountPageState.ofUserInfo(context).host,
+                                "",
+                                false,
                                 SingleAccountPageState.ofUserInfo(context)
-                                    .updateToken(
-                                  SingleAccountPageState.of(context)?.index ??
-                                      0,
-                                  SingleAccountPageState.ofUserInfo(context)
-                                      .host,
-                                  "",
-                                  false,
-                                  SingleAccountPageState.ofUserInfo(context)
-                                      .alias,
-                                );
-                                Navigator.of(context).pushNamedAndRemoveUntil(
-                                  Routes.routeLogin,
-                                  (p) {
-                                    return false;
-                                  },
-                                );
-                              },
-                            ),
-                          ],
-                        ),
-                      );
-                    }),
+                                    .alias,
+                              );
+                              Navigator.of(context).pushNamedAndRemoveUntil(
+                                Routes.routeLogin,
+                                (p) {
+                                  return false;
+                                },
+                              );
+                            },
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
               ),
             ),
-            const SizedBox(
-              height: 20,
-            ),
+            const SizedBox(height: 20),
             Center(
               child: SizedBox(
                 width: MediaQuery.of(context).size.width - 40,
                 child: ButtonWidget(
-                    title: "退出登录并清空本地数据",
-                    onTap: () {
-                      showCupertinoDialog(
-                        useRootNavigator: false,
-                        context: context,
-                        builder: (context) => CupertinoAlertDialog(
-                          title: const Text("确认退出登录并清空账号本地数据吗?"),
-                          actions: [
-                            CupertinoDialogAction(
-                              child: const Text(
-                                "取消",
-                                style: TextStyle(
-                                  color: Color(0xff999999),
-                                ),
-                              ),
-                              onPressed: () {
-                                Navigator.of(context).pop();
-                              },
+                  title: "退出登录并清空本地数据",
+                  onTap: () {
+                    showCupertinoDialog(
+                      useRootNavigator: false,
+                      context: context,
+                      builder: (context) => CupertinoAlertDialog(
+                        title: const Text("确认退出登录并清空账号本地数据吗?"),
+                        actions: [
+                          CupertinoDialogAction(
+                            child: const Text(
+                              "取消",
+                              style: TextStyle(color: Color(0xff999999)),
                             ),
-                            CupertinoDialogAction(
-                              child: Text(
-                                "确定",
-                                style: TextStyle(
-                                  color: ref.watch(themeProvider).primaryColor,
-                                ),
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                          ),
+                          CupertinoDialogAction(
+                            child: Text(
+                              "确定",
+                              style: TextStyle(
+                                color: ref.watch(themeProvider).primaryColor,
                               ),
-                              onPressed: () {
-                                clearData(context);
-                                Navigator.of(context).pushNamedAndRemoveUntil(
-                                  Routes.routeLogin,
-                                  (p) {
-                                    return false;
-                                  },
-                                );
-                              },
                             ),
-                          ],
-                        ),
-                      );
-                    }),
+                            onPressed: () {
+                              clearData(context);
+                              Navigator.of(context).pushNamedAndRemoveUntil(
+                                Routes.routeLogin,
+                                (p) {
+                                  return false;
+                                },
+                              );
+                            },
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
               ),
             ),
-            const SizedBox(
-              height: 30,
-            ),
+            const SizedBox(height: 30),
           ],
         ),
       ),
@@ -744,8 +709,9 @@ class _SettingPageState extends ConsumerState<SettingPage> {
   }
 
   void clearData(BuildContext context) {
-    getIt<MultiAccountUserInfoViewModel>()
-        .removeHistoryAccount(SingleAccountPageState.ofUserInfo(context).host);
+    getIt<MultiAccountUserInfoViewModel>().removeHistoryAccount(
+      SingleAccountPageState.ofUserInfo(context).host,
+    );
     SingleAccountPageState.ofUserInfo(context)
         .clearCurrentInfo(SingleAccountPageState.of(context)?.index ?? 0);
   }
@@ -754,10 +720,11 @@ class _SettingPageState extends ConsumerState<SettingPage> {
     String? host = SingleAccountPageState.ofUserInfo(context).host;
 
     TextEditingController controller = TextEditingController(
-        text: getIt<SystemBean>(
-                instanceName:
-                    (SingleAccountPageState.of(context)?.index ?? 0).toString())
-            .version);
+      text: getIt<SystemBean>(
+        instanceName: (SingleAccountPageState.of(context)?.index ?? 0)
+            .toString(),
+      ).version,
+    );
     showCupertinoDialog(
       useRootNavigator: false,
       context: context,
@@ -768,9 +735,7 @@ class _SettingPageState extends ConsumerState<SettingPage> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Padding(
-              padding: const EdgeInsets.symmetric(
-                vertical: 10,
-              ),
+              padding: const EdgeInsets.symmetric(vertical: 10),
               child: TextField(
                 textAlign: TextAlign.center,
                 controller: controller,
@@ -798,12 +763,7 @@ class _SettingPageState extends ConsumerState<SettingPage> {
         ),
         actions: [
           CupertinoDialogAction(
-            child: const Text(
-              "取消",
-              style: TextStyle(
-                color: Color(0xff999999),
-              ),
-            ),
+            child: const Text("取消", style: TextStyle(color: Color(0xff999999))),
             onPressed: () {
               Navigator.of(context1).pop();
             },
@@ -811,14 +771,13 @@ class _SettingPageState extends ConsumerState<SettingPage> {
           CupertinoDialogAction(
             child: Text(
               "确定",
-              style: TextStyle(
-                color: ref.watch(themeProvider).primaryColor,
-              ),
+              style: TextStyle(color: ref.watch(themeProvider).primaryColor),
             ),
             onPressed: () async {
               Navigator.of(context1).pop();
-              HomePageState.updateVersionHistory(VersionHistoryBean(
-                  host: host, version: controller.text.trim()));
+              HomePageState.updateVersionHistory(
+                VersionHistoryBean(host: host, version: controller.text.trim()),
+              );
               SingleAccountPageState.of(context)
                   ?.registerSystemBean(controller.text.trim(), false);
               setState(() {});

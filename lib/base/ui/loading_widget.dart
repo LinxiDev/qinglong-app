@@ -2,8 +2,6 @@ import 'package:cupertino_ui/cupertino_ui.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 
-
-
 class LoadingWidget extends StatelessWidget {
   final Color color;
   final double size;
@@ -16,9 +14,6 @@ class LoadingWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return LoadingAnimationWidget.staggeredDotsWave(
-      color: color,
-      size: size,
-    );
+    return LoadingAnimationWidget.staggeredDotsWave(color: color, size: size);
   }
 }

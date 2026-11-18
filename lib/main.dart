@@ -285,18 +285,20 @@ class MultiAccountPageState extends ConsumerState<MultiAccountPage>
   void _setQuickActions() {
     const QuickActions quickActions = QuickActions();
 
-    quickActions.setShortcutItems(<ShortcutItem>[
-      ShortcutItem(
-        type: actionRunAll,
-        localizedTitle: '运行所有任务',
-        icon: Platform.isAndroid ? 'icon_cron' : 'CronImage',
-      ),
-      ShortcutItem(
-        type: actionEditConfig,
-        localizedTitle: '编辑配置文件',
-        icon: Platform.isAndroid ? 'icon_file' : 'FileImage',
-      ),
-    ]).catchError((Object e) => logger.w("快捷方式不可用: $e"));
+    quickActions
+        .setShortcutItems(<ShortcutItem>[
+          ShortcutItem(
+            type: actionRunAll,
+            localizedTitle: '运行所有任务',
+            icon: Platform.isAndroid ? 'icon_cron' : 'CronImage',
+          ),
+          ShortcutItem(
+            type: actionEditConfig,
+            localizedTitle: '编辑配置文件',
+            icon: Platform.isAndroid ? 'icon_file' : 'FileImage',
+          ),
+        ])
+        .catchError((Object e) => logger.w("快捷方式不可用: $e"));
   }
 
   @override

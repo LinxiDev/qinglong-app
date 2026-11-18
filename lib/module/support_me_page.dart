@@ -5,7 +5,6 @@ import 'package:qinglong_app/base/ql_app_bar.dart';
 
 import '../base/theme.dart';
 
-
 class SupportMePage extends ConsumerStatefulWidget {
   const SupportMePage({super.key});
 
@@ -13,7 +12,8 @@ class SupportMePage extends ConsumerStatefulWidget {
   ConsumerState<SupportMePage> createState() => _SupportMePageState();
 }
 
-class _SupportMePageState extends ConsumerState<SupportMePage> with TickerProviderStateMixin {
+class _SupportMePageState extends ConsumerState<SupportMePage>
+    with TickerProviderStateMixin {
   late TabController tabController;
 
   @override
@@ -25,19 +25,13 @@ class _SupportMePageState extends ConsumerState<SupportMePage> with TickerProvid
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: QlAppBar(
-        title: "请作者喝杯咖啡",
-      ),
+      appBar: QlAppBar(title: "请作者喝杯咖啡"),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const SizedBox(
-            height: 15,
-          ),
+          const SizedBox(height: 15),
           Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 15,
-            ),
+            padding: const EdgeInsets.symmetric(horizontal: 15),
             child: Text(
               "截屏后打开相应的支付软件即可",
               maxLines: 1,
@@ -48,13 +42,14 @@ class _SupportMePageState extends ConsumerState<SupportMePage> with TickerProvid
               ),
             ),
           ),
-          const SizedBox(
-            height: 5,
-          ),
+          const SizedBox(height: 5),
           SizedBox(
             height: 55,
             child: ColoredBox(
-              color: ref.watch(themeProvider).currentTheme.scaffoldBackgroundColor,
+              color: ref
+                  .watch(themeProvider)
+                  .currentTheme
+                  .scaffoldBackgroundColor,
               child: Padding(
                 padding: const EdgeInsets.only(
                   left: 15,
@@ -71,19 +66,28 @@ class _SupportMePageState extends ConsumerState<SupportMePage> with TickerProvid
                       "微信",
                       style: TextStyle(
                         fontSize: 14,
-                        color: ref.watch(themeProvider).themeColor.title2Color(),
+                        color: ref
+                            .watch(themeProvider)
+                            .themeColor
+                            .title2Color(),
                       ),
                     ),
                     1: Text(
                       "支付宝",
                       style: TextStyle(
                         fontSize: 14,
-                        color: ref.watch(themeProvider).themeColor.title2Color(),
+                        color: ref
+                            .watch(themeProvider)
+                            .themeColor
+                            .title2Color(),
                       ),
                     ),
                   },
                   decoration: BoxDecoration(
-                    color: ref.watch(themeProvider).themeColor.segmentedUnCheckBg(),
+                    color: ref
+                        .watch(themeProvider)
+                        .themeColor
+                        .segmentedUnCheckBg(),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   thumbDecoration: BoxDecoration(

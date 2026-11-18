@@ -1,4 +1,3 @@
-
 class EnvBean {
   String? name;
   String? value;
@@ -13,14 +12,15 @@ class EnvBean {
   String? updatedAt;
   String? createdAt;
 
-  EnvBean(
-      {this.value,
-      this.sId,
-      this.created,
-      this.status,
-      this.timestamp,
-      this.name,
-      this.remarks});
+  EnvBean({
+    this.value,
+    this.sId,
+    this.created,
+    this.status,
+    this.timestamp,
+    this.name,
+    this.remarks,
+  });
 
   String? get nId => _id;
 

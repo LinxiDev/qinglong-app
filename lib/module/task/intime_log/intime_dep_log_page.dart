@@ -48,8 +48,8 @@ class InTimeDepLogPageState extends State<InTimeDepLogPage>
     if (!canRequest) return;
     if (isRequest) return;
     isRequest = true;
-    HttpResponse<String> response =
-        await SingleAccountPageState.ofApi(context).inTimeDepLog(widget.id);
+    HttpResponse<String> response = await SingleAccountPageState.ofApi(context)
+        .inTimeDepLog(widget.id);
     if (response.success) {
       try {
         if (response.bean == null) {
@@ -85,72 +85,65 @@ class InTimeDepLogPageState extends State<InTimeDepLogPage>
 
   @override
   Widget build(BuildContext context) {
-    return Builder(builder: (context) {
-      return Scaffold(
-        floatingActionButton: FloatingActionButton(
-          mini: true,
-          onPressed: () {
-            setState(() {
-              alwaysAuthScroll = !alwaysAuthScroll;
-            });
-          },
-          elevation: 2,
-          child: Icon(
-            alwaysAuthScroll
-                ? CupertinoIcons.pause_circle
-                : CupertinoIcons.play_circle,
+    return Builder(
+      builder: (context) {
+        return Scaffold(
+          floatingActionButton: FloatingActionButton(
+            mini: true,
+            onPressed: () {
+              setState(() {
+                alwaysAuthScroll = !alwaysAuthScroll;
+              });
+            },
+            elevation: 2,
+            child: Icon(
+              alwaysAuthScroll
+                  ? CupertinoIcons.pause_circle
+                  : CupertinoIcons.play_circle,
+            ),
           ),
-        ),
-        appBar: QlAppBar(
-          canBack: true,
-          actions: [
-            CommitButton(
-              title: "分享",
-              onTap: () {
-                SharePlus.instance.share(ShareParams(text: content ?? ""));
-              },
-            ),
-          ],
-          title: widget.title,
-        ),
-        body: SafeArea(
-          child: Container(
-            width: MediaQuery.of(context).size.width,
-            padding: const EdgeInsets.only(
-              bottom: 10,
-            ),
-            child: (content == null)
-                ? const Center(
-                    child: LoadingWidget(),
-                  )
-                : CupertinoScrollbar(
-                    child: SingleChildScrollView(
-                      controller: controller,
-                      padding: const EdgeInsets.symmetric(horizontal: 15),
-                      child: SelectableText(
-                        content!,
-                        style: const TextStyle(
-                          fontSize: 12,
+          appBar: QlAppBar(
+            canBack: true,
+            actions: [
+              CommitButton(
+                title: "分享",
+                onTap: () {
+                  SharePlus.instance.share(ShareParams(text: content ?? ""));
+                },
+              ),
+            ],
+            title: widget.title,
+          ),
+          body: SafeArea(
+            child: Container(
+              width: MediaQuery.of(context).size.width,
+              padding: const EdgeInsets.only(bottom: 10),
+              child: (content == null)
+                  ? const Center(child: LoadingWidget())
+                  : CupertinoScrollbar(
+                      child: SingleChildScrollView(
+                        controller: controller,
+                        padding: const EdgeInsets.symmetric(horizontal: 15),
+                        child: SelectableText(
+                          content!,
+                          style: const TextStyle(fontSize: 12),
                         ),
                       ),
                     ),
-                  ),
+            ),
           ),
-        ),
-      );
-    });
+        );
+      },
+    );
   }
 
   @override
   void onLazyLoad() {
     alwaysAuthScroll = SpUtil.getBool(spLogAutoJump2Bottom, defValue: false);
     if (widget.needTimer) {
-      _timer = Timer.periodic(
-        const Duration(seconds: 2),
-        (timer) {
-          getLogData();
-        },
-      );
+      _timer = Timer.periodic(const Duration(seconds: 2), (timer) {
+        getLogData();
+      });
     } else {
       WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
         getLogData();

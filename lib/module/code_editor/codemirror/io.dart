@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -50,15 +51,62 @@ class CodeMirrorViewState extends CodeMirrorViewImplState<CodeMirrorView> {
   Size _size = Size.zero;
   String _rawHtml = "";
 
+  TextEditingController? _fallbackController;
+
+  /// Windows / Linux 没有 webview_flutter 的原生实现，
+  /// 用只读文本视图兜底，避免编辑器页面直接抛 MissingPluginException
+  static bool get _webViewSupported {
+    if (kIsWeb) return true;
+    return defaultTargetPlatform == TargetPlatform.android ||
+        defaultTargetPlatform == TargetPlatform.iOS ||
+        defaultTargetPlatform == TargetPlatform.macOS;
+  }
+
+  void _ensureFallback() {
+    if (_fallbackController != null) return;
+    _fallbackController = TextEditingController();
+    isLoaded = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      widget.onCreate(
+        EditorController(
+          setValue: (String val) {
+            _fallbackController?.text = val;
+          },
+          setOptions: (CodeMirrorOptions val) {
+            readOnly = val.readOnly;
+          },
+          refresh: () {},
+        ),
+      );
+    });
+  }
+
+  Widget _buildFallback() {
+    _ensureFallback();
+    return Container(
+      color: ref.read(themeProvider).themeColor.codeBgColor(),
+      padding: const EdgeInsets.all(12),
+      child: TextField(
+        controller: _fallbackController,
+        readOnly: true,
+        maxLines: null,
+        expands: true,
+        style: const TextStyle(fontFamily: 'monospace', fontSize: 13),
+        decoration: const InputDecoration(
+          border: InputBorder.none,
+          isDense: true,
+          hintText: "当前平台不支持代码高亮编辑器，以下为只读内容",
+        ),
+      ),
+    );
+  }
+
   Future<void> showSearchBar() async {
     if (isShowSearch) {
-      await _controller?.runJavaScript(
-        'clearSearchText()',
-      );
+      await _controller?.runJavaScript('clearSearchText()');
     } else {
-      await _controller?.runJavaScript(
-        'searchText()',
-      );
+      await _controller?.runJavaScript('searchText()');
     }
     isShowSearch = !isShowSearch;
   }
@@ -103,12 +151,8 @@ class CodeMirrorViewState extends CodeMirrorViewImplState<CodeMirrorView> {
                   await _controller?.runJavaScript(
                     'editor.setOption("lineNumbers", ${val.showLineNumber})',
                   );
-                  await Future.delayed(
-                    const Duration(milliseconds: 200),
-                  );
-                  await _controller?.runJavaScript(
-                    'editor.refresh()',
-                  );
+                  await Future.delayed(const Duration(milliseconds: 200));
+                  await _controller?.runJavaScript('editor.refresh()');
                   await EasyLoading.dismiss();
                   if (widget.options.mode != val.mode ||
                       widget.options.theme != val.theme) {
@@ -127,9 +171,7 @@ class CodeMirrorViewState extends CodeMirrorViewImplState<CodeMirrorView> {
                 refresh: () async {
                   const delay = Duration(milliseconds: 50);
                   await Future.delayed(delay);
-                  await _controller?.runJavaScript(
-                    'editor.refresh()',
-                  );
+                  await _controller?.runJavaScript('editor.refresh()');
                 },
               ),
             );
@@ -154,24 +196,29 @@ class CodeMirrorViewState extends CodeMirrorViewImplState<CodeMirrorView> {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<String>(
-        future: rootBundle.loadString('assets/codemirror.html'),
-        builder: (context, snapshot) {
-          if (!snapshot.hasData) {
-            return const Center(child: LoadingWidget());
-          }
-          _rawHtml = snapshot.data ?? "";
-          return LayoutBuilder(
-            builder: (context, dimens) {
-              _size = Size(dimens.maxWidth, dimens.maxHeight);
-              return KeyboardVisibilityBuilder(
-                  builder: (context, isKeyboardVisible) {
+      future: rootBundle.loadString('assets/codemirror.html'),
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) {
+          return const Center(child: LoadingWidget());
+        }
+        _rawHtml = snapshot.data ?? "";
+        return LayoutBuilder(
+          builder: (context, dimens) {
+            _size = Size(dimens.maxWidth, dimens.maxHeight);
+            return KeyboardVisibilityBuilder(
+              builder: (context, isKeyboardVisible) {
+                if (!_webViewSupported) {
+                  return _buildFallback();
+                }
                 _ensureController();
                 _resize();
 
                 return WebViewWidget(controller: _controller!);
-              });
-            },
-          );
-        });
+              },
+            );
+          },
+        );
+      },
+    );
   }
 }

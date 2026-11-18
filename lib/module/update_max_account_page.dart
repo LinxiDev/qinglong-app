@@ -9,7 +9,6 @@ import 'package:qinglong_app/base/theme.dart';
 import 'package:qinglong_app/module/subscribe/add_subscribe_page.dart';
 import 'package:qinglong_app/utils/extension.dart';
 
-
 class UpdateMaxAccountPage extends ConsumerStatefulWidget {
   const UpdateMaxAccountPage({super.key});
 
@@ -49,19 +48,12 @@ class _UpdateMaxAccountPageState extends ConsumerState<UpdateMaxAccountPage> {
           title: "修改多账号登录最大个数",
         ),
         body: Container(
-          padding: const EdgeInsets.symmetric(
-            horizontal: 15,
-            vertical: 20,
-          ),
+          padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 20),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              TitleWidget(
-                "设置最大个数:当前($count个)",
-              ),
-              const SizedBox(
-                height: 15,
-              ),
+              TitleWidget("设置最大个数:当前($count个)"),
+              const SizedBox(height: 15),
               TextField(
                 inputFormatters: [
                   FilteringTextInputFormatter.allow(RegExp("[0-9]")),
@@ -71,20 +63,13 @@ class _UpdateMaxAccountPageState extends ConsumerState<UpdateMaxAccountPage> {
                   signed: true,
                   decimal: true,
                 ),
-                decoration: const InputDecoration(
-                  hintText: "请输入你想要的个数",
-                ),
+                decoration: const InputDecoration(hintText: "请输入你想要的个数"),
                 autofocus: false,
               ),
-              const SizedBox(
-                height: 10,
-              ),
+              const SizedBox(height: 10),
               const Text(
                 "温馨提示:按需设置，如果你的手机性能有限，建议在系统设置中开启单实例模式",
-                style: TextStyle(
-                  color: Colors.red,
-                  fontSize: 12,
-                ),
+                style: TextStyle(color: Colors.red, fontSize: 12),
               ),
             ],
           ),
@@ -118,12 +103,7 @@ class _UpdateMaxAccountPageState extends ConsumerState<UpdateMaxAccountPage> {
         content: Text("你设置了${controller.text}个最大登录数,确定吗?"),
         actions: [
           CupertinoDialogAction(
-            child: const Text(
-              "取消",
-              style: TextStyle(
-                color: Color(0xff999999),
-              ),
-            ),
+            child: const Text("取消", style: TextStyle(color: Color(0xff999999))),
             onPressed: () {
               Navigator.of(context).pop();
             },
@@ -131,14 +111,13 @@ class _UpdateMaxAccountPageState extends ConsumerState<UpdateMaxAccountPage> {
           CupertinoDialogAction(
             child: Text(
               "确实",
-              style: TextStyle(
-                color: ref.watch(themeProvider).primaryColor,
-              ),
+              style: TextStyle(color: ref.watch(themeProvider).primaryColor),
             ),
             onPressed: () async {
               Navigator.of(context).pop();
               MultiAccountUserInfoViewModel.updateMaxAccount(
-                  int.tryParse(controller.text.toString()) ?? count);
+                int.tryParse(controller.text.toString()) ?? count,
+              );
               _restartApp(context);
             },
           ),
@@ -156,9 +135,7 @@ class _UpdateMaxAccountPageState extends ConsumerState<UpdateMaxAccountPage> {
         content: const Text("重启APP后，相关功能将会启用"),
         actions: [
           CupertinoDialogAction(
-            child: const Text(
-              "知道了",
-            ),
+            child: const Text("知道了"),
             onPressed: () {
               Navigator.of(context).pop();
               setState(() {});

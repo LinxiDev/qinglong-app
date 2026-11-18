@@ -49,8 +49,10 @@ void main() {
       }
     }
     if (best == null) return false;
-    await tester.tap(find.byElementPredicate((Element e) => identical(e, best)),
-        warnIfMissed: false);
+    await tester.tap(
+      find.byElementPredicate((Element e) => identical(e, best)),
+      warnIfMissed: false,
+    );
     await settle(tester, 4);
     return true;
   }
@@ -69,8 +71,7 @@ void main() {
 
     for (final String tab in <String>['定时任务', '环境变量']) {
       expect(await tapTab(tester, tab), isTrue, reason: '应能切换到 $tab');
-      expect(find.text('暂无数据'), findsWidgets,
-          reason: '$tab 在无数据时应展示空态占位');
+      expect(find.text('暂无数据'), findsWidgets, reason: '$tab 在无数据时应展示空态占位');
       // ignore: avoid_print
       print('EMPTY_STATE PASS: $tab 空态正常');
     }

@@ -24,9 +24,7 @@ class IcloudFilePageState extends State<IcloudFilePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: QlAppBar(
-        title: "iCloud文件",
-      ),
+      appBar: QlAppBar(title: "iCloud文件"),
       body: loading
           ? const Center(child: CircularProgressIndicator())
           : ListView.builder(
@@ -35,9 +33,7 @@ class IcloudFilePageState extends State<IcloudFilePage> {
                 return ListTile(
                   title: Text(
                     file.relativePath,
-                    style: const TextStyle(
-                      fontSize: 16,
-                    ),
+                    style: const TextStyle(fontSize: 16),
                   ),
                   subtitle: file.isDirectory
                       ? const Text("文件夹")

@@ -1,4 +1,3 @@
-
 import 'package:cupertino_ui/cupertino_ui.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -9,8 +8,6 @@ import 'package:qinglong_app/main.dart';
 
 import '../../base/sp_const.dart';
 import '../../utils/sp_utils.dart';
-
-
 
 class TextSizePage extends ConsumerStatefulWidget {
   const TextSizePage({super.key});
@@ -40,7 +37,9 @@ class _TextSizePageState extends ConsumerState<TextSizePage> {
           actions: [
             CommitButton(
               onTap: () {
-                context.findAncestorStateOfType<QlAppState>()?.updateTextScaleFactor(textScaleFactor);
+                context
+                    .findAncestorStateOfType<QlAppState>()
+                    ?.updateTextScaleFactor(textScaleFactor);
                 Navigator.of(context).pop();
               },
             ),
@@ -49,9 +48,8 @@ class _TextSizePageState extends ConsumerState<TextSizePage> {
         body: Column(
           children: [
             MediaQuery(
-              data: MediaQueryData.fromView(View.of(context)).copyWith(
-                textScaler: TextScaler.linear(textScaleFactor),
-              ),
+              data: MediaQueryData.fromView(View.of(context))
+                  .copyWith(textScaler: TextScaler.linear(textScaleFactor)),
               child: Material(
                 color: ref.watch(themeProvider).themeColor.settingBgColor(),
                 child: Row(
@@ -78,7 +76,10 @@ class _TextSizePageState extends ConsumerState<TextSizePage> {
                                     children: [
                                       ConstrainedBox(
                                         constraints: BoxConstraints.loose(
-                                          Size.fromWidth(MediaQuery.of(context).size.width * 0.45),
+                                          Size.fromWidth(
+                                            MediaQuery.of(context).size.width *
+                                                0.45,
+                                          ),
                                         ),
                                         child: Material(
                                           color: Colors.transparent,
@@ -88,18 +89,17 @@ class _TextSizePageState extends ConsumerState<TextSizePage> {
                                             overflow: TextOverflow.ellipsis,
                                             style: TextStyle(
                                               overflow: TextOverflow.ellipsis,
-                                              color: ref.watch(themeProvider).themeColor.titleColor(),
+                                              color: ref
+                                                  .watch(themeProvider)
+                                                  .themeColor
+                                                  .titleColor(),
                                               fontSize: 17,
                                             ),
                                           ),
                                         ),
                                       ),
-                                      const SizedBox(
-                                        width: 7,
-                                      ),
-                                      const SizedBox(
-                                        width: 7,
-                                      ),
+                                      const SizedBox(width: 7),
+                                      const SizedBox(width: 7),
                                     ],
                                   ),
                                 ),
@@ -110,16 +110,17 @@ class _TextSizePageState extends ConsumerState<TextSizePage> {
                                     maxLines: 1,
                                     style: TextStyle(
                                       overflow: TextOverflow.ellipsis,
-                                      color: ref.watch(themeProvider).themeColor.descColor(),
+                                      color: ref
+                                          .watch(themeProvider)
+                                          .themeColor
+                                          .descColor(),
                                       fontSize: 12,
                                     ),
                                   ),
                                 ),
                               ],
                             ),
-                            const SizedBox(
-                              height: 5,
-                            ),
+                            const SizedBox(height: 5),
                             Material(
                               color: Colors.transparent,
                               child: Text(
@@ -127,14 +128,15 @@ class _TextSizePageState extends ConsumerState<TextSizePage> {
                                 maxLines: 1,
                                 style: TextStyle(
                                   overflow: TextOverflow.ellipsis,
-                                  color: ref.watch(themeProvider).themeColor.descColor(),
+                                  color: ref
+                                      .watch(themeProvider)
+                                      .themeColor
+                                      .descColor(),
                                   fontSize: 14,
                                 ),
                               ),
                             ),
-                            const SizedBox(
-                              height: 5,
-                            ),
+                            const SizedBox(height: 5),
                             Material(
                               color: Colors.transparent,
                               child: Text(
@@ -143,7 +145,10 @@ class _TextSizePageState extends ConsumerState<TextSizePage> {
                                 overflow: TextOverflow.ellipsis,
                                 style: TextStyle(
                                   overflow: TextOverflow.ellipsis,
-                                  color: ref.watch(themeProvider).themeColor.descColor(),
+                                  color: ref
+                                      .watch(themeProvider)
+                                      .themeColor
+                                      .descColor(),
                                   fontSize: 14,
                                 ),
                               ),
@@ -158,19 +163,15 @@ class _TextSizePageState extends ConsumerState<TextSizePage> {
             ),
             const Spacer(),
             ColoredBox(
-              color: ref.watch(themeProvider).currentTheme.scaffoldBackgroundColor,
+              color: ref
+                  .watch(themeProvider)
+                  .currentTheme
+                  .scaffoldBackgroundColor,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  const SizedBox(
-                    width: 30,
-                  ),
-                  const Text(
-                    "A",
-                    style: TextStyle(
-                      fontSize: 12,
-                    ),
-                  ),
+                  const SizedBox(width: 30),
+                  const Text("A", style: TextStyle(fontSize: 12)),
                   const Spacer(),
                   CupertinoButton(
                     onPressed: () {
@@ -185,24 +186,18 @@ class _TextSizePageState extends ConsumerState<TextSizePage> {
                     ),
                   ),
                   const Spacer(),
-                  const Text(
-                    "A",
-                    style: TextStyle(
-                      fontSize: 22,
-                    ),
-                  ),
-                  const SizedBox(
-                    width: 30,
-                  ),
+                  const Text("A", style: TextStyle(fontSize: 22)),
+                  const SizedBox(width: 30),
                 ],
               ),
             ),
             Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 15,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 15),
               width: MediaQuery.of(context).size.width,
-              color: ref.watch(themeProvider).currentTheme.scaffoldBackgroundColor,
+              color: ref
+                  .watch(themeProvider)
+                  .currentTheme
+                  .scaffoldBackgroundColor,
               child: SafeArea(
                 top: false,
                 child: SizedBox(

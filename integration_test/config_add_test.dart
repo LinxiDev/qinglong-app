@@ -48,8 +48,10 @@ void main() {
       }
     }
     if (best == null) return false;
-    await tester.tap(find.byElementPredicate((Element e) => identical(e, best)),
-        warnIfMissed: false);
+    await tester.tap(
+      find.byElementPredicate((Element e) => identical(e, best)),
+      warnIfMissed: false,
+    );
     await settle(tester, 4);
     return true;
   }
@@ -67,10 +69,16 @@ void main() {
     }
 
     await tapTab(tester, '配置文件');
-    expect(find.byIcon(CupertinoIcons.add), findsWidgets,
-        reason: '配置文件页应存在右上角新增按钮');
+    expect(
+      find.byIcon(CupertinoIcons.add),
+      findsWidgets,
+      reason: '配置文件页应存在右上角新增按钮',
+    );
 
-    await tester.tap(find.byIcon(CupertinoIcons.add).first, warnIfMissed: false);
+    await tester.tap(
+      find.byIcon(CupertinoIcons.add).first,
+      warnIfMissed: false,
+    );
     await settle(tester, 4);
 
     expect(find.text('新增配置文件'), findsOneWidget, reason: '应进入新增配置文件页');

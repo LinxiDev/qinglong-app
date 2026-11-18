@@ -4,15 +4,10 @@ import 'package:qinglong_app/base/ql_app_bar.dart';
 
 import '../base/theme.dart';
 
-
-
 class PoetPage extends ConsumerWidget {
   final Map<String, dynamic> data;
 
-  const PoetPage({
-    super.key,
-    required this.data,
-  });
+  const PoetPage({super.key, required this.data});
 
   @override
   Widget build(BuildContext context, ref) {
@@ -49,10 +44,7 @@ class PoetPage extends ConsumerWidget {
                 color: ref.watch(themeProvider).themeColor.blackAndWhite(),
               ),
               alignment: Alignment.topCenter,
-              padding: const EdgeInsets.symmetric(
-                vertical: 10,
-                horizontal: 15,
-              ),
+              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
               margin: const EdgeInsets.only(
                 left: 15,
                 right: 15,
@@ -60,7 +52,10 @@ class PoetPage extends ConsumerWidget {
                 top: 5,
               ),
               child: SelectableText(
-                (data["data"]?["origin"]?["content"] as List?)?.join("\n\n").toString() ?? "",
+                (data["data"]?["origin"]?["content"] as List?)
+                        ?.join("\n\n")
+                        .toString() ??
+                    "",
                 style: TextStyle(
                   color: ref.watch(themeProvider).themeColor.titleColor(),
                   fontSize: 14,
@@ -70,9 +65,7 @@ class PoetPage extends ConsumerWidget {
             Visibility(
               visible: data["data"]?["origin"]?["translate"] != null,
               child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 30,
-                ),
+                padding: const EdgeInsets.symmetric(horizontal: 30),
                 child: Text(
                   "译文",
                   maxLines: 1,
@@ -104,7 +97,10 @@ class PoetPage extends ConsumerWidget {
                   top: 5,
                 ),
                 child: SelectableText(
-                  (data["data"]?["origin"]?["translate"] as List?)?.join("\n\n").toString() ?? "",
+                  (data["data"]?["origin"]?["translate"] as List?)
+                          ?.join("\n\n")
+                          .toString() ??
+                      "",
                   style: TextStyle(
                     color: ref.watch(themeProvider).themeColor.titleColor(),
                     fontSize: 14,
@@ -113,10 +109,7 @@ class PoetPage extends ConsumerWidget {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 30,
-                vertical: 10,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
               child: SelectableText(
                 "数据来源:https://www.jinrishici.com",
                 maxLines: 1,

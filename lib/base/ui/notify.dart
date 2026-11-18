@@ -1,8 +1,6 @@
-
 import 'dart:async';
 
 import 'package:material_ui/material_ui.dart';
-
 
 ///消息弹窗横幅
 class Notify {
@@ -11,15 +9,15 @@ class Notify {
   final GlobalKey<_NotifyWidgetState> _stateKey = GlobalKey();
 
   void show(
-      BuildContext context,
-      Widget child, {
-        bool? rootNavigator,
-        int duration = 300,
-        int keepDuration = 3 * 1000,
-        double topOffset = 40,
-        bool dismissDirectly = false,
-        bool disableDrag = false,
-      }) {
+    BuildContext context,
+    Widget child, {
+    bool? rootNavigator,
+    int duration = 300,
+    int keepDuration = 3 * 1000,
+    double topOffset = 40,
+    bool dismissDirectly = false,
+    bool disableDrag = false,
+  }) {
     _createView(
       child,
       context,
@@ -33,21 +31,23 @@ class Notify {
   }
 
   void _createView(
-      Widget child,
-      BuildContext context,
-      bool? rootNavigator,
-      int duration,
-      int keepDuration,
-      double topOffset,
-      bool dismissDirectly,
-      bool disableDrag,
-      ) {
+    Widget child,
+    BuildContext context,
+    bool? rootNavigator,
+    int duration,
+    int keepDuration,
+    double topOffset,
+    bool dismissDirectly,
+    bool disableDrag,
+  ) {
     if (_overlayEntry != null) {
       throw ArgumentError("you shuold call dismiss() firstly");
     }
 
-    final OverlayState overlayState =
-    Overlay.of(context, rootOverlay: rootNavigator ?? false);
+    final OverlayState overlayState = Overlay.of(
+      context,
+      rootOverlay: rootNavigator ?? false,
+    );
 
     _overlayEntry = OverlayEntry(
       builder: (BuildContext context) => NotifyWidget(
@@ -154,24 +154,17 @@ class _NotifyWidgetState extends State<NotifyWidget>
       duration: Duration(milliseconds: widget.duration),
       vsync: this,
     );
-    _offsetAnimation = Tween<double>(
-      begin: begin,
-      end: widget.topOffset,
-    ).animate(
-      CurvedAnimation(
-        parent: _playController!,
-        curve: Curves.easeOutBack,
-      ),
-    );
-    _playController?.addListener(
-          () {
-        if (mounted) {
-          setState(() {
-            _offset = _offsetAnimation!.value;
-          });
-        }
-      },
-    );
+    _offsetAnimation = Tween<double>(begin: begin, end: widget.topOffset)
+        .animate(
+          CurvedAnimation(parent: _playController!, curve: Curves.easeOutBack),
+        );
+    _playController?.addListener(() {
+      if (mounted) {
+        setState(() {
+          _offset = _offsetAnimation!.value;
+        });
+      }
+    });
     _playController?.forward();
   }
 
@@ -219,27 +212,20 @@ class _NotifyWidgetState extends State<NotifyWidget>
 
   void _reset2Target() {
     if (_reversed) {
-      _offsetAnimation = Tween<double>(
-        begin: _offset,
-        end: widget.topOffset,
-      ).animate(
-        CurvedAnimation(
-          parent: _playController!,
-          curve: Curves.easeOutBack,
-        ),
-      );
+      _offsetAnimation = Tween<double>(begin: _offset, end: widget.topOffset)
+          .animate(
+            CurvedAnimation(
+              parent: _playController!,
+              curve: Curves.easeOutBack,
+            ),
+          );
       _playController?.forward();
       _reversed = false;
     } else {
-      _offsetAnimation = Tween<double>(
-        begin: widget.topOffset,
-        end: _offset,
-      ).animate(
-        CurvedAnimation(
-          parent: _playController!,
-          curve: Curves.easeInBack,
-        ),
-      );
+      _offsetAnimation = Tween<double>(begin: widget.topOffset, end: _offset)
+          .animate(
+            CurvedAnimation(parent: _playController!, curve: Curves.easeInBack),
+          );
       _playController?.reverse();
       _reversed = true;
     }
@@ -254,14 +240,8 @@ class _NotifyWidgetState extends State<NotifyWidget>
     }
 
     if (_reversed) {
-      _offsetAnimation = Tween<double>(
-        begin: _offset,
-        end: begin,
-      ).animate(
-        CurvedAnimation(
-          parent: _playController!,
-          curve: Curves.linear,
-        ),
+      _offsetAnimation = Tween<double>(begin: _offset, end: begin).animate(
+        CurvedAnimation(parent: _playController!, curve: Curves.linear),
       );
 
       try {
@@ -272,14 +252,8 @@ class _NotifyWidgetState extends State<NotifyWidget>
       }
       return;
     } else {
-      _offsetAnimation = Tween<double>(
-        begin: begin,
-        end: _offset,
-      ).animate(
-        CurvedAnimation(
-          parent: _playController!,
-          curve: Curves.linear,
-        ),
+      _offsetAnimation = Tween<double>(begin: begin, end: _offset).animate(
+        CurvedAnimation(parent: _playController!, curve: Curves.linear),
       );
       try {
         await _playController?.reverse();

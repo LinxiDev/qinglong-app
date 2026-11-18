@@ -4,8 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:qinglong_app/base/theme.dart';
 import 'package:qinglong_app/base/ui/loading_widget.dart';
 
-
-
 class RunningWidget extends ConsumerWidget {
   const RunningWidget({super.key});
 
@@ -20,19 +18,12 @@ class RunningWidget extends ConsumerWidget {
           width: 1,
         ),
       ),
-      padding: const EdgeInsets.symmetric(
-        horizontal: 3,
-      ),
+      padding: const EdgeInsets.symmetric(horizontal: 3),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          LoadingWidget(
-            color: ref.watch(themeProvider).primaryColor,
-            size: 12,
-          ),
-          const SizedBox(
-            width: 3,
-          ),
+          LoadingWidget(color: ref.watch(themeProvider).primaryColor, size: 12),
+          const SizedBox(width: 3),
           Text(
             "运行中",
             style: TextStyle(

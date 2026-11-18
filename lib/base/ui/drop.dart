@@ -66,9 +66,7 @@ class DropDownState {
       builder: (context) {
         return StatefulBuilder(
           builder: (BuildContext context, StateSetter setState) {
-            return MainBody(
-              dropDown: dropDown,
-            );
+            return MainBody(dropDown: dropDown);
           },
         );
       },
@@ -116,7 +114,11 @@ class _MainBodyState extends ConsumerState<MainBody> {
         return Column(
           children: <Widget>[
             Padding(
-              padding: const EdgeInsets.only(left: 15.0, right: 15.0, top: 10.0),
+              padding: const EdgeInsets.only(
+                left: 15.0,
+                right: 15.0,
+                top: 10.0,
+              ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -128,9 +130,7 @@ class _MainBodyState extends ConsumerState<MainBody> {
                       fontSize: 16,
                     ),
                   ),
-                  Expanded(
-                    child: Container(),
-                  ),
+                  Expanded(child: Container()),
 
                   /// Done button
                   Visibility(
@@ -138,28 +138,33 @@ class _MainBodyState extends ConsumerState<MainBody> {
                     child: Align(
                       alignment: Alignment.centerRight,
                       child: CupertinoButton(
-                          onPressed: () {
-                            List<SelectedListItem> selectedList = widget.dropDown.dataList.where((element) => element.isSelected == true).toList();
-                            List<String> selectedNameList = [];
+                        onPressed: () {
+                          List<SelectedListItem> selectedList = widget
+                              .dropDown
+                              .dataList
+                              .where((element) => element.isSelected == true)
+                              .toList();
+                          List<String> selectedNameList = [];
 
-                            for (var element in selectedList) {
-                              selectedNameList.add(element.value ?? element.name);
-                            }
+                          for (var element in selectedList) {
+                            selectedNameList.add(element.value ?? element.name);
+                          }
 
-                            if (selectedNameList.isEmpty) {
-                              "至少选择一项".toast();
-                              return;
-                            }
-                            widget.dropDown.selectedItems?.call(selectedNameList);
-                            _onUnfocusKeyboardAndPop();
-                          },
-                          child: Text(
-                            widget.dropDown.submitButtonText ?? 'Done',
-                            style: TextStyle(
-                              color: ref.watch(themeProvider).primaryColor,
-                              fontSize: 18,
-                            ),
-                          )),
+                          if (selectedNameList.isEmpty) {
+                            "至少选择一项".toast();
+                            return;
+                          }
+                          widget.dropDown.selectedItems?.call(selectedNameList);
+                          _onUnfocusKeyboardAndPop();
+                        },
+                        child: Text(
+                          widget.dropDown.submitButtonText ?? 'Done',
+                          style: TextStyle(
+                            color: ref.watch(themeProvider).primaryColor,
+                            fontSize: 18,
+                          ),
+                        ),
+                      ),
                     ),
                   ),
                 ],
@@ -176,7 +181,11 @@ class _MainBodyState extends ConsumerState<MainBody> {
                     onTap: widget.dropDown.enableMultipleSelection
                         ? null
                         : () {
-                            widget.dropDown.selectedItem?.call((mainList[index].value != null) ? mainList[index].value ?? '' : mainList[index].name);
+                            widget.dropDown.selectedItem?.call(
+                              (mainList[index].value != null)
+                                  ? mainList[index].value ?? ''
+                                  : mainList[index].name,
+                            );
                             _onUnfocusKeyboardAndPop();
                           },
                     child: Padding(
@@ -184,23 +193,21 @@ class _MainBodyState extends ConsumerState<MainBody> {
                       child: ListTile(
                         onTap: () {
                           setState(() {
-                            mainList[index].isSelected = !mainList[index].isSelected;
+                            mainList[index].isSelected =
+                                !mainList[index].isSelected;
                           });
                         },
-                        title: Text(
-                          mainList[index].name,
-                        ),
+                        title: Text(mainList[index].name),
                         trailing: widget.dropDown.enableMultipleSelection
                             ? mainList[index].isSelected
-                                ? Icon(
-                                    Icons.check_box,
-                                    color: ref.watch(themeProvider).primaryColor,
-                                  )
-                                : const Icon(Icons.check_box_outline_blank)
-                            : const SizedBox(
-                                height: 0.0,
-                                width: 0.0,
-                              ),
+                                  ? Icon(
+                                      Icons.check_box,
+                                      color: ref
+                                          .watch(themeProvider)
+                                          .primaryColor,
+                                    )
+                                  : const Icon(Icons.check_box_outline_blank)
+                            : const SizedBox(height: 0.0, width: 0.0),
                       ),
                     ),
                   );

@@ -33,7 +33,8 @@ class ScriptCodeDetailPage extends ConsumerStatefulWidget {
   ScriptCodeDetailPageState createState() => ScriptCodeDetailPageState();
 }
 
-class ScriptCodeDetailPageState extends ConsumerState<ScriptCodeDetailPage> with LazyLoadState<ScriptCodeDetailPage> {
+class ScriptCodeDetailPageState extends ConsumerState<ScriptCodeDetailPage>
+    with LazyLoadState<ScriptCodeDetailPage> {
   bool buttonshow = false;
 
   late CodeMirrorOptions options;
@@ -64,7 +65,8 @@ class ScriptCodeDetailPageState extends ConsumerState<ScriptCodeDetailPage> with
   String? content;
 
   bool isJsonFile() {
-    return (widget.absPath?.endsWith(".${FileUtil.env}") ?? false) || (widget.absPath?.endsWith(".${FileUtil.subscribe}") ?? false);
+    return (widget.absPath?.endsWith(".${FileUtil.env}") ?? false) ||
+        (widget.absPath?.endsWith(".${FileUtil.subscribe}") ?? false);
   }
 
   String getPrettyJSONString() {
@@ -78,20 +80,14 @@ class ScriptCodeDetailPageState extends ConsumerState<ScriptCodeDetailPage> with
     return Scaffold(
       floatingActionButton: isJsonFile()
           ? FloatingActionButton(
-              child: const Icon(
-                Icons.grid_on,
-              ),
+              child: const Icon(Icons.grid_on),
               onPressed: () {
-                setState(
-                  () {
-                    showTable = !showTable;
-                  },
-                );
-              })
-          : const Visibility(
-              visible: false,
-              child: SizedBox.shrink(),
-            ),
+                setState(() {
+                  showTable = !showTable;
+                });
+              },
+            )
+          : const Visibility(visible: false, child: SizedBox.shrink()),
       appBar: QlAppBar(
         canBack: true,
         actions: [
@@ -111,9 +107,7 @@ class ScriptCodeDetailPageState extends ConsumerState<ScriptCodeDetailPage> with
                           CupertinoDialogAction(
                             child: const Text(
                               "取消",
-                              style: TextStyle(
-                                color: Color(0xff999999),
-                              ),
+                              style: TextStyle(color: Color(0xff999999)),
                             ),
                             onPressed: () {
                               Navigator.of(childContext).pop();
@@ -129,11 +123,33 @@ class ScriptCodeDetailPageState extends ConsumerState<ScriptCodeDetailPage> with
                             onPressed: () async {
                               Navigator.of(context).pop();
                               if (widget.title.endsWith(".${FileUtil.env}")) {
-                                getIt<ICloudUtils>(instanceName: (SingleAccountPageState.of(context)?.index ?? 0).toString()).restoreEnv(widget.absPath!);
-                              } else if (widget.title.endsWith(".${FileUtil.config}")) {
-                                getIt<ICloudUtils>(instanceName: (SingleAccountPageState.of(context)?.index ?? 0).toString()).restoreConfig(widget.absPath!);
-                              } else if (widget.title.endsWith(".${FileUtil.subscribe}")) {
-                                getIt<ICloudUtils>(instanceName: (SingleAccountPageState.of(context)?.index ?? 0).toString()).restoreSubscribe(widget.absPath!);
+                                getIt<ICloudUtils>(
+                                  instanceName:
+                                      (SingleAccountPageState.of(context)
+                                                  ?.index ??
+                                              0)
+                                          .toString(),
+                                ).restoreEnv(widget.absPath!);
+                              } else if (widget.title.endsWith(
+                                ".${FileUtil.config}",
+                              )) {
+                                getIt<ICloudUtils>(
+                                  instanceName:
+                                      (SingleAccountPageState.of(context)
+                                                  ?.index ??
+                                              0)
+                                          .toString(),
+                                ).restoreConfig(widget.absPath!);
+                              } else if (widget.title.endsWith(
+                                ".${FileUtil.subscribe}",
+                              )) {
+                                getIt<ICloudUtils>(
+                                  instanceName:
+                                      (SingleAccountPageState.of(context)
+                                                  ?.index ??
+                                              0)
+                                          .toString(),
+                                ).restoreSubscribe(widget.absPath!);
                               } else {
                                 "不支持还原该文件".toast();
                               }
@@ -144,9 +160,7 @@ class ScriptCodeDetailPageState extends ConsumerState<ScriptCodeDetailPage> with
                     );
                   },
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 15,
-                    ),
+                    padding: const EdgeInsets.symmetric(horizontal: 15),
                     child: Center(
                       child: Text(
                         "还原",
@@ -157,14 +171,12 @@ class ScriptCodeDetailPageState extends ConsumerState<ScriptCodeDetailPage> with
                       ),
                     ),
                   ),
-                )
+                ),
         ],
         title: widget.title,
       ),
       body: (content == null)
-          ? const Center(
-              child: LoadingWidget(),
-            )
+          ? const Center(child: LoadingWidget())
           : SafeArea(
               top: false,
               child: isJsonFile()
@@ -187,14 +199,10 @@ class ScriptCodeDetailPageState extends ConsumerState<ScriptCodeDetailPage> with
         ? Center(
             child: SingleChildScrollView(
               padding: const EdgeInsets.all(12),
-              child: SelectableText(
-                getPrettyJSONString(),
-              ),
+              child: SelectableText(getPrettyJSONString()),
             ),
           )
-        : JsonTableView(
-            jsonDecode(content ?? "[]"),
-          );
+        : JsonTableView(jsonDecode(content ?? "[]"));
   }
 
   @override

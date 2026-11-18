@@ -1,8 +1,10 @@
 import 'package:material_ui/material_ui.dart';
 
 const qinglongLightTheme = {
-  'root':
-      TextStyle(color: Color(0xff1307D5), backgroundColor: Color(0xffffffff)),
+  'root': TextStyle(
+    color: Color(0xff1307D5),
+    backgroundColor: Color(0xffffffff),
+  ),
   'comment': TextStyle(
     color: Color(0xffAA521D),
     fontStyle: FontStyle.normal,
@@ -10,8 +12,10 @@ const qinglongLightTheme = {
   ),
   'quote': TextStyle(color: Color(0xff999988), fontStyle: FontStyle.normal),
   'keyword': TextStyle(color: Color(0xff333333), fontWeight: FontWeight.normal),
-  'selector-tag':
-      TextStyle(color: Color(0xff333333), fontWeight: FontWeight.normal),
+  'selector-tag': TextStyle(
+    color: Color(0xff333333),
+    fontWeight: FontWeight.normal,
+  ),
   'subst': TextStyle(color: Color(0xff333333), fontWeight: FontWeight.normal),
   'number': TextStyle(color: Color(0xff008080)),
   'literal': TextStyle(color: Color(0xff008080)),
@@ -21,13 +25,17 @@ const qinglongLightTheme = {
   'doctag': TextStyle(color: Color(0xffdd1144)),
   'title': TextStyle(color: Color(0xff990000), fontWeight: FontWeight.normal),
   'section': TextStyle(color: Color(0xff990000), fontWeight: FontWeight.normal),
-  'selector-id':
-      TextStyle(color: Color(0xff990000), fontWeight: FontWeight.normal),
+  'selector-id': TextStyle(
+    color: Color(0xff990000),
+    fontWeight: FontWeight.normal,
+  ),
   'type': TextStyle(color: Color(0xff445588), fontWeight: FontWeight.normal),
   'tag': TextStyle(color: Color(0xff000080), fontWeight: FontWeight.normal),
   'name': TextStyle(color: Color(0xff000080), fontWeight: FontWeight.normal),
-  'attribute':
-      TextStyle(color: Color(0xff000080), fontWeight: FontWeight.normal),
+  'attribute': TextStyle(
+    color: Color(0xff000080),
+    fontWeight: FontWeight.normal,
+  ),
   'regexp': TextStyle(color: Color(0xff009926)),
   'link': TextStyle(color: Color(0xff009926)),
   'symbol': TextStyle(color: Color(0xff990073)),
@@ -50,8 +58,10 @@ const qinglongDarkTheme = {
   ),
   'quote': TextStyle(color: Color(0xff999988), fontStyle: FontStyle.normal),
   'keyword': TextStyle(color: Color(0xff333333), fontWeight: FontWeight.normal),
-  'selector-tag':
-      TextStyle(color: Color(0xff333333), fontWeight: FontWeight.normal),
+  'selector-tag': TextStyle(
+    color: Color(0xff333333),
+    fontWeight: FontWeight.normal,
+  ),
   'subst': TextStyle(color: Color(0xff333333), fontWeight: FontWeight.normal),
   'number': TextStyle(color: Color(0xff008080)),
   'literal': TextStyle(color: Color(0xff008080)),
@@ -61,13 +71,17 @@ const qinglongDarkTheme = {
   'doctag': TextStyle(color: Color(0xffdd1144)),
   'title': TextStyle(color: Color(0xff990000), fontWeight: FontWeight.normal),
   'section': TextStyle(color: Color(0xff990000), fontWeight: FontWeight.normal),
-  'selector-id':
-      TextStyle(color: Color(0xff990000), fontWeight: FontWeight.normal),
+  'selector-id': TextStyle(
+    color: Color(0xff990000),
+    fontWeight: FontWeight.normal,
+  ),
   'type': TextStyle(color: Color(0xff445588), fontWeight: FontWeight.normal),
   'tag': TextStyle(color: Color(0xff000080), fontWeight: FontWeight.normal),
   'name': TextStyle(color: Color(0xff000080), fontWeight: FontWeight.normal),
-  'attribute':
-      TextStyle(color: Color(0xff000080), fontWeight: FontWeight.normal),
+  'attribute': TextStyle(
+    color: Color(0xff000080),
+    fontWeight: FontWeight.normal,
+  ),
   'regexp': TextStyle(color: Color(0xff009926)),
   'link': TextStyle(color: Color(0xff009926)),
   'symbol': TextStyle(color: Color(0xff990073)),

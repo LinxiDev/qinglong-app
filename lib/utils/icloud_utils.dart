@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+
 import 'package:file_picker/file_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
@@ -12,8 +13,6 @@ import 'package:qinglong_app/utils/extension.dart';
 import 'package:qinglong_app/utils/sp_utils.dart';
 import 'package:qinglong_app/utils/utils.dart';
 import 'package:path/path.dart' as path;
-
-
 
 class ICloudUtils {
   static bool remindError = false;
@@ -37,7 +36,9 @@ class ICloudUtils {
       }
 
       bool exist = await existContent(
-          await FileUtil(index).getSubscribeDirectory(), list);
+        await FileUtil(index).getSubscribeDirectory(),
+        list,
+      );
 
       if (!exist) {
         await FileUtil(index).writeSubscribe(list);
@@ -70,7 +71,9 @@ class ICloudUtils {
         return;
       }
       bool exist = await existContent(
-          await FileUtil(index).getEnvDirectory(), jsonEncode(list));
+        await FileUtil(index).getEnvDirectory(),
+        jsonEncode(list),
+      );
 
       if (!exist) {
         await FileUtil(index).writeEnv(jsonEncode(list));
@@ -80,8 +83,11 @@ class ICloudUtils {
     }
   }
 
-  Future<void> asyncConfig(String? title, String? content,
-      {bool focusUpdate = false}) async {
+  Future<void> asyncConfig(
+    String? title,
+    String? content, {
+    bool focusUpdate = false,
+  }) async {
     try {
       if (SpUtil.getInt(spVIP, defValue: typeNormal) == typeNormal) return;
 
@@ -92,9 +98,9 @@ class ICloudUtils {
       }
 
       bool exist = await existContent(
-          await FileUtil(index)
-              .getConfigHolDirectory(title ?? "nameNotFound.sh"),
-          content);
+        await FileUtil(index).getConfigHolDirectory(title ?? "nameNotFound.sh"),
+        content,
+      );
 
       if (!exist) {
         await FileUtil(index).writeConfig(title ?? "nameNotFound.sh", content);
@@ -184,9 +190,11 @@ class ICloudUtils {
 
       List<dynamic> data = jsonDecode(contents);
 
-      list.addAll(data.map((e) {
-        return e as Map<String, dynamic>;
-      }).toList());
+      list.addAll(
+        data.map((e) {
+          return e as Map<String, dynamic>;
+        }).toList(),
+      );
 
       for (var value in list) {
         value.remove("id");
@@ -228,11 +236,7 @@ class ICloudUtils {
       for (var value in list) {
         if (value.name == null || value.value == null) continue;
 
-        await Api(index).addEnv(
-          value.name!,
-          value.value!,
-          value.remarks ?? "",
-        );
+        await Api(index).addEnv(value.name!, value.value!, value.remarks ?? "");
       }
       "已还原，请刷新环境变量列表查看".toast();
     } catch (e) {
@@ -272,8 +276,8 @@ class FileUtil {
   }
 
   String getHost() {
-    String? temp =
-        getIt<UserInfoViewModel>(instanceName: index.toString()).host;
+    String? temp = getIt<UserInfoViewModel>(instanceName: index.toString())
+        .host;
 
     if (temp == null) return "";
 

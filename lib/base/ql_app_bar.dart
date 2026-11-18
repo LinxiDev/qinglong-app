@@ -42,9 +42,7 @@ class QlAppBar extends ConsumerWidget implements PreferredSizeWidget {
           }
         },
         child: Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: 15,
-          ),
+          padding: const EdgeInsets.symmetric(horizontal: 15),
           child: Center(
             child: Icon(
               CupertinoIcons.left_chevron,
@@ -74,9 +72,7 @@ class QlAppBar extends ConsumerWidget implements PreferredSizeWidget {
             ),
           );
         },
-        child: Text(
-          title,
-        ),
+        child: Text(title),
       ),
       centerTitle: true,
       actions: [...?actions],
@@ -86,7 +82,8 @@ class QlAppBar extends ConsumerWidget implements PreferredSizeWidget {
       return Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
-              colors: ref.watch(themeProvider).themeColor.appBarBg()),
+            colors: ref.watch(themeProvider).themeColor.appBarBg(),
+          ),
         ),
         child: appBar,
       );

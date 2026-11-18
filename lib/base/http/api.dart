@@ -31,10 +31,8 @@ class Api {
   }
 
   Future<HttpResponse<LogDelBean>> logDel() async {
-    return await getIt<Http>(instanceName: index.toString()).get<LogDelBean>(
-      getIt<Url>(instanceName: index.toString()).logDel,
-      {},
-    );
+    return await getIt<Http>(instanceName: index.toString())
+        .get<LogDelBean>(getIt<Url>(instanceName: index.toString()).logDel, {});
   }
 
   Future<HttpResponse<String>> logDelTime(int time) async {
@@ -45,23 +43,17 @@ class Api {
   }
 
   Future<HttpResponse<SystemBean>> system() async {
-    return await getIt<Http>(instanceName: index.toString()).get<SystemBean>(
-      Url.system,
-      {},
-    );
+    return await getIt<Http>(instanceName: index.toString())
+        .get<SystemBean>(Url.system, {});
   }
 
   Future<HttpResponse<LoginBean>> login(
     String userName,
     String passWord,
   ) async {
-    return await getIt<Http>(instanceName: index.toString()).post<LoginBean>(
-      Url.login,
-      {
-        "username": userName,
-        "password": passWord,
-      },
-    );
+    return await getIt<Http>(
+      instanceName: index.toString(),
+    ).post<LoginBean>(Url.login, {"username": userName, "password": passWord});
   }
 
   Future<HttpResponse<LoginBean>> loginOld(
@@ -70,10 +62,7 @@ class Api {
   ) async {
     return await getIt<Http>(instanceName: index.toString()).post<LoginBean>(
       Url.loginOld,
-      {
-        "username": userName,
-        "password": passWord,
-      },
+      {"username": userName, "password": passWord},
     );
   }
 
@@ -84,11 +73,7 @@ class Api {
   ) async {
     return await getIt<Http>(instanceName: index.toString()).put<LoginBean>(
       Url.loginTwo,
-      {
-        "username": userName,
-        "password": passWord,
-        "code": code,
-      },
+      {"username": userName, "password": passWord, "code": code},
     );
   }
 
@@ -98,18 +83,13 @@ class Api {
   ) async {
     return await getIt<Http>(instanceName: index.toString()).get<LoginBean>(
       Url.loginByClientId,
-      {
-        "client_id": id,
-        "client_secret": secret,
-      },
+      {"client_id": id, "client_secret": secret},
     );
   }
 
   Future<HttpResponse<UserBean>> user() async {
-    return await getIt<Http>(instanceName: index.toString()).get<UserBean>(
-      Url.user,
-      null,
-    );
+    return await getIt<Http>(instanceName: index.toString())
+        .get<UserBean>(Url.user, null);
   }
 
   Future<HttpResponse<TaskBean2>> crons2_13_09() async {
@@ -120,24 +100,32 @@ class Api {
   }
 
   Future<HttpResponse<List<TaskBean>>> crons() async {
-    return await getIt<Http>(instanceName: index.toString()).get<List<TaskBean>>(
-      getIt<Url>(instanceName: index.toString()).tasks,
-      {"searchValue": ""},
-    );
+    return await getIt<Http>(instanceName: index.toString())
+        .get<List<TaskBean>>(getIt<Url>(instanceName: index.toString()).tasks, {
+          "searchValue": "",
+        });
   }
 
-  Future<HttpResponse<NullResponse>> deleteLogFold(String fileName, String path) async {
-    return await getIt<Http>(instanceName: index.toString()).delete<NullResponse>(
-      getIt<Url>(instanceName: index.toString()).logFoldDelete,
-      {"filename": fileName, "path": path, "type": "directory"},
-    );
+  Future<HttpResponse<NullResponse>> deleteLogFold(
+    String fileName,
+    String path,
+  ) async {
+    return await getIt<Http>(instanceName: index.toString())
+        .delete<NullResponse>(
+          getIt<Url>(instanceName: index.toString()).logFoldDelete,
+          {"filename": fileName, "path": path, "type": "directory"},
+        );
   }
 
-  Future<HttpResponse<NullResponse>> deleteLog(String fileName, String path) async {
-    return await getIt<Http>(instanceName: index.toString()).delete<NullResponse>(
-      getIt<Url>(instanceName: index.toString()).logFoldDelete,
-      {"filename": fileName, "path": path, "type": "file"},
-    );
+  Future<HttpResponse<NullResponse>> deleteLog(
+    String fileName,
+    String path,
+  ) async {
+    return await getIt<Http>(instanceName: index.toString())
+        .delete<NullResponse>(
+          getIt<Url>(instanceName: index.toString()).logFoldDelete,
+          {"filename": fileName, "path": path, "type": "file"},
+        );
   }
 
   Future<HttpResponse<String>> subscribes() async {
@@ -147,7 +135,9 @@ class Api {
     );
   }
 
-  Future<HttpResponse<NullResponse>> updateNotifcation(Map<String, dynamic> params) async {
+  Future<HttpResponse<NullResponse>> updateNotifcation(
+    Map<String, dynamic> params,
+  ) async {
     return await getIt<Http>(instanceName: index.toString()).put<NullResponse>(
       getIt<Url>(instanceName: index.toString()).notifcations,
       params,
@@ -155,20 +145,23 @@ class Api {
   }
 
   Future<HttpResponse<String>> getNotifcation() async {
-    return await getIt<Http>(instanceName: index.toString()).get<String>(
-      getIt<Url>(instanceName: index.toString()).notifcations,
-      {},
-    );
+    return await getIt<Http>(
+      instanceName: index.toString(),
+    ).get<String>(getIt<Url>(instanceName: index.toString()).notifcations, {});
   }
 
-  Future<HttpResponse<String>> updateSubscribes(Map<String, dynamic> params) async {
+  Future<HttpResponse<String>> updateSubscribes(
+    Map<String, dynamic> params,
+  ) async {
     return await getIt<Http>(instanceName: index.toString()).put<String>(
       getIt<Url>(instanceName: index.toString()).subscribes,
       params,
     );
   }
 
-  Future<HttpResponse<String>> addSubscribes(Map<String, dynamic> params) async {
+  Future<HttpResponse<String>> addSubscribes(
+    Map<String, dynamic> params,
+  ) async {
     return await getIt<Http>(instanceName: index.toString()).post<String>(
       getIt<Url>(instanceName: index.toString()).subscribes,
       params,
@@ -203,13 +196,13 @@ class Api {
     );
   }
 
-  Future<HttpResponse<NullResponse>> updatePassword(String name, String password) async {
+  Future<HttpResponse<NullResponse>> updatePassword(
+    String name,
+    String password,
+  ) async {
     return await getIt<Http>(instanceName: index.toString()).put<NullResponse>(
       Url.updatePassword,
-      {
-        "username": name,
-        "password": password,
-      },
+      {"username": name, "password": password},
     );
   }
 
@@ -251,10 +244,11 @@ class Api {
       } else if (nId != null) {
         data["_id"] = nId;
       }
-      return await getIt<Http>(instanceName: index.toString()).put<NullResponse>(
-        getIt<Url>(instanceName: index.toString()).addTask,
-        data,
-      );
+      return await getIt<Http>(instanceName: index.toString())
+          .put<NullResponse>(
+            getIt<Url>(instanceName: index.toString()).addTask,
+            data,
+          );
     }
     return await getIt<Http>(instanceName: index.toString()).post<NullResponse>(
       getIt<Url>(instanceName: index.toString()).addTask,
@@ -263,17 +257,19 @@ class Api {
   }
 
   Future<HttpResponse<NullResponse>> delSubscribe(int cron) async {
-    return await getIt<Http>(instanceName: index.toString()).delete<NullResponse>(
-      getIt<Url>(instanceName: index.toString()).addSubscribes,
-      [cron],
-    );
+    return await getIt<Http>(instanceName: index.toString())
+        .delete<NullResponse>(
+          getIt<Url>(instanceName: index.toString()).addSubscribes,
+          [cron],
+        );
   }
 
   Future<HttpResponse<NullResponse>> delTask(List<String> crons) async {
-    return await getIt<Http>(instanceName: index.toString()).delete<NullResponse>(
-      getIt<Url>(instanceName: index.toString()).addTask,
-      crons,
-    );
+    return await getIt<Http>(instanceName: index.toString())
+        .delete<NullResponse>(
+          getIt<Url>(instanceName: index.toString()).addTask,
+          crons,
+        );
   }
 
   Future<HttpResponse<NullResponse>> pinTask(List<String> crons) async {
@@ -319,28 +315,28 @@ class Api {
   }
 
   Future<HttpResponse<List<ConfigBean>>> files() async {
-    return await getIt<Http>(instanceName: index.toString()).get<List<ConfigBean>>(
-      getIt<Url>(instanceName: index.toString()).files,
-      null,
-    );
+    return await getIt<Http>(instanceName: index.toString())
+        .get<List<ConfigBean>>(
+          getIt<Url>(instanceName: index.toString()).files,
+          null,
+        );
   }
 
   Future<HttpResponse<String>> content(String name) async {
     final Url url = getIt<Url>(instanceName: index.toString());
     // 2.23+ 已下线 /configs/:file，改用 /configs/detail?path=
     if (_system?.isUpperVersion2_23_0() ?? false) {
-      return await getIt<Http>(instanceName: index.toString()).get<String>(
-        url.configDetail,
-        {"path": name},
-      );
+      return await getIt<Http>(instanceName: index.toString())
+          .get<String>(url.configDetail, {"path": name});
     }
-    return await getIt<Http>(instanceName: index.toString()).get<String>(
-      url.configContent + name,
-      null,
-    );
+    return await getIt<Http>(instanceName: index.toString())
+        .get<String>(url.configContent + name, null);
   }
 
-  Future<HttpResponse<NullResponse>> saveFile(String name, String content) async {
+  Future<HttpResponse<NullResponse>> saveFile(
+    String name,
+    String content,
+  ) async {
     return await getIt<Http>(instanceName: index.toString()).post<NullResponse>(
       getIt<Url>(instanceName: index.toString()).saveFile,
       {"content": content, "name": name},
@@ -369,17 +365,19 @@ class Api {
   }
 
   Future<HttpResponse<NullResponse>> delEnvs(List<String> ids) async {
-    return await getIt<Http>(instanceName: index.toString()).delete<NullResponse>(
-      getIt<Url>(instanceName: index.toString()).delEnv,
-      ids,
-    );
+    return await getIt<Http>(instanceName: index.toString())
+        .delete<NullResponse>(
+          getIt<Url>(instanceName: index.toString()).delEnv,
+          ids,
+        );
   }
 
   Future<HttpResponse<NullResponse>> delEnv(String id) async {
-    return await getIt<Http>(instanceName: index.toString()).delete<NullResponse>(
-      getIt<Url>(instanceName: index.toString()).delEnv,
-      [id],
-    );
+    return await getIt<Http>(instanceName: index.toString())
+        .delete<NullResponse>(
+          getIt<Url>(instanceName: index.toString()).delEnv,
+          [id],
+        );
   }
 
   Future<HttpResponse<NullResponse>> addEnv(
@@ -401,10 +399,11 @@ class Api {
       } else if (nId != null) {
         data["_id"] = nId;
       }
-      return await getIt<Http>(instanceName: index.toString()).put<NullResponse>(
-        getIt<Url>(instanceName: index.toString()).addEnv,
-        data,
-      );
+      return await getIt<Http>(instanceName: index.toString())
+          .put<NullResponse>(
+            getIt<Url>(instanceName: index.toString()).addEnv,
+            data,
+          );
     }
     return await getIt<Http>(instanceName: index.toString()).post<NullResponse>(
       getIt<Url>(instanceName: index.toString()).addEnv,
@@ -412,7 +411,11 @@ class Api {
     );
   }
 
-  Future<HttpResponse<NullResponse>> moveEnv(String id, int fromIndex, int toIndex) async {
+  Future<HttpResponse<NullResponse>> moveEnv(
+    String id,
+    int fromIndex,
+    int toIndex,
+  ) async {
     return await getIt<Http>(instanceName: index.toString()).put<NullResponse>(
       getIt<Url>(instanceName: index.toString()).envMove(id),
       {"fromIndex": fromIndex, "toIndex": toIndex},
@@ -420,15 +423,22 @@ class Api {
   }
 
   Future<HttpResponse<List<LoginLogBean>>> loginLog() async {
-    return await getIt<Http>(instanceName: index.toString()).get<List<LoginLogBean>>(
-      getIt<Url>(instanceName: index.toString()).loginLog,
-      null,
-    );
+    return await getIt<Http>(instanceName: index.toString())
+        .get<List<LoginLogBean>>(
+          getIt<Url>(instanceName: index.toString()).loginLog,
+          null,
+        );
   }
 
   Future<HttpResponse<List<TaskLogBean>>> taskLog() async {
-    return await getIt<Http>(instanceName: index.toString()).get<List<TaskLogBean>>(getIt<Url>(instanceName: index.toString()).taskLog, null,
-        serializationName: (_system?.isUpperVersion2_12_2() ?? false) ? "data" : "dirs");
+    return await getIt<Http>(instanceName: index.toString())
+        .get<List<TaskLogBean>>(
+          getIt<Url>(instanceName: index.toString()).taskLog,
+          null,
+          serializationName: (_system?.isUpperVersion2_12_2() ?? false)
+              ? "data"
+              : "dirs",
+        );
   }
 
   Future<HttpResponse<String>> taskLogDetail(String name, String path) async {
@@ -452,76 +462,79 @@ class Api {
   }
 
   Future<HttpResponse<List<ScriptData>>> scripts() async {
-    return await getIt<Http>(instanceName: index.toString()).get<List<ScriptData>>(
-      (_system?.isUpperVersion2_13_0() ?? false)
-          ? getIt<Url>(instanceName: index.toString()).scripts2
-          : getIt<Url>(instanceName: index.toString()).scripts,
-      null,
-    );
+    return await getIt<Http>(instanceName: index.toString())
+        .get<List<ScriptData>>(
+          (_system?.isUpperVersion2_13_0() ?? false)
+              ? getIt<Url>(instanceName: index.toString()).scripts2
+              : getIt<Url>(instanceName: index.toString()).scripts,
+          null,
+        );
   }
 
-  Future<HttpResponse<NullResponse>> updateScript(String name, String path, String content) async {
+  Future<HttpResponse<NullResponse>> updateScript(
+    String name,
+    String path,
+    String content,
+  ) async {
     return await getIt<Http>(instanceName: index.toString()).put<NullResponse>(
       getIt<Url>(instanceName: index.toString()).scriptDetail,
-      {
-        "filename": name,
-        "path": path,
-        "content": content,
-      },
+      {"filename": name, "path": path, "content": content},
     );
   }
 
   Future<HttpResponse<NullResponse>> delScript(String name, String path) async {
-    return await getIt<Http>(instanceName: index.toString()).delete<NullResponse>(
-      getIt<Url>(instanceName: index.toString()).scriptDetail,
-      {
-        "filename": name,
-        "path": path,
-      },
-    );
+    return await getIt<Http>(instanceName: index.toString())
+        .delete<NullResponse>(
+          getIt<Url>(instanceName: index.toString()).scriptDetail,
+          {"filename": name, "path": path},
+        );
   }
 
-  Future<HttpResponse<NullResponse>> delScriptFold(String fileName, String path) async {
-    return await getIt<Http>(instanceName: index.toString()).delete<NullResponse>(
-      getIt<Url>(instanceName: index.toString()).scriptDetail,
-      {"filename": fileName, "path": path, "type": "directory"},
-    );
+  Future<HttpResponse<NullResponse>> delScriptFold(
+    String fileName,
+    String path,
+  ) async {
+    return await getIt<Http>(instanceName: index.toString())
+        .delete<NullResponse>(
+          getIt<Url>(instanceName: index.toString()).scriptDetail,
+          {"filename": fileName, "path": path, "type": "directory"},
+        );
   }
 
-  Future<HttpResponse<NullResponse>> addScriptFolder(String fileName, String path) async {
+  Future<HttpResponse<NullResponse>> addScriptFolder(
+    String fileName,
+    String path,
+  ) async {
     return await getIt<Http>(instanceName: index.toString()).post<NullResponse>(
       getIt<Url>(instanceName: index.toString()).scriptDetail,
-      {
-        "directory": fileName,
-        "path": path,
-      },
+      {"directory": fileName, "path": path},
     );
   }
 
-  Future<HttpResponse<NullResponse>> delScriptNewVersion(String fileName, String path) async {
-    return await getIt<Http>(instanceName: index.toString()).delete<NullResponse>(
-      getIt<Url>(instanceName: index.toString()).scriptDetail,
-      {"filename": fileName, "path": path, "type": "file"},
-    );
+  Future<HttpResponse<NullResponse>> delScriptNewVersion(
+    String fileName,
+    String path,
+  ) async {
+    return await getIt<Http>(instanceName: index.toString())
+        .delete<NullResponse>(
+          getIt<Url>(instanceName: index.toString()).scriptDetail,
+          {"filename": fileName, "path": path, "type": "file"},
+        );
   }
 
   Future<HttpResponse<String>> scriptDetail(String name, String? path) async {
     return await getIt<Http>(instanceName: index.toString()).get<String>(
       getIt<Url>(instanceName: index.toString()).scriptDetailForReadFile,
-      {
-        "file": name,
-        "path": path,
-      },
+      {"file": name, "path": path},
     );
   }
 
   Future<HttpResponse<List<DependencyBean>>> dependencies(String type) async {
-    return await getIt<Http>(instanceName: index.toString()).get<List<DependencyBean>>(
-      getIt<Url>(instanceName: index.toString()).dependencies,
-      {
-        "type": type.toString(),
-      },
-    );
+    return await getIt<Http>(instanceName: index.toString())
+        .get<List<DependencyBean>>(
+          getIt<Url>(instanceName: index.toString()).dependencies,
+          {"type": type.toString()},
+        );
   }
 
   Future<HttpResponse<NullResponse>> dependencyReinstall(
@@ -529,15 +542,17 @@ class Api {
     List<int?>? id,
   ) async {
     if (sId != null && sId.isNotEmpty && sId[0] != null) {
-      return await getIt<Http>(instanceName: index.toString()).put<NullResponse>(
-        getIt<Url>(instanceName: index.toString()).dependenciesReinstall,
-        sId,
-      );
+      return await getIt<Http>(instanceName: index.toString())
+          .put<NullResponse>(
+            getIt<Url>(instanceName: index.toString()).dependenciesReinstall,
+            sId,
+          );
     } else {
-      return await getIt<Http>(instanceName: index.toString()).put<NullResponse>(
-        getIt<Url>(instanceName: index.toString()).dependenciesReinstall,
-        id,
-      );
+      return await getIt<Http>(instanceName: index.toString())
+          .put<NullResponse>(
+            getIt<Url>(instanceName: index.toString()).dependenciesReinstall,
+            id,
+          );
     }
   }
 
@@ -548,25 +563,30 @@ class Api {
     );
   }
 
-  Future<HttpResponse<String>> addDependency(List<Map<String, dynamic>> list) async {
+  Future<HttpResponse<String>> addDependency(
+    List<Map<String, dynamic>> list,
+  ) async {
     return await getIt<Http>(instanceName: index.toString()).post<String>(
       getIt<Url>(instanceName: index.toString()).dependencies,
       list,
     );
   }
 
-  Future<HttpResponse<NullResponse>> addScript(String name, String path, String content) async {
+  Future<HttpResponse<NullResponse>> addScript(
+    String name,
+    String path,
+    String content,
+  ) async {
     return await getIt<Http>(instanceName: index.toString()).post<NullResponse>(
       getIt<Url>(instanceName: index.toString()).addScript,
-      {
-        "filename": name,
-        "path": path,
-        "content": content,
-      },
+      {"filename": name, "path": path, "content": content},
     );
   }
 
-  Future<HttpResponse<NullResponse>> delDependency(List<String?>? sIds, List<int?>? ids) async {
+  Future<HttpResponse<NullResponse>> delDependency(
+    List<String?>? sIds,
+    List<int?>? ids,
+  ) async {
     bool focus = _system?.isUpperVersion2_13_0() ?? false;
 
     String url = "";
@@ -578,56 +598,51 @@ class Api {
 
     HttpResponse<NullResponse> response;
     if (sIds != null && sIds.isNotEmpty && sIds[0] != null) {
-      response = await getIt<Http>(instanceName: index.toString()).delete<NullResponse>(
-        url,
-        sIds,
-      );
+      response = await getIt<Http>(instanceName: index.toString())
+          .delete<NullResponse>(url, sIds);
     } else {
-      response = await getIt<Http>(instanceName: index.toString()).delete<NullResponse>(
-        url,
-        ids,
-      );
+      response = await getIt<Http>(instanceName: index.toString())
+          .delete<NullResponse>(url, ids);
     }
 
     if (response.success == false && focus) {
       url = getIt<Url>(instanceName: index.toString()).dependencies;
       if (sIds != null && sIds.isNotEmpty && sIds[0] != null) {
-        response = await getIt<Http>(instanceName: index.toString()).delete<NullResponse>(
-          url,
-          sIds,
-        );
+        response = await getIt<Http>(instanceName: index.toString())
+            .delete<NullResponse>(url, sIds);
       } else {
-        response = await getIt<Http>(instanceName: index.toString()).delete<NullResponse>(
-          url,
-          ids,
-        );
+        response = await getIt<Http>(instanceName: index.toString())
+            .delete<NullResponse>(url, ids);
       }
     }
     return response;
   }
 
   Future<HttpResponse<CheckUpdateBean>> checkUpdate() async {
-    return await getIt<Http>(instanceName: index.toString()).put<CheckUpdateBean>(
-      getIt<Url>(instanceName: index.toString()).checkUpdate,
-      {},
-    );
+    return await getIt<Http>(instanceName: index.toString())
+        .put<CheckUpdateBean>(
+          getIt<Url>(instanceName: index.toString()).checkUpdate,
+          {},
+        );
   }
 
   Future<HttpResponse<String>> appKeys() async {
-    return await getIt<Http>(instanceName: index.toString()).get<String>(
-      getIt<Url>(instanceName: index.toString()).appkeys,
-      {},
-    );
+    return await getIt<Http>(instanceName: index.toString())
+        .get<String>(getIt<Url>(instanceName: index.toString()).appkeys, {});
   }
 
-  Future<HttpResponse<NullResponse>> addAppKey(Map<String, dynamic> data) async {
+  Future<HttpResponse<NullResponse>> addAppKey(
+    Map<String, dynamic> data,
+  ) async {
     return await getIt<Http>(instanceName: index.toString()).post<NullResponse>(
       getIt<Url>(instanceName: index.toString()).appkeys,
       data,
     );
   }
 
-  Future<HttpResponse<NullResponse>> updateAppKey(Map<String, dynamic> data) async {
+  Future<HttpResponse<NullResponse>> updateAppKey(
+    Map<String, dynamic> data,
+  ) async {
     return await getIt<Http>(instanceName: index.toString()).put<NullResponse>(
       getIt<Url>(instanceName: index.toString()).appkeys,
       data,
@@ -635,10 +650,11 @@ class Api {
   }
 
   Future<HttpResponse<NullResponse>> deleteAppKey(List<String> data) async {
-    return await getIt<Http>(instanceName: index.toString()).delete<NullResponse>(
-      getIt<Url>(instanceName: index.toString()).appkeys,
-      data,
-    );
+    return await getIt<Http>(instanceName: index.toString())
+        .delete<NullResponse>(
+          getIt<Url>(instanceName: index.toString()).appkeys,
+          data,
+        );
   }
 
   Future<HttpResponse<NullResponse>> resetAppKey(dynamic id) async {
@@ -658,11 +674,7 @@ class Api {
   }) async {
     return await getIt<Http>(instanceName: index.toString()).put<String>(
       getIt<Url>(instanceName: index.toString()).scriptsRun,
-      {
-        "filename": filename,
-        "path": path,
-        "content": content ?? "",
-      },
+      {"filename": filename, "path": path, "content": content ?? ""},
     );
   }
 
@@ -670,10 +682,7 @@ class Api {
   Future<HttpResponse<String>> stopScript(String filename, String path) async {
     return await getIt<Http>(instanceName: index.toString()).put<String>(
       getIt<Url>(instanceName: index.toString()).scriptsStop,
-      {
-        "filename": filename,
-        "path": path,
-      },
+      {"filename": filename, "path": path},
     );
   }
 
@@ -684,16 +693,15 @@ class Api {
   ) async {
     return await getIt<Http>(instanceName: index.toString()).put<NullResponse>(
       getIt<Url>(instanceName: index.toString()).scriptsRename,
-      {
-        "filename": filename,
-        "path": path,
-        "newFilename": newFilename,
-      },
+      {"filename": filename, "path": path, "newFilename": newFilename},
     );
   }
 
   /// 脚本历史版本列表
-  Future<HttpResponse<String>> scriptHistory(String filename, String path) async {
+  Future<HttpResponse<String>> scriptHistory(
+    String filename,
+    String path,
+  ) async {
     return await getIt<Http>(instanceName: index.toString()).get<String>(
       getIt<Url>(instanceName: index.toString()).scriptsHistory,
       {"filename": filename, "path": path},
@@ -748,9 +756,13 @@ class Api {
     );
   }
 
-  Future<HttpResponse<String>> stopCronInstance(String id, String instanceId) async {
+  Future<HttpResponse<String>> stopCronInstance(
+    String id,
+    String instanceId,
+  ) async {
     return await getIt<Http>(instanceName: index.toString()).post<String>(
-      getIt<Url>(instanceName: index.toString()).cronInstanceStop(id, instanceId),
+      getIt<Url>(instanceName: index.toString())
+          .cronInstanceStop(id, instanceId),
       {},
     );
   }
@@ -840,10 +852,11 @@ class Api {
   }
 
   Future<HttpResponse<NullResponse>> deleteSystemLog() async {
-    return await getIt<Http>(instanceName: index.toString()).delete<NullResponse>(
-      getIt<Url>(instanceName: index.toString()).systemLogDelete,
-      null,
-    );
+    return await getIt<Http>(instanceName: index.toString())
+        .delete<NullResponse>(
+          getIt<Url>(instanceName: index.toString()).systemLogDelete,
+          null,
+        );
   }
 
   // ==================== 数据保留与清理 ====================
@@ -855,21 +868,27 @@ class Api {
     );
   }
 
-  Future<HttpResponse<String>> retentionUpdateConfig(Map<String, dynamic> data) async {
+  Future<HttpResponse<String>> retentionUpdateConfig(
+    Map<String, dynamic> data,
+  ) async {
     return await getIt<Http>(instanceName: index.toString()).put<String>(
       getIt<Url>(instanceName: index.toString()).retentionConfig,
       data,
     );
   }
 
-  Future<HttpResponse<String>> retentionPreview(Map<String, dynamic> data) async {
+  Future<HttpResponse<String>> retentionPreview(
+    Map<String, dynamic> data,
+  ) async {
     return await getIt<Http>(instanceName: index.toString()).post<String>(
       getIt<Url>(instanceName: index.toString()).retentionPreview,
       data,
     );
   }
 
-  Future<HttpResponse<String>> retentionCleanup(Map<String, dynamic> data) async {
+  Future<HttpResponse<String>> retentionCleanup(
+    Map<String, dynamic> data,
+  ) async {
     return await getIt<Http>(instanceName: index.toString()).post<String>(
       getIt<Url>(instanceName: index.toString()).retentionCleanup,
       {...data, "confirmation": "CLEAN"},
@@ -879,10 +898,9 @@ class Api {
   // ==================== 用户安全 ====================
 
   Future<HttpResponse<String>> getIpBlacklist() async {
-    return await getIt<Http>(instanceName: index.toString()).get<String>(
-      getIt<Url>(instanceName: index.toString()).ipBlacklist,
-      null,
-    );
+    return await getIt<Http>(
+      instanceName: index.toString(),
+    ).get<String>(getIt<Url>(instanceName: index.toString()).ipBlacklist, null);
   }
 
   Future<HttpResponse<String>> addIpBlacklist(String ip) async {
@@ -902,10 +920,9 @@ class Api {
   // ==================== 环境变量 ====================
 
   Future<HttpResponse<NullResponse>> pinEnv(List<int> ids) async {
-    return await getIt<Http>(instanceName: index.toString()).put<NullResponse>(
-      getIt<Url>(instanceName: index.toString()).envPin,
-      ids,
-    );
+    return await getIt<Http>(
+      instanceName: index.toString(),
+    ).put<NullResponse>(getIt<Url>(instanceName: index.toString()).envPin, ids);
   }
 
   Future<HttpResponse<NullResponse>> unpinEnv(List<int> ids) async {
@@ -915,7 +932,10 @@ class Api {
     );
   }
 
-  Future<HttpResponse<NullResponse>> renameEnv(List<int> ids, String name) async {
+  Future<HttpResponse<NullResponse>> renameEnv(
+    List<int> ids,
+    String name,
+  ) async {
     return await getIt<Http>(instanceName: index.toString()).put<NullResponse>(
       getIt<Url>(instanceName: index.toString()).envRename,
       {"ids": ids, "name": name},

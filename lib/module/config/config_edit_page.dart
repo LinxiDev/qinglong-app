@@ -37,7 +37,8 @@ class ConfigEditPageState extends ConsumerState<ConfigEditPage> {
   List<String> operateList = [];
 
   void remindKeyboard(WidgetRef ref, BuildContext context) {
-    if (Platform.isIOS) return;
+    // 只有 Android 存在软键盘兼容问题，其它平台不提示
+    if (!Platform.isAndroid) return;
     if (SpUtil.getBool(spAndroidKeyboardError, defValue: false) == true) {
       return;
     }

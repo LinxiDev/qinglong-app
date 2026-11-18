@@ -65,19 +65,22 @@ class Routes {
         return CupertinoPageRoute(builder: (context) => const HomePage());
       case routeLogin:
         return MaterialPageRoute(
-            builder: (context) => LoginPage(
-                  fromAddNewAccount: (settings.arguments as bool?) ?? false,
-                ));
+          builder: (context) => LoginPage(
+            fromAddNewAccount: (settings.arguments as bool?) ?? false,
+          ),
+        );
       case routeDashboard:
         return CupertinoPageRoute(builder: (context) => const DashboardPage());
       case routeNotifyLog:
         return CupertinoPageRoute(builder: (context) => const NotifyLogPage());
       case routeStorageRetention:
         return CupertinoPageRoute(
-            builder: (context) => const StorageRetentionPage());
+          builder: (context) => const StorageRetentionPage(),
+        );
       case routeIpBlacklist:
         return CupertinoPageRoute(
-            builder: (context) => const IpBlacklistPage());
+          builder: (context) => const IpBlacklistPage(),
+        );
       case routeICloud:
         return CupertinoPageRoute(builder: (context) => const IcloudPage());
       case routeSubscribeList:
@@ -88,21 +91,23 @@ class Routes {
         return CupertinoPageRoute(builder: (context) => const IcloudFilePage());
 
       case routeAddDependency:
-        return CupertinoPageRoute(builder: (context) => const AddDependencyPage());
+        return CupertinoPageRoute(
+          builder: (context) => const AddDependencyPage(),
+        );
       case routeAddEnv:
         if (settings.arguments != null) {
           return CupertinoPageRoute(
-              builder: (context) => AddEnvPage(
-                    envBean: settings.arguments as EnvBean,
-                  ));
+            builder: (context) =>
+                AddEnvPage(envBean: settings.arguments as EnvBean),
+          );
         } else {
           return CupertinoPageRoute(builder: (context) => const AddEnvPage());
         }
       case routeConfigEdit:
         return CupertinoPageRoute(
           builder: (context) => ConfigEditPage(
-            (settings.arguments as Map)["title"],
-            (settings.arguments as Map)["content"],
+            (settings.arguments as Map)["title"] ?? "",
+            (settings.arguments as Map)["content"] ?? "",
           ),
         );
       case routeConfigDetail:
@@ -113,29 +118,20 @@ class Routes {
           ),
         );
       case routeLoginLog:
-        return CupertinoPageRoute(
-          builder: (context) => const LoginLogPage(),
-        );
+        return CupertinoPageRoute(builder: (context) => const LoginLogPage());
       case routeTaskLog:
         if (settings.arguments != null) {
           return CupertinoPageRoute(
-            builder: (context) => TaskLogPage(
-              searchText: (settings.arguments as Map)["search"],
-            ),
+            builder: (context) =>
+                TaskLogPage(searchText: (settings.arguments as Map)["search"]),
           );
         } else {
-          return CupertinoPageRoute(
-            builder: (context) => TaskLogPage(),
-          );
+          return CupertinoPageRoute(builder: (context) => TaskLogPage());
         }
       case routeScript:
-        return CupertinoPageRoute(
-          builder: (context) => const ScriptPage(),
-        );
+        return CupertinoPageRoute(builder: (context) => const ScriptPage());
       case routeDependency:
-        return CupertinoPageRoute(
-          builder: (context) => const DependencyPage(),
-        );
+        return CupertinoPageRoute(builder: (context) => const DependencyPage());
       case routeScriptDetail:
         return CupertinoPageRoute(
           builder: (context) => ScriptDetailPage(
@@ -145,30 +141,23 @@ class Routes {
         );
       case routeTaskDetail:
         return CupertinoPageRoute(
-          builder: (context) => TaskDetailPage(
-            settings.arguments as TaskBean,
-          ),
+          builder: (context) => TaskDetailPage(settings.arguments as TaskBean),
         );
       case routeSubscribeDetail:
         return CupertinoPageRoute(
-          builder: (context) => SubscribeDetailPage(
-            settings.arguments as Map<String, dynamic>,
-          ),
+          builder: (context) =>
+              SubscribeDetailPage(settings.arguments as Map<String, dynamic>),
         );
       case routeEnvDetail:
         return CupertinoPageRoute(
-          builder: (context) => EnvDetailPage(
-            settings.arguments as EnvBean,
-          ),
+          builder: (context) => EnvDetailPage(settings.arguments as EnvBean),
         );
       case routeUpdatePassword:
         return CupertinoPageRoute(
           builder: (context) => const UpdatePasswordPage(),
         );
       case routeAbout:
-        return CupertinoPageRoute(
-          builder: (context) => const AboutPage(),
-        );
+        return CupertinoPageRoute(builder: (context) => const AboutPage());
       case routeScriptUpdate:
         return CupertinoPageRoute(
           builder: (context) => ScriptEditPage(

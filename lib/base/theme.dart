@@ -32,7 +32,12 @@ class ThemeViewModel extends ChangeNotifier {
     if (SpUtil.getBool(spThemeFollowSystem, defValue: false)) {
       changeThemeWithSystemStatus();
     } else {
-      _themeMode = SpUtil.getInt(spThemeStyle, defValue: SpUtil.getInt(spVIP, defValue: typeNormal) != typeNormal ? modeWhite : modeLight);
+      _themeMode = SpUtil.getInt(
+        spThemeStyle,
+        defValue: SpUtil.getInt(spVIP, defValue: typeNormal) != typeNormal
+            ? modeWhite
+            : modeLight,
+      );
     }
 
     changeThemeReal(_themeMode, false);
@@ -40,12 +45,15 @@ class ThemeViewModel extends ChangeNotifier {
 
   void changeThemeWithSystemStatus([bool must = true]) {
     if (SpUtil.getBool(spThemeFollowSystem, defValue: false) == false) return;
-    var brightness = WidgetsBinding.instance.platformDispatcher.platformBrightness;
+    var brightness =
+        WidgetsBinding.instance.platformDispatcher.platformBrightness;
     int theme;
     if (brightness == Brightness.dark) {
       theme = modeDark;
     } else {
-      theme = SpUtil.getInt(spVIP, defValue: typeNormal) != typeNormal ? modeWhite : modeLight;
+      theme = SpUtil.getInt(spVIP, defValue: typeNormal) != typeNormal
+          ? modeWhite
+          : modeLight;
     }
     if (!must && _themeMode == theme) return;
     changeThemeReal(theme);
@@ -72,9 +80,15 @@ class ThemeViewModel extends ChangeNotifier {
     if (Platform.isAndroid) {
       SystemUiOverlayStyle style;
       if (_themeMode == modeDark) {
-        style = const SystemUiOverlayStyle(statusBarColor: Colors.transparent, systemNavigationBarColor: Colors.black);
+        style = const SystemUiOverlayStyle(
+          statusBarColor: Colors.transparent,
+          systemNavigationBarColor: Colors.black,
+        );
       } else {
-        style = const SystemUiOverlayStyle(statusBarColor: Colors.transparent, systemNavigationBarColor: Colors.white);
+        style = const SystemUiOverlayStyle(
+          statusBarColor: Colors.transparent,
+          systemNavigationBarColor: Colors.white,
+        );
       }
       SystemChrome.setSystemUIOverlayStyle(style);
     }
@@ -105,19 +119,10 @@ class ThemeViewModel extends ChangeNotifier {
       ),
       scaffoldBackgroundColor: const Color(0xffffffff),
       inputDecorationTheme: InputDecorationTheme(
-        hintStyle: const TextStyle(
-          fontSize: 14,
-          color: Color(0xffBBBBBB),
-        ),
-        labelStyle: TextStyle(
-          color: _primaryColor,
-          fontSize: 14,
-        ),
+        hintStyle: const TextStyle(fontSize: 14, color: Color(0xffBBBBBB)),
+        labelStyle: TextStyle(color: _primaryColor, fontSize: 14),
         isDense: true,
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: 10,
-          vertical: 8,
-        ),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
         focusedBorder: OutlineInputBorder(
           borderSide: BorderSide(color: primaryColor, width: 1),
           borderRadius: BorderRadius.circular(4),
@@ -143,34 +148,20 @@ class ThemeViewModel extends ChangeNotifier {
           fontSize: 16,
           fontWeight: FontWeight.w600,
         ),
-        toolbarTextStyle: TextStyle(
-          color: _primaryColor,
-        ),
-        iconTheme: IconThemeData(
-          color: _primaryColor,
-        ),
-        actionsIconTheme: IconThemeData(
-          color: _primaryColor,
-        ),
+        toolbarTextStyle: TextStyle(color: _primaryColor),
+        iconTheme: IconThemeData(color: _primaryColor),
+        actionsIconTheme: IconThemeData(color: _primaryColor),
       ),
       bottomNavigationBarTheme: BottomNavigationBarThemeData(
         selectedItemColor: _primaryColor,
         backgroundColor: const Color(0xBBF9F9F9),
         elevation: 0,
       ),
-      buttonTheme: ButtonThemeData(
-        buttonColor: _primaryColor,
-      ),
-      progressIndicatorTheme: ProgressIndicatorThemeData(
-        color: _primaryColor,
-      ),
+      buttonTheme: ButtonThemeData(buttonColor: _primaryColor),
+      progressIndicatorTheme: ProgressIndicatorThemeData(color: _primaryColor),
       tabBarTheme: TabBarThemeData(
-        labelStyle: const TextStyle(
-          fontSize: 14,
-        ),
-        unselectedLabelStyle: const TextStyle(
-          fontSize: 14,
-        ),
+        labelStyle: const TextStyle(fontSize: 14),
+        unselectedLabelStyle: const TextStyle(fontSize: 14),
         labelColor: _primaryColor,
         unselectedLabelColor: const Color(0xff999999),
         indicator: UnderlineTabIndicator(
@@ -179,17 +170,15 @@ class ThemeViewModel extends ChangeNotifier {
       ),
       hintColor: const Color(0xffBBBBBB),
       checkboxTheme: CheckboxThemeData(
-        checkColor: WidgetStateProperty.resolveWith(
-          (Set<WidgetState> states) {
-            if (states.contains(WidgetState.disabled)) {
-              return Colors.transparent;
-            }
-            if (states.contains(WidgetState.selected)) {
-              return Colors.white;
-            }
-            return Colors.black;
-          },
-        ),
+        checkColor: WidgetStateProperty.resolveWith((Set<WidgetState> states) {
+          if (states.contains(WidgetState.disabled)) {
+            return Colors.transparent;
+          }
+          if (states.contains(WidgetState.selected)) {
+            return Colors.white;
+          }
+          return Colors.black;
+        }),
       ),
       cupertinoOverrideTheme: NoDefaultCupertinoThemeData(
         brightness: Brightness.light,
@@ -219,14 +208,8 @@ class ThemeViewModel extends ChangeNotifier {
       ),
       scaffoldBackgroundColor: const Color(0xffffffff),
       inputDecorationTheme: InputDecorationTheme(
-        hintStyle: const TextStyle(
-          fontSize: 14,
-          color: Color(0xffBBBBBB),
-        ),
-        labelStyle: TextStyle(
-          color: _primaryColor,
-          fontSize: 14,
-        ),
+        hintStyle: const TextStyle(fontSize: 14, color: Color(0xffBBBBBB)),
+        labelStyle: TextStyle(color: _primaryColor, fontSize: 14),
         isDense: true,
         contentPadding: const EdgeInsets.only(
           left: 10,
@@ -259,34 +242,20 @@ class ThemeViewModel extends ChangeNotifier {
           fontSize: 16,
           fontWeight: FontWeight.w600,
         ),
-        toolbarTextStyle: TextStyle(
-          color: Colors.white,
-        ),
-        iconTheme: IconThemeData(
-          color: Colors.white,
-        ),
-        actionsIconTheme: IconThemeData(
-          color: Colors.white,
-        ),
+        toolbarTextStyle: TextStyle(color: Colors.white),
+        iconTheme: IconThemeData(color: Colors.white),
+        actionsIconTheme: IconThemeData(color: Colors.white),
       ),
       bottomNavigationBarTheme: BottomNavigationBarThemeData(
         selectedItemColor: _primaryColor,
         backgroundColor: const Color(0xBBF9F9F9),
         elevation: 0,
       ),
-      buttonTheme: ButtonThemeData(
-        buttonColor: _primaryColor,
-      ),
-      progressIndicatorTheme: ProgressIndicatorThemeData(
-        color: _primaryColor,
-      ),
+      buttonTheme: ButtonThemeData(buttonColor: _primaryColor),
+      progressIndicatorTheme: ProgressIndicatorThemeData(color: _primaryColor),
       tabBarTheme: TabBarThemeData(
-        labelStyle: const TextStyle(
-          fontSize: 14,
-        ),
-        unselectedLabelStyle: const TextStyle(
-          fontSize: 14,
-        ),
+        labelStyle: const TextStyle(fontSize: 14),
+        unselectedLabelStyle: const TextStyle(fontSize: 14),
         labelColor: _primaryColor,
         unselectedLabelColor: const Color(0xff999999),
         indicator: UnderlineTabIndicator(
@@ -295,17 +264,15 @@ class ThemeViewModel extends ChangeNotifier {
       ),
       hintColor: const Color(0xffBBBBBB),
       checkboxTheme: CheckboxThemeData(
-        checkColor: WidgetStateProperty.resolveWith(
-          (Set<WidgetState> states) {
-            if (states.contains(WidgetState.disabled)) {
-              return Colors.transparent;
-            }
-            if (states.contains(WidgetState.selected)) {
-              return Colors.white;
-            }
-            return Colors.black;
-          },
-        ),
+        checkColor: WidgetStateProperty.resolveWith((Set<WidgetState> states) {
+          if (states.contains(WidgetState.disabled)) {
+            return Colors.transparent;
+          }
+          if (states.contains(WidgetState.selected)) {
+            return Colors.white;
+          }
+          return Colors.black;
+        }),
       ),
       cupertinoOverrideTheme: NoDefaultCupertinoThemeData(
         brightness: Brightness.light,
@@ -326,9 +293,7 @@ class ThemeViewModel extends ChangeNotifier {
       splashColor: Colors.transparent,
       dividerColor: const Color(0xff242424),
       canvasColor: const Color(0xff242424),
-      dividerTheme: const DividerThemeData(
-        color: Color(0xff242424),
-      ),
+      dividerTheme: const DividerThemeData(color: Color(0xff242424)),
       floatingActionButtonTheme: const FloatingActionButtonThemeData().copyWith(
         backgroundColor: Colors.white,
       ),
@@ -343,15 +308,9 @@ class ThemeViewModel extends ChangeNotifier {
           fontSize: 16,
           fontWeight: FontWeight.w600,
         ),
-        toolbarTextStyle: TextStyle(
-          color: _primaryColor,
-        ),
-        iconTheme: IconThemeData(
-          color: _primaryColor,
-        ),
-        actionsIconTheme: IconThemeData(
-          color: _primaryColor,
-        ),
+        toolbarTextStyle: TextStyle(color: _primaryColor),
+        iconTheme: IconThemeData(color: _primaryColor),
+        actionsIconTheme: IconThemeData(color: _primaryColor),
       ),
       bottomNavigationBarTheme: BottomNavigationBarThemeData(
         selectedItemColor: _primaryColor,
@@ -360,19 +319,10 @@ class ThemeViewModel extends ChangeNotifier {
       ),
       hintColor: const Color(0xffBBBBBB),
       inputDecorationTheme: InputDecorationTheme(
-        hintStyle: const TextStyle(
-          fontSize: 14,
-          color: Color(0xffBBBBBB),
-        ),
-        labelStyle: TextStyle(
-          color: _primaryColor,
-          fontSize: 14,
-        ),
+        hintStyle: const TextStyle(fontSize: 14, color: Color(0xffBBBBBB)),
+        labelStyle: TextStyle(color: _primaryColor, fontSize: 14),
         isDense: true,
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: 10,
-          vertical: 8,
-        ),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
         focusedBorder: OutlineInputBorder(
           borderSide: BorderSide(color: primaryColor, width: 1),
           borderRadius: BorderRadius.circular(4),
@@ -391,12 +341,8 @@ class ThemeViewModel extends ChangeNotifier {
         ),
       ),
       tabBarTheme: const TabBarThemeData(
-        labelStyle: TextStyle(
-          fontSize: 14,
-        ),
-        unselectedLabelStyle: TextStyle(
-          fontSize: 14,
-        ),
+        labelStyle: TextStyle(fontSize: 14),
+        unselectedLabelStyle: TextStyle(fontSize: 14),
         labelColor: Color(0xffffffff),
         unselectedLabelColor: Color(0xff999999),
       ),
@@ -405,17 +351,15 @@ class ThemeViewModel extends ChangeNotifier {
         primary: _primaryColor,
       ),
       checkboxTheme: CheckboxThemeData(
-        checkColor: WidgetStateProperty.resolveWith(
-          (Set<WidgetState> states) {
-            if (states.contains(WidgetState.disabled)) {
-              return Colors.transparent;
-            }
-            if (states.contains(WidgetState.selected)) {
-              return Colors.white;
-            }
+        checkColor: WidgetStateProperty.resolveWith((Set<WidgetState> states) {
+          if (states.contains(WidgetState.disabled)) {
+            return Colors.transparent;
+          }
+          if (states.contains(WidgetState.selected)) {
             return Colors.white;
-          },
-        ),
+          }
+          return Colors.white;
+        }),
       ),
       cupertinoOverrideTheme: const NoDefaultCupertinoThemeData(
         brightness: Brightness.dark,
@@ -509,10 +453,7 @@ class LightThemeColors extends ThemeColors {
 
   @override
   List<Color> appBarBg() {
-    return [
-      const Color(0xff5DD16F),
-      const Color(0xff099657),
-    ];
+    return [const Color(0xff5DD16F), const Color(0xff099657)];
   }
 
   @override
@@ -629,10 +570,7 @@ class WhiteThemeColors extends ThemeColors {
 
   @override
   List<Color> appBarBg() {
-    return [
-      const Color(0xff5DD16F),
-      const Color(0xff099657),
-    ];
+    return [const Color(0xff5DD16F), const Color(0xff099657)];
   }
 
   @override

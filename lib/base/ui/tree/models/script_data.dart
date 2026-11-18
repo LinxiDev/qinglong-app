@@ -1,4 +1,3 @@
-
 import 'package:flutter/widgets.dart';
 
 import '../tree_node.dart';
@@ -62,7 +61,9 @@ class ScriptData {
     // }
     if (map['children'] != null) {
       List<Map<String, dynamic>> childrenMap = List.from(map['children']);
-      nodeChildren = childrenMap.map((Map<String, dynamic> child) => ScriptData.fromMap(child)).toList();
+      nodeChildren = childrenMap
+          .map((Map<String, dynamic> child) => ScriptData.fromMap(child))
+          .toList();
     }
     String? type = map['type'];
 
@@ -96,15 +97,14 @@ class ScriptData {
     IconData? icon,
     Color? iconColor,
     Color? selectedIconColor,
-  }) =>
-      ScriptData(
-        key: key ?? this.key,
-        title: title ?? this.title,
-        type: type ?? this.type,
-        expanded: expanded ?? this.expanded,
-        parent: parent ?? this.parent,
-        children: children ?? this.children,
-      );
+  }) => ScriptData(
+    key: key ?? this.key,
+    title: title ?? this.title,
+    type: type ?? this.type,
+    expanded: expanded ?? this.expanded,
+    parent: parent ?? this.parent,
+    children: children ?? this.children,
+  );
 
   /// Whether this object has children [ScriptData].
   bool get isParent => type == "directory";
@@ -116,13 +116,7 @@ class ScriptData {
 
   @override
   int get hashCode {
-    return Object.hashAll([
-      key,
-      title,
-      expanded,
-      parent,
-      children,
-    ]);
+    return Object.hashAll([key, title, expanded, parent, children]);
   }
 
   @override

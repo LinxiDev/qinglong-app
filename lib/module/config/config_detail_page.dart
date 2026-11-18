@@ -20,27 +20,20 @@ import '../../utils/icloud_utils.dart';
 import '../code_editor/codemirror/io.dart';
 import '../code_editor/editor.dart';
 
-
-
 class ConfigDetailPage extends ConsumerStatefulWidget {
   final ConfigBean bean;
   final String? content;
 
-  const ConfigDetailPage({
-    super.key,
-    required this.bean,
-    this.content,
-  });
+  const ConfigDetailPage({super.key, required this.bean, this.content});
 
   @override
   ConsumerState<ConfigDetailPage> createState() => _ConfigDetailPageState();
 }
 
-class _ConfigDetailPageState extends ConsumerState<ConfigDetailPage> with LazyLoadState<ConfigDetailPage> {
+class _ConfigDetailPageState extends ConsumerState<ConfigDetailPage>
+    with LazyLoadState<ConfigDetailPage> {
   String? sourceContent;
-  CodeMirrorOptions options = CodeMirrorOptions().copyWith(
-    readOnly: true,
-  );
+  CodeMirrorOptions options = CodeMirrorOptions().copyWith(readOnly: true);
   EditorController? controller;
 
   @override
@@ -67,9 +60,7 @@ class _ConfigDetailPageState extends ConsumerState<ConfigDetailPage> with LazyLo
               codeKey.currentState?.showSearchBar();
             },
             child: Padding(
-              padding: const EdgeInsets.only(
-                left: 15,
-              ),
+              padding: const EdgeInsets.only(left: 15),
               child: Center(
                 child: Icon(
                   Icons.search,
@@ -88,28 +79,30 @@ class _ConfigDetailPageState extends ConsumerState<ConfigDetailPage> with LazyLo
                 CupertinoSheer(
                   title: "编辑",
                   onTap: () async {
-                    Navigator.of(context).pushNamed(
-                      Routes.routeConfigEdit,
-                      arguments: {
-                        "title": widget.bean.title,
-                        "content": sourceContent,
-                      },
-                    ).then(
-                      (value) async {
-                        if (value != null && (value as String).isNotEmpty) {
-                          sourceContent = value;
-                          controller?.setValue(sourceContent ?? "");
-                          setState(() {});
-                        }
-                      },
-                    );
+                    Navigator.of(context)
+                        .pushNamed(
+                          Routes.routeConfigEdit,
+                          arguments: {
+                            "title": widget.bean.title,
+                            "content": sourceContent,
+                          },
+                        )
+                        .then((value) async {
+                          if (value != null && (value as String).isNotEmpty) {
+                            sourceContent = value;
+                            controller?.setValue(sourceContent ?? "");
+                            setState(() {});
+                          }
+                        });
                   },
                 ),
                 addDivider(),
                 CupertinoSheer(
                   title: "分享",
                   onTap: () {
-                    SharePlus.instance.share(ShareParams(text: sourceContent ?? ""));
+                    SharePlus.instance.share(
+                      ShareParams(text: sourceContent ?? ""),
+                    );
                   },
                 ),
                 addDivider(),
@@ -117,8 +110,10 @@ class _ConfigDetailPageState extends ConsumerState<ConfigDetailPage> with LazyLo
                   title: "下载",
                   onTap: () async {
                     try {
-                      String name = "${Random().nextInt(40000)}_${widget.bean.title}";
-                      await FileUtil(0).writeDownloadFile(name, sourceContent ?? "");
+                      String name =
+                          "${Random().nextInt(40000)}_${widget.bean.title}";
+                      await FileUtil(0)
+                          .writeDownloadFile(name, sourceContent ?? "");
                       "已写入qinglong_app文件夹下,文件名$name".toast2();
                     } catch (e) {
                       e.toString().toast();
@@ -128,9 +123,7 @@ class _ConfigDetailPageState extends ConsumerState<ConfigDetailPage> with LazyLo
               ]);
             },
             child: Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 15,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 15),
               child: Center(
                 child: Icon(
                   Icons.more_horiz,
@@ -163,7 +156,8 @@ class _ConfigDetailPageState extends ConsumerState<ConfigDetailPage> with LazyLo
   GlobalKey<CodeMirrorViewState> codeKey = GlobalKey();
 
   void loadData(ConfigBean bean) async {
-    HttpResponse<String> result = await SingleAccountPageState.ofApi(context).content(bean.value!);
+    HttpResponse<String> result = await SingleAccountPageState.ofApi(context)
+        .content(bean.value!);
     if (result.success && result.bean != null) {
       sourceContent = result.bean;
       isLoading = false;

@@ -24,8 +24,12 @@ class ChangeAccountPageState extends ConsumerState<SortAccountPage> {
   @override
   void initState() {
     try {
-      String json = jsonEncode(getIt<MultiAccountUserInfoViewModel>().tokenBeans);
-      list.addAll((jsonDecode(json) as List).map((e) => TokenBean.fromJson(e)).toList());
+      String json = jsonEncode(
+        getIt<MultiAccountUserInfoViewModel>().tokenBeans,
+      );
+      list.addAll(
+        (jsonDecode(json) as List).map((e) => TokenBean.fromJson(e)).toList(),
+      );
     } catch (e) {
       // 忽略异常，保持原有行为
     }
@@ -70,31 +74,31 @@ class ChangeAccountPageState extends ConsumerState<SortAccountPage> {
         ],
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.only(
-          bottom: 30,
-          top: 10,
-        ),
+        padding: const EdgeInsets.only(bottom: 30, top: 10),
         child: ReorderableListView(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           onReorderItem: (int oldIndex, int newIndex) {
-            setState(
-              () {
-                //交换数据
-                final TokenBean item = list.removeAt(oldIndex);
-                list.insert(newIndex, item);
-              },
-            );
+            setState(() {
+              //交换数据
+              final TokenBean item = list.removeAt(oldIndex);
+              list.insert(newIndex, item);
+            });
           },
           children: list
-              .map((e) => ClipRRect(
-                    key: ValueKey(e.host),
-                    borderRadius: BorderRadius.circular(10),
-                    child: Container(
-                      color: ref.watch(themeProvider).themeColor.settingBordorColor(),
-                      child: buildCell(e),
-                    ),
-                  ))
+              .map(
+                (e) => ClipRRect(
+                  key: ValueKey(e.host),
+                  borderRadius: BorderRadius.circular(10),
+                  child: Container(
+                    color: ref
+                        .watch(themeProvider)
+                        .themeColor
+                        .settingBordorColor(),
+                    child: buildCell(e),
+                  ),
+                ),
+              )
               .toList(),
         ),
       ),
@@ -113,28 +117,28 @@ class ChangeAccountPageState extends ConsumerState<SortAccountPage> {
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
       ),
-      contentPadding: const EdgeInsets.symmetric(
-        horizontal: 15,
-      ),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 15),
       minVerticalPadding: 10,
       trailing: (model.token != null && model.token!.isNotEmpty)
           ? Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 5,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 5),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(5),
-                border: Border.all(color: ref.watch(themeProvider).primaryColor, width: 1),
+                border: Border.all(
+                  color: ref.watch(themeProvider).primaryColor,
+                  width: 1,
+                ),
               ),
               child: Text(
                 "已登录",
-                style: TextStyle(color: ref.watch(themeProvider).primaryColor, fontSize: 12),
+                style: TextStyle(
+                  color: ref.watch(themeProvider).primaryColor,
+                  fontSize: 12,
+                ),
               ),
             )
           : Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 5,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 5),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(5),
                 border: Border.all(color: const Color(0xffFB5858), width: 1),
@@ -156,18 +160,15 @@ class ChangeAccountPageState extends ConsumerState<SortAccountPage> {
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
       onTap: () {
-        context.findAncestorStateOfType<MultiAccountPageState>()?.updateIndex(index);
-        Navigator.of(
-          context,
-        ).pop();
+        context.findAncestorStateOfType<MultiAccountPageState>()?.updateIndex(
+          index,
+        );
+        Navigator.of(context).pop();
       },
       child: ClipRRect(
         borderRadius: BorderRadius.circular(10),
         child: Container(
-          padding: const EdgeInsets.symmetric(
-            vertical: 15,
-            horizontal: 15,
-          ),
+          padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 15),
           decoration: BoxDecoration(
             color: ref.watch(themeProvider).themeColor.settingBordorColor(),
             borderRadius: BorderRadius.circular(15),
@@ -188,9 +189,7 @@ class ChangeAccountPageState extends ConsumerState<SortAccountPage> {
                   color: ref.watch(themeProvider).themeColor.descColor(),
                 ),
               ),
-              const SizedBox(
-                width: 15,
-              ),
+              const SizedBox(width: 15),
               Text(
                 "添加账号",
                 style: TextStyle(
@@ -204,5 +203,4 @@ class ChangeAccountPageState extends ConsumerState<SortAccountPage> {
       ),
     );
   }
-
 }

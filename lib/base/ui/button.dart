@@ -5,11 +5,7 @@ class ButtonWidget extends StatefulWidget {
 
   final String? title;
 
-  const ButtonWidget({
-    super.key,
-    required this.onTap,
-    this.title,
-  });
+  const ButtonWidget({super.key, required this.onTap, this.title});
 
   @override
   ButtonWidgetState createState() => ButtonWidgetState();
@@ -25,25 +21,15 @@ class ButtonWidgetState extends State<ButtonWidget> {
           width: MediaQuery.of(context).size.width * 0.8,
           decoration: const BoxDecoration(
             gradient: LinearGradient(
-              colors: [
-                Color(0xff5DD16F),
-                Color(0xff089556),
-              ],
+              colors: [Color(0xff5DD16F), Color(0xff089556)],
             ),
-            borderRadius: BorderRadius.all(
-              Radius.circular(10),
-            ),
+            borderRadius: BorderRadius.all(Radius.circular(10)),
           ),
-          padding: const EdgeInsets.symmetric(
-            vertical: 10,
-          ),
+          padding: const EdgeInsets.symmetric(vertical: 10),
           child: Center(
             child: Text(
               widget.title ?? "提交",
-              style: const TextStyle(
-                fontSize: 16,
-                color: Colors.white,
-              ),
+              style: const TextStyle(fontSize: 16, color: Colors.white),
             ),
           ),
         ),

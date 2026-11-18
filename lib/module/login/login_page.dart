@@ -24,10 +24,7 @@ import '../others/change_account_page.dart';
 class LoginPage extends ConsumerStatefulWidget {
   final bool fromAddNewAccount;
 
-  const LoginPage({
-    super.key,
-    this.fromAddNewAccount = false,
-  });
+  const LoginPage({super.key, this.fromAddNewAccount = false});
 
   @override
   LoginPageState createState() => LoginPageState();
@@ -48,13 +45,16 @@ class LoginPageState extends ConsumerState<LoginPage> {
   void initState() {
     super.initState();
     if (!widget.fromAddNewAccount) {
-      _hostController.text = SingleAccountPageState.ofUserInfo(context).host ?? "";
+      _hostController.text =
+          SingleAccountPageState.ofUserInfo(context).host ?? "";
       if (SingleAccountPageState.ofUserInfo(context).userName != null &&
           SingleAccountPageState.ofUserInfo(context).userName!.isNotEmpty) {
         if (SingleAccountPageState.ofUserInfo(context).useSecretLogined) {
-          _cIdController.text = SingleAccountPageState.ofUserInfo(context).userName!;
+          _cIdController.text = SingleAccountPageState.ofUserInfo(context)
+              .userName!;
         } else {
-          _userNameController.text = SingleAccountPageState.ofUserInfo(context).userName!;
+          _userNameController.text = SingleAccountPageState.ofUserInfo(context)
+              .userName!;
         }
         rememberPassword = true;
       } else {
@@ -63,15 +63,18 @@ class LoginPageState extends ConsumerState<LoginPage> {
       if (SingleAccountPageState.ofUserInfo(context).passWord != null &&
           SingleAccountPageState.ofUserInfo(context).passWord!.isNotEmpty) {
         if (SingleAccountPageState.ofUserInfo(context).useSecretLogined) {
-          _cSecretController.text = SingleAccountPageState.ofUserInfo(context).passWord!;
+          _cSecretController.text = SingleAccountPageState.ofUserInfo(context)
+              .passWord!;
         } else {
-          _passwordController.text = SingleAccountPageState.ofUserInfo(context).passWord!;
+          _passwordController.text = SingleAccountPageState.ofUserInfo(context)
+              .passWord!;
         }
       }
 
       if (SingleAccountPageState.ofUserInfo(context).alias != null &&
           SingleAccountPageState.ofUserInfo(context).alias!.isNotEmpty) {
-        _aliasController.text = SingleAccountPageState.ofUserInfo(context).alias!;
+        _aliasController.text = SingleAccountPageState.ofUserInfo(context)
+            .alias!;
       }
     }
   }
@@ -96,36 +99,38 @@ class LoginPageState extends ConsumerState<LoginPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 40,
-                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 40),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      SizedBox(
-                        height: MediaQuery.of(context).size.height / 8,
-                      ),
+                      SizedBox(height: MediaQuery.of(context).size.height / 8),
                       GestureDetector(
                         onTap: () {
-                          if (SpUtil.getInt(spVIP, defValue: typeNormal) == typeNormal) {
+                          if (SpUtil.getInt(spVIP, defValue: typeNormal) ==
+                              typeNormal) {
                             Navigator.of(context).push(
                               CupertinoPageRoute(
-                                builder: (context) => const InAppPurchasePage(
-                                  fromDirectly: true,
-                                ),
+                                builder: (context) =>
+                                    const InAppPurchasePage(fromDirectly: true),
                               ),
                             );
                             return;
                           } else {
-                            if (SpUtil.getBool(spSingleInstance, defValue: false)) {
+                            if (SpUtil.getBool(
+                              spSingleInstance,
+                              defValue: false,
+                            )) {
                               Navigator.pop(context);
                               return;
                             }
                             Navigator.of(context).push(
                               PageRouteBuilder(
-                                pageBuilder: (context, animation1, animation2) =>
-                                    const ChangeAccountPage(),
+                                pageBuilder: (
+                                  context,
+                                  animation1,
+                                  animation2,
+                                ) => const ChangeAccountPage(),
                                 transitionDuration: Duration.zero,
                                 reverseTransitionDuration: Duration.zero,
                               ),
@@ -135,7 +140,10 @@ class LoginPageState extends ConsumerState<LoginPage> {
                         child: Row(
                           children: [
                             Visibility(
-                              visible:SpUtil.getBool(spSingleInstance,defValue: false) ,
+                              visible: SpUtil.getBool(
+                                spSingleInstance,
+                                defValue: false,
+                              ),
                               child: CupertinoButton(
                                 padding: EdgeInsets.zero,
                                 onPressed: () {
@@ -156,7 +164,10 @@ class LoginPageState extends ConsumerState<LoginPage> {
                                   style: TextStyle(
                                     fontSize: 26,
                                     fontWeight: FontWeight.bold,
-                                    color: ref.watch(themeProvider).themeColor.title2Color(),
+                                    color: ref
+                                        .watch(themeProvider)
+                                        .themeColor
+                                        .title2Color(),
                                   ),
                                 ),
                               ),
@@ -167,31 +178,20 @@ class LoginPageState extends ConsumerState<LoginPage> {
                               },
                               child: ClipRRect(
                                 borderRadius: BorderRadius.circular(5),
-                                child: const AppLogo(
-                                  height: 45,
-                                ),
+                                child: const AppLogo(height: 45),
                               ),
                             ),
                           ],
                         ),
                       ),
-                      SizedBox(
-                        height: MediaQuery.of(context).size.height / 15,
-                      ),
+                      SizedBox(height: MediaQuery.of(context).size.height / 15),
                       Row(
                         children: [
                           const SizedBox(
                             width: 40,
-                            child: Text(
-                              "域名",
-                              style: TextStyle(
-                                fontSize: 16,
-                              ),
-                            ),
+                            child: Text("域名", style: TextStyle(fontSize: 16)),
                           ),
-                          const SizedBox(
-                            width: 30,
-                          ),
+                          const SizedBox(width: 30),
                           Expanded(
                             child: TextField(
                               onChanged: (_) {
@@ -207,7 +207,10 @@ class LoginPageState extends ConsumerState<LoginPage> {
                                 hintText: "http://1.1.1.1:5700",
                                 hintStyle: TextStyle(
                                   fontSize: 16,
-                                  color: ref.watch(themeProvider).themeColor.hintColor(),
+                                  color: ref
+                                      .watch(themeProvider)
+                                      .themeColor
+                                      .hintColor(),
                                 ),
                               ),
                               autofocus: false,
@@ -215,12 +218,8 @@ class LoginPageState extends ConsumerState<LoginPage> {
                           ),
                         ],
                       ),
-                      const Divider(
-                        color: Color(0xff999999),
-                      ),
-                      const SizedBox(
-                        height: 10,
-                      ),
+                      const Divider(color: Color(0xff999999)),
+                      const SizedBox(height: 10),
                       Column(
                         mainAxisSize: MainAxisSize.min,
                         mainAxisAlignment: MainAxisAlignment.start,
@@ -232,14 +231,10 @@ class LoginPageState extends ConsumerState<LoginPage> {
                                 width: 40,
                                 child: Text(
                                   "账户",
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                  ),
+                                  style: TextStyle(fontSize: 16),
                                 ),
                               ),
-                              const SizedBox(
-                                width: 30,
-                              ),
+                              const SizedBox(width: 30),
                               Expanded(
                                 child: TextField(
                                   onChanged: (_) {
@@ -255,7 +250,10 @@ class LoginPageState extends ConsumerState<LoginPage> {
                                     hintText: "请输入账户",
                                     hintStyle: TextStyle(
                                       fontSize: 16,
-                                      color: ref.watch(themeProvider).themeColor.hintColor(),
+                                      color: ref
+                                          .watch(themeProvider)
+                                          .themeColor
+                                          .hintColor(),
                                     ),
                                   ),
                                   autofocus: false,
@@ -263,26 +261,18 @@ class LoginPageState extends ConsumerState<LoginPage> {
                               ),
                             ],
                           ),
-                          const Divider(
-                            color: Color(0xff999999),
-                          ),
-                          const SizedBox(
-                            height: 10,
-                          ),
+                          const Divider(color: Color(0xff999999)),
+                          const SizedBox(height: 10),
                           Row(
                             children: [
                               const SizedBox(
                                 width: 40,
                                 child: Text(
                                   "密码",
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                  ),
+                                  style: TextStyle(fontSize: 16),
                                 ),
                               ),
-                              const SizedBox(
-                                width: 30,
-                              ),
+                              const SizedBox(width: 30),
                               Expanded(
                                 child: TextField(
                                   onChanged: (_) {
@@ -299,7 +289,10 @@ class LoginPageState extends ConsumerState<LoginPage> {
                                     hintText: "请输入密码",
                                     hintStyle: TextStyle(
                                       fontSize: 16,
-                                      color: ref.watch(themeProvider).themeColor.hintColor(),
+                                      color: ref
+                                          .watch(themeProvider)
+                                          .themeColor
+                                          .hintColor(),
                                     ),
                                   ),
                                   autofocus: false,
@@ -307,25 +300,16 @@ class LoginPageState extends ConsumerState<LoginPage> {
                               ),
                             ],
                           ),
-                          const Divider(
-                            color: Color(0xff999999),
-                          ),
+                          const Divider(color: Color(0xff999999)),
                         ],
                       ),
                       Row(
                         children: [
                           const SizedBox(
                             width: 40,
-                            child: Text(
-                              "别名",
-                              style: TextStyle(
-                                fontSize: 16,
-                              ),
-                            ),
+                            child: Text("别名", style: TextStyle(fontSize: 16)),
                           ),
-                          const SizedBox(
-                            width: 30,
-                          ),
+                          const SizedBox(width: 30),
                           Expanded(
                             child: TextField(
                               inputFormatters: [
@@ -341,7 +325,10 @@ class LoginPageState extends ConsumerState<LoginPage> {
                                 hintText: "请输入别名(选填),仅用于展示",
                                 hintStyle: TextStyle(
                                   fontSize: 16,
-                                  color: ref.watch(themeProvider).themeColor.hintColor(),
+                                  color: ref
+                                      .watch(themeProvider)
+                                      .themeColor
+                                      .hintColor(),
                                 ),
                               ),
                               autofocus: false,
@@ -349,19 +336,13 @@ class LoginPageState extends ConsumerState<LoginPage> {
                           ),
                         ],
                       ),
-                      const Divider(
-                        color: Color(0xff999999),
-                      ),
-                      const SizedBox(
-                        height: 10,
-                      ),
+                      const Divider(color: Color(0xff999999)),
+                      const SizedBox(height: 10),
                     ],
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 25,
-                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 25),
                   child: Row(
                     children: [
                       Checkbox(
@@ -378,24 +359,18 @@ class LoginPageState extends ConsumerState<LoginPage> {
                           fontSize: 14,
                         ),
                       ),
-                      const SizedBox(
-                        width: 10,
-                      ),
+                      const SizedBox(width: 10),
                     ],
                   ),
                 ),
-                const SizedBox(
-                  height: 30,
-                ),
+                const SizedBox(height: 30),
                 ShakeWidget(
                   key: loginKey,
                   child: Center(
                     child: Container(
                       alignment: Alignment.center,
                       width: MediaQuery.of(context).size.width * 0.8,
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 40,
-                      ),
+                      padding: const EdgeInsets.symmetric(horizontal: 40),
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
                           colors: canClickLoginBtn()
@@ -404,8 +379,10 @@ class LoginPageState extends ConsumerState<LoginPage> {
                                   const Color(0xff089556),
                                 ]
                               : [
-                                  const Color(0xff5DD16F).withValues(alpha: 0.6),
-                                  const Color(0xff089556).withValues(alpha: 0.6),
+                                  const Color(0xff5DD16F)
+                                      .withValues(alpha: 0.6),
+                                  const Color(0xff089556)
+                                      .withValues(alpha: 0.6),
                                 ],
                         ),
                         borderRadius: const BorderRadius.all(
@@ -416,50 +393,60 @@ class LoginPageState extends ConsumerState<LoginPage> {
                         width: MediaQuery.of(context).size.width - 80,
                         child: IgnorePointer(
                           ignoring: !canClickLoginBtn(),
-                          child: Builder(builder: (context) {
-                            return CupertinoButton(
-                              padding: const EdgeInsets.symmetric(
-                                vertical: 5,
-                              ),
-                              child: isLoading
-                                  ? const LoadingWidget(
-                                      color: Colors.white,
-                                    )
-                                  : const Text(
-                                      "登 录",
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        color: Colors.white,
+                          child: Builder(
+                            builder: (context) {
+                              return CupertinoButton(
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 5,
+                                ),
+                                child: isLoading
+                                    ? const LoadingWidget(color: Colors.white)
+                                    : const Text(
+                                        "登 录",
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          color: Colors.white,
+                                        ),
                                       ),
-                                    ),
-                              onPressed: () async {
-                                //检测是否已经存在host登录
+                                onPressed: () async {
+                                  //检测是否已经存在host登录
 
-                                if (!_hostController.text.startsWith("http://") &&
-                                    !_hostController.text.startsWith("https://")) {
-                                  "域名必须以http://或者https://开头".toast();
-                                  return;
-                                }
-                                SingleAccountPageState.of(context)
-                                    ?.registerHttp(_hostController.text);
-                                SingleAccountPageState.ofHttp(context)?.pushedLoginPage = false;
-                                Utils.hideKeyBoard(context);
-                                if (loginByUserName()) {
-                                  login(_userNameController.text, _passwordController.text);
-                                } else {
-                                  login(_cIdController.text, _cSecretController.text);
-                                }
-                              },
-                            );
-                          }),
+                                  if (!_hostController.text.startsWith(
+                                        "http://",
+                                      ) &&
+                                      !_hostController.text.startsWith(
+                                        "https://",
+                                      )) {
+                                    "域名必须以http://或者https://开头".toast();
+                                    return;
+                                  }
+                                  SingleAccountPageState.of(context)
+                                      ?.registerHttp(_hostController.text);
+                                  SingleAccountPageState.ofHttp(context)
+                                          ?.pushedLoginPage =
+                                      false;
+                                  Utils.hideKeyBoard(context);
+                                  if (loginByUserName()) {
+                                    login(
+                                      _userNameController.text,
+                                      _passwordController.text,
+                                    );
+                                  } else {
+                                    login(
+                                      _cIdController.text,
+                                      _cSecretController.text,
+                                    );
+                                  }
+                                },
+                              );
+                            },
+                          ),
                         ),
                       ),
                     ),
                   ),
                 ),
-                const SizedBox(
-                  height: 30,
-                ),
+                const SizedBox(height: 30),
                 (getIt<MultiAccountUserInfoViewModel>().historyAccounts.isEmpty)
                     ? const SizedBox.shrink()
                     : SafeArea(
@@ -475,14 +462,15 @@ class LoginPageState extends ConsumerState<LoginPage> {
                                 },
                                 itemBuilder: (BuildContext context) =>
                                     <PopupMenuEntry<UserInfoBean>>[
-                                  ...getIt<MultiAccountUserInfoViewModel>()
-                                      .historyAccounts
-                                      .map((e) => PopupMenuItem<UserInfoBean>(
-                                            value: e,
-                                            child: buildCell(context, e),
-                                          ))
-                                      ,
-                                ],
+                                      ...getIt<MultiAccountUserInfoViewModel>()
+                                          .historyAccounts
+                                          .map(
+                                            (e) => PopupMenuItem<UserInfoBean>(
+                                              value: e,
+                                              child: buildCell(context, e),
+                                            ),
+                                          ),
+                                    ],
                                 child: Row(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
@@ -491,9 +479,7 @@ class LoginPageState extends ConsumerState<LoginPage> {
                                       fit: BoxFit.cover,
                                       width: 16,
                                     ),
-                                    const SizedBox(
-                                      width: 5,
-                                    ),
+                                    const SizedBox(width: 5),
                                     const Text(
                                       "历史账号",
                                       style: TextStyle(
@@ -560,70 +546,66 @@ class LoginPageState extends ConsumerState<LoginPage> {
 
     if (_hostController.text.isEmpty) return false;
     if (!loginByUserName()) {
-      return _cIdController.text.isNotEmpty && _cSecretController.text.isNotEmpty;
+      return _cIdController.text.isNotEmpty &&
+          _cSecretController.text.isNotEmpty;
     } else {
-      return _userNameController.text.isNotEmpty && _passwordController.text.isNotEmpty;
+      return _userNameController.text.isNotEmpty &&
+          _passwordController.text.isNotEmpty;
     }
   }
 
   void twoFact() {
     String twoFact = "";
     showCupertinoDialog(
-        useRootNavigator: false,
-        context: context,
-        builder: (_) => CupertinoAlertDialog(
-              title: const Text("两步验证"),
-              content: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Material(
-                    color: Colors.transparent,
-                    child: TextField(
-                      onChanged: (value) {
-                        twoFact = value;
-                      },
-                      maxLines: 1,
-                      keyboardType: TextInputType.number,
-                      decoration: const InputDecoration(
-                        contentPadding: EdgeInsets.fromLTRB(0, 5, 0, 5),
-                        hintText: "请输入code",
-                      ),
-                      autofocus: true,
-                    ),
-                  ),
-                ],
+      useRootNavigator: false,
+      context: context,
+      builder: (_) => CupertinoAlertDialog(
+        title: const Text("两步验证"),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Material(
+              color: Colors.transparent,
+              child: TextField(
+                onChanged: (value) {
+                  twoFact = value;
+                },
+                maxLines: 1,
+                keyboardType: TextInputType.number,
+                decoration: const InputDecoration(
+                  contentPadding: EdgeInsets.fromLTRB(0, 5, 0, 5),
+                  hintText: "请输入code",
+                ),
+                autofocus: true,
               ),
-              actions: [
-                CupertinoDialogAction(
-                  child: const Text(
-                    "取消",
-                    style: TextStyle(
-                      color: Color(0xff999999),
-                    ),
-                  ),
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                ),
-                CupertinoDialogAction(
-                  child: Text(
-                    "确定",
-                    style: TextStyle(
-                      color: ref.watch(themeProvider).primaryColor,
-                    ),
-                  ),
-                  onPressed: () async {
-                    Navigator.of(context).pop(true);
-                    if (helper != null) {
-                      var response = await helper!.loginTwice(context, twoFact);
-                      dealLoginResponse(response);
-                    } else {
-                      "状态异常，请重新点登录按钮".toast();
-                    }
-                  },
-                ),
-              ],
-            )).then((value) {
+            ),
+          ],
+        ),
+        actions: [
+          CupertinoDialogAction(
+            child: const Text("取消", style: TextStyle(color: Color(0xff999999))),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
+          CupertinoDialogAction(
+            child: Text(
+              "确定",
+              style: TextStyle(color: ref.watch(themeProvider).primaryColor),
+            ),
+            onPressed: () async {
+              Navigator.of(context).pop(true);
+              if (helper != null) {
+                var response = await helper!.loginTwice(context, twoFact);
+                dealLoginResponse(response);
+              } else {
+                "状态异常，请重新点登录按钮".toast();
+              }
+            },
+          ),
+        ],
+      ),
+    ).then((value) {
       if (value == null) {
         isLoading = false;
         setState(() {});
@@ -641,21 +623,23 @@ class LoginPageState extends ConsumerState<LoginPage> {
       subtitle: Padding(
         padding: const EdgeInsets.only(top: 10.0),
         child: Text(
-          (bean.alias == null || bean.alias!.isEmpty) ? (bean.userName ?? "") : bean.alias!,
+          (bean.alias == null || bean.alias!.isEmpty)
+              ? (bean.userName ?? "")
+              : bean.alias!,
         ),
       ),
       contentPadding: EdgeInsets.zero,
       trailing: GestureDetector(
-          onTap: () {
-            getIt<MultiAccountUserInfoViewModel>().removeHistoryAccount(bean.host);
-            Navigator.pop(context);
+        onTap: () {
+          getIt<MultiAccountUserInfoViewModel>().removeHistoryAccount(
+            bean.host,
+          );
+          Navigator.pop(context);
 
-            setState(() {});
-          },
-          child: const Icon(
-            CupertinoIcons.clear_thick,
-            size: 20,
-          )),
+          setState(() {});
+        },
+        child: const Icon(CupertinoIcons.clear_thick, size: 20),
+      ),
     );
   }
 

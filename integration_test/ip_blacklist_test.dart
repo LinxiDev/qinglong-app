@@ -48,14 +48,19 @@ void main() {
       }
     }
     if (best == null) return false;
-    await tester.tap(find.byElementPredicate((Element e) => identical(e, best)),
-        warnIfMissed: false);
+    await tester.tap(
+      find.byElementPredicate((Element e) => identical(e, best)),
+      warnIfMissed: false,
+    );
     await settle(tester, 4);
     return true;
   }
 
-  Future<bool> dragUntilFound(WidgetTester tester, Finder target,
-      {int maxDrags = 6}) async {
+  Future<bool> dragUntilFound(
+    WidgetTester tester,
+    Finder target, {
+    int maxDrags = 6,
+  }) async {
     for (int i = 0; i < maxDrags; i++) {
       if (target.evaluate().isNotEmpty) return true;
       final Size size = tester.getSize(find.byType(MaterialApp).first);
@@ -89,7 +94,10 @@ void main() {
     await settle(tester, 5);
     expect(find.text('IP 黑名单'), findsOneWidget, reason: '应进入 IP 黑名单页');
 
-    await tester.tap(find.byIcon(CupertinoIcons.add).first, warnIfMissed: false);
+    await tester.tap(
+      find.byIcon(CupertinoIcons.add).first,
+      warnIfMissed: false,
+    );
     await settle(tester, 2);
     expect(find.text('添加 IP 黑名单'), findsOneWidget, reason: '应弹出添加对话框');
 

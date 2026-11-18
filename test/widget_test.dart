@@ -11,12 +11,7 @@ void main() {
 
     await tester.pumpWidget(
       MaterialApp(
-        home: Scaffold(
-          body: SizedBox(
-            height: 300,
-            child: JsonTableView(json),
-          ),
-        ),
+        home: Scaffold(body: SizedBox(height: 300, child: JsonTableView(json))),
       ),
     );
 
@@ -28,11 +23,7 @@ void main() {
 
   testWidgets('JsonTableView 处理空数据', (WidgetTester tester) async {
     await tester.pumpWidget(
-      const MaterialApp(
-        home: Scaffold(
-          body: JsonTableView(null),
-        ),
-      ),
+      const MaterialApp(home: Scaffold(body: JsonTableView(null))),
     );
 
     expect(find.text("暂无数据"), findsOneWidget);

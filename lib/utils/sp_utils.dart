@@ -1,7 +1,8 @@
-
 import 'package:shared_preferences/shared_preferences.dart';
+
 import 'dart:async';
 import 'dart:convert';
+
 import 'package:synchronized/synchronized.dart';
 
 class SpUtil {
@@ -57,7 +58,11 @@ class SpUtil {
   }
 
   /// get obj list.
-  static List<T>? getObjList<T>(String key, T Function(Map v) f, {List<T> defValue = const []}) {
+  static List<T>? getObjList<T>(
+    String key,
+    T Function(Map v) f, {
+    List<T> defValue = const [],
+  }) {
     List<Map>? dataList = getObjectList(key);
     List<T>? list = dataList?.map((value) {
       return f(value);
@@ -124,7 +129,10 @@ class SpUtil {
   }
 
   /// get string list.
-  static List<String> getStringList(String key, {List<String> defValue = const []}) {
+  static List<String> getStringList(
+    String key, {
+    List<String> defValue = const [],
+  }) {
     if (_prefs == null) return defValue;
     return _prefs!.getStringList(key) ?? defValue;
   }

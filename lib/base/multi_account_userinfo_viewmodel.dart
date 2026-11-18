@@ -29,13 +29,14 @@ class MultiAccountUserInfoViewModel {
   }
 
   static void updateMaxAccount(int count) {
-
     SpUtil.putInt(spAccountCount, count);
   }
 
   MultiAccountUserInfoViewModel() {
     try {
-      List<dynamic>? tempTokenList = jsonDecode(SpUtil.getString(spTokenBeanList, defValue: '[]'));
+      List<dynamic>? tempTokenList = jsonDecode(
+        SpUtil.getString(spTokenBeanList, defValue: '[]'),
+      );
 
       if (tempTokenList != null && tempTokenList.isNotEmpty) {
         for (Map<String, dynamic> value in tempTokenList) {
@@ -46,7 +47,9 @@ class MultiAccountUserInfoViewModel {
         }
       }
 
-      List<dynamic>? tempList = jsonDecode(SpUtil.getString(spLoginHistory, defValue: '[]'));
+      List<dynamic>? tempList = jsonDecode(
+        SpUtil.getString(spLoginHistory, defValue: '[]'),
+      );
 
       if (tempList != null && tempList.isNotEmpty) {
         for (Map<String, dynamic> value in tempList) {
@@ -75,10 +78,7 @@ class MultiAccountUserInfoViewModel {
 
     historyAccounts.removeWhere((element) => element.host == userInfoBean.host);
 
-    historyAccounts.insert(
-      0,
-      userInfoBean,
-    );
+    historyAccounts.insert(0, userInfoBean);
 
     SpUtil.putString(spLoginHistory, jsonEncode(historyAccounts));
   }
@@ -91,7 +91,13 @@ class MultiAccountUserInfoViewModel {
     SpUtil.putString(spLoginHistory, jsonEncode(historyAccounts));
   }
 
-  void updateToken(int index, String? host, String? token, bool useSecretLogined, String? alias) {
+  void updateToken(
+    int index,
+    String? host,
+    String? token,
+    bool useSecretLogined,
+    String? alias,
+  ) {
     if (host == null) return;
 
     if (MultiAccountUserInfoViewModel.maxAccount == 1) {

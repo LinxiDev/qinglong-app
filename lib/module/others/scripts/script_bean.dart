@@ -1,5 +1,3 @@
-
-
 class ScriptBean {
   String? title;
   String? value;

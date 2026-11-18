@@ -51,8 +51,10 @@ void main() {
       }
     }
     if (best == null) return false;
-    await tester.tap(find.byElementPredicate((Element e) => identical(e, best)),
-        warnIfMissed: false);
+    await tester.tap(
+      find.byElementPredicate((Element e) => identical(e, best)),
+      warnIfMissed: false,
+    );
     await settle(tester, 4);
     return true;
   }
@@ -70,17 +72,25 @@ void main() {
     }
 
     await tapTab(tester, '环境变量');
-    expect(find.byIcon(CupertinoIcons.add), findsWidgets,
-        reason: '环境变量页应存在右上角新增按钮');
+    expect(
+      find.byIcon(CupertinoIcons.add),
+      findsWidgets,
+      reason: '环境变量页应存在右上角新增按钮',
+    );
 
-    await tester.tap(find.byIcon(CupertinoIcons.add).first, warnIfMissed: false);
+    await tester.tap(
+      find.byIcon(CupertinoIcons.add).first,
+      warnIfMissed: false,
+    );
     await settle(tester, 3);
     expect(find.text('新增环境变量'), findsOneWidget, reason: '应进入新增环境变量页');
-    expect(find.byType(TextField).evaluate().length, greaterThanOrEqualTo(2),
-        reason: '表单应有名称与值两个输入框');
+    expect(
+      find.byType(TextField).evaluate().length,
+      greaterThanOrEqualTo(2),
+      reason: '表单应有名称与值两个输入框',
+    );
 
-    final String suffix =
-        '${DateTime.now().millisecondsSinceEpoch % 100000}';
+    final String suffix = '${DateTime.now().millisecondsSinceEpoch % 100000}';
     final String envName = 'TEST_UI_VAR_$suffix';
     final String envValue = 'hello_$suffix';
     await tester.enterText(find.byType(TextField).at(0), envName);
@@ -95,6 +105,19 @@ void main() {
     expect(find.text(envValue), findsWidgets, reason: '列表应出现新增变量');
     // ignore: avoid_print
     print('ENV_ADD PASS: $envName 新增成功且已返回列表');
+
+    // 长按打开操作菜单，确认菜单项渲染正常后关闭
+    await tester.longPress(find.text(envValue).first);
+    await settle(tester, 2);
+    expect(find.text('重命名变量名'), findsWidgets, reason: '长按应弹出操作菜单');
+    final Finder barrier = find.byType(ModalBarrier);
+    if (barrier.evaluate().isNotEmpty) {
+      await tester.tap(barrier.last, warnIfMissed: false);
+      await settle(tester, 2);
+    }
+    expect(find.text('重命名变量名'), findsNothing, reason: '菜单应可关闭');
+    // ignore: avoid_print
+    print('ENV_MENU PASS: 长按菜单打开/关闭正常');
 
     ErrorWidget.builder = original;
   });

@@ -7,13 +7,16 @@ import 'package:qinglong_app/module/config/config_bean.dart';
 class ConfigDetailViewModel extends BaseViewModel {
   String? content;
 
-  Future<void> loadData(BuildContext context, ConfigBean bean,
-      [isLoading = true]) async {
+  Future<void> loadData(
+    BuildContext context,
+    ConfigBean bean, [
+    isLoading = true,
+  ]) async {
     if (isLoading) {
       loading(notify: true);
     }
-    HttpResponse<String> result =
-        await SingleAccountPageState.ofApi(context).content(bean.value!);
+    HttpResponse<String> result = await SingleAccountPageState.ofApi(context)
+        .content(bean.value!);
     if (result.success && result.bean != null) {
       content = result.bean;
       success();

@@ -82,9 +82,7 @@ class _QLCupertinoContextMenuActionState
 
   TextStyle get _textStyle {
     if (widget.isDefaultAction) {
-      return _kActionSheetActionStyle.copyWith(
-        fontWeight: FontWeight.w600,
-      );
+      return _kActionSheetActionStyle.copyWith(fontWeight: FontWeight.w600);
     }
     if (widget.isDestructiveAction) {
       return _kActionSheetActionStyle.copyWith(
@@ -104,9 +102,7 @@ class _QLCupertinoContextMenuActionState
       onTap: widget.onPressed,
       behavior: HitTestBehavior.opaque,
       child: ConstrainedBox(
-        constraints: const BoxConstraints(
-          minHeight: _kButtonHeight,
-        ),
+        constraints: const BoxConstraints(minHeight: _kButtonHeight),
         child: Semantics(
           button: true,
           child: Container(
@@ -125,9 +121,7 @@ class _QLCupertinoContextMenuActionState
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
-                  Flexible(
-                    child: widget.child,
-                  ),
+                  Flexible(child: widget.child),
                   if (widget.trailingIcon != null)
                     Icon(
                       widget.trailingIcon,

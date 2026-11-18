@@ -11,6 +11,7 @@ import 'package:qinglong_app/base/ui/empty_widget.dart';
 import 'package:qinglong_app/main.dart';
 import 'package:qinglong_app/module/config/add_config_page.dart';
 import 'package:qinglong_app/module/config/config_bean.dart';
+import 'package:qinglong_app/utils/extension.dart';
 import 'package:qinglong_app/utils/utils.dart';
 
 import 'config_viewmodel.dart';
@@ -131,6 +132,11 @@ class ConfigPageState extends ConsumerState<ConfigPage>
                 GestureDetector(
                   behavior: HitTestBehavior.opaque,
                   onDoubleTap: () {
+                    if (configContent == null) {
+                      "配置内容加载中，请稍候".toast();
+                      loadConfigData(context);
+                      return;
+                    }
                     Navigator.of(context)
                         .pushNamed(
                           Routes.routeConfigEdit,

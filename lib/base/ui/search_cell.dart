@@ -6,10 +6,7 @@ import '../theme.dart';
 class SearchCell extends ConsumerStatefulWidget {
   final TextEditingController controller;
 
-  const SearchCell({
-    super.key,
-    required this.controller,
-  });
+  const SearchCell({super.key, required this.controller});
 
   @override
   ConsumerState createState() => _SearchCellState();
@@ -26,24 +23,19 @@ class _SearchCellState extends ConsumerState<SearchCell> {
   @override
   Widget build(BuildContext context) {
     TextPainter textPainter = TextPainter(
-      text: const TextSpan(
-        text: "搜索",
-        style: TextStyle(
-          fontSize: 14,
-        ),
-      ),
+      text: const TextSpan(text: "搜索", style: TextStyle(fontSize: 14)),
       textDirection: TextDirection.ltr,
       textScaler: MediaQuery.textScalerOf(context),
     );
     textPainter.layout();
     return CupertinoTextField.borderless(
       maxLines: 1,
-      textAlign: widget.controller.text.isNotEmpty ? TextAlign.center : TextAlign.start,
+      textAlign: widget.controller.text.isNotEmpty
+          ? TextAlign.center
+          : TextAlign.start,
       decoration: BoxDecoration(
         color: ref.watch(themeProvider).themeColor.pinedAndWhite(),
-        borderRadius: BorderRadius.circular(
-          10,
-        ),
+        borderRadius: BorderRadius.circular(10),
       ),
       suffixMode: OverlayVisibilityMode.editing,
       suffix: GestureDetector(
@@ -52,9 +44,7 @@ class _SearchCellState extends ConsumerState<SearchCell> {
           setState(() {});
         },
         child: Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: 15,
-          ),
+          padding: const EdgeInsets.symmetric(horizontal: 15),
           child: Icon(
             CupertinoIcons.clear_circled_solid,
             size: 20,
@@ -63,17 +53,18 @@ class _SearchCellState extends ConsumerState<SearchCell> {
         ),
       ),
       controller: widget.controller,
-      padding: const EdgeInsets.symmetric(
-        horizontal: 5,
-        vertical: 7,
-      ),
+      padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 7),
       prefixMode: OverlayVisibilityMode.notEditing,
       onEditingComplete: () {
         FocusScope.of(context).requestFocus(FocusNode());
       },
       prefix: Padding(
         padding: EdgeInsets.only(
-          left: MediaQuery.of(context).size.width / 2 - textPainter.width - 15 - 5,
+          left:
+              MediaQuery.of(context).size.width / 2 -
+              textPainter.width -
+              15 -
+              5,
         ),
         child: Image.asset(
           "assets/images/icon_search.png",

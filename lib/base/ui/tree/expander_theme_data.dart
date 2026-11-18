@@ -4,20 +4,11 @@ const double _kDefaultExpanderSize = 30.0;
 
 /// Defines whether expander icon is shown on the
 /// left or right side of the parent node label.
-enum ExpanderPosition {
-  start,
-  end,
-}
+enum ExpanderPosition { start, end }
 
 /// Defines the type expander icon displayed. All
 /// types except the plus-minus type will be animated
-enum ExpanderType {
-  none,
-  caret,
-  arrow,
-  chevron,
-  plusMinus,
-}
+enum ExpanderType { none, caret, arrow, chevron, plusMinus }
 
 /// Defines whether expander icon has a circle or square shape
 /// and whether it is outlined or filled.
@@ -71,12 +62,12 @@ class ExpanderThemeData {
   /// the [animated] property is true,
   /// and the [size] is 30.0.
   const ExpanderThemeData.fallback()
-      : color = const Color(0xFF000000),
-        position = ExpanderPosition.start,
-        type = ExpanderType.caret,
-        modifier = ExpanderModifier.none,
-        animated = true,
-        size = _kDefaultExpanderSize;
+    : color = const Color(0xFF000000),
+      position = ExpanderPosition.start,
+      type = ExpanderType.caret,
+      modifier = ExpanderModifier.none,
+      animated = true,
+      size = _kDefaultExpanderSize;
 
   /// Creates a copy of this theme but with the given fields replaced with
   /// the new values.

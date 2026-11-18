@@ -1,5 +1,3 @@
-
-
 import 'package:timezone/data/latest.dart';
 import 'package:timezone/standalone.dart';
 import 'package:timezone/timezone.dart';
@@ -28,12 +26,20 @@ abstract class Cron {
   /// It returns an iterator [HasNext] which delivers [TZDateTime] events. If no [startTime]
   /// is provided [TZDateTime.now(getLocation(locationName)] is used.
   /// The [locationName] string has to be in the format listed at http://www.iana.org/time-zones.
-  CronIterator<TZDateTime> parse(String cronString, String locationName, [TZDateTime? startTime]);
+  CronIterator<TZDateTime> parse(
+    String cronString,
+    String locationName, [
+    TZDateTime? startTime,
+  ]);
 }
 
 class _Cron implements Cron {
   @override
-  CronIterator<TZDateTime> parse(String cronString, String locationName, [TZDateTime? startTime]) {
+  CronIterator<TZDateTime> parse(
+    String cronString,
+    String locationName, [
+    TZDateTime? startTime,
+  ]) {
     assert(cronString.isNotEmpty);
     // assert(_cronRegex.hasMatch(cronString));
     var location = getLocation(locationName);
@@ -43,8 +49,17 @@ class _Cron implements Cron {
   }
 
   _Schedule _parse(String cronString) {
-    List<List<int>?> p = cronString.split(RegExp('\\s+')).map(parseConstraint).toList();
-    _Schedule schedule = _Schedule(minutes: p[0], hours: p[1], days: p[2], months: p[3], weekdays: p[4]);
+    List<List<int>?> p = cronString
+        .split(RegExp('\\s+'))
+        .map(parseConstraint)
+        .toList();
+    _Schedule schedule = _Schedule(
+      minutes: p[0],
+      hours: p[1],
+      days: p[2],
+      months: p[3],
+      weekdays: p[4],
+    );
     return schedule;
   }
 }
@@ -58,13 +73,37 @@ class _Schedule {
 
   _Schedule._(this.minutes, this.hours, this.days, this.months, this.weekdays);
 
-  factory _Schedule({dynamic minutes, dynamic hours, dynamic days, dynamic months, dynamic weekdays}) {
-    List<int>? parsedMinutes = parseConstraint(minutes)?.where((x) => x >= 0 && x <= 59).toList();
-    List<int>? parsedHours = parseConstraint(hours)?.where((x) => x >= 0 && x <= 23).toList();
-    List<int>? parsedDays = parseConstraint(days)?.where((x) => x >= 1 && x <= 31).toList();
-    List<int>? parsedMonths = parseConstraint(months)?.where((x) => x >= 1 && x <= 12).toList();
-    List<int>? parsedWeekdays = parseConstraint(weekdays)?.where((x) => x >= 0 && x <= 7).map((x) => x == 0 ? 7 : x).toSet().toList();
-    return _Schedule._(parsedMinutes, parsedHours, parsedDays, parsedMonths, parsedWeekdays);
+  factory _Schedule({
+    dynamic minutes,
+    dynamic hours,
+    dynamic days,
+    dynamic months,
+    dynamic weekdays,
+  }) {
+    List<int>? parsedMinutes = parseConstraint(minutes)
+        ?.where((x) => x >= 0 && x <= 59)
+        .toList();
+    List<int>? parsedHours = parseConstraint(hours)
+        ?.where((x) => x >= 0 && x <= 23)
+        .toList();
+    List<int>? parsedDays = parseConstraint(days)
+        ?.where((x) => x >= 1 && x <= 31)
+        .toList();
+    List<int>? parsedMonths = parseConstraint(months)
+        ?.where((x) => x >= 1 && x <= 12)
+        .toList();
+    List<int>? parsedWeekdays = parseConstraint(weekdays)
+        ?.where((x) => x >= 0 && x <= 7)
+        .map((x) => x == 0 ? 7 : x)
+        .toSet()
+        .toList();
+    return _Schedule._(
+      parsedMinutes,
+      parsedHours,
+      parsedDays,
+      parsedMonths,
+      parsedWeekdays,
+    );
   }
 }
 
@@ -76,7 +115,11 @@ List<int>? parseConstraint(dynamic constraint) {
     if (constraint == '*') return null;
     final parts = constraint.split(',');
     if (parts.length > 1) {
-      final items = parts.map(parseConstraint).expand((list) => list!).toSet().toList();
+      final items = parts
+          .map(parseConstraint)
+          .expand((list) => list!)
+          .toSet()
+          .toList();
       items.sort();
       return items;
     }
@@ -91,7 +134,9 @@ List<int>? parseConstraint(dynamic constraint) {
       }
     }
 
-    if (!constraint.startsWith("/") && !constraint.endsWith("/") && constraint.contains("/")) {
+    if (!constraint.startsWith("/") &&
+        !constraint.endsWith("/") &&
+        constraint.contains("/")) {
       List<dynamic> duration = constraint.split("/");
 
       String first = duration.first.toString();
@@ -130,7 +175,10 @@ class _CronIterator implements CronIterator<TZDateTime> {
   bool _previousCalled = false;
 
   _CronIterator(this._schedule, this._currentDate) {
-    _currentDate = TZDateTime.fromMillisecondsSinceEpoch(_currentDate.location, _currentDate.millisecondsSinceEpoch ~/ 60000 * 60000);
+    _currentDate = TZDateTime.fromMillisecondsSinceEpoch(
+      _currentDate.location,
+      _currentDate.millisecondsSinceEpoch ~/ 60000 * 60000,
+    );
   }
 
   @override
@@ -139,20 +187,37 @@ class _CronIterator implements CronIterator<TZDateTime> {
     _currentDate = _currentDate.add(Duration(minutes: 1));
     while (true) {
       if (_schedule.months?.contains(_currentDate.month) == false) {
-        _currentDate = TZDateTime(_currentDate.location, _currentDate.year, _currentDate.month + 1, 1);
+        _currentDate = TZDateTime(
+          _currentDate.location,
+          _currentDate.year,
+          _currentDate.month + 1,
+          1,
+        );
         continue;
       }
       if (_schedule.weekdays?.contains(_currentDate.weekday) == false) {
-        _currentDate = TZDateTime(_currentDate.location, _currentDate.year, _currentDate.month, _currentDate.day + 1);
+        _currentDate = TZDateTime(
+          _currentDate.location,
+          _currentDate.year,
+          _currentDate.month,
+          _currentDate.day + 1,
+        );
         continue;
       }
       if (_schedule.days?.contains(_currentDate.day) == false) {
-        _currentDate = TZDateTime(_currentDate.location, _currentDate.year, _currentDate.month, _currentDate.day + 1);
+        _currentDate = TZDateTime(
+          _currentDate.location,
+          _currentDate.year,
+          _currentDate.month,
+          _currentDate.day + 1,
+        );
         continue;
       }
       if (_schedule.hours?.contains(_currentDate.hour) == false) {
         _currentDate = _currentDate.add(Duration(hours: 1));
-        _currentDate = _currentDate.subtract(Duration(minutes: _currentDate.minute));
+        _currentDate = _currentDate.subtract(
+          Duration(minutes: _currentDate.minute),
+        );
         continue;
       }
       if (_schedule.minutes?.contains(_currentDate.minute) == false) {

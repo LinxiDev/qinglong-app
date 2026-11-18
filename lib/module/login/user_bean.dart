@@ -1,15 +1,9 @@
-
-
 class UserBean {
   String? username;
   bool? twoFactorActivated;
   String? avatar;
 
-  UserBean({
-    this.username,
-    this.twoFactorActivated,
-    this.avatar,
-  });
+  UserBean({this.username, this.twoFactorActivated, this.avatar});
 
   UserBean.fromJson(Map<String, dynamic> json) {
     username = json['username'];

@@ -1,5 +1,3 @@
-
-
 import 'package:material_ui/material_ui.dart';
 
 class AnimatedIndexedStack extends StatefulWidget {
@@ -28,12 +26,10 @@ class AnimatedIndexedStackState extends State<AnimatedIndexedStack>
       vsync: this,
       duration: const Duration(milliseconds: 150),
     );
-    _animation = Tween(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(
-        parent: _controller,
-        curve: Curves.ease,
-      ),
-    );
+    _animation = Tween(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.ease));
 
     _index = widget.index;
     _controller.forward();
@@ -70,10 +66,7 @@ class AnimatedIndexedStackState extends State<AnimatedIndexedStack>
           ),
         );
       },
-      child: IndexedStack(
-        index: _index,
-        children: widget.children,
-      ),
+      child: IndexedStack(index: _index, children: widget.children),
     );
   }
 }

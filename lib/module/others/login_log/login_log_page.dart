@@ -14,7 +14,6 @@ import 'package:qinglong_app/utils/utils.dart';
 
 import 'login_log_bean.dart';
 
-
 class LoginLogPage extends ConsumerStatefulWidget {
   const LoginLogPage({super.key});
 
@@ -37,9 +36,7 @@ class LoginLogPageState extends ConsumerState<LoginLogPage>
         title: "登录日志",
       ),
       body: list.isEmpty
-          ? const Center(
-              child: LoadingWidget(),
-            )
+          ? const Center(child: LoadingWidget())
           : ListView.separated(
               primary: true,
               itemBuilder: (context, index) {
@@ -48,22 +45,19 @@ class LoginLogPageState extends ConsumerState<LoginLogPage>
                 return Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const SizedBox(
-                      width: 15,
-                    ),
+                    const SizedBox(width: 15),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const SizedBox(
-                          height: 10,
-                        ),
+                        const SizedBox(height: 10),
                         Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             ConstrainedBox(
                               constraints: BoxConstraints.loose(
                                 Size.fromWidth(
-                                    MediaQuery.of(context).size.width / 1.8),
+                                  MediaQuery.of(context).size.width / 1.8,
+                                ),
                               ),
                               child: Text(
                                 "${item.address}",
@@ -76,68 +70,55 @@ class LoginLogPageState extends ConsumerState<LoginLogPage>
                                 ),
                               ),
                             ),
-                            const SizedBox(
-                              width: 5,
-                            ),
+                            const SizedBox(width: 5),
                             Padding(
-                              padding: const EdgeInsets.only(
-                                top: 2,
-                              ),
+                              padding: const EdgeInsets.only(top: 2),
                               child: StatusWidget(
-                                title:  item.status == 0
-                                    ? "成功"
-                                    : "失败",
-                                color:  item.status == 0
+                                title: item.status == 0 ? "成功" : "失败",
+                                color: item.status == 0
                                     ? ref.watch(themeProvider).primaryColor
                                     : const Color(0xffFB5858),
                               ),
                             ),
                           ],
                         ),
-                        const SizedBox(
-                          height: 10,
-                        ),
+                        const SizedBox(height: 10),
                         SelectableText(
                           "${item.ip}",
                           selectionWidthStyle: BoxWidthStyle.max,
                           selectionHeightStyle: BoxHeightStyle.max,
                           style: TextStyle(
-                            color:
-                                ref.watch(themeProvider).themeColor.descColor(),
+                            color: ref
+                                .watch(themeProvider)
+                                .themeColor
+                                .descColor(),
                             fontSize: 14,
                           ),
                         ),
-                        const SizedBox(
-                          height: 10,
-                        ),
+                        const SizedBox(height: 10),
                       ],
                     ),
                     const Spacer(),
                     Padding(
-                      padding: const EdgeInsets.only(
-                        top: 10,
-                      ),
+                      padding: const EdgeInsets.only(top: 10),
                       child: Text(
                         Utils.formatMessageTime(item.timestamp ?? 0),
                         style: TextStyle(
                           fontSize: 12,
-                          color:
-                              ref.watch(themeProvider).themeColor.descColor(),
+                          color: ref
+                              .watch(themeProvider)
+                              .themeColor
+                              .descColor(),
                         ),
                       ),
                     ),
-                    const SizedBox(
-                      width: 15,
-                    ),
+                    const SizedBox(width: 15),
                   ],
                 );
               },
               itemCount: list.length,
               separatorBuilder: (BuildContext context, int index) {
-                return const Divider(
-                  indent: 15,
-                  height: 1,
-                );
+                return const Divider(indent: 15, height: 1);
               },
             ),
     );

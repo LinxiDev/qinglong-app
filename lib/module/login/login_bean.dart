@@ -1,4 +1,3 @@
-
 class LoginBean {
   String? token;
   String? lastip;
@@ -7,13 +6,14 @@ class LoginBean {
   int? retries;
   String? platform;
 
-  LoginBean(
-      {this.token,
-      this.lastip,
-      this.lastaddr,
-      this.lastlogon,
-      this.retries,
-      this.platform});
+  LoginBean({
+    this.token,
+    this.lastip,
+    this.lastaddr,
+    this.lastlogon,
+    this.retries,
+    this.platform,
+  });
 
   LoginBean.fromJson(Map<String, dynamic> json) {
     token = json['token'];

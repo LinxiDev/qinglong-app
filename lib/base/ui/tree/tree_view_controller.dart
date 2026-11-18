@@ -3,11 +3,7 @@ import 'dart:convert' show jsonDecode;
 import 'models/script_data.dart';
 
 /// Defines the insertion mode adding a new [ScriptData] to the [TreeView].
-enum InsertMode {
-  prepend,
-  append,
-  insert,
-}
+enum InsertMode { prepend, append, insert }
 
 /// Defines the controller needed to display the [TreeView].
 ///
@@ -37,14 +33,14 @@ class TreeViewController {
   /// The key of the select node in the [TreeView].
   final String? selectedKey;
 
-  TreeViewController({
-    this.children = const [],
-    this.selectedKey,
-  });
+  TreeViewController({this.children = const [], this.selectedKey});
 
   /// Creates a copy of this controller but with the given fields
   /// replaced with the new values.
-  TreeViewController copyWith<T>({List<ScriptData>? children, String? selectedKey}) {
+  TreeViewController copyWith<T>({
+    List<ScriptData>? children,
+    String? selectedKey,
+  }) {
     return TreeViewController(
       children: children ?? this.children,
       selectedKey: selectedKey ?? this.selectedKey,
@@ -74,12 +70,10 @@ class TreeViewController {
   /// });
   /// ```
   TreeViewController loadMap<T>({List<Map<String, dynamic>> list = const []}) {
-    List<ScriptData> treeData =
-        list.map((Map<String, dynamic> item) => ScriptData.fromMap(item)).toList();
-    return TreeViewController(
-      children: treeData,
-      selectedKey: selectedKey,
-    );
+    List<ScriptData> treeData = list
+        .map((Map<String, dynamic> item) => ScriptData.fromMap(item))
+        .toList();
+    return TreeViewController(children: treeData, selectedKey: selectedKey);
   }
 
   /// Adds a new node to an existing node identified by specified key.
@@ -101,12 +95,14 @@ class TreeViewController {
     int? index,
     InsertMode mode = InsertMode.append,
   }) {
-    List<ScriptData> data =
-        addNode(key, newNode, parent: parent, mode: mode, index: index);
-    return TreeViewController(
-      children: data,
-      selectedKey: selectedKey,
+    List<ScriptData> data = addNode(
+      key,
+      newNode,
+      parent: parent,
+      mode: mode,
+      index: index,
     );
+    return TreeViewController(children: data, selectedKey: selectedKey);
   }
 
   /// Replaces an existing node identified by specified key with a new node.
@@ -121,12 +117,13 @@ class TreeViewController {
   ///   controller = controller.withUpdateNode(key, newNode);
   /// });
   /// ```
-  TreeViewController withUpdateNode(String key, ScriptData newNode, {ScriptData? parent}) {
+  TreeViewController withUpdateNode(
+    String key,
+    ScriptData newNode, {
+    ScriptData? parent,
+  }) {
     List<ScriptData> data = updateNode(key, newNode, parent: parent);
-    return TreeViewController(
-      children: data,
-      selectedKey: selectedKey,
-    );
+    return TreeViewController(children: data, selectedKey: selectedKey);
   }
 
   /// Removes an existing node identified by specified key.
@@ -143,10 +140,7 @@ class TreeViewController {
   /// ```
   TreeViewController withDeleteNode(String key, {ScriptData? parent}) {
     List<ScriptData> data = deleteNode(key, parent: parent);
-    return TreeViewController(
-      children: data,
-      selectedKey: selectedKey,
-    );
+    return TreeViewController(children: data, selectedKey: selectedKey);
   }
 
   /// Toggles the expanded property of an existing node identified by
@@ -163,10 +157,7 @@ class TreeViewController {
   /// ```
   TreeViewController withToggleNode(String key, {ScriptData? parent}) {
     List<ScriptData> data = toggleNode(key, parent: parent);
-    return TreeViewController(
-      children: data,
-      selectedKey: selectedKey,
-    );
+    return TreeViewController(children: data, selectedKey: selectedKey);
   }
 
   /// Expands all nodes down to Node identified by specified key.
@@ -183,10 +174,7 @@ class TreeViewController {
   /// ```
   TreeViewController withExpandToNode(String key) {
     List<ScriptData> data = expandToNode(key);
-    return TreeViewController(
-      children: data,
-      selectedKey: selectedKey,
-    );
+    return TreeViewController(children: data, selectedKey: selectedKey);
   }
 
   /// Collapses all nodes down to Node identified by specified key.
@@ -203,10 +191,7 @@ class TreeViewController {
   /// ```
   TreeViewController withCollapseToNode(String key) {
     List<ScriptData> data = collapseToNode(key);
-    return TreeViewController(
-      children: data,
-      selectedKey: selectedKey,
-    );
+    return TreeViewController(children: data, selectedKey: selectedKey);
   }
 
   /// Expands all nodes down to parent Node.
@@ -223,10 +208,7 @@ class TreeViewController {
   /// ```
   TreeViewController withExpandAll({ScriptData? parent}) {
     List<ScriptData> data = expandAll(parent: parent);
-    return TreeViewController(
-      children: data,
-      selectedKey: selectedKey,
-    );
+    return TreeViewController(children: data, selectedKey: selectedKey);
   }
 
   /// Collapses all nodes down to parent Node.
@@ -243,10 +225,7 @@ class TreeViewController {
   /// ```
   TreeViewController withCollapseAll({ScriptData? parent}) {
     List<ScriptData> data = collapseAll(parent: parent);
-    return TreeViewController(
-      children: data,
-      selectedKey: selectedKey,
-    );
+    return TreeViewController(children: data, selectedKey: selectedKey);
   }
 
   /// Gets the node that has a key value equal to the specified key.
@@ -274,15 +253,15 @@ class TreeViewController {
   /// Expands all node that are children of the parent node parameter. If no parent is passed, uses the root node as the parent.
   List<ScriptData> expandAll({ScriptData? parent}) {
     List<ScriptData> nodeChildren = [];
-    Iterator iter =
-        parent == null ? children.iterator : parent.children.iterator;
+    Iterator iter = parent == null
+        ? children.iterator
+        : parent.children.iterator;
     while (iter.moveNext()) {
       ScriptData child = iter.current;
       if (child.isParent) {
-        nodeChildren.add(child.copyWith(
-          expanded: true,
-          children: expandAll(parent: child),
-        ));
+        nodeChildren.add(
+          child.copyWith(expanded: true, children: expandAll(parent: child)),
+        );
       } else {
         nodeChildren.add(child);
       }
@@ -293,15 +272,15 @@ class TreeViewController {
   /// Collapses all node that are children of the parent node parameter. If no parent is passed, uses the root node as the parent.
   List<ScriptData> collapseAll({ScriptData? parent}) {
     List<ScriptData> nodeChildren = [];
-    Iterator iter =
-        parent == null ? children.iterator : parent.children.iterator;
+    Iterator iter = parent == null
+        ? children.iterator
+        : parent.children.iterator;
     while (iter.moveNext()) {
       ScriptData child = iter.current;
       if (child.isParent) {
-        nodeChildren.add(child.copyWith(
-          expanded: false,
-          children: collapseAll(parent: child),
-        ));
+        nodeChildren.add(
+          child.copyWith(expanded: false, children: collapseAll(parent: child)),
+        );
       } else {
         nodeChildren.add(child);
       }
@@ -420,7 +399,11 @@ class TreeViewController {
 
   /// Updates an existing node identified by specified key. This method
   /// returns a new list with the updated node.
-  List<ScriptData> updateNode(String key, ScriptData newNode, {ScriptData? parent}) {
+  List<ScriptData> updateNode(
+    String key,
+    ScriptData newNode, {
+    ScriptData? parent,
+  }) {
     List<ScriptData> nodeChildren = parent == null ? children : parent.children;
     return nodeChildren.map((ScriptData child) {
       if (child.key == key) {
@@ -428,11 +411,7 @@ class TreeViewController {
       } else {
         if (child.isParent) {
           return child.copyWith(
-            children: updateNode(
-              key,
-              newNode,
-              parent: child,
-            ),
+            children: updateNode(key, newNode, parent: child),
           );
         }
         return child;
@@ -457,9 +436,9 @@ class TreeViewController {
       ScriptData child = iter.current;
       if (child.key != key) {
         if (child.isParent) {
-          filteredChildren.add(child.copyWith(
-            children: deleteNode(key, parent: child),
-          ));
+          filteredChildren.add(
+            child.copyWith(children: deleteNode(key, parent: child)),
+          );
         } else {
           filteredChildren.add(child);
         }
@@ -472,8 +451,6 @@ class TreeViewController {
   ScriptData? get selectedNode {
     return selectedKey!.isEmpty ? null : getNode(selectedKey!);
   }
-
-
 
   @override
   String toString() {

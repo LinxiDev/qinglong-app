@@ -9,16 +9,11 @@ import 'package:qinglong_app/base/ui/lazy_load_state.dart';
 import 'package:qinglong_app/base/ui/loading_widget.dart';
 import 'package:qinglong_app/utils/extension.dart';
 
-
 class TaskLogDetailPage extends ConsumerStatefulWidget {
   final String title;
   final String path;
 
-  const TaskLogDetailPage({
-    super.key,
-    required this.title,
-    required this.path,
-  });
+  const TaskLogDetailPage({super.key, required this.title, required this.path});
 
   @override
   TaskLogDetailPageState createState() => TaskLogDetailPageState();
@@ -41,27 +36,20 @@ class TaskLogDetailPageState extends ConsumerState<TaskLogDetailPage>
       body: content == null
           ? const Center(child: LoadingWidget())
           : Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 15,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 15),
               child: SelectableText(
                 (content == null || content!.isEmpty) ? "暂无数据" : content!,
                 selectionHeightStyle: BoxHeightStyle.max,
                 selectionWidthStyle: BoxWidthStyle.max,
-                style: const TextStyle(
-                  fontSize: 12,
-                ),
+                style: const TextStyle(fontSize: 12),
               ),
             ),
     );
   }
 
   Future<void> loadData() async {
-    HttpResponse<String> response =
-        await SingleAccountPageState.ofApi(context).taskLogDetail(
-      widget.title,
-      widget.path,
-    );
+    HttpResponse<String> response = await SingleAccountPageState.ofApi(context)
+        .taskLogDetail(widget.title, widget.path);
 
     if (response.success) {
       content = response.bean;

@@ -27,8 +27,10 @@ class Utilities {
       final buffer = StringBuffer();
       if (colorValue.length == 3 || colorValue.length == 4) {
         colorValue = colorValue.replaceFirst('#', '');
-        List<String> pieces =
-            colorValue.split('').map((String piece) => '$piece$piece').toList();
+        List<String> pieces = colorValue
+            .split('')
+            .map((String piece) => '$piece$piece')
+            .toList();
         colorValue = pieces.join();
       }
       if (colorValue.length == 6 || colorValue.length == 7) buffer.write('ff');

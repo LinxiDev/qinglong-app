@@ -20,16 +20,14 @@ import '../../home/system_bean.dart';
 class TaskLogPage extends ConsumerStatefulWidget {
   final String? searchText;
 
-  const TaskLogPage({
-    super.key,
-    this.searchText,
-  });
+  const TaskLogPage({super.key, this.searchText});
 
   @override
   TaskLogPageState createState() => TaskLogPageState();
 }
 
-class TaskLogPageState extends ConsumerState<TaskLogPage> with LazyLoadState<TaskLogPage> {
+class TaskLogPageState extends ConsumerState<TaskLogPage>
+    with LazyLoadState<TaskLogPage> {
   List<TaskLogBean> list = [];
 
   TextEditingController searchText = TextEditingController();
@@ -39,7 +37,11 @@ class TaskLogPageState extends ConsumerState<TaskLogPage> with LazyLoadState<Tas
   bool buttonshow = false;
 
   void scrollToTop() {
-    controller.animateTo(0, duration: const Duration(milliseconds: 200), curve: Curves.linear);
+    controller.animateTo(
+      0,
+      duration: const Duration(milliseconds: 200),
+      curve: Curves.linear,
+    );
   }
 
   @override
@@ -69,13 +71,8 @@ class TaskLogPageState extends ConsumerState<TaskLogPage> with LazyLoadState<Tas
   Widget searchCell(WidgetRef context) {
     return Container(
       color: ref.watch(themeProvider).themeColor.searchBgColor(),
-      padding: const EdgeInsets.symmetric(
-        horizontal: 15,
-        vertical: 10,
-      ),
-      child: SearchCell(
-        controller: searchText,
-      ),
+      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+      child: SearchCell(controller: searchText),
     );
   }
 
@@ -106,21 +103,21 @@ class TaskLogPageState extends ConsumerState<TaskLogPage> with LazyLoadState<Tas
           title: "任务日志",
         ),
         body: list.isEmpty
-            ? const Center(
-                child: LoadingWidget(),
-              )
+            ? const Center(child: LoadingWidget())
             : SlidableAutoCloseBehavior(
                 child: ListView.builder(
                   padding: const EdgeInsets.only(bottom: 50),
                   controller: controller,
-                  keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+                  keyboardDismissBehavior:
+                      ScrollViewKeyboardDismissBehavior.onDrag,
                   itemBuilder: (context, index) {
                     if (index == 0) {
                       return searchCell(ref);
                     }
                     TaskLogBean item = list[index - 1];
 
-                    if (searchText.text.isNotEmpty && !(item.name?.contains(searchText.text) ?? false)) {
+                    if (searchText.text.isNotEmpty &&
+                        !(item.name?.contains(searchText.text) ?? false)) {
                       return const SizedBox.shrink();
                     }
 
@@ -156,7 +153,9 @@ class TaskLogPageState extends ConsumerState<TaskLogPage> with LazyLoadState<Tas
                                         child: Text(
                                           "确定",
                                           style: TextStyle(
-                                            color: ref.watch(themeProvider).primaryColor,
+                                            color: ref
+                                                .watch(themeProvider)
+                                                .primaryColor,
                                           ),
                                         ),
                                         onPressed: () {
@@ -177,59 +176,75 @@ class TaskLogPageState extends ConsumerState<TaskLogPage> with LazyLoadState<Tas
                           title: Text(
                             item.name ?? "",
                             style: TextStyle(
-                              color: ref.watch(themeProvider).themeColor.titleColor(),
+                              color: ref
+                                  .watch(themeProvider)
+                                  .themeColor
+                                  .titleColor(),
                               fontSize: 16,
                             ),
                           ),
                           children: (item.files?.isNotEmpty ?? false)
                               ? item.files!
-                                  .map((e) => ListTile(
+                                    .map(
+                                      (e) => ListTile(
                                         onTap: () {
                                           Navigator.of(context).push(
                                             CupertinoPageRoute(
-                                              builder: (context) => InTimeHistoryLogPage(
-                                                path: item.name ?? "",
-                                                title: e,
-                                              ),
+                                              builder: (context) =>
+                                                  InTimeHistoryLogPage(
+                                                    path: item.name ?? "",
+                                                    title: e,
+                                                  ),
                                             ),
                                           );
                                         },
                                         title: Text(
                                           e,
                                           style: TextStyle(
-                                            color: ref.watch(themeProvider).themeColor.titleColor(),
+                                            color: ref
+                                                .watch(themeProvider)
+                                                .themeColor
+                                                .titleColor(),
                                             fontSize: 14,
                                           ),
                                         ),
-                                      ))
-                                  .toList()
+                                      ),
+                                    )
+                                    .toList()
                               : (item.children ?? [])
-                                  .map((e) => ListTile(
+                                    .map(
+                                      (e) => ListTile(
                                         onTap: () {
                                           Navigator.of(context)
                                               .push(
-                                            CupertinoPageRoute(
-                                              builder: (context) => InTimeHistoryLogPage(
-                                                path: item.name ?? "",
-                                                title: e.title ?? "",
-                                              ),
-                                            ),
-                                          )
+                                                CupertinoPageRoute(
+                                                  builder: (context) =>
+                                                      InTimeHistoryLogPage(
+                                                        path: item.name ?? "",
+                                                        title: e.title ?? "",
+                                                      ),
+                                                ),
+                                              )
                                               .then((value) {
-                                            if (value != null && value == true) {
-                                              loadData();
-                                            }
-                                          });
+                                                if (value != null &&
+                                                    value == true) {
+                                                  loadData();
+                                                }
+                                              });
                                         },
                                         title: Text(
                                           e.title ?? "",
                                           style: TextStyle(
-                                            color: ref.watch(themeProvider).themeColor.titleColor(),
+                                            color: ref
+                                                .watch(themeProvider)
+                                                .themeColor
+                                                .titleColor(),
                                             fontSize: 14,
                                           ),
                                         ),
-                                      ))
-                                  .toList(),
+                                      ),
+                                    )
+                                    .toList(),
                         ),
                       );
                     } else {
@@ -264,7 +279,9 @@ class TaskLogPageState extends ConsumerState<TaskLogPage> with LazyLoadState<Tas
                                         child: Text(
                                           "确定",
                                           style: TextStyle(
-                                            color: ref.watch(themeProvider).primaryColor,
+                                            color: ref
+                                                .watch(themeProvider)
+                                                .primaryColor,
                                           ),
                                         ),
                                         onPressed: () {
@@ -300,7 +317,10 @@ class TaskLogPageState extends ConsumerState<TaskLogPage> with LazyLoadState<Tas
                           title: Text(
                             item.name ?? "",
                             style: TextStyle(
-                              color: ref.watch(themeProvider).themeColor.titleColor(),
+                              color: ref
+                                  .watch(themeProvider)
+                                  .themeColor
+                                  .titleColor(),
                               fontSize: 16,
                             ),
                           ),
@@ -316,7 +336,8 @@ class TaskLogPageState extends ConsumerState<TaskLogPage> with LazyLoadState<Tas
   }
 
   Future<void> loadData() async {
-    HttpResponse<List<TaskLogBean>> response = await SingleAccountPageState.ofApi(context).taskLog();
+    HttpResponse<List<TaskLogBean>> response =
+        await SingleAccountPageState.ofApi(context).taskLog();
 
     if (response.success) {
       if (response.bean == null || response.bean!.isEmpty) {
@@ -344,7 +365,10 @@ class TaskLogPageState extends ConsumerState<TaskLogPage> with LazyLoadState<Tas
     SystemBean? systemBean;
 
     try {
-      systemBean = getIt<SystemBean>(instanceName: (SingleAccountPageState.of(context)?.index ?? 0).toString());
+      systemBean = getIt<SystemBean>(
+        instanceName: (SingleAccountPageState.of(context)?.index ?? 0)
+            .toString(),
+      );
     } catch (e) {
       systemBean = SystemBean(version: "2.10.13", fromAutoGet: false);
     }
@@ -355,8 +379,10 @@ class TaskLogPageState extends ConsumerState<TaskLogPage> with LazyLoadState<Tas
 
     EasyLoading.show(status: "删除中...");
     var temp = item.isDir == true
-        ? await SingleAccountPageState.ofApi(context).deleteLogFold(item.name ?? "", "")
-        : await SingleAccountPageState.ofApi(context).deleteLog(item.name ?? "", "");
+        ? await SingleAccountPageState.ofApi(context)
+              .deleteLogFold(item.name ?? "", "")
+        : await SingleAccountPageState.ofApi(context)
+              .deleteLog(item.name ?? "", "");
     EasyLoading.dismiss();
     if (temp.success) {
       "已删除".toast();

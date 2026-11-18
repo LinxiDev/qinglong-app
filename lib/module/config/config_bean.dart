@@ -1,4 +1,3 @@
-
 class ConfigBean {
   String? title;
   String? value;

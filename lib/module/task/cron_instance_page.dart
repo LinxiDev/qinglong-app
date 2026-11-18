@@ -214,8 +214,8 @@ class _CronInstancePageState extends ConsumerState<CronInstancePage> {
       duration = seconds >= 3600
           ? "${seconds ~/ 3600}小时${(seconds % 3600) ~/ 60}分"
           : seconds >= 60
-              ? "${seconds ~/ 60}分${seconds % 60}秒"
-              : "$seconds秒";
+          ? "${seconds ~/ 60}分${seconds % 60}秒"
+          : "$seconds秒";
     }
 
     return Container(
@@ -267,10 +267,15 @@ class _CronInstancePageState extends ConsumerState<CronInstancePage> {
             ],
           ),
           const SizedBox(height: 10),
-          _row("开始时间", startedAt > 0 ? Utils.formatMessageTime(_toMillis(startedAt)) : "-"),
+          _row(
+            "开始时间",
+            startedAt > 0 ? Utils.formatMessageTime(_toMillis(startedAt)) : "-",
+          ),
           _row(
             "结束时间",
-            finishedAt == null ? "-" : Utils.formatMessageTime(_toMillis(finishedAt)),
+            finishedAt == null
+                ? "-"
+                : Utils.formatMessageTime(_toMillis(finishedAt)),
           ),
           _row("耗时", duration),
           _row("退出码", "${item["exit_code"] ?? "-"}"),

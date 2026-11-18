@@ -7,10 +7,7 @@ class CupertinoSheer extends ConsumerWidget {
   final String title;
   final GestureTapCallback onTap;
 
-  const CupertinoSheer({super.key,
-    required this.title,
-    required this.onTap,
-  });
+  const CupertinoSheer({super.key, required this.title, required this.onTap});
 
   @override
   Widget build(BuildContext context, ref) {
@@ -24,9 +21,7 @@ class CupertinoSheer extends ConsumerWidget {
             onTap();
           },
           child: Container(
-            padding: const EdgeInsets.symmetric(
-              vertical: 15,
-            ),
+            padding: const EdgeInsets.symmetric(vertical: 15),
             child: Center(
               child: Text(
                 title,
@@ -44,9 +39,7 @@ class CupertinoSheer extends ConsumerWidget {
 }
 
 Widget addDivider() {
-  return const Divider(
-    height: 0.5,
-  );
+  return const Divider(height: 0.5);
 }
 
 void showMoreOperate(BuildContext context, List<Widget> list) {
@@ -59,29 +52,28 @@ void showMoreOperate(BuildContext context, List<Widget> list) {
           topLeft: Radius.circular(15),
           topRight: Radius.circular(15),
         ),
-        child: Consumer(builder: (context, ref, c) {
-          return ColoredBox(
-            color: ref.watch(themeProvider).themeColor.settingBordorColor(),
-            child: SafeArea(
-              top: false,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  ...list,
-                  Container(
-                    width: MediaQuery.of(context).size.width,
-                    height: 10,
-                    color: ref.watch(themeProvider).themeColor.pinColor(),
-                  ),
-                  CupertinoSheer(
-                    title: "取消",
-                    onTap: () {},
-                  ),
-                ],
+        child: Consumer(
+          builder: (context, ref, c) {
+            return ColoredBox(
+              color: ref.watch(themeProvider).themeColor.settingBordorColor(),
+              child: SafeArea(
+                top: false,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    ...list,
+                    Container(
+                      width: MediaQuery.of(context).size.width,
+                      height: 10,
+                      color: ref.watch(themeProvider).themeColor.pinColor(),
+                    ),
+                    CupertinoSheer(title: "取消", onTap: () {}),
+                  ],
+                ),
               ),
-            ),
-          );
-        }),
+            );
+          },
+        ),
       );
     },
   );
