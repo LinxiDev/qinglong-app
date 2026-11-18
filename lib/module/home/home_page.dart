@@ -27,7 +27,7 @@ import '../../base/multi_account_userinfo_viewmodel.dart';
 import '../../base/userinfo_viewmodel.dart';
 
 class HomePage extends ConsumerStatefulWidget {
-  const HomePage({Key? key}) : super(key: key);
+  const HomePage({super.key});
 
   @override
   HomePageState createState() => HomePageState();
@@ -85,6 +85,7 @@ class HomePageState extends ConsumerState<HomePage> {
     var bean = await SingleAccountPageState.ofApi(context).system();
 
     if (!bean.success) {
+      // ignore: use_build_context_synchronously
       String? host = SingleAccountPageState.ofUserInfo(context).host;
 
       String? version = getCurrentVersion(host);
@@ -92,7 +93,9 @@ class HomePageState extends ConsumerState<HomePage> {
       if (version == null || version.isEmpty) {
         "获取版本号失败，请前往应用设置中添加".toast();
         updateVersionHistory(VersionHistoryBean(
+            // ignore: use_build_context_synchronously
             host: SingleAccountPageState.ofUserInfo(context).host, version: "2.10.13"));
+        // ignore: use_build_context_synchronously
         SingleAccountPageState.of(context)
             ?.registerSystemBean(bean.bean?.version ?? "2.10.13", false);
         updateSystemBean();
@@ -102,11 +105,13 @@ class HomePageState extends ConsumerState<HomePage> {
 
     if (bean.bean == null || bean.bean?.version == null) {
       //从历史记录里找版本号
+      // ignore: use_build_context_synchronously
       String? host = SingleAccountPageState.ofUserInfo(context).host;
 
       String? version = getCurrentVersion(host);
 
       if (version != null && version.isNotEmpty) {
+        // ignore: use_build_context_synchronously
         SingleAccountPageState.of(context)?.registerSystemBean(version, false);
         updateSystemBean();
         return;
@@ -116,6 +121,7 @@ class HomePageState extends ConsumerState<HomePage> {
       TextEditingController controller = TextEditingController(text: "");
       showCupertinoDialog(
         useRootNavigator: false,
+        // ignore: use_build_context_synchronously
         context: context,
         builder: (context1) => CupertinoAlertDialog(
           title: const Text("请输入版本号:"),
@@ -188,6 +194,7 @@ class HomePageState extends ConsumerState<HomePage> {
         ),
       );
     } else {
+      // ignore: use_build_context_synchronously
       SingleAccountPageState.of(context)?.registerSystemBean(
         bean.bean?.version ?? "2.10.13",
         true,
@@ -351,6 +358,7 @@ class HomePageState extends ConsumerState<HomePage> {
               ),
             ),
             Positioned(
+              bottom: MediaQuery.of(context).viewPadding.bottom,
               child: Visibility(
                 visible: showMask,
                 child: Column(
@@ -361,14 +369,13 @@ class HomePageState extends ConsumerState<HomePage> {
                       margin: const EdgeInsets.only(
                         right: 10,
                       ),
-                      child: _buildOtherAccounts(),
                       width: MediaQuery.of(context).size.width / 2,
+                      child: _buildOtherAccounts(),
                     ),
                     _buildOtherWidget(),
                   ],
                 ),
               ),
-              bottom: MediaQuery.of(context).viewPadding.bottom,
             )
           ],
         ),
@@ -642,6 +649,7 @@ class HomePageState extends ConsumerState<HomePage> {
 
                   LoginHelper loginHelper = LoginHelper(
                       userInfo.host!, userInfo.userName!, userInfo.password!, true, userInfo.alias);
+                  // ignore: use_build_context_synchronously
                   var response = await loginHelper.login(context);
 
                   EasyLoading.dismiss();

@@ -83,7 +83,7 @@ class ThemeViewModel extends ChangeNotifier {
     }
   }
 
-  get themeMode => _themeMode;
+  int get themeMode => _themeMode;
 
   ThemeData getWhiteTheme() {
     return ThemeData.light().copyWith(

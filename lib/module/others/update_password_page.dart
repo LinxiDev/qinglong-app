@@ -11,8 +11,8 @@ import 'package:qinglong_app/utils/extension.dart';
 
 class UpdatePasswordPage extends ConsumerStatefulWidget {
   const UpdatePasswordPage({
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   ConsumerState<UpdatePasswordPage> createState() => _UpdatePasswordPageState();
@@ -172,15 +172,20 @@ class _UpdatePasswordPageState extends ConsumerState<UpdatePasswordPage>
     if (response.success) {
       "更新成功".toast();
 
+      // ignore: use_build_context_synchronously
       if (!SingleAccountPageState.ofUserInfo(context).useSecretLogined) {
+        // ignore: use_build_context_synchronously
         SingleAccountPageState.ofUserInfo(context).updateUserName(
+          // ignore: use_build_context_synchronously
           SingleAccountPageState.ofUserInfo(context).host ?? "",
           name,
           password,
           false,
+          // ignore: use_build_context_synchronously
           SingleAccountPageState.ofUserInfo(context).alias,
         );
       }
+      // ignore: use_build_context_synchronously
       Navigator.of(context)
           .pushNamedAndRemoveUntil(Routes.routeLogin, (route) => false);
     } else {

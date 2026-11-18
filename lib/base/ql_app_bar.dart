@@ -14,15 +14,15 @@ class QlAppBar extends ConsumerWidget implements PreferredSizeWidget {
   final Widget? backWidget;
   final bool canClick2Vip;
 
-  QlAppBar({
-    Key? key,
+  const QlAppBar({
+    super.key,
     required this.title,
     this.actions,
     this.backCall,
     this.canBack = true,
     this.backWidget,
     this.canClick2Vip = true,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context, ref) {

@@ -33,16 +33,16 @@ class ScriptDetailPage extends ConsumerStatefulWidget {
   final String? path;
 
   const ScriptDetailPage({
-    Key? key,
+    super.key,
     required this.title,
     this.path,
-  }) : super(key: key);
+  });
 
   @override
-  _ScriptDetailPageState createState() => _ScriptDetailPageState();
+  ScriptDetailPageState createState() => ScriptDetailPageState();
 }
 
-class _ScriptDetailPageState extends ConsumerState<ScriptDetailPage> with LazyLoadState<ScriptDetailPage> {
+class ScriptDetailPageState extends ConsumerState<ScriptDetailPage> with LazyLoadState<ScriptDetailPage> {
   String? content;
 
   List<Widget> actions = [];
@@ -50,7 +50,7 @@ class _ScriptDetailPageState extends ConsumerState<ScriptDetailPage> with LazyLo
   late CodeMirrorOptions options;
   EditorController? controller;
 
-  getLanguageType(String title) {
+  String getLanguageType(String title) {
     if (title.endsWith(".js")) {
       return 'javascript';
     }
@@ -116,6 +116,7 @@ class _ScriptDetailPageState extends ConsumerState<ScriptDetailPage> with LazyLo
             EasyLoading.dismiss();
             if (response.success) {
               "已开始运行".toast();
+              // ignore: use_build_context_synchronously
               Navigator.of(context).pop(true);
             } else {
               (response.message ?? "运行失败").toast();
@@ -246,6 +247,7 @@ class _ScriptDetailPageState extends ConsumerState<ScriptDetailPage> with LazyLo
                       }
                       if (result.success) {
                         "删除成功".toast();
+                        // ignore: use_build_context_synchronously
                         Navigator.of(context).pop(true);
                       } else {
                         result.message?.toast();
@@ -302,6 +304,7 @@ class _ScriptDetailPageState extends ConsumerState<ScriptDetailPage> with LazyLo
             padding: EdgeInsets.zero,
             onPressed: () async {
               await hideKeyboardFocus();
+              // ignore: use_build_context_synchronously
               showMoreOperate(context, actions);
             },
             child: Padding(

@@ -10,9 +10,9 @@ class PoetPage extends ConsumerWidget {
   final Map<String, dynamic> data;
 
   const PoetPage({
-    Key? key,
+    super.key,
     required this.data,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context, ref) {

@@ -21,7 +21,7 @@ import 'package:qinglong_app/utils/sp_utils.dart';
 import '../../base/theme.dart';
 
 class IcloudPage extends ConsumerStatefulWidget {
-  const IcloudPage({Key? key}) : super(key: key);
+  const IcloudPage({super.key});
 
   @override
   ConsumerState<IcloudPage> createState() => _IcloudPageState();
@@ -199,13 +199,16 @@ class _IcloudPageState extends ConsumerState<IcloudPage> with LazyLoadState<Iclo
                         onTap: () async {
                           try {
                             var result = await Api(SingleAccountPageState.of(context)!.index).envs("");
+                            // ignore: use_build_context_synchronously
                             await getIt<ICloudUtils>(instanceName: SingleAccountPageState.of(context)!.index.toString()).asyncEnv(
                               result.bean ?? [],
                               focusUpdate: true,
                             );
                             SpUtil.putString(spEnvBackTime, ICloudUtils.now());
                             setState(() {});
-                          } catch (e) {}
+                          } catch (e) {
+                            // 忽略异常，保持原有行为
+                          }
                         },
                         child: Padding(
                           padding: const EdgeInsets.only(
@@ -371,6 +374,7 @@ class _IcloudPageState extends ConsumerState<IcloudPage> with LazyLoadState<Iclo
                           HttpResponse<String> result = await SingleAccountPageState.ofApi(context).content("config.sh");
                           if (result.success && result.bean != null) {
                             content = result.bean ?? "";
+                            // ignore: use_build_context_synchronously
                             await ICloudUtils(SingleAccountPageState.of(context)!.index).asyncConfig(
                               "config.sh",
                               content,
@@ -559,13 +563,16 @@ class _IcloudPageState extends ConsumerState<IcloudPage> with LazyLoadState<Iclo
                         onTap: () async {
                           try {
                             var result = await Api(SingleAccountPageState.of(context)!.index).subscribes();
+                            // ignore: use_build_context_synchronously
                             await getIt<ICloudUtils>(instanceName: SingleAccountPageState.of(context)!.index.toString()).asyncSubscribe(
                               result.bean ?? "",
                               focusUpdate: true,
                             );
                             SpUtil.putString(spSubscribeBackTime, ICloudUtils.now());
                             setState(() {});
-                          } catch (e) {}
+                          } catch (e) {
+                            // 忽略异常，保持原有行为
+                          }
                         },
                         child: Padding(
                           padding: const EdgeInsets.only(
@@ -870,7 +877,9 @@ class _IcloudPageState extends ConsumerState<IcloudPage> with LazyLoadState<Iclo
 
                 SpUtil.putInt(spLocalBackUpFileExperiedTime, int.tryParse(controller.text)!);
                 Navigator.of(context).pop();
-              } catch (e) {}
+              } catch (e) {
+                // 忽略异常，保持原有行为
+              }
             },
           ),
         ],
@@ -888,7 +897,9 @@ class _IcloudPageState extends ConsumerState<IcloudPage> with LazyLoadState<Iclo
         2,
       );
       setState(() {});
-    } catch (e) {}
+    } catch (e) {
+      // 忽略异常，保持原有行为
+    }
   }
 
   String? fileNum = "-";
@@ -903,6 +914,7 @@ class _IcloudPageState extends ConsumerState<IcloudPage> with LazyLoadState<Iclo
 
   void lookUpFiles() async {
     String path = await FileUtil(SingleAccountPageState.of(context)?.index ?? 0).sourcePath;
+    // ignore: use_build_context_synchronously
     Navigator.of(context).push(
       CupertinoPageRoute(
         builder: (context) => FileDirectoryPage(
@@ -926,7 +938,9 @@ Map<String, int> dirStatSync(String dirPath) {
         }
       });
     }
-  } catch (e) {}
+  } catch (e) {
+    // 忽略异常，保持原有行为
+  }
 
   return {'fileNum': fileNum, 'size': totalSize};
 }

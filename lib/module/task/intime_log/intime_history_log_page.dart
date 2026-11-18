@@ -20,22 +20,22 @@ class InTimeHistoryLogPage extends StatefulWidget {
   final String path;
 
   const InTimeHistoryLogPage({
-    Key? key,
+    super.key,
     required this.title,
     required this.path,
-  }) : super(key: key);
+  });
 
   @override
-  _InTimeHistoryLogPageState createState() => _InTimeHistoryLogPageState();
+  InTimeHistoryLogPageState createState() => InTimeHistoryLogPageState();
 }
 
-class _InTimeHistoryLogPageState extends State<InTimeHistoryLogPage> with LazyLoadState<InTimeHistoryLogPage> {
+class InTimeHistoryLogPageState extends State<InTimeHistoryLogPage> with LazyLoadState<InTimeHistoryLogPage> {
   String? content;
 
   bool isRequest = false;
   bool canRequest = true;
 
-  getLogData() async {
+  Future<void> getLogData() async {
     HttpResponse<String> response = await SingleAccountPageState.ofApi(context).taskLogDetail(
       widget.title,
       widget.path,
@@ -150,6 +150,7 @@ class _InTimeHistoryLogPageState extends State<InTimeHistoryLogPage> with LazyLo
     EasyLoading.dismiss();
     if (temp.success) {
       "已删除".toast();
+      // ignore: use_build_context_synchronously
       Navigator.of(context).pop(true);
     } else {
       temp.message.toast();

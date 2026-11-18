@@ -43,7 +43,7 @@ void main() async {
   ]);
   runApp(ProviderScope(overrides: [themeProvider], child: const QlApp()));
   ErrorWidget.builder = (FlutterErrorDetails flutterErrorDetail) {
-    print(flutterErrorDetail.toString());
+    debugPrint(flutterErrorDetail.toString());
     return Scaffold(
       backgroundColor: Colors.white,
       body: Builder(
@@ -106,7 +106,7 @@ void main() async {
 }
 
 class QlApp extends ConsumerStatefulWidget {
-  const QlApp({Key? key}) : super(key: key);
+  const QlApp({super.key});
 
   @override
   ConsumerState<QlApp> createState() => QlAppState();
@@ -133,7 +133,7 @@ class QlAppState extends ConsumerState<QlApp> with WidgetsBindingObserver {
     try {
       await FlutterDisplayMode.setHighRefreshRate();
     } on PlatformException catch (e) {
-      print(e);
+      debugPrint('$e');
     }
     setState(() {});
   }
@@ -164,8 +164,8 @@ class QlAppState extends ConsumerState<QlApp> with WidgetsBindingObserver {
         // 与 flutter_localizations 中的同名类不是同一个类型，需要同时注册。
         GlobalMaterialLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
-        fl.GlobalMaterialLocalizations.delegate,
-        fl.GlobalCupertinoLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
         fl.GlobalWidgetsLocalizations.delegate,
       ],
       builder: EasyLoading.init(
@@ -210,7 +210,7 @@ class ScrollPhysicsConfig extends ScrollBehavior {
 }
 
 class MultiAccountPage extends ConsumerStatefulWidget {
-  const MultiAccountPage({Key? key}) : super(key: key);
+  const MultiAccountPage({super.key});
 
   @override
   ConsumerState<MultiAccountPage> createState() => MultiAccountPageState();
@@ -222,7 +222,7 @@ class MultiAccountPageState extends ConsumerState<MultiAccountPage>
 
   List<Widget> list = [];
 
-  get index => _index;
+  int get index => _index;
 
   bool authenticated = false;
 

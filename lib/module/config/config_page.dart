@@ -16,7 +16,7 @@ import 'package:qinglong_app/utils/utils.dart';
 import 'config_viewmodel.dart';
 
 class ConfigPage extends ConsumerStatefulWidget {
-  const ConfigPage({Key? key}) : super(key: key);
+  const ConfigPage({super.key});
 
   @override
   ConfigPageState createState() => ConfigPageState();
@@ -52,6 +52,7 @@ class ConfigPageState extends ConsumerState<ConfigPage> with SingleTickerProvide
 
       if (MultiAccountPageState.actionEditConfig == MultiAccountPageState.useAction() && !gotoConfigDetailed) {
         gotoConfigDetailed = true;
+        // ignore: use_build_context_synchronously
         Navigator.of(context).pushNamed(
           Routes.routeConfigEdit,
           arguments: {
@@ -59,6 +60,7 @@ class ConfigPageState extends ConsumerState<ConfigPage> with SingleTickerProvide
             "content": configContent,
           },
         ).then((value) {
+          // ignore: use_build_context_synchronously
           loadConfigData(context);
         });
       }
@@ -85,6 +87,7 @@ class ConfigPageState extends ConsumerState<ConfigPage> with SingleTickerProvide
                   .then(
                 (value) {
                   if (value != null && value == true) {
+                    // ignore: use_build_context_synchronously
                     ref.read(SingleAccountPageState.ofConfigProvider(context)(getProviderName(context)).notifier).loadData(context, false);
                   }
                 },
@@ -123,6 +126,7 @@ class ConfigPageState extends ConsumerState<ConfigPage> with SingleTickerProvide
                     },
                   ).then((value) {
                     Future.delayed(const Duration(seconds: 1), () {
+                      // ignore: use_build_context_synchronously
                       loadConfigData(context);
                     });
                   });
@@ -144,6 +148,7 @@ class ConfigPageState extends ConsumerState<ConfigPage> with SingleTickerProvide
                   color: Theme.of(context).primaryColor,
                   onRefresh: () async {
                     await loadConfigData(context);
+                    // ignore: use_build_context_synchronously
                     return model.loadData(context, false);
                   },
                   child: ListView(
@@ -175,9 +180,9 @@ class ConfigCell extends ConsumerWidget {
   final ConfigBean bean;
 
   const ConfigCell({
-    Key? key,
+    super.key,
     required this.bean,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context, ref) {

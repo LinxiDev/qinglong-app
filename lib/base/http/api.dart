@@ -440,12 +440,12 @@ class Api {
     }
     if (_system?.isUpperVersion2_13_0() ?? false) {
       return await getIt<Http>(instanceName: index.toString()).get<String>(
-        getIt<Url>(instanceName: index.toString()).taskLogDetail + name + "?path=" + path,
+        "${getIt<Url>(instanceName: index.toString()).taskLogDetail}$name?path=$path",
         null,
       );
     } else {
       return await getIt<Http>(instanceName: index.toString()).get<String>(
-        getIt<Url>(instanceName: index.toString()).taskLogDetail + path + "/" + name,
+        "${getIt<Url>(instanceName: index.toString()).taskLogDetail}$path/$name",
         null,
       );
     }
@@ -543,7 +543,7 @@ class Api {
 
   Future<HttpResponse<String>> dependencyLog(String id) async {
     return await getIt<Http>(instanceName: index.toString()).get<String>(
-      getIt<Url>(instanceName: index.toString()).dependencies + "/" + id,
+      "${getIt<Url>(instanceName: index.toString()).dependencies}/$id",
       null,
     );
   }

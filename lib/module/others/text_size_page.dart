@@ -13,7 +13,7 @@ import '../../utils/sp_utils.dart';
 
 
 class TextSizePage extends ConsumerStatefulWidget {
-  const TextSizePage({Key? key}) : super(key: key);
+  const TextSizePage({super.key});
 
   @override
   ConsumerState<TextSizePage> createState() => _TextSizePageState();

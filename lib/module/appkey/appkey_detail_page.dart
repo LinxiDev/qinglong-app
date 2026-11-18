@@ -18,14 +18,14 @@ class AppKeyDetailDetailPage extends ConsumerStatefulWidget {
 
   const AppKeyDetailDetailPage(
     this.bean, {
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
-  _TaskDetailPageState createState() => _TaskDetailPageState();
+  TaskDetailPageState createState() => TaskDetailPageState();
 }
 
-class _TaskDetailPageState extends ConsumerState<AppKeyDetailDetailPage> {
+class TaskDetailPageState extends ConsumerState<AppKeyDetailDetailPage> {
   @override
   void initState() {
     super.initState();
@@ -184,6 +184,7 @@ class _TaskDetailPageState extends ConsumerState<AppKeyDetailDetailPage> {
                   )
                   .then((value) {
                 EasyLoading.dismiss();
+                // ignore: use_build_context_synchronously
                 Navigator.of(context1).pop(true);
               }).catchError((_, _) {
                 EasyLoading.dismiss();
@@ -204,13 +205,13 @@ class AppKeyDetailCell extends ConsumerWidget {
   final bool obtext;
 
   const AppKeyDetailCell({
-    Key? key,
+    super.key,
     required this.title,
     this.desc,
     this.icon,
     this.hideDivide = false,
     this.obtext = false,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

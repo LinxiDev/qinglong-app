@@ -16,8 +16,8 @@ import 'package:qinglong_app/utils/extension.dart';
 
 class ScriptUploadPage extends ConsumerStatefulWidget {
   const ScriptUploadPage({
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   ConsumerState<ScriptUploadPage> createState() => ScriptUploadPageState();
@@ -106,12 +106,14 @@ class ScriptUploadPageState extends ConsumerState<ScriptUploadPage> {
           },
         ).then((value) {
           if (value != null && value == true) {
+            // ignore: use_build_context_synchronously
             Navigator.of(context).pop(true);
           }
         });
       } else {
         String content = await fileKey.currentState!.file!.readAsString();
         EasyLoading.show(status: "提交中...");
+        // ignore: use_build_context_synchronously
         HttpResponse<NullResponse> response = await SingleAccountPageState.ofApi(context).addScript(
           _nameController.text,
           fileKey.currentState?.scriptPath ?? "",
@@ -125,6 +127,7 @@ class ScriptUploadPageState extends ConsumerState<ScriptUploadPage> {
               "task ${fileKey.currentState?.scriptPath}${(fileKey.currentState?.scriptPath != null && fileKey.currentState!.scriptPath.isNotEmpty) ? separator : ""}${_nameController.text} ";
 
           String? cron = getCronString(content, _nameController.text);
+          // ignore: use_build_context_synchronously
           Navigator.of(context)
               .push(
             CupertinoPageRoute(
@@ -139,6 +142,7 @@ class ScriptUploadPageState extends ConsumerState<ScriptUploadPage> {
             ),
           )
               .then((value) {
+            // ignore: use_build_context_synchronously
             Navigator.of(context).pop();
           });
         } else {

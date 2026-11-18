@@ -18,7 +18,7 @@ import '../base/ui/button.dart';
 
 
 class ScanPage extends ConsumerStatefulWidget {
-  const ScanPage({Key? key}) : super(key: key);
+  const ScanPage({super.key});
 
   @override
   ConsumerState<ScanPage> createState() => ScanPageState();
@@ -105,10 +105,13 @@ class ScanPageState extends ConsumerState<ScanPage> {
       String command = bean.command!.trim().split(" ").last;
       if (!command.endsWith(".js") &&
           !command.endsWith(".ts") &&
-          !command.endsWith(".py")) continue;
+          !command.endsWith(".py")) {
+        continue;
+      }
 
       _updateDescText("正在扫描: $command");
       HttpResponse<String> response =
+          // ignore: use_build_context_synchronously
           await SingleAccountPageState.ofApi(context).inTimeLog(bean.sId!);
 
       String text = "";

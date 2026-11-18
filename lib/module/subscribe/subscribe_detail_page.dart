@@ -17,22 +17,18 @@ class SubscribeDetailPage extends ConsumerStatefulWidget {
   final Map<String, dynamic> taskBean;
   final bool hideAppbar;
 
-  const SubscribeDetailPage(this.taskBean, {Key? key, this.hideAppbar = false}) : super(key: key);
+  const SubscribeDetailPage(this.taskBean, {super.key, this.hideAppbar = false});
 
   @override
-  _TaskDetailPageState createState() => _TaskDetailPageState();
+  TaskDetailPageState createState() => TaskDetailPageState();
 }
 
-class _TaskDetailPageState extends ConsumerState<SubscribeDetailPage> with LazyLoadState<SubscribeDetailPage> {
+class TaskDetailPageState extends ConsumerState<SubscribeDetailPage> with LazyLoadState<SubscribeDetailPage> {
   Type type = Type.public;
   CronType cronType = CronType.cron;
   PullType pullType = PullType.privateKey;
   String intervalUnit = "天";
 
-  @override
-  void initState() {
-    super.initState();
-  }
 
   void _enableSubscribe(BuildContext context, int disabled) {
     ref
@@ -74,7 +70,7 @@ class _TaskDetailPageState extends ConsumerState<SubscribeDetailPage> with LazyL
                           true,
                         );
                       } else {
-                        await _stopCron(context, ref);
+                        _stopCron(context, ref);
                       }
                     },
                   ),
@@ -102,10 +98,13 @@ class _TaskDetailPageState extends ConsumerState<SubscribeDetailPage> with LazyL
                           if (value != null && value == true) {
                             ref
                                 .read(
+                                  // ignore: use_build_context_synchronously
                                   SingleAccountPageState.ofSubscribeProvider(context)(
+                                    // ignore: use_build_context_synchronously
                                     getProviderName(context),
                                   ),
                                 )
+                                // ignore: use_build_context_synchronously
                                 .loadData(context);
                           }
                         },
@@ -317,6 +316,7 @@ class _TaskDetailPageState extends ConsumerState<SubscribeDetailPage> with LazyL
             onPressed: () async {
               Navigator.of(context).pop();
               await ref.read(SingleAccountPageState.ofSubscribeProvider(context1)(getProviderName(context1))).delSubscribe(context1, widget.taskBean["id"]);
+              // ignore: use_build_context_synchronously
               Navigator.of(context1).pop();
             },
           ),
@@ -364,7 +364,7 @@ class _TaskDetailPageState extends ConsumerState<SubscribeDetailPage> with LazyL
     );
   }
 
-  _startCron(BuildContext context, WidgetRef ref, bool log) async {
+  Future<void> _startCron(BuildContext context, WidgetRef ref, bool log) async {
     await ref
         .read(
           SingleAccountPageState.ofSubscribeProvider(context)(
@@ -382,7 +382,7 @@ class _TaskDetailPageState extends ConsumerState<SubscribeDetailPage> with LazyL
     }
   }
 
-  _stopCron(BuildContext context, WidgetRef ref) {
+  void _stopCron(BuildContext context, WidgetRef ref) {
     ref
         .read(
           SingleAccountPageState.ofSubscribeProvider(context)(
@@ -498,13 +498,13 @@ class SubscribeDetailCell extends ConsumerWidget {
   final Function? taped;
 
   const SubscribeDetailCell({
-    Key? key,
+    super.key,
     required this.title,
     this.desc,
     this.icon,
     this.hideDivide = false,
     this.taped,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

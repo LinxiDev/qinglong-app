@@ -1,0 +1,102 @@
+name: 集成测试（真实面板）
+
+# 说明：
+# 1. 需要配置仓库 secret：QL_HOST / QL_TOKEN。
+#    QL_HOST 形如 http://1.2.3.4:5700，QL_TOKEN 为面板登录后拿到的 token。
+# 2. 未配置 secret 时，用例会打印「未登录，跳过」并直接通过，不会阻塞构建。
+# 3. 每个测试文件单独起进程执行：应用启动时用 GetIt 注册单例，
+#    同一进程内多次 app.main() 会重复注册而失败。
+
+on:
+  push:
+    branches:
+      - develop
+    paths:
+      - "lib/**"
+      - "integration_test/**"
+      - "pubspec.yaml"
+      - ".github/workflows/integration-test.yml"
+  pull_request:
+    paths:
+      - "lib/**"
+      - "integration_test/**"
+      - "pubspec.yaml"
+      - ".github/workflows/integration-test.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  FLUTTER_VERSION: "3.50.0"
+
+jobs:
+  integration:
+    name: 集成测试（Linux 桌面）
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    steps:
+      - name: 拉取代码
+        uses: actions/checkout@v4
+
+      - name: 安装 Linux 桌面构建依赖
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            clang cmake ninja-build pkg-config \
+            libgtk-3-dev libblkid-dev liblzma-dev libstdc++-12-dev \
+            xvfb
+
+      - name: 安装 Flutter 环境
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+
+      - name: 安装依赖
+        run: flutter pub get
+
+      - name: 写入面板登录态
+        if: ${{ secrets.QL_HOST != '' && secrets.QL_TOKEN != '' }}
+        env:
+          QL_HOST: ${{ secrets.QL_HOST }}
+          QL_TOKEN: ${{ secrets.QL_TOKEN }}
+        run: |
+          python3 - <<'PY'
+          import json, os
+
+          host = os.environ["QL_HOST"].rstrip("/")
+          token = os.environ["QL_TOKEN"]
+          path = os.path.expanduser(
+              "~/.local/share/work.master.qinglong_app/shared_preferences.json"
+          )
+          os.makedirs(os.path.dirname(path), exist_ok=True)
+          data = {}
+          if os.path.exists(path):
+              with open(path, encoding="utf-8") as f:
+                  data = json.load(f)
+          data["flutter.spAccountCount"] = 1
+          data["flutter.spTokenBeanList"] = json.dumps([
+              {"token": token, "useSecretLogined": False,
+               "host": host, "alias": "CI 面板"}
+          ], ensure_ascii=False)
+          data["flutter.loginHistory"] = json.dumps([
+              {"userName": "", "password": "", "useSecretLogined": False,
+               "host": host, "alias": "CI 面板"}
+          ], ensure_ascii=False)
+          with open(path, "w", encoding="utf-8") as f:
+              json.dump(data, f, ensure_ascii=False)
+          print("已写入登录态:", host)
+          PY
+
+      - name: 运行集成测试
+        run: |
+          set -o pipefail
+          for f in integration_test/*_test.dart; do
+            echo "::group::$f"
+            xvfb-run -a flutter test "$f" -d linux || exit 1
+            echo "::endgroup::"
+          done

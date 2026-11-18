@@ -12,13 +12,13 @@ import 'package:qinglong_app/utils/utils.dart';
 class EnvDetailPage extends ConsumerStatefulWidget {
   final EnvBean envBean;
 
-  const EnvDetailPage(this.envBean, {Key? key}) : super(key: key);
+  const EnvDetailPage(this.envBean, {super.key});
 
   @override
-  _TaskDetailPageState createState() => _TaskDetailPageState();
+  TaskDetailPageState createState() => TaskDetailPageState();
 }
 
-class _TaskDetailPageState extends ConsumerState<EnvDetailPage> {
+class TaskDetailPageState extends ConsumerState<EnvDetailPage> {
   @override
   void initState() {
     super.initState();
@@ -153,6 +153,7 @@ class _TaskDetailPageState extends ConsumerState<EnvDetailPage> {
                   .read(SingleAccountPageState.ofEnvProvider(context1)(
                       getProviderName(context1)))
                   .delEnv(context1, widget.envBean.sId!);
+              // ignore: use_build_context_synchronously
               Navigator.of(context1).pop();
             },
           ),
@@ -170,13 +171,13 @@ class EnvDetailCell extends ConsumerWidget {
   final Function? taped;
 
   const EnvDetailCell({
-    Key? key,
+    super.key,
     required this.title,
     this.desc,
     this.icon,
     this.hideDivide = false,
     this.taped,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

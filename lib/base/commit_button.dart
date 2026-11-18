@@ -8,10 +8,10 @@ class CommitButton extends StatefulWidget {
   final String? title;
 
   const CommitButton({
-    Key? key,
+    super.key,
     required this.onTap,
     this.title,
-  }) : super(key: key);
+  });
 
   @override
   State<CommitButton> createState() => _CommitButtonState();

@@ -22,7 +22,7 @@ class EnvBean {
       this.name,
       this.remarks});
 
-  get nId => _id;
+  String? get nId => _id;
 
   EnvBean.fromJson(Map<String, dynamic> json) {
     name = json['name'];

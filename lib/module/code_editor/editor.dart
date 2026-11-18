@@ -6,20 +6,20 @@ import 'codemirror/io.dart' if (dart.library.html) 'codemirror/web.dart';
 export 'codemirror/impl.dart';
 
 class Editor extends StatelessWidget {
-  Editor({
-    Key? key,
+  const Editor({
+    super.key,
     required this.onCreate,
     required this.onValue,
     required this.options,
     this.codeMirrorKey,
-  }) : super(key: key) {}
+  });
 
   final CodeMirrorOptions options;
   final ValueChanged<EditorController> onCreate;
   final void Function(String val) onValue;
   final Key? codeMirrorKey;
 
-  static List<String> MODES = const <String>[
+  static List<String> modes = const <String>[
     "apl",
     "gfm",
     "ntriples",
@@ -145,7 +145,7 @@ class Editor extends StatelessWidget {
     "sparql",
   ];
 
-  static final List<String> THEMES = const [
+  static final List<String> themes = const [
     '3024-day',
     '3024-night',
     'abcdef',
@@ -211,7 +211,7 @@ class Editor extends StatelessWidget {
     'zenburn',
   ];
 
-  static final List<String> KEY_MAPS = const [
+  static final List<String> keyMaps = const [
     'default',
     'emacs',
     'sublime',

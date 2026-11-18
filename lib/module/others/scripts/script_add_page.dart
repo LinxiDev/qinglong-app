@@ -14,7 +14,7 @@ class ScriptAddPage extends ConsumerStatefulWidget {
   final String title;
   final String path;
 
-  const ScriptAddPage(this.title, this.path, {Key? key}) : super(key: key);
+  const ScriptAddPage(this.title, this.path, {super.key});
 
   @override
   ConsumerState createState() => _ScriptAddPageState();
@@ -44,7 +44,7 @@ class _ScriptAddPageState extends ConsumerState<ScriptAddPage> {
     super.initState();
   }
 
-  getLanguageType(String title) {
+  String getLanguageType(String title) {
     if (title.endsWith(".js")) {
       return 'javascript';
     }
@@ -120,6 +120,7 @@ class _ScriptAddPageState extends ConsumerState<ScriptAddPage> {
               try {
                 await EasyLoading.show(status: " 提交中");
                 HttpResponse<NullResponse> response =
+                    // ignore: use_build_context_synchronously
                     await SingleAccountPageState.ofApi(context).addScript(
                   widget.title,
                   widget.path,
@@ -128,6 +129,7 @@ class _ScriptAddPageState extends ConsumerState<ScriptAddPage> {
                 await EasyLoading.dismiss();
                 if (response.success) {
                   "提交成功".toast();
+                  // ignore: use_build_context_synchronously
                   Navigator.of(context).pop(true);
                 } else {
                   (response.message ?? "").toast();

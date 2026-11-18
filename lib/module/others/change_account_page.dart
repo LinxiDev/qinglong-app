@@ -13,13 +13,13 @@ import 'package:qinglong_app/utils/sp_utils.dart';
 import '../../main.dart';
 
 class ChangeAccountPage extends ConsumerStatefulWidget {
-  const ChangeAccountPage({Key? key}) : super(key: key);
+  const ChangeAccountPage({super.key});
 
   @override
-  _ChangeAccountPageState createState() => _ChangeAccountPageState();
+  ChangeAccountPageState createState() => ChangeAccountPageState();
 }
 
-class _ChangeAccountPageState extends ConsumerState<ChangeAccountPage> {
+class ChangeAccountPageState extends ConsumerState<ChangeAccountPage> {
   @override
   void initState() {
     super.initState();

@@ -26,11 +26,11 @@ class UploadScriptWidget extends ConsumerStatefulWidget {
   final bool onlyShowName;
 
   const UploadScriptWidget({
-    Key? key,
+    super.key,
     required this.nameCallBack,
     this.onlyShowName = false,
     this.cronCallBack,
-  }) : super(key: key);
+  });
 
   @override
   ConsumerState<UploadScriptWidget> createState() => UploadScriptWidgetState();
@@ -74,10 +74,10 @@ class UploadScriptWidgetState extends ConsumerState<UploadScriptWidget>
             String name = node.parent;
             if (name == "") return;
             if (paths.isEmpty) {
-              paths.add(name + "/" + node.title);
+              paths.add("$name/${node.title}");
             } else {
-              if (!paths.contains(name + "/" + node.title)) {
-                paths.add(name + "/" + node.title);
+              if (!paths.contains("$name/${node.title}")) {
+                paths.add("$name/${node.title}");
               }
             }
           } else {
@@ -299,6 +299,7 @@ class UploadScriptWidgetState extends ConsumerState<UploadScriptWidget>
       onTap: () async {
         try {
           String content = await file!.readAsString();
+          // ignore: use_build_context_synchronously
           Navigator.of(context).push(
             CupertinoPageRoute(
               builder: (context) => ScriptCodeDetailPage(

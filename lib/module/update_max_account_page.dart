@@ -11,7 +11,7 @@ import 'package:qinglong_app/utils/extension.dart';
 
 
 class UpdateMaxAccountPage extends ConsumerStatefulWidget {
-  const UpdateMaxAccountPage({Key? key}) : super(key: key);
+  const UpdateMaxAccountPage({super.key});
 
   @override
   ConsumerState<UpdateMaxAccountPage> createState() =>

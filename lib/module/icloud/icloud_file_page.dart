@@ -5,13 +5,13 @@ import 'package:qinglong_app/utils/extension.dart';
 import 'package:qinglong_app/utils/icloud_utils.dart';
 
 class IcloudFilePage extends StatefulWidget {
-  const IcloudFilePage({Key? key}) : super(key: key);
+  const IcloudFilePage({super.key});
 
   @override
-  _IcloudFilePageState createState() => _IcloudFilePageState();
+  IcloudFilePageState createState() => IcloudFilePageState();
 }
 
-class _IcloudFilePageState extends State<IcloudFilePage> {
+class IcloudFilePageState extends State<IcloudFilePage> {
   List<ICloudFile> list = [];
   bool loading = true;
 

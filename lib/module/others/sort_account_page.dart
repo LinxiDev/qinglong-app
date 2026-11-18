@@ -12,13 +12,13 @@ import '../../base/commit_button.dart';
 import '../../main.dart';
 
 class SortAccountPage extends ConsumerStatefulWidget {
-  const SortAccountPage({Key? key}) : super(key: key);
+  const SortAccountPage({super.key});
 
   @override
-  _ChangeAccountPageState createState() => _ChangeAccountPageState();
+  ChangeAccountPageState createState() => ChangeAccountPageState();
 }
 
-class _ChangeAccountPageState extends ConsumerState<SortAccountPage> {
+class ChangeAccountPageState extends ConsumerState<SortAccountPage> {
   List<TokenBean> list = [];
 
   @override
@@ -26,7 +26,9 @@ class _ChangeAccountPageState extends ConsumerState<SortAccountPage> {
     try {
       String json = jsonEncode(getIt<MultiAccountUserInfoViewModel>().tokenBeans);
       list.addAll((jsonDecode(json) as List).map((e) => TokenBean.fromJson(e)).toList());
-    } catch (e) {}
+    } catch (e) {
+      // 忽略异常，保持原有行为
+    }
 
     super.initState();
     FocusManager.instance.primaryFocus?.unfocus();

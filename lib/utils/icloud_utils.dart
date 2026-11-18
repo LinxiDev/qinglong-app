@@ -32,7 +32,9 @@ class ICloudUtils {
       if (list.isEmpty) return;
       if (SpUtil.getInt(spVIP, defValue: typeNormal) == typeNormal) return;
       if (SpUtil.getBool(spICloud, defValue: true) == false &&
-          focusUpdate == false) return;
+          focusUpdate == false) {
+        return;
+      }
 
       bool exist = await existContent(
           await FileUtil(index).getSubscribeDirectory(), list);
@@ -53,7 +55,9 @@ class ICloudUtils {
         }
       }
       return false;
-    } catch (e) {}
+    } catch (e) {
+      // 忽略异常，保持原有行为
+    }
     return false;
   }
 
@@ -62,7 +66,9 @@ class ICloudUtils {
       if (list.isEmpty) return;
       if (SpUtil.getInt(spVIP, defValue: typeNormal) == typeNormal) return;
       if (SpUtil.getBool(spICloud, defValue: true) == false &&
-          focusUpdate == false) return;
+          focusUpdate == false) {
+        return;
+      }
       bool exist = await existContent(
           await FileUtil(index).getEnvDirectory(), jsonEncode(list));
 
@@ -81,7 +87,9 @@ class ICloudUtils {
 
       if (content == null || content.isEmpty) return;
       if (SpUtil.getBool(spICloud, defValue: true) == false &&
-          focusUpdate == false) return;
+          focusUpdate == false) {
+        return;
+      }
 
       bool exist = await existContent(
           await FileUtil(index)
@@ -91,7 +99,9 @@ class ICloudUtils {
       if (!exist) {
         await FileUtil(index).writeConfig(title ?? "nameNotFound.sh", content);
       }
-    } catch (e) {}
+    } catch (e) {
+      // 忽略异常，保持原有行为
+    }
   }
 
   void restoreEnv(String? path) async {
@@ -145,7 +155,9 @@ class ICloudUtils {
               title = temp[temp.length - 2];
             }
             _handleRestoreConfig(title, p);
-          } catch (e) {}
+          } catch (e) {
+            // 忽略异常，保持原有行为
+          }
         }
       }
     } else {
@@ -157,7 +169,9 @@ class ICloudUtils {
           title = temp[temp.length - 2];
         }
         _handleRestoreConfig(title, path);
-      } catch (e) {}
+      } catch (e) {
+        // 忽略异常，保持原有行为
+      }
     }
   }
 

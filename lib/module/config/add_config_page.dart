@@ -20,8 +20,8 @@ import '../others/scripts/script_code_detail_page.dart';
 
 class AddConfigPage extends ConsumerStatefulWidget {
   const AddConfigPage({
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   ConsumerState<AddConfigPage> createState() => _AddConfigPageState();
@@ -187,10 +187,12 @@ class _AddConfigPageState extends ConsumerState<AddConfigPage> {
     try {
       await EasyLoading.show(status: " 提交中");
       final contents = await file!.readAsString();
+      // ignore: use_build_context_synchronously
       var response = await SingleAccountPageState.ofApi(context).saveFile(_nameController.text, contents);
       await EasyLoading.dismiss();
       if (response.success) {
         "上传成功".toast();
+        // ignore: use_build_context_synchronously
         Navigator.of(context).pop(true);
       } else {
         response.message.toast();
@@ -251,6 +253,7 @@ class _AddConfigPageState extends ConsumerState<AddConfigPage> {
       onTap: () async {
         try {
           String content = await file!.readAsString();
+          // ignore: use_build_context_synchronously
           Navigator.of(context).push(
             CupertinoPageRoute(
               builder: (context) => ScriptCodeDetailPage(

@@ -18,13 +18,13 @@ class InTimeSubscribeLogPage extends StatefulWidget {
   final bool needTimer;
   final String title;
 
-  const InTimeSubscribeLogPage(this.cronId, this.needTimer, this.title, {Key? key}) : super(key: key);
+  const InTimeSubscribeLogPage(this.cronId, this.needTimer, this.title, {super.key});
 
   @override
-  _InTimeSubscribeLogPageState createState() => _InTimeSubscribeLogPageState();
+  InTimeSubscribeLogPageState createState() => InTimeSubscribeLogPageState();
 }
 
-class _InTimeSubscribeLogPageState extends State<InTimeSubscribeLogPage> with LazyLoadState<InTimeSubscribeLogPage> {
+class InTimeSubscribeLogPageState extends State<InTimeSubscribeLogPage> with LazyLoadState<InTimeSubscribeLogPage> {
   Timer? _timer;
 
   String? content;
@@ -42,7 +42,7 @@ class _InTimeSubscribeLogPageState extends State<InTimeSubscribeLogPage> with La
   bool isRequest = false;
   bool canRequest = true;
 
-  getLogData() async {
+  Future<void> getLogData() async {
     if (!canRequest) return;
     if (isRequest) return;
     isRequest = true;

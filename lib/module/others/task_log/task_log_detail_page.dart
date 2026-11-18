@@ -15,16 +15,16 @@ class TaskLogDetailPage extends ConsumerStatefulWidget {
   final String path;
 
   const TaskLogDetailPage({
-    Key? key,
+    super.key,
     required this.title,
     required this.path,
-  }) : super(key: key);
+  });
 
   @override
-  _TaskLogDetailPageState createState() => _TaskLogDetailPageState();
+  TaskLogDetailPageState createState() => TaskLogDetailPageState();
 }
 
-class _TaskLogDetailPageState extends ConsumerState<TaskLogDetailPage>
+class TaskLogDetailPageState extends ConsumerState<TaskLogDetailPage>
     with LazyLoadState<TaskLogDetailPage> {
   String? content;
 

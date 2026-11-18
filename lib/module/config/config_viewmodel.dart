@@ -25,8 +25,9 @@ class ConfigViewModel extends BaseViewModel {
     if (result.success && result.bean != null) {
       list.clear();
       list.addAll(result.bean!);
+      // ignore: use_build_context_synchronously
       backUpAllConfigFiles(context);
-      success();
+      list.isEmpty ? empty(notify: true) : success();
     } else {
       list.clear();
       failed(result.message, notify: true);
@@ -40,6 +41,7 @@ class ConfigViewModel extends BaseViewModel {
             (SingleAccountPageState.of(context)?.index ?? 0).toString());
     for (ConfigBean c in list) {
       HttpResponse<String> result =
+          // ignore: use_build_context_synchronously
           await SingleAccountPageState.ofApi(context).content(
         c.title ?? c.value ?? "",
       );

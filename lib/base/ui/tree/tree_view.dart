@@ -78,7 +78,7 @@ class TreeView extends InheritedWidget {
   final bool supportParentDoubleTap;
 
   TreeView({
-    Key? key,
+    super.key,
     required this.controller,
     this.onNodeTap,
     this.onNodeDoubleTap,
@@ -93,7 +93,6 @@ class TreeView extends InheritedWidget {
     TreeViewTheme? theme,
   })  : theme = theme ?? const TreeViewTheme(),
         super(
-          key: key,
           child: _TreeViewData(
             controller,
             shrinkWrap: shrinkWrap,
@@ -125,9 +124,9 @@ class _TreeViewData extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    ThemeData _parentTheme = Theme.of(context);
+    ThemeData parentTheme = Theme.of(context);
     return Theme(
-      data: _parentTheme,
+      data: parentTheme,
       child: ListView(
         shrinkWrap: shrinkWrap!,
         primary: primary,

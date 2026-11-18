@@ -22,6 +22,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../main.dart';
 import '../config/config_detail_page.dart';
 import '../home/system_bean.dart';
+import 'task_payload.dart';
 
 /// 新增 / 编辑任务，覆盖面板侧的完整字段：
 /// 定时类型、多条定时规则、实例模式、工作目录、日志名称、执行前后命令、队列控制。
@@ -30,10 +31,10 @@ class AddTaskPage extends ConsumerStatefulWidget {
   final bool hideUploadFile;
 
   const AddTaskPage({
-    Key? key,
+    super.key,
     this.taskBean,
     required this.hideUploadFile,
-  }) : super(key: key);
+  });
 
   @override
   ConsumerState<AddTaskPage> createState() => _AddTaskPageState();
@@ -181,7 +182,9 @@ class _AddTaskPageState extends ConsumerState<AddTaskPage>
                             await launchUrl(
                               Uri.tryParse("https://crontab.guru/#$cron")!,
                             );
-                          } catch (e) {}
+                          } catch (e) {
+                            // 忽略异常，保持原有行为
+                          }
                         },
                         child: Text(
                           "在线测试",
@@ -734,31 +737,23 @@ class _AddTaskPageState extends ConsumerState<AddTaskPage>
         .where((e) => e.isNotEmpty)
         .toList();
 
-    final Map<String, dynamic> payload = <String, dynamic>{
-      "name": _nameController.text.trim(),
-      "command": _commandController.text.trim(),
-      "schedule": schedule,
-      "allow_multiple_instances": allowMultipleInstances,
-      "work_dir": _workDirController.text.trim(),
-      "log_name": _logNameController.text.trim(),
-      "task_before": _beforeController.text.trim(),
-      "task_after": _afterController.text.trim(),
-    };
+    final bool normal = scheduleType == ScheduleType.normal;
 
-    if (scheduleType == ScheduleType.normal) {
-      payload["extra_schedules"] = extras
-          .map((e) => {"schedule": e})
-          .toList();
-      if (_supportQueueConfig) {
-        payload["skip_if_pending"] = skipIfPending;
-        payload["max_queue_wait"] =
-            int.tryParse(_maxQueueController.text.trim()) ?? 0;
-        payload["catchup_seconds"] =
-            int.tryParse(_catchupController.text.trim()) ?? 0;
-      }
-    }
-
-    return payload;
+    return buildTaskPayload(
+      name: _nameController.text.trim(),
+      command: _commandController.text.trim(),
+      schedule: schedule,
+      allowMultipleInstances: allowMultipleInstances,
+      workDir: _workDirController.text.trim(),
+      logName: _logNameController.text.trim(),
+      taskBefore: _beforeController.text.trim(),
+      taskAfter: _afterController.text.trim(),
+      includeExtraSchedules: normal,
+      extraSchedules: extras,
+      skipIfPending: normal && _supportQueueConfig ? skipIfPending : null,
+      maxQueueWait: int.tryParse(_maxQueueController.text.trim()) ?? 0,
+      catchupSeconds: int.tryParse(_catchupController.text.trim()) ?? 0,
+    );
   }
 
   void commitReal() async {
@@ -767,6 +762,7 @@ class _AddTaskPageState extends ConsumerState<AddTaskPage>
       if (fileKey.currentState != null && fileKey.currentState!.file != null) {
         String content = await fileKey.currentState!.file!.readAsString();
         HttpResponse<NullResponse> responseS = await SingleAccountPageState
+            // ignore: use_build_context_synchronously
             .ofApi(context)
             .addScript(
               fileKey.currentState?.getFileName() ??
@@ -803,6 +799,7 @@ class _AddTaskPageState extends ConsumerState<AddTaskPage>
 
       await EasyLoading.show(status: " 提交中");
       HttpResponse<NullResponse> response = await SingleAccountPageState.ofApi(
+        // ignore: use_build_context_synchronously
         context,
       ).addTask(
         payload,
@@ -819,6 +816,7 @@ class _AddTaskPageState extends ConsumerState<AddTaskPage>
           "schedule": payload["schedule"],
         };
         final HttpResponse<NullResponse> retry = await SingleAccountPageState
+            // ignore: use_build_context_synchronously
             .ofApi(context)
             .addTask(basic, id: taskBean.id, nId: taskBean.nId);
         if (retry.success) {
@@ -832,11 +830,15 @@ class _AddTaskPageState extends ConsumerState<AddTaskPage>
         isEdit ? "修改成功".toast() : "新增成功".toast();
         ref
             .read(
+              // ignore: use_build_context_synchronously
               SingleAccountPageState.ofTaskProvider(context)(
+                // ignore: use_build_context_synchronously
                 getProviderName(context),
               ),
             )
+            // ignore: use_build_context_synchronously
             .updateBean(context, taskBean);
+        // ignore: use_build_context_synchronously
         Navigator.of(context).pop();
       } else {
         response.message.toast();

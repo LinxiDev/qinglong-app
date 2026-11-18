@@ -18,13 +18,13 @@ import 'package:qinglong_app/utils/utils.dart';
 import 'subscribe_viewmodel.dart';
 
 class SubscribePage extends ConsumerStatefulWidget {
-  const SubscribePage({Key? key}) : super(key: key);
+  const SubscribePage({super.key});
 
   @override
-  _SubscribePageState createState() => _SubscribePageState();
+  SubscribePageState createState() => SubscribePageState();
 }
 
-class _SubscribePageState extends ConsumerState<SubscribePage> {
+class SubscribePageState extends ConsumerState<SubscribePage> {
   TextEditingController searchText = TextEditingController();
 
   String currentState = TaskViewModel.allStr;
@@ -93,10 +93,13 @@ class _SubscribePageState extends ConsumerState<SubscribePage> {
                   if (value != null && value == true) {
                     ref
                         .read(
+                          // ignore: use_build_context_synchronously
                           SingleAccountPageState.ofSubscribeProvider(context)(
+                            // ignore: use_build_context_synchronously
                             getProviderName(context),
                           ),
                         )
+                        // ignore: use_build_context_synchronously
                         .loadData(context);
                   }
                 },
@@ -219,7 +222,7 @@ class TaskItemCell extends StatelessWidget {
   final Map<String, dynamic> bean;
   final WidgetRef ref;
 
-  const TaskItemCell(this.bean, this.ref, {Key? key}) : super(key: key);
+  const TaskItemCell(this.bean, this.ref, {super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -247,10 +250,13 @@ class TaskItemCell extends StatelessWidget {
                     if (value != null && value == true) {
                       ref
                           .read(
+                            // ignore: use_build_context_synchronously
                             SingleAccountPageState.ofSubscribeProvider(context)(
+                              // ignore: use_build_context_synchronously
                               getProviderName(context),
                             ),
                           )
+                          // ignore: use_build_context_synchronously
                           .loadData(context);
                     }
                   },
@@ -263,6 +269,7 @@ class TaskItemCell extends StatelessWidget {
               backgroundColor: const Color(0xffA356D6),
               onPressed: (_) {
                 WidgetsBinding.instance.endOfFrame.then((value) {
+                  // ignore: use_build_context_synchronously
                   _enableSubscribe(context, bean["is_disabled"] ?? 0);
                 });
               },
@@ -273,6 +280,7 @@ class TaskItemCell extends StatelessWidget {
               backgroundColor: const Color(0xffEA4D3E),
               onPressed: (_) {
                 WidgetsBinding.instance.endOfFrame.then((value) {
+                  // ignore: use_build_context_synchronously
                   _delSubscribe(context, ref);
                 });
               },
@@ -311,6 +319,7 @@ class TaskItemCell extends StatelessWidget {
                     const Duration(
                       milliseconds: 250,
                     ), () {
+                  // ignore: use_build_context_synchronously
                   logCron(context, ref);
                 });
               },
@@ -430,7 +439,7 @@ class TaskItemCell extends StatelessWidget {
     );
   }
 
-  _startCron(BuildContext context, WidgetRef ref, bool showLog) async {
+  Future<void> _startCron(BuildContext context, WidgetRef ref, bool showLog) async {
     await ref
         .read(
           SingleAccountPageState.ofSubscribeProvider(context)(
@@ -443,12 +452,13 @@ class TaskItemCell extends StatelessWidget {
         );
     if (showLog) {
       Future.delayed(const Duration(milliseconds: 250), () {
+        // ignore: use_build_context_synchronously
         logCron(context, ref);
       });
     }
   }
 
-  _stopCron(BuildContext context, WidgetRef ref) {
+  void _stopCron(BuildContext context, WidgetRef ref) {
     ref
         .read(
           SingleAccountPageState.ofSubscribeProvider(context)(
@@ -461,7 +471,7 @@ class TaskItemCell extends StatelessWidget {
         );
   }
 
-  logCron(BuildContext context, WidgetRef ref) {
+  void logCron(BuildContext context, WidgetRef ref) {
     Navigator.of(context).push(
       CupertinoPageRoute(
         builder: (context) => InTimeSubscribeLogPage(

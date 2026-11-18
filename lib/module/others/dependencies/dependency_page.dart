@@ -21,7 +21,7 @@ import 'package:qinglong_app/utils/extension.dart';
 import 'package:qinglong_app/utils/utils.dart';
 
 class DependencyPage extends ConsumerStatefulWidget {
-  const DependencyPage({Key? key}) : super(key: key);
+  const DependencyPage({super.key});
 
   @override
   DependcyPageState createState() => DependcyPageState();
@@ -29,9 +29,9 @@ class DependencyPage extends ConsumerStatefulWidget {
 
 class DependcyPageState extends ConsumerState<DependencyPage> with TickerProviderStateMixin {
   static List<DepedencyEnum> types = [
-    DepedencyEnum.NodeJS,
-    DepedencyEnum.Python3,
-    DepedencyEnum.Linux,
+    DepedencyEnum.nodeJs,
+    DepedencyEnum.python3,
+    DepedencyEnum.linux,
   ];
   ScrollController? controller;
 
@@ -149,23 +149,30 @@ class DependcyPageState extends ConsumerState<DependencyPage> with TickerProvide
                     .then(
                   (value) async {
                     if (value != null && value is Map<String, dynamic> && value.isNotEmpty) {
+                      // ignore: use_build_context_synchronously
                       await ref.read(SingleAccountPageState.ofDependencyProvider(context)(getProviderName(context)).notifier).loadData(
+                            // ignore: use_build_context_synchronously
                             context,
                             types[0].name.toLowerCase(),
                             false,
                           );
+                      // ignore: use_build_context_synchronously
                       await ref.read(SingleAccountPageState.ofDependencyProvider(context)(getProviderName(context)).notifier).loadData(
+                            // ignore: use_build_context_synchronously
                             context,
                             types[1].name.toLowerCase(),
                             false,
                           );
+                      // ignore: use_build_context_synchronously
                       await ref.read(SingleAccountPageState.ofDependencyProvider(context)(getProviderName(context)).notifier).loadData(
+                            // ignore: use_build_context_synchronously
                             context,
                             types[2].name.toLowerCase(),
                             false,
                           );
 
                       var bean = DependencyBean.fromJson(value);
+                      // ignore: use_build_context_synchronously
                       showLog(context, bean.name ?? "", ref, bean.sId, bean.id);
                     }
                   },
@@ -313,7 +320,9 @@ class DependcyPageState extends ConsumerState<DependencyPage> with TickerProvide
     )
         .then(
       (value) async {
+        // ignore: use_build_context_synchronously
         await ref.read(SingleAccountPageState.ofDependencyProvider(context)(getProviderName(context))).loadData(
+              // ignore: use_build_context_synchronously
               context,
               types[_tabController!.index].name.toLowerCase(),
             );
@@ -396,7 +405,7 @@ class DependcyPageState extends ConsumerState<DependencyPage> with TickerProvide
       },
     );
 
-    Overlay.of(context)?.insert(_editModeOverlay!);
+    Overlay.of(context).insert(_editModeOverlay!);
   }
 
   void _executeCode(BuildContext context1, String s) {
@@ -532,14 +541,14 @@ class DepListView extends StatefulWidget {
   final ValueChanged<String> changed;
 
   const DepListView({
-    Key? key,
+    super.key,
     required this.list,
     required this.type,
     required this.searchText,
     required this.editMode,
     required this.checked,
     required this.changed,
-  }) : super(key: key);
+  });
 
   @override
   State<DepListView> createState() => _DepListViewState();
@@ -602,11 +611,11 @@ class DependencyCell extends ConsumerWidget {
   const DependencyCell(
     this.type,
     this.bean, {
-    Key? key,
+    super.key,
     this.editMode = false,
     required this.checkedCallback,
     required this.checked,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -775,7 +784,9 @@ class DependencyCell extends ConsumerWidget {
     )
         .then(
       (value) async {
+        // ignore: use_build_context_synchronously
         await ref.read(SingleAccountPageState.ofDependencyProvider(context)(getProviderName(context))).loadData(
+              // ignore: use_build_context_synchronously
               context,
               type.name.toLowerCase(),
             );
@@ -824,6 +835,7 @@ class DependencyCell extends ConsumerWidget {
               await ref
                   .read(SingleAccountPageState.ofDependencyProvider(context1)(getProviderName(context1)))
                   .del(context1, type.name.toLowerCase(), [sId], [id]);
+              // ignore: use_build_context_synchronously
               showLog(context1, bean.name ?? "", ref, sId, id);
             },
           ),

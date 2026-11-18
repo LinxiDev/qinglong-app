@@ -23,13 +23,13 @@ class ConfigEditPage extends ConsumerStatefulWidget {
   final String content;
   final String title;
 
-  const ConfigEditPage(this.title, this.content, {Key? key}) : super(key: key);
+  const ConfigEditPage(this.title, this.content, {super.key});
 
   @override
-  _ConfigEditPageState createState() => _ConfigEditPageState();
+  ConfigEditPageState createState() => ConfigEditPageState();
 }
 
-class _ConfigEditPageState extends ConsumerState<ConfigEditPage> {
+class ConfigEditPageState extends ConsumerState<ConfigEditPage> {
   CodeMirrorOptions options = CodeMirrorOptions();
   EditorController? controller;
   late String result;
@@ -178,11 +178,11 @@ class _ConfigEditPageState extends ConsumerState<ConfigEditPage> {
                 ...operateList
                     .map(
                       (e) => PopupMenuItem<String>(
-                        child: Text(e),
                         value: e,
+                        child: Text(e),
                       ),
                     )
-                    .toList(),
+                    ,
               ],
               child: const Padding(
                 padding: EdgeInsets.symmetric(
@@ -204,13 +204,16 @@ class _ConfigEditPageState extends ConsumerState<ConfigEditPage> {
               try {
                 await hideKeyboardFocus();
                 await EasyLoading.show(status: " 提交中");
+                // ignore: use_build_context_synchronously
                 HttpResponse<NullResponse> response = await SingleAccountPageState.ofApi(context).saveFile(widget.title, result);
                 if (Platform.isIOS) {
+                  // ignore: use_build_context_synchronously
                   await notifyICloud(context, widget.title, result);
                 }
                 await EasyLoading.dismiss();
                 if (response.success) {
                   "提交成功".toast();
+                  // ignore: use_build_context_synchronously
                   Navigator.of(context).pop(result);
                 } else {
                   (response.message ?? "").toast();
@@ -268,7 +271,9 @@ class _ConfigEditPageState extends ConsumerState<ConfigEditPage> {
           int i = t.indexOf("export") + 6;
           int j = t.indexOf("=");
           operateList.add(t.substring(i, j));
-        } catch (e) {}
+        } catch (e) {
+          // 忽略异常，保持原有行为
+        }
       }
     }
   }
@@ -295,11 +300,14 @@ class _ConfigEditPageState extends ConsumerState<ConfigEditPage> {
           defaultValue = tempText;
         }
       }
-    } catch (e) {}
+    } catch (e) {
+      // 忽略异常，保持原有行为
+    }
 
     TextEditingController controller = TextEditingController(text: defaultValue.replaceAll("\"", "").replaceAll("'", ""));
     showCupertinoDialog(
       useRootNavigator: false,
+      // ignore: use_build_context_synchronously
       context: context,
       builder: (context) => AlertDialog(
         contentPadding: const EdgeInsets.symmetric(
@@ -402,6 +410,8 @@ class _ConfigEditPageState extends ConsumerState<ConfigEditPage> {
           }
         }
       }
-    } catch (e) {}
+    } catch (e) {
+      // 忽略异常，保持原有行为
+    }
   }
 }

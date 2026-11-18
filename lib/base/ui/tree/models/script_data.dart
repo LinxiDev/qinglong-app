@@ -36,18 +36,18 @@ class ScriptData {
     return ScriptData.fromMap(json);
   }
 
-  /// Creates a [ScriptData] from a Map<String, dynamic> map. The map
+  /// Creates a [ScriptData] from a `Map<String, dynamic>` map. The map
   /// should contain a "label" value. If the key value is
   /// missing, it generates a unique key.
   /// If the expanded value, if present, can be any 'truthful'
   /// value. Excepted values include: 1, yes, true and their
   /// associated string values.
   static ScriptData fromMap(Map<String, dynamic> map) {
-    String? _key = map['key'];
+    String? nodeKey = map['key'];
     String? title = map['title'];
 
     String? parent = map['parent'];
-    List<ScriptData> _children = [];
+    List<ScriptData> nodeChildren = [];
 
     // if (map['icon'] != null) {
     // int _iconData = int.parse(map['icon']);
@@ -61,13 +61,13 @@ class ScriptData {
     // _icon = const IconData(_iconData);
     // }
     if (map['children'] != null) {
-      List<Map<String, dynamic>> _childrenMap = List.from(map['children']);
-      _children = _childrenMap.map((Map<String, dynamic> child) => ScriptData.fromMap(child)).toList();
+      List<Map<String, dynamic>> childrenMap = List.from(map['children']);
+      nodeChildren = childrenMap.map((Map<String, dynamic> child) => ScriptData.fromMap(child)).toList();
     }
     String? type = map['type'];
 
     if (type == null || type.isEmpty) {
-      if (_children.isNotEmpty) {
+      if (nodeChildren.isNotEmpty) {
         type = "directory";
       } else {
         type = "file";
@@ -75,12 +75,12 @@ class ScriptData {
     }
 
     return ScriptData(
-      key: '$_key',
+      key: '$nodeKey',
       title: title ?? "",
       type: type,
       expanded: false,
       parent: parent ?? "",
-      children: _children,
+      children: nodeChildren,
     );
   }
 

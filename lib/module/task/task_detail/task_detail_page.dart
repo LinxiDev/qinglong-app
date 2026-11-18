@@ -23,13 +23,13 @@ class TaskDetailPage extends ConsumerStatefulWidget {
   final TaskBean taskBean;
   final bool hideAppbar;
 
-  const TaskDetailPage(this.taskBean, {Key? key, this.hideAppbar = false}) : super(key: key);
+  const TaskDetailPage(this.taskBean, {super.key, this.hideAppbar = false});
 
   @override
-  _TaskDetailPageState createState() => _TaskDetailPageState();
+  TaskDetailPageState createState() => TaskDetailPageState();
 }
 
-class _TaskDetailPageState extends ConsumerState<TaskDetailPage> with LazyLoadState<TaskDetailPage> {
+class TaskDetailPageState extends ConsumerState<TaskDetailPage> with LazyLoadState<TaskDetailPage> {
   bool isPin = false;
   bool isLoading = true;
 
@@ -401,7 +401,7 @@ class _TaskDetailPageState extends ConsumerState<TaskDetailPage> with LazyLoadSt
     );
   }
 
-  startCron(BuildContext context, WidgetRef ref) async {
+  Future<void> startCron(BuildContext context, WidgetRef ref) async {
     await ref.read(SingleAccountPageState.ofTaskProvider(context)(getProviderName(context)).notifier).runCrons(context, [widget.taskBean.sId!]);
     setState(() {});
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
@@ -409,7 +409,7 @@ class _TaskDetailPageState extends ConsumerState<TaskDetailPage> with LazyLoadSt
     });
   }
 
-  stopCron(BuildContext context, WidgetRef ref) async {
+  Future<void> stopCron(BuildContext context, WidgetRef ref) async {
     await ref.read(SingleAccountPageState.ofTaskProvider(context)(getProviderName(context)).notifier).stopCrons(context, [widget.taskBean.sId!]);
     setState(() {});
   }
@@ -461,6 +461,7 @@ class _TaskDetailPageState extends ConsumerState<TaskDetailPage> with LazyLoadSt
             onPressed: () async {
               Navigator.of(context).pop();
               await ref.read(SingleAccountPageState.ofTaskProvider(context1)(getProviderName(context1))).delCron(context1, [widget.taskBean.sId!]);
+              // ignore: use_build_context_synchronously
               Navigator.of(context1).pop();
             },
           ),
@@ -501,14 +502,14 @@ class TaskDetailCell extends ConsumerWidget {
   final Function? taped;
 
   const TaskDetailCell({
-    Key? key,
+    super.key,
     required this.title,
     this.desc,
     this.icon,
     this.suffixIcon,
     this.hideDivide = false,
     this.taped,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

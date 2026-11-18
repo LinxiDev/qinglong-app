@@ -19,7 +19,7 @@ import 'package:qinglong_app/utils/sp_utils.dart';
 import '../base/ql_app_bar.dart';
 
 class SettingPage extends ConsumerStatefulWidget {
-  const SettingPage({Key? key}) : super(key: key);
+  const SettingPage({super.key});
 
   @override
   ConsumerState createState() => _SettingPageState();

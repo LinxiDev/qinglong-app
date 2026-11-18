@@ -13,9 +13,9 @@ class FileDirectoryPage extends ConsumerStatefulWidget {
   final String path;
 
   const FileDirectoryPage({
-    Key? key,
+    super.key,
     required this.path,
-  }) : super(key: key);
+  });
 
   @override
   ConsumerState<FileDirectoryPage> createState() => _FileDirectoryPageState();
@@ -53,6 +53,7 @@ class _FileDirectoryPageState extends ConsumerState<FileDirectoryPage> {
               } else {
                 try {
                   String content = await File(paths[index]).readAsString();
+                  // ignore: use_build_context_synchronously
                   Navigator.of(context).push(
                     CupertinoPageRoute(
                       builder: (context) => ScriptCodeDetailPage(

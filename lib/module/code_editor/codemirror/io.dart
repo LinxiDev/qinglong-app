@@ -18,11 +18,11 @@ class CodeMirrorView extends CodeMirrorViewImpl {
   final Function(String val) onValue;
 
   const CodeMirrorView({
-    Key? key,
+    super.key,
     required this.options,
     required this.onCreate,
     required this.onValue,
-  }) : super(key: key);
+  });
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() {
@@ -32,11 +32,11 @@ class CodeMirrorView extends CodeMirrorViewImpl {
 
 class CodeMirrorViewState extends CodeMirrorViewImplState<CodeMirrorView> {
   String getHtml(String raw) {
-    String _html = raw;
-    _html = _html.replaceAll('VERSION', '5.65.6');
-    _html = _html.replaceAll('EDITOR_THEME', widget.options.theme);
-    _html = _html.replaceAll('EDITOR_MODE', widget.options.mode);
-    return Uri.dataFromString(_html, mimeType: 'text/html').toString();
+    String html = raw;
+    html = html.replaceAll('VERSION', '5.65.6');
+    html = html.replaceAll('EDITOR_THEME', widget.options.theme);
+    html = html.replaceAll('EDITOR_MODE', widget.options.mode);
+    return Uri.dataFromString(html, mimeType: 'text/html').toString();
   }
 
   WebViewController? _controller;

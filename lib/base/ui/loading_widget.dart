@@ -9,10 +9,10 @@ class LoadingWidget extends StatelessWidget {
   final double size;
 
   const LoadingWidget({
-    Key? key,
+    super.key,
     this.color = const Color(0xffc8c9cc),
     this.size = 30,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

@@ -50,6 +50,7 @@ class AppKeyViewModel extends BaseViewModel {
         await SingleAccountPageState.ofApi(context).deleteAppKey([id]);
     if (result.success) {
       "删除成功".toast();
+      // ignore: use_build_context_synchronously
       loadData(context, false);
     } else {
       failToast(result.message, notify: true);
@@ -61,6 +62,7 @@ class AppKeyViewModel extends BaseViewModel {
         await SingleAccountPageState.ofApi(context).resetAppKey(id);
     if (result.success) {
       "重置成功".toast();
+      // ignore: use_build_context_synchronously
       loadData(context, false);
     } else {
       failToast(result.message, notify: true);

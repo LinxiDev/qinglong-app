@@ -39,14 +39,17 @@ class LoginHelper {
           .loginByClientId(userName, password);
     }
     if (response.success) {
+      // ignore: use_build_context_synchronously
       loginSuccess(context, response, userName, password);
       return success;
     } else if (loginByUserName() && response.code == 401) {
       //可能用户使用的是老版本qinglong
       HttpResponse<LoginBean> oldResponse =
+          // ignore: use_build_context_synchronously
           await SingleAccountPageState.ofApi(context)
               .loginOld(userName, password);
       if (oldResponse.success) {
+        // ignore: use_build_context_synchronously
         loginSuccess(context, oldResponse, userName, password);
         return success;
       } else {
@@ -73,6 +76,7 @@ class LoginHelper {
         await SingleAccountPageState.ofApi(context)
             .loginTwo(userName, password, code);
     if (response.success) {
+      // ignore: use_build_context_synchronously
       loginSuccess(context, response, userName, password);
       return success;
     } else {

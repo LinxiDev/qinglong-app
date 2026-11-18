@@ -35,6 +35,7 @@ class SubscribeViewModel extends BaseViewModel {
         }
       }
       if (list.isNotEmpty) {
+        // ignore: use_build_context_synchronously
         notifyICloud(context, result.bean ?? "");
       }
 
@@ -60,6 +61,7 @@ class SubscribeViewModel extends BaseViewModel {
     HttpResponse<NullResponse> result =
         await SingleAccountPageState.ofApi(context).startSubscribes([cron]);
     if (result.success) {
+      // ignore: use_build_context_synchronously
       loadData(context, false);
     } else {
       failToast(result.message, notify: true);
@@ -70,6 +72,7 @@ class SubscribeViewModel extends BaseViewModel {
     HttpResponse<NullResponse> result =
         await SingleAccountPageState.ofApi(context).stopSubscribes([cron]);
     if (result.success) {
+      // ignore: use_build_context_synchronously
       loadData(context, false);
     } else {
       failToast(result.message, notify: true);
@@ -81,6 +84,7 @@ class SubscribeViewModel extends BaseViewModel {
         await SingleAccountPageState.ofApi(context).delSubscribe(id);
     if (result.success) {
       "删除成功".toast();
+      // ignore: use_build_context_synchronously
       loadData(context, false);
     } else {
       failToast(result.message, notify: true);
@@ -95,6 +99,7 @@ class SubscribeViewModel extends BaseViewModel {
 
       if (response.success) {
         "禁用成功".toast();
+        // ignore: use_build_context_synchronously
         loadData(context, false);
       } else {
         failToast(response.message, notify: true);
@@ -105,6 +110,7 @@ class SubscribeViewModel extends BaseViewModel {
 
       if (response.success) {
         "启用成功".toast();
+        // ignore: use_build_context_synchronously
         loadData(context, false);
       } else {
         failToast(response.message, notify: true);

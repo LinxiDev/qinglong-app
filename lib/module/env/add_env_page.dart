@@ -15,7 +15,7 @@ import '../subscribe/add_subscribe_page.dart';
 class AddEnvPage extends ConsumerStatefulWidget {
   final EnvBean? envBean;
 
-  const AddEnvPage({Key? key, this.envBean}) : super(key: key);
+  const AddEnvPage({super.key, this.envBean});
 
   @override
   ConsumerState<AddEnvPage> createState() => _AddEnvPageState();
@@ -179,6 +179,7 @@ class _AddEnvPageState extends ConsumerState<AddEnvPage> with LazyLoadState<AddE
       envBean.remarks = _remarkController.text;
 
       await EasyLoading.show(status: " 提交中");
+      // ignore: use_build_context_synchronously
       HttpResponse<NullResponse> response = await SingleAccountPageState.ofApi(context).addEnv(
         _nameController.text,
         _valueController.text,
@@ -188,6 +189,7 @@ class _AddEnvPageState extends ConsumerState<AddEnvPage> with LazyLoadState<AddE
       );
       await EasyLoading.show(status: " 提交中");
       if (envBean.sId != null && envBean.sId!.isNotEmpty) {
+        // ignore: use_build_context_synchronously
         await SingleAccountPageState.ofApi(context).enableEnv(
           [envBean.sId!],
         );
@@ -195,6 +197,7 @@ class _AddEnvPageState extends ConsumerState<AddEnvPage> with LazyLoadState<AddE
       await EasyLoading.dismiss();
       if (response.success) {
         (envBean.sId == null || envBean.sId!.isEmpty) ? "新增成功" : "修改成功${envBean.status == 1?",并自动启用":""}".toast();
+        // ignore: use_build_context_synchronously
         Navigator.of(context).pop();
       } else {
         (response.message ?? "").toast();

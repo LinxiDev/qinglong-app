@@ -21,15 +21,15 @@ class TaskLogPage extends ConsumerStatefulWidget {
   final String? searchText;
 
   const TaskLogPage({
-    Key? key,
+    super.key,
     this.searchText,
-  }) : super(key: key);
+  });
 
   @override
-  _TaskLogPageState createState() => _TaskLogPageState();
+  TaskLogPageState createState() => TaskLogPageState();
 }
 
-class _TaskLogPageState extends ConsumerState<TaskLogPage> with LazyLoadState<TaskLogPage> {
+class TaskLogPageState extends ConsumerState<TaskLogPage> with LazyLoadState<TaskLogPage> {
   List<TaskLogBean> list = [];
 
   TextEditingController searchText = TextEditingController();

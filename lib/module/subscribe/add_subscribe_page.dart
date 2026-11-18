@@ -13,7 +13,7 @@ import 'package:url_launcher/url_launcher.dart';
 class AddSubscribePage extends ConsumerStatefulWidget {
   final Map<String, dynamic> taskBean;
 
-  const AddSubscribePage({Key? key, required this.taskBean}) : super(key: key);
+  const AddSubscribePage({super.key, required this.taskBean});
 
   @override
   ConsumerState<AddSubscribePage> createState() => _AddSubscribePageState();
@@ -289,7 +289,9 @@ class _AddSubscribePageState extends ConsumerState<AddSubscribePage> {
                   onTap: () async {
                     try {
                       await launchUrl(Uri.tryParse("https://crontab.guru")!);
-                    } catch (e) {}
+                    } catch (e) {
+                      // 忽略异常，保持原有行为
+                    }
                   },
                   child: Text(
                     "在线测试",
@@ -690,11 +692,14 @@ class _AddSubscribePageState extends ConsumerState<AddSubscribePage> {
           _branchController.getTextOrDefault(), type.name);
       await EasyLoading.show(status: " 提交中");
       var response = params.containsKey("id")
+          // ignore: use_build_context_synchronously
           ? await SingleAccountPageState.ofApi(context).updateSubscribes(params)
+          // ignore: use_build_context_synchronously
           : await SingleAccountPageState.ofApi(context).addSubscribes(params);
       await EasyLoading.dismiss();
       if (response.success) {
         "提交成功".toast();
+        // ignore: use_build_context_synchronously
         Navigator.of(context).pop(true);
       } else {
         response.message.toast();
@@ -1017,10 +1022,10 @@ class _AddSubscribePageState extends ConsumerState<AddSubscribePage> {
   String getAlias(String url, String? branch, String type) {
     var repoUrlRegx = RegExp(r'[^\/\:]+\/[^\/]+(?=\.git)');
     var fileUrlRegx = RegExp(r'[^\/\:]+\/[^\/]+$');
-    String _alias = "";
-    var _regx = type == 'file' ? fileUrlRegx : repoUrlRegx;
-    if (_regx.hasMatch(url)) {
-      _alias = _regx
+    String alias = "";
+    var regx = type == 'file' ? fileUrlRegx : repoUrlRegx;
+    if (regx.hasMatch(url)) {
+      alias = regx
               .firstMatch(url)
               ?.group(0)
               ?.replaceAll('/', '_')
@@ -1028,9 +1033,9 @@ class _AddSubscribePageState extends ConsumerState<AddSubscribePage> {
           "";
     }
     if (branch != null) {
-      _alias = _alias + '_' + branch;
+      alias = '${alias}_$branch';
     }
-    return _alias;
+    return alias;
   }
 }
 
@@ -1040,9 +1045,9 @@ class TitleWidget extends ConsumerWidget {
 
   const TitleWidget(
     this.title, {
-    Key? key,
+    super.key,
     this.required = false,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context, ref) {

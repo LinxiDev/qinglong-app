@@ -46,25 +46,23 @@ class Notify {
       throw ArgumentError("you shuold call dismiss() firstly");
     }
 
-    final OverlayState? overlayState =
+    final OverlayState overlayState =
     Overlay.of(context, rootOverlay: rootNavigator ?? false);
 
     _overlayEntry = OverlayEntry(
       builder: (BuildContext context) => NotifyWidget(
         key: _stateKey,
         finished: _closeSelfImmediately,
-        child: child,
         duration: duration,
         keepDuration: keepDuration,
         topOffset: topOffset,
         dismissDirectly: dismissDirectly,
         disableDrag: disableDrag,
+        child: child,
       ),
     );
 
-    if (overlayState != null) {
-      overlayState.insert(_overlayEntry!);
-    }
+    overlayState.insert(_overlayEntry!);
   }
 
   bool isShown() {
@@ -105,7 +103,7 @@ class NotifyWidget extends StatefulWidget {
   final bool disableDrag;
 
   const NotifyWidget({
-    Key? key,
+    super.key,
     required this.finished,
     required this.duration,
     required this.keepDuration,
@@ -113,7 +111,7 @@ class NotifyWidget extends StatefulWidget {
     required this.disableDrag,
     required this.dismissDirectly,
     required this.child,
-  }) : super(key: key);
+  });
 
   @override
   State<NotifyWidget> createState() => _NotifyWidgetState();

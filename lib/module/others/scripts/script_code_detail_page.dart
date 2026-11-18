@@ -22,12 +22,12 @@ class ScriptCodeDetailPage extends ConsumerStatefulWidget {
   final String? absPath;
 
   const ScriptCodeDetailPage({
-    Key? key,
+    super.key,
     required this.title,
     required this.content,
     this.absPath,
     this.canRestore = false,
-  }) : super(key: key);
+  });
 
   @override
   ScriptCodeDetailPageState createState() => ScriptCodeDetailPageState();
@@ -39,7 +39,7 @@ class ScriptCodeDetailPageState extends ConsumerState<ScriptCodeDetailPage> with
   late CodeMirrorOptions options;
   EditorController? controller;
 
-  getLanguageType(String title) {
+  String getLanguageType(String title) {
     if (title.endsWith(".js")) {
       return 'javascript';
     }

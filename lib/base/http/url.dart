@@ -6,123 +6,123 @@ class Url {
 
   Url(this.index);
 
-  static get login => "/api/user/login";
+  static String get login => "/api/user/login";
 
-  static get system => "/api/system";
+  static String get system => "/api/system";
 
-  static get loginOld => "/api/login";
+  static String get loginOld => "/api/login";
 
-  static get loginTwo => "/api/user/two-factor/login";
+  static String get loginTwo => "/api/user/two-factor/login";
   static const loginByClientId = "/open/auth/token";
   static const user = "/api/user";
 
   static const updatePassword = "/api/user";
 
-  get logDel => getIt<UserInfoViewModel>(instanceName: index.toString()).useSecretLogined ? "/open/system/log/remove" : "/api/system/log/remove";
+  String get logDel => getIt<UserInfoViewModel>(instanceName: index.toString()).useSecretLogined ? "/open/system/log/remove" : "/api/system/log/remove";
 
-  get tasks => getIt<UserInfoViewModel>(instanceName: index.toString()).useSecretLogined ? "/open/crons" : "/api/crons";
+  String get tasks => getIt<UserInfoViewModel>(instanceName: index.toString()).useSecretLogined ? "/open/crons" : "/api/crons";
 
-  get subscribes => getIt<UserInfoViewModel>(instanceName: index.toString()).useSecretLogined ? "/open/subscriptions" : "/api/subscriptions";
+  String get subscribes => getIt<UserInfoViewModel>(instanceName: index.toString()).useSecretLogined ? "/open/subscriptions" : "/api/subscriptions";
 
-  get notifcations => getIt<UserInfoViewModel>(instanceName: index.toString()).useSecretLogined ? "/open/user/notification" : "/api/user/notification";
+  String get notifcations => getIt<UserInfoViewModel>(instanceName: index.toString()).useSecretLogined ? "/open/user/notification" : "/api/user/notification";
 
-  get runSubscribes => getIt<UserInfoViewModel>(instanceName: index.toString()).useSecretLogined ? "/open/subscriptions/run" : "/api/subscriptions/run";
+  String get runSubscribes => getIt<UserInfoViewModel>(instanceName: index.toString()).useSecretLogined ? "/open/subscriptions/run" : "/api/subscriptions/run";
 
-  get stopSubscribes => getIt<UserInfoViewModel>(instanceName: index.toString()).useSecretLogined ? "/open/subscriptions/stop" : "/api/subscriptions/stop";
+  String get stopSubscribes => getIt<UserInfoViewModel>(instanceName: index.toString()).useSecretLogined ? "/open/subscriptions/stop" : "/api/subscriptions/stop";
 
-  get addSubscribes => getIt<UserInfoViewModel>(instanceName: index.toString()).useSecretLogined ? "/open/subscriptions" : "/api/subscriptions";
+  String get addSubscribes => getIt<UserInfoViewModel>(instanceName: index.toString()).useSecretLogined ? "/open/subscriptions" : "/api/subscriptions";
 
-  get enableSubscribes =>
+  String get enableSubscribes =>
       getIt<UserInfoViewModel>(instanceName: index.toString()).useSecretLogined ? "/open/subscriptions/enable" : "/api/subscriptions/enable";
 
-  get disableSubscribes =>
+  String get disableSubscribes =>
       getIt<UserInfoViewModel>(instanceName: index.toString()).useSecretLogined ? "/open/subscriptions/disable" : "/api/subscriptions/disable";
 
-  get runTasks => getIt<UserInfoViewModel>(instanceName: index.toString()).useSecretLogined ? "/open/crons/run" : "/api/crons/run";
+  String get runTasks => getIt<UserInfoViewModel>(instanceName: index.toString()).useSecretLogined ? "/open/crons/run" : "/api/crons/run";
 
-  get stopTasks => getIt<UserInfoViewModel>(instanceName: index.toString()).useSecretLogined ? "/open/crons/stop" : "/api/crons/stop";
+  String get stopTasks => getIt<UserInfoViewModel>(instanceName: index.toString()).useSecretLogined ? "/open/crons/stop" : "/api/crons/stop";
 
-  get taskDetail => getIt<UserInfoViewModel>(instanceName: index.toString()).useSecretLogined ? "/open/crons/" : "/api/crons/";
+  String get taskDetail => getIt<UserInfoViewModel>(instanceName: index.toString()).useSecretLogined ? "/open/crons/" : "/api/crons/";
 
-  get addTask => getIt<UserInfoViewModel>(instanceName: index.toString()).useSecretLogined ? "/open/crons" : "/api/crons";
+  String get addTask => getIt<UserInfoViewModel>(instanceName: index.toString()).useSecretLogined ? "/open/crons" : "/api/crons";
 
-  get pinTask => getIt<UserInfoViewModel>(instanceName: index.toString()).useSecretLogined ? "/open/crons/pin" : "/api/crons/pin";
+  String get pinTask => getIt<UserInfoViewModel>(instanceName: index.toString()).useSecretLogined ? "/open/crons/pin" : "/api/crons/pin";
 
-  get unpinTask => getIt<UserInfoViewModel>(instanceName: index.toString()).useSecretLogined ? "/open/crons/unpin" : "/api/crons/unpin";
+  String get unpinTask => getIt<UserInfoViewModel>(instanceName: index.toString()).useSecretLogined ? "/open/crons/unpin" : "/api/crons/unpin";
 
-  get enableTask => getIt<UserInfoViewModel>(instanceName: index.toString()).useSecretLogined ? "/open/crons/enable" : "/api/crons/enable";
+  String get enableTask => getIt<UserInfoViewModel>(instanceName: index.toString()).useSecretLogined ? "/open/crons/enable" : "/api/crons/enable";
 
-  get disableTask => getIt<UserInfoViewModel>(instanceName: index.toString()).useSecretLogined ? "/open/crons/disable" : "/api/crons/disable";
+  String get disableTask => getIt<UserInfoViewModel>(instanceName: index.toString()).useSecretLogined ? "/open/crons/disable" : "/api/crons/disable";
 
-  get files => getIt<UserInfoViewModel>(instanceName: index.toString()).useSecretLogined ? "/open/configs/files" : "/api/configs/files";
+  String get files => getIt<UserInfoViewModel>(instanceName: index.toString()).useSecretLogined ? "/open/configs/files" : "/api/configs/files";
 
-  get configContent => getIt<UserInfoViewModel>(instanceName: index.toString()).useSecretLogined ? "/open/configs/" : "/api/configs/";
+  String get configContent => getIt<UserInfoViewModel>(instanceName: index.toString()).useSecretLogined ? "/open/configs/" : "/api/configs/";
 
-  get saveFile => getIt<UserInfoViewModel>(instanceName: index.toString()).useSecretLogined ? "/open/configs/save" : "/api/configs/save";
+  String get saveFile => getIt<UserInfoViewModel>(instanceName: index.toString()).useSecretLogined ? "/open/configs/save" : "/api/configs/save";
 
-  get envs => getIt<UserInfoViewModel>(instanceName: index.toString()).useSecretLogined ? "/open/envs" : "/api/envs";
+  String get envs => getIt<UserInfoViewModel>(instanceName: index.toString()).useSecretLogined ? "/open/envs" : "/api/envs";
 
-  get addEnv => getIt<UserInfoViewModel>(instanceName: index.toString()).useSecretLogined ? "/open/envs" : "/api/envs";
+  String get addEnv => getIt<UserInfoViewModel>(instanceName: index.toString()).useSecretLogined ? "/open/envs" : "/api/envs";
 
-  get delEnv => getIt<UserInfoViewModel>(instanceName: index.toString()).useSecretLogined ? "/open/envs" : "/api/envs";
+  String get delEnv => getIt<UserInfoViewModel>(instanceName: index.toString()).useSecretLogined ? "/open/envs" : "/api/envs";
 
-  get disableEnvs => getIt<UserInfoViewModel>(instanceName: index.toString()).useSecretLogined ? "/open/envs/disable" : "/api/envs/disable";
+  String get disableEnvs => getIt<UserInfoViewModel>(instanceName: index.toString()).useSecretLogined ? "/open/envs/disable" : "/api/envs/disable";
 
-  get enableEnvs => getIt<UserInfoViewModel>(instanceName: index.toString()).useSecretLogined ? "/open/envs/enable" : "/api/envs/enable";
+  String get enableEnvs => getIt<UserInfoViewModel>(instanceName: index.toString()).useSecretLogined ? "/open/envs/enable" : "/api/envs/enable";
 
-  get loginLog => getIt<UserInfoViewModel>(instanceName: index.toString()).useSecretLogined ? "/open/user/login-log" : "/api/user/login-log";
+  String get loginLog => getIt<UserInfoViewModel>(instanceName: index.toString()).useSecretLogined ? "/open/user/login-log" : "/api/user/login-log";
 
-  get logFoldDelete => getIt<UserInfoViewModel>(instanceName: index.toString()).useSecretLogined ? "/open/logs" : "/api/logs";
+  String get logFoldDelete => getIt<UserInfoViewModel>(instanceName: index.toString()).useSecretLogined ? "/open/logs" : "/api/logs";
 
-  get taskLog => getIt<UserInfoViewModel>(instanceName: index.toString()).useSecretLogined ? "/open/logs" : "/api/logs";
+  String get taskLog => getIt<UserInfoViewModel>(instanceName: index.toString()).useSecretLogined ? "/open/logs" : "/api/logs";
 
-  get taskLogDetail => getIt<UserInfoViewModel>(instanceName: index.toString()).useSecretLogined ? "/open/logs/" : "/api/logs/";
+  String get taskLogDetail => getIt<UserInfoViewModel>(instanceName: index.toString()).useSecretLogined ? "/open/logs/" : "/api/logs/";
 
-  get scripts => getIt<UserInfoViewModel>(instanceName: index.toString()).useSecretLogined ? "/open/scripts/files" : "/api/scripts/files";
+  String get scripts => getIt<UserInfoViewModel>(instanceName: index.toString()).useSecretLogined ? "/open/scripts/files" : "/api/scripts/files";
 
-  get scripts2 => getIt<UserInfoViewModel>(instanceName: index.toString()).useSecretLogined ? "/open/scripts" : "/api/scripts";
+  String get scripts2 => getIt<UserInfoViewModel>(instanceName: index.toString()).useSecretLogined ? "/open/scripts" : "/api/scripts";
 
-  get scriptUpdate => getIt<UserInfoViewModel>(instanceName: index.toString()).useSecretLogined ? "/open/scripts" : "/api/scripts";
+  String get scriptUpdate => getIt<UserInfoViewModel>(instanceName: index.toString()).useSecretLogined ? "/open/scripts" : "/api/scripts";
 
-  get scriptDetail => getIt<UserInfoViewModel>(instanceName: index.toString()).useSecretLogined ? "/open/scripts" : "/api/scripts";
-  get scriptDetailForReadFile => getIt<UserInfoViewModel>(instanceName: index.toString()).useSecretLogined ? "/open/scripts/detail" : "/api/scripts/detail";
+  String get scriptDetail => getIt<UserInfoViewModel>(instanceName: index.toString()).useSecretLogined ? "/open/scripts" : "/api/scripts";
+  String get scriptDetailForReadFile => getIt<UserInfoViewModel>(instanceName: index.toString()).useSecretLogined ? "/open/scripts/detail" : "/api/scripts/detail";
 
-  get dependencies => getIt<UserInfoViewModel>(instanceName: index.toString()).useSecretLogined ? "/open/dependencies" : "/api/dependencies";
+  String get dependencies => getIt<UserInfoViewModel>(instanceName: index.toString()).useSecretLogined ? "/open/dependencies" : "/api/dependencies";
 
-  get dependenciesDeleteFocus =>
+  String get dependenciesDeleteFocus =>
       getIt<UserInfoViewModel>(instanceName: index.toString()).useSecretLogined ? "/open/dependencies/force" : "/api/dependencies/force";
 
-  get dependenciesReinstall =>
+  String get dependenciesReinstall =>
       getIt<UserInfoViewModel>(instanceName: index.toString()).useSecretLogined ? "/open/dependencies/reinstall" : "/api/dependencies/reinstall";
 
-  get addScript => getIt<UserInfoViewModel>(instanceName: index.toString()).useSecretLogined ? "/open/scripts" : "/api/scripts";
+  String get addScript => getIt<UserInfoViewModel>(instanceName: index.toString()).useSecretLogined ? "/open/scripts" : "/api/scripts";
 
-  get dependencyReinstall =>
+  String get dependencyReinstall =>
       getIt<UserInfoViewModel>(instanceName: index.toString()).useSecretLogined ? "/open/dependencies/reinstall" : "/api/dependencies/reinstall";
 
-  get checkUpdate => getIt<UserInfoViewModel>(instanceName: index.toString()).useSecretLogined ? "/open/system/update-check" : "/api/system/update-check";
+  String get checkUpdate => getIt<UserInfoViewModel>(instanceName: index.toString()).useSecretLogined ? "/open/system/update-check" : "/api/system/update-check";
 
-  get appkeys => getIt<UserInfoViewModel>(instanceName: index.toString()).useSecretLogined ? "/open/apps" : "/api/apps";
+  String get appkeys => getIt<UserInfoViewModel>(instanceName: index.toString()).useSecretLogined ? "/open/apps" : "/api/apps";
 
-  resetAppKey(dynamic id) {
+  String resetAppKey(dynamic id) {
     return getIt<UserInfoViewModel>(instanceName: index.toString()).useSecretLogined
         ? "/api/apps/${id.toString()}/reset-secret"
         : "/api/apps/${id.toString()}/reset-secret";
   }
 
-  intimeLog(String cronId) {
+  String intimeLog(String cronId) {
     return getIt<UserInfoViewModel>(instanceName: index.toString()).useSecretLogined ? "/open/crons/$cronId/log" : "/api/crons/$cronId/log";
   }
 
-  intimeDepLog(String id) {
+  String intimeDepLog(String id) {
     return getIt<UserInfoViewModel>(instanceName: index.toString()).useSecretLogined ? "/open/dependencies/$id" : "/api/dependencies/$id";
   }
 
-  intimeSubscribeLog(int cronId) {
+  String intimeSubscribeLog(int cronId) {
     return getIt<UserInfoViewModel>(instanceName: index.toString()).useSecretLogined ? "/open/subscriptions/$cronId/log" : "/api/subscriptions/$cronId/log";
   }
 
-  envMove(String envId) {
+  String envMove(String envId) {
     return getIt<UserInfoViewModel>(instanceName: index.toString()).useSecretLogined ? "/open/envs/$envId/move" : "/api/envs/$envId/move";
   }
 
@@ -132,26 +132,26 @@ class Url {
   }
 
   // ---------------- 脚本（v2.23+ 新增运行/停止/重命名/历史版本） ----------------
-  get scriptsRun => p("/scripts/run");
+  String get scriptsRun => p("/scripts/run");
 
-  get scriptsStop => p("/scripts/stop");
+  String get scriptsStop => p("/scripts/stop");
 
-  get scriptsRename => p("/scripts/rename");
+  String get scriptsRename => p("/scripts/rename");
 
-  get scriptsHistory => p("/scripts/history");
+  String get scriptsHistory => p("/scripts/history");
 
-  get scriptsHistoryDetail => p("/scripts/history/detail");
+  String get scriptsHistoryDetail => p("/scripts/history/detail");
 
-  get scriptsHistoryRestore => p("/scripts/history/restore");
+  String get scriptsHistoryRestore => p("/scripts/history/restore");
 
   // ---------------- 定时任务（v2.22+ 新增预览/实例/触发历史） ----------------
-  get cronPreview => p("/crons/preview");
+  String get cronPreview => p("/crons/preview");
 
-  get cronDetail => p("/crons/detail");
+  String get cronDetail => p("/crons/detail");
 
-  get cronStatus => p("/crons/status");
+  String get cronStatus => p("/crons/status");
 
-  get cronImport => p("/crons/import");
+  String get cronImport => p("/crons/import");
 
   String cronInstances(String id) => p("/crons/$id/instances");
 
@@ -166,59 +166,59 @@ class Url {
   String cronDetailById(String id) => p("/crons/$id");
 
   // ---------------- 仪表盘统计 ----------------
-  get dashboardOverview => p("/dashboard/overview");
+  String get dashboardOverview => p("/dashboard/overview");
 
-  get dashboardTrend => p("/dashboard/trend");
+  String get dashboardTrend => p("/dashboard/trend");
 
-  get dashboardTopTime => p("/dashboard/top-time");
+  String get dashboardTopTime => p("/dashboard/top-time");
 
-  get dashboardTopCount => p("/dashboard/top-count");
+  String get dashboardTopCount => p("/dashboard/top-count");
 
-  get dashboardRuntime => p("/dashboard/runtime");
+  String get dashboardRuntime => p("/dashboard/runtime");
 
-  get dashboardSuccesses => p("/dashboard/successes");
+  String get dashboardSuccesses => p("/dashboard/successes");
 
-  get dashboardFailures => p("/dashboard/failures");
+  String get dashboardFailures => p("/dashboard/failures");
 
   // ---------------- 系统 ----------------
   // 2.23+ 下线的旧接口替代：配置文件/日志内容统一走 /detail
-  get configDetail => p("/configs/detail");
+  String get configDetail => p("/configs/detail");
 
-  get logsDetail => p("/logs/detail");
+  String get logsDetail => p("/logs/detail");
 
-  get systemConfig => p("/system/config");
+  String get systemConfig => p("/system/config");
 
-  get systemNotifyLog => p("/system/notify-log");
+  String get systemNotifyLog => p("/system/notify-log");
 
-  get systemLog => p("/system/log");
+  String get systemLog => p("/system/log");
 
-  get systemLogDelete => p("/system/log");
+  String get systemLogDelete => p("/system/log");
 
-  get systemNotify => p("/system/notify");
+  String get systemNotify => p("/system/notify");
 
   // ---------------- 数据保留与清理 ----------------
-  get retentionConfig => p("/system/storage-retention/config");
+  String get retentionConfig => p("/system/storage-retention/config");
 
-  get retentionPreview => p("/system/storage-retention/preview");
+  String get retentionPreview => p("/system/storage-retention/preview");
 
-  get retentionCleanup => p("/system/storage-retention/cleanup");
+  String get retentionCleanup => p("/system/storage-retention/cleanup");
 
   // ---------------- 用户安全 ----------------
-  get ipBlacklist => p("/user/ip-blacklist");
+  String get ipBlacklist => p("/user/ip-blacklist");
 
   // ---------------- 环境变量（置顶/重命名） ----------------
-  get envPin => p("/envs/pin");
+  String get envPin => p("/envs/pin");
 
-  get envUnpin => p("/envs/unpin");
+  String get envUnpin => p("/envs/unpin");
 
-  get envRename => p("/envs/name");
+  String get envRename => p("/envs/name");
 
   // ---------------- 依赖 ----------------
-  get dependencyRefresh => p("/dependencies/refresh");
+  String get dependencyRefresh => p("/dependencies/refresh");
 
-  get dependencyRefreshActive => p("/dependencies/refresh/active");
+  String get dependencyRefreshActive => p("/dependencies/refresh/active");
 
-  get dependencyCancel => p("/dependencies/cancel");
+  String get dependencyCancel => p("/dependencies/cancel");
 
   static bool inWhiteList(String path) {
     if (path == login || path == loginByClientId || path == loginTwo || path == loginOld) {

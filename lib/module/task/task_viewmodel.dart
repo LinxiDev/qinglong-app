@@ -48,11 +48,13 @@ class TaskViewModel extends BaseViewModel {
       if (temp.success && temp.bean != null) {
         list.clear();
         list.addAll(temp.bean?.data ?? []);
+        // ignore: use_build_context_synchronously
         sortList(context);
-        success();
+        list.isEmpty ? empty(notify: true) : success();
         if (MultiAccountPageState.actionRunAll == MultiAccountPageState.useAction() &&
             !runAllTasked) {
           runAllTasked = true;
+          // ignore: use_build_context_synchronously
           runAllTasks(context);
         }
       } else {
@@ -64,11 +66,13 @@ class TaskViewModel extends BaseViewModel {
       if (result.success && result.bean != null) {
         list.clear();
         list.addAll(result.bean!);
+        // ignore: use_build_context_synchronously
         sortList(context);
-        success();
+        list.isEmpty ? empty(notify: true) : success();
         if (MultiAccountPageState.actionRunAll == MultiAccountPageState.useAction() &&
             !runAllTasked) {
           runAllTasked = true;
+          // ignore: use_build_context_synchronously
           runAllTasks(context);
         }
       } else {
@@ -178,6 +182,7 @@ class TaskViewModel extends BaseViewModel {
     HttpResponse<NullResponse> result =
         await SingleAccountPageState.ofApi(context).startTasks(crons);
     if (result.success) {
+      // ignore: use_build_context_synchronously
       loadData(context, false);
     } else {
       failToast(result.message, notify: true);
@@ -188,6 +193,7 @@ class TaskViewModel extends BaseViewModel {
     HttpResponse<NullResponse> result =
         await SingleAccountPageState.ofApi(context).stopTasks(crons);
     if (result.success) {
+      // ignore: use_build_context_synchronously
       loadData(context, false);
     } else {
       failToast(result.message, notify: true);
@@ -198,6 +204,7 @@ class TaskViewModel extends BaseViewModel {
     HttpResponse<NullResponse> result = await SingleAccountPageState.ofApi(context).delTask(id);
     if (result.success) {
       "删除成功".toast();
+      // ignore: use_build_context_synchronously
       loadData(context, false);
     } else {
       failToast(result.message, notify: true);
@@ -215,6 +222,7 @@ class TaskViewModel extends BaseViewModel {
 
       if (response.success) {
         "取消置顶成功".toast();
+        // ignore: use_build_context_synchronously
         loadData(context, false);
       } else {
         failToast(response.message, notify: true);
@@ -225,6 +233,7 @@ class TaskViewModel extends BaseViewModel {
 
       if (response.success) {
         "置顶成功".toast();
+        // ignore: use_build_context_synchronously
         loadData(context, false);
       } else {
         failToast(response.message, notify: true);
@@ -239,6 +248,7 @@ class TaskViewModel extends BaseViewModel {
 
       if (response.success) {
         "禁用成功".toast();
+        // ignore: use_build_context_synchronously
         loadData(context, false);
       } else {
         failToast(response.message, notify: true);
@@ -249,6 +259,7 @@ class TaskViewModel extends BaseViewModel {
 
       if (response.success) {
         "启用成功".toast();
+        // ignore: use_build_context_synchronously
         loadData(context, false);
       } else {
         failToast(response.message, notify: true);

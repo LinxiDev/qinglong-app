@@ -7,7 +7,7 @@ import 'package:synchronized/synchronized.dart';
 class SpUtil {
   static SpUtil? _singleton;
   static SharedPreferences? _prefs;
-  static Lock _lock = Lock();
+  static final Lock _lock = Lock();
 
   static Future<SpUtil> getInstance() async {
     if (_singleton == null) {
@@ -35,7 +35,7 @@ class SpUtil {
   }
 
   /// get obj.
-  static T? getObj<T>(String key, T f(Map v), {T? defValue}) {
+  static T? getObj<T>(String key, T Function(Map v) f, {T? defValue}) {
     Map? map = getObject(key);
     return map == null ? defValue : f(map);
   }
@@ -43,21 +43,21 @@ class SpUtil {
   /// get object.
   static Map? getObject(String key) {
     if (_prefs == null) return null;
-    String? _data = _prefs!.getString(key);
-    return (_data == null || _data.isEmpty) ? null : json.decode(_data);
+    String? data = _prefs!.getString(key);
+    return (data == null || data.isEmpty) ? null : json.decode(data);
   }
 
   /// put object list.
   static Future<bool>? putObjectList(String key, List<Object> list) {
     if (_prefs == null) return null;
-    List<String> _dataList = list.map((value) {
+    List<String> dataList = list.map((value) {
       return json.encode(value);
     }).toList();
-    return _prefs!.setStringList(key, _dataList);
+    return _prefs!.setStringList(key, dataList);
   }
 
   /// get obj list.
-  static List<T>? getObjList<T>(String key, T f(Map v), {List<T> defValue = const []}) {
+  static List<T>? getObjList<T>(String key, T Function(Map v) f, {List<T> defValue = const []}) {
     List<Map>? dataList = getObjectList(key);
     List<T>? list = dataList?.map((value) {
       return f(value);
@@ -70,8 +70,8 @@ class SpUtil {
     if (_prefs == null) return null;
     List<String>? dataLis = _prefs!.getStringList(key);
     return dataLis?.map((value) {
-      Map _dataMap = json.decode(value);
-      return _dataMap;
+      Map dataMap = json.decode(value);
+      return dataMap;
     }).toList();
   }
 

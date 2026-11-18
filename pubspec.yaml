@@ -62,6 +62,9 @@ dependencies:
   icloud_storage_plus: ^4.4.0
   flutter_displaymode: ^0.7.0
 
+  vector_math: any
+  local_auth_android: any
+  local_auth_darwin: any
 dev_dependencies:
   flutter_test:
     sdk: flutter

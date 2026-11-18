@@ -22,13 +22,13 @@ import '../../../main.dart';
 import '../../home/system_bean.dart';
 
 class ScriptPage extends ConsumerStatefulWidget {
-  const ScriptPage({Key? key}) : super(key: key);
+  const ScriptPage({super.key});
 
   @override
-  _ScriptPageState createState() => _ScriptPageState();
+  ScriptPageState createState() => ScriptPageState();
 }
 
-class _ScriptPageState extends ConsumerState<ScriptPage> with LazyLoadState<ScriptPage> {
+class ScriptPageState extends ConsumerState<ScriptPage> with LazyLoadState<ScriptPage> {
   List<ScriptData> list = [];
 
   String? path;
@@ -303,10 +303,12 @@ class _ScriptPageState extends ConsumerState<ScriptPage> with LazyLoadState<Scri
             item.parent,
           )
         : (systemBean.isUpperVersion2_14_5()
+            // ignore: use_build_context_synchronously
             ? await SingleAccountPageState.ofApi(context).delScriptNewVersion(
                 item.title,
                 item.parent,
               )
+            // ignore: use_build_context_synchronously
             : await SingleAccountPageState.ofApi(context).delScript(
                 item.title,
                 item.parent,

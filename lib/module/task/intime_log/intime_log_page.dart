@@ -27,15 +27,15 @@ class InTimeLogPage extends ConsumerStatefulWidget {
     this.cronId,
     this.needTimer,
     this.title, {
-    Key? key,
+    super.key,
     this.command,
-  }) : super(key: key);
+  });
 
   @override
-  _InTimeLogPageState createState() => _InTimeLogPageState();
+  InTimeLogPageState createState() => InTimeLogPageState();
 }
 
-class _InTimeLogPageState extends ConsumerState<InTimeLogPage> with LazyLoadState<InTimeLogPage> {
+class InTimeLogPageState extends ConsumerState<InTimeLogPage> with LazyLoadState<InTimeLogPage> {
   Timer? _timer;
 
   String? content;
@@ -47,7 +47,7 @@ class _InTimeLogPageState extends ConsumerState<InTimeLogPage> with LazyLoadStat
   ScrollController? controller = ScrollController();
   bool showVIPReminder = false;
 
-  getLogData() async {
+  Future<void> getLogData() async {
     if (!canRequest) return;
     if (isRequest) return;
     if (!mounted) return;
@@ -100,10 +100,6 @@ class _InTimeLogPageState extends ConsumerState<InTimeLogPage> with LazyLoadStat
     super.dispose();
   }
 
-  @override
-  void initState() {
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {

@@ -14,7 +14,7 @@ import 'package:qinglong_app/utils/extension.dart';
 import '../base/commit_button.dart';
 
 class PushSettingPage extends ConsumerStatefulWidget {
-  const PushSettingPage({Key? key}) : super(key: key);
+  const PushSettingPage({super.key});
 
   @override
   ConsumerState<PushSettingPage> createState() => _PushSettingPageState();
@@ -366,6 +366,7 @@ class _PushSettingPageState extends ConsumerState<PushSettingPage> {
       EasyLoading.dismiss();
       if (response.success) {
         "设置成功".toast();
+        // ignore: use_build_context_synchronously
         Navigator.of(context).pop();
       } else {
         response.message.toast();
@@ -391,6 +392,7 @@ class _PushSettingPageState extends ConsumerState<PushSettingPage> {
     EasyLoading.dismiss();
     if (response.success) {
       "设置成功".toast();
+      // ignore: use_build_context_synchronously
       Navigator.of(context).pop();
     } else {
       response.message.toast();

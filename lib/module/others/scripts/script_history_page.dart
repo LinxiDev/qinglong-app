@@ -22,10 +22,10 @@ class ScriptHistoryPage extends ConsumerStatefulWidget {
   final String path;
 
   const ScriptHistoryPage({
-    Key? key,
+    super.key,
     required this.filename,
     required this.path,
-  }) : super(key: key);
+  });
 
   @override
   ConsumerState<ScriptHistoryPage> createState() => _ScriptHistoryPageState();
@@ -322,14 +322,14 @@ class ScriptHistoryDetailPage extends ConsumerStatefulWidget {
   final String expectedHash;
 
   const ScriptHistoryDetailPage({
-    Key? key,
+    super.key,
     required this.filename,
     required this.path,
     required this.versionId,
     required this.createdAt,
     required this.sourceLabel,
     required this.expectedHash,
-  }) : super(key: key);
+  });
 
   @override
   ConsumerState<ScriptHistoryDetailPage> createState() =>

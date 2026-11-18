@@ -25,9 +25,9 @@ class SingleAccountPage extends StatefulWidget {
   final int index;
 
   const SingleAccountPage({
-    Key? key,
+    super.key,
     required this.index,
-  }) : super(key: key);
+  });
 
   @override
   State<SingleAccountPage> createState() => SingleAccountPageState();

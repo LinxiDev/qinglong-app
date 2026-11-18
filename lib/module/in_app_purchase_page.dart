@@ -7,9 +7,9 @@ class InAppPurchasePage extends ConsumerStatefulWidget {
   final bool fromDirectly;
 
   const InAppPurchasePage({
-    Key? key,
+    super.key,
     this.fromDirectly = false,
-  }) : super(key: key);
+  });
 
   @override
   ConsumerState<InAppPurchasePage> createState() => _InAppPurchasePageState();
@@ -177,10 +177,10 @@ class BasicFuncWidget extends ConsumerWidget {
   final bool advance;
 
   const BasicFuncWidget({
-    Key? key,
+    super.key,
     required this.title,
     this.advance = false,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context, ref) {

@@ -21,8 +21,7 @@ class CronInstancePage extends ConsumerStatefulWidget {
   final String cronId;
   final String cronName;
 
-  const CronInstancePage({Key? key, required this.cronId, this.cronName = ""})
-    : super(key: key);
+  const CronInstancePage({super.key, required this.cronId, this.cronName = ""});
 
   @override
   ConsumerState<CronInstancePage> createState() => _CronInstancePageState();

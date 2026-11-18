@@ -9,10 +9,10 @@ class StatusWidget extends ConsumerWidget {
   final Color color;
 
   const StatusWidget({
-    Key? key,
+    super.key,
     required this.title,
     required this.color,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context, ref) {

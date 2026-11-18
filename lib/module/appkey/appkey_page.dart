@@ -14,13 +14,13 @@ import 'package:qinglong_app/utils/utils.dart';
 import 'add_appkey_page.dart';
 
 class AppKeyPage extends ConsumerStatefulWidget {
-  const AppKeyPage({Key? key}) : super(key: key);
+  const AppKeyPage({super.key});
 
   @override
-  _AppKeyPageState createState() => _AppKeyPageState();
+  AppKeyPageState createState() => AppKeyPageState();
 }
 
-class _AppKeyPageState extends ConsumerState<AppKeyPage> {
+class AppKeyPageState extends ConsumerState<AppKeyPage> {
   TextEditingController searchText = TextEditingController();
 
   ScrollController controller = ScrollController();
@@ -88,10 +88,13 @@ class _AppKeyPageState extends ConsumerState<AppKeyPage> {
                   if (value != null && value == true) {
                     ref
                         .read(
+                          // ignore: use_build_context_synchronously
                           SingleAccountPageState.ofAppKeyProvider(context)(
+                            // ignore: use_build_context_synchronously
                             getProviderName(context),
                           ),
                         )
+                        // ignore: use_build_context_synchronously
                         .loadData(context);
                   }
                 },
@@ -202,7 +205,7 @@ class AppKeyItemCell extends StatelessWidget {
   final Map<String, dynamic> bean;
   final WidgetRef ref;
 
-  const AppKeyItemCell(this.bean, this.ref, {Key? key}) : super(key: key);
+  const AppKeyItemCell(this.bean, this.ref, {super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -230,10 +233,13 @@ class AppKeyItemCell extends StatelessWidget {
                     if (value != null && value == true) {
                       ref
                           .read(
+                            // ignore: use_build_context_synchronously
                             SingleAccountPageState.ofAppKeyProvider(context)(
+                              // ignore: use_build_context_synchronously
                               getProviderName(context),
                             ),
                           )
+                          // ignore: use_build_context_synchronously
                           .loadData(context);
                     }
                   },
@@ -246,6 +252,7 @@ class AppKeyItemCell extends StatelessWidget {
                 backgroundColor: const Color(0xffA356D6),
                 onPressed: (_) {
                   WidgetsBinding.instance.endOfFrame.then((value) {
+                    // ignore: use_build_context_synchronously
                     _reset(context);
                   });
                 },
@@ -255,6 +262,7 @@ class AppKeyItemCell extends StatelessWidget {
               backgroundColor: const Color(0xffEA4D3E),
               onPressed: (_) {
                 WidgetsBinding.instance.endOfFrame.then((value) {
+                  // ignore: use_build_context_synchronously
                   _del(context, ref);
                 });
               },

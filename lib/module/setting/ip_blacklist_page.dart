@@ -16,7 +16,7 @@ import '../../main.dart';
 ///
 /// 被加入黑名单的 IP 无法登录面板，可用于应急阻断异常来源。
 class IpBlacklistPage extends ConsumerStatefulWidget {
-  const IpBlacklistPage({Key? key}) : super(key: key);
+  const IpBlacklistPage({super.key});
 
   @override
   ConsumerState<IpBlacklistPage> createState() => _IpBlacklistPageState();

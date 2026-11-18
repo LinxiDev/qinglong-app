@@ -101,10 +101,10 @@ class TreeViewController {
     int? index,
     InsertMode mode = InsertMode.append,
   }) {
-    List<ScriptData> _data =
+    List<ScriptData> data =
         addNode(key, newNode, parent: parent, mode: mode, index: index);
     return TreeViewController(
-      children: _data,
+      children: data,
       selectedKey: selectedKey,
     );
   }
@@ -122,9 +122,9 @@ class TreeViewController {
   /// });
   /// ```
   TreeViewController withUpdateNode(String key, ScriptData newNode, {ScriptData? parent}) {
-    List<ScriptData> _data = updateNode(key, newNode, parent: parent);
+    List<ScriptData> data = updateNode(key, newNode, parent: parent);
     return TreeViewController(
-      children: _data,
+      children: data,
       selectedKey: selectedKey,
     );
   }
@@ -142,9 +142,9 @@ class TreeViewController {
   /// });
   /// ```
   TreeViewController withDeleteNode(String key, {ScriptData? parent}) {
-    List<ScriptData> _data = deleteNode(key, parent: parent);
+    List<ScriptData> data = deleteNode(key, parent: parent);
     return TreeViewController(
-      children: _data,
+      children: data,
       selectedKey: selectedKey,
     );
   }
@@ -162,9 +162,9 @@ class TreeViewController {
   /// });
   /// ```
   TreeViewController withToggleNode(String key, {ScriptData? parent}) {
-    List<ScriptData> _data = toggleNode(key, parent: parent);
+    List<ScriptData> data = toggleNode(key, parent: parent);
     return TreeViewController(
-      children: _data,
+      children: data,
       selectedKey: selectedKey,
     );
   }
@@ -182,9 +182,9 @@ class TreeViewController {
   /// });
   /// ```
   TreeViewController withExpandToNode(String key) {
-    List<ScriptData> _data = expandToNode(key);
+    List<ScriptData> data = expandToNode(key);
     return TreeViewController(
-      children: _data,
+      children: data,
       selectedKey: selectedKey,
     );
   }
@@ -202,9 +202,9 @@ class TreeViewController {
   /// });
   /// ```
   TreeViewController withCollapseToNode(String key) {
-    List<ScriptData> _data = collapseToNode(key);
+    List<ScriptData> data = collapseToNode(key);
     return TreeViewController(
-      children: _data,
+      children: data,
       selectedKey: selectedKey,
     );
   }
@@ -222,9 +222,9 @@ class TreeViewController {
   /// });
   /// ```
   TreeViewController withExpandAll({ScriptData? parent}) {
-    List<ScriptData> _data = expandAll(parent: parent);
+    List<ScriptData> data = expandAll(parent: parent);
     return TreeViewController(
-      children: _data,
+      children: data,
       selectedKey: selectedKey,
     );
   }
@@ -242,117 +242,116 @@ class TreeViewController {
   /// });
   /// ```
   TreeViewController withCollapseAll({ScriptData? parent}) {
-    List<ScriptData> _data = collapseAll(parent: parent);
+    List<ScriptData> data = collapseAll(parent: parent);
     return TreeViewController(
-      children: _data,
+      children: data,
       selectedKey: selectedKey,
     );
   }
 
   /// Gets the node that has a key value equal to the specified key.
   ScriptData? getNode(String key, {ScriptData? parent}) {
-    ScriptData? _found;
-    List<ScriptData> _children = parent == null ? children : parent.children;
-    Iterator iter = _children.iterator;
+    ScriptData? found;
+    List<ScriptData> nodeChildren = parent == null ? children : parent.children;
+    Iterator iter = nodeChildren.iterator;
     while (iter.moveNext()) {
       ScriptData child = iter.current;
       if (child.key == key) {
-        _found = child;
+        found = child;
         break;
       } else {
         if (child.isParent) {
-          _found = getNode(key, parent: child);
-          if (_found != null) {
+          found = getNode(key, parent: child);
+          if (found != null) {
             break;
           }
         }
       }
     }
-    return _found;
+    return found;
   }
 
   /// Expands all node that are children of the parent node parameter. If no parent is passed, uses the root node as the parent.
   List<ScriptData> expandAll({ScriptData? parent}) {
-    List<ScriptData> _children = [];
+    List<ScriptData> nodeChildren = [];
     Iterator iter =
         parent == null ? children.iterator : parent.children.iterator;
     while (iter.moveNext()) {
       ScriptData child = iter.current;
       if (child.isParent) {
-        _children.add(child.copyWith(
+        nodeChildren.add(child.copyWith(
           expanded: true,
           children: expandAll(parent: child),
         ));
       } else {
-        _children.add(child);
+        nodeChildren.add(child);
       }
     }
-    return _children;
+    return nodeChildren;
   }
 
   /// Collapses all node that are children of the parent node parameter. If no parent is passed, uses the root node as the parent.
   List<ScriptData> collapseAll({ScriptData? parent}) {
-    List<ScriptData> _children = [];
+    List<ScriptData> nodeChildren = [];
     Iterator iter =
         parent == null ? children.iterator : parent.children.iterator;
     while (iter.moveNext()) {
       ScriptData child = iter.current;
       if (child.isParent) {
-        _children.add(child.copyWith(
+        nodeChildren.add(child.copyWith(
           expanded: false,
           children: collapseAll(parent: child),
         ));
       } else {
-        _children.add(child);
+        nodeChildren.add(child);
       }
     }
-    return _children;
+    return nodeChildren;
   }
 
   /// Gets the parent of the node identified by specified key.
   ScriptData? getParent(String key, {ScriptData? parent}) {
-    ScriptData? _found;
-    List<ScriptData> _children = parent == null ? children : parent.children;
-    Iterator iter = _children.iterator;
+    ScriptData? found;
+    List<ScriptData> nodeChildren = parent == null ? children : parent.children;
+    Iterator iter = nodeChildren.iterator;
     while (iter.moveNext()) {
       ScriptData child = iter.current;
       if (child.key == key) {
-        _found = parent ?? child;
+        found = parent ?? child;
         break;
       } else {
         if (child.isParent) {
-          _found = getParent(key, parent: child);
-          if (_found != null) {
+          found = getParent(key, parent: child);
+          if (found != null) {
             break;
           }
         }
       }
     }
-    return _found == null ? null : _found;
+    return found;
   }
 
   /// Expands a node and all of the node's ancestors so that the node is
   /// visible without the need to manually expand each node.
   List<ScriptData> expandToNode(String key) {
-    List<String> _ancestors = [];
-    String _currentKey = key;
+    List<String> ancestors = [];
+    String currentKey = key;
 
-    _ancestors.add(_currentKey);
+    ancestors.add(currentKey);
 
-    ScriptData? _parent = getParent(_currentKey);
-    if (_parent != null) {
-      while (_parent!.key != _currentKey) {
-        _currentKey = _parent.key;
-        _ancestors.add(_currentKey);
-        _parent = getParent(_currentKey);
+    ScriptData? parent = getParent(currentKey);
+    if (parent != null) {
+      while (parent!.key != currentKey) {
+        currentKey = parent.key;
+        ancestors.add(currentKey);
+        parent = getParent(currentKey);
       }
-      TreeViewController _this = this;
-      _ancestors.forEach((String k) {
-        ScriptData _node = _this.getNode(k)!;
-        ScriptData _updated = _node.copyWith(expanded: true);
-        _this = _this.withUpdateNode(k, _updated);
-      });
-      return _this.children;
+      for (var k in ancestors) {
+        ScriptData node = getNode(k)!;
+        ScriptData updated = node.copyWith(expanded: true);
+        withUpdateNode(k, updated);
+      }
+      return children;
     }
     return children;
   }
@@ -360,25 +359,24 @@ class TreeViewController {
   /// Collapses a node and all of the node's ancestors without the need to
   /// manually collapse each node.
   List<ScriptData> collapseToNode(String key) {
-    List<String> _ancestors = [];
-    String _currentKey = key;
+    List<String> ancestors = [];
+    String currentKey = key;
 
-    _ancestors.add(_currentKey);
+    ancestors.add(currentKey);
 
-    ScriptData? _parent = getParent(_currentKey);
-    if (_parent != null) {
-      while (_parent!.key != _currentKey) {
-        _currentKey = _parent.key;
-        _ancestors.add(_currentKey);
-        _parent = getParent(_currentKey);
+    ScriptData? parent = getParent(currentKey);
+    if (parent != null) {
+      while (parent!.key != currentKey) {
+        currentKey = parent.key;
+        ancestors.add(currentKey);
+        parent = getParent(currentKey);
       }
-      TreeViewController _this = this;
-      _ancestors.forEach((String k) {
-        ScriptData _node = _this.getNode(k)!;
-        ScriptData _updated = _node.copyWith(expanded: false);
-        _this = _this.withUpdateNode(k, _updated);
-      });
-      return _this.children;
+      for (var k in ancestors) {
+        ScriptData node = getNode(k)!;
+        ScriptData updated = node.copyWith(expanded: false);
+        withUpdateNode(k, updated);
+      }
+      return children;
     }
     return children;
   }
@@ -394,18 +392,18 @@ class TreeViewController {
     int? index,
     InsertMode mode = InsertMode.append,
   }) {
-    List<ScriptData> __children = parent == null ? children : parent.children;
-    return __children.map((ScriptData child) {
+    List<ScriptData> nodeChildren = parent == null ? children : parent.children;
+    return nodeChildren.map((ScriptData child) {
       if (child.key == key) {
-        List<ScriptData> _children = child.children.toList(growable: true);
+        List<ScriptData> nodeChildren = child.children.toList(growable: true);
         if (mode == InsertMode.prepend) {
-          _children.insert(0, newNode);
+          nodeChildren.insert(0, newNode);
         } else if (mode == InsertMode.insert) {
-          _children.insert(index ?? _children.length, newNode);
+          nodeChildren.insert(index ?? nodeChildren.length, newNode);
         } else {
-          _children.add(newNode);
+          nodeChildren.add(newNode);
         }
-        return child.copyWith(children: _children);
+        return child.copyWith(children: nodeChildren);
       } else {
         return child.copyWith(
           children: addNode(
@@ -423,8 +421,8 @@ class TreeViewController {
   /// Updates an existing node identified by specified key. This method
   /// returns a new list with the updated node.
   List<ScriptData> updateNode(String key, ScriptData newNode, {ScriptData? parent}) {
-    List<ScriptData> _children = parent == null ? children : parent.children;
-    return _children.map((ScriptData child) {
+    List<ScriptData> nodeChildren = parent == null ? children : parent.children;
+    return nodeChildren.map((ScriptData child) {
       if (child.key == key) {
         return newNode;
       } else {
@@ -445,29 +443,29 @@ class TreeViewController {
   /// Toggles an existing node identified by specified key. This method
   /// returns a new list with the specified node toggled.
   List<ScriptData> toggleNode(String key, {ScriptData? parent}) {
-    ScriptData? _node = getNode(key, parent: parent);
-    return updateNode(key, _node!.copyWith(expanded: !_node.expanded));
+    ScriptData? node = getNode(key, parent: parent);
+    return updateNode(key, node!.copyWith(expanded: !node.expanded));
   }
 
   /// Deletes an existing node identified by specified key. This method
   /// returns a new list with the specified node removed.
   List<ScriptData> deleteNode(String key, {ScriptData? parent}) {
-    List<ScriptData> _children = parent == null ? children : parent.children;
-    List<ScriptData> _filteredChildren = [];
-    Iterator iter = _children.iterator;
+    List<ScriptData> nodeChildren = parent == null ? children : parent.children;
+    List<ScriptData> filteredChildren = [];
+    Iterator iter = nodeChildren.iterator;
     while (iter.moveNext()) {
       ScriptData child = iter.current;
       if (child.key != key) {
         if (child.isParent) {
-          _filteredChildren.add(child.copyWith(
+          filteredChildren.add(child.copyWith(
             children: deleteNode(key, parent: child),
           ));
         } else {
-          _filteredChildren.add(child);
+          filteredChildren.add(child);
         }
       }
     }
-    return _filteredChildren;
+    return filteredChildren;
   }
 
   /// Get the current selected node. Returns null if there is no selectedKey

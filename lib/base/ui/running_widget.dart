@@ -7,7 +7,7 @@ import 'package:qinglong_app/base/ui/loading_widget.dart';
 
 
 class RunningWidget extends ConsumerWidget {
-  const RunningWidget({Key? key}) : super(key: key);
+  const RunningWidget({super.key});
 
   @override
   Widget build(BuildContext context, ref) {

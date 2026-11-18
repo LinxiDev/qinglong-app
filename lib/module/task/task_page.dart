@@ -32,10 +32,10 @@ class TaskPage extends ConsumerStatefulWidget {
   final bool onlyShowPullRepo;
 
   const TaskPage({
-    Key? key,
+    super.key,
     this.loading = false,
     this.onlyShowPullRepo = false,
-  }) : super(key: key);
+  });
 
   @override
   TaskPageState createState() => TaskPageState();
@@ -72,12 +72,21 @@ class TaskPageState extends ConsumerState<TaskPage>
   }
 
   Future<void> scrollToTop() async {
+    // 空态下没有滚动视图，控制器未挂载
+    if (!_scrollController.hasClients) return;
     await _scrollController.animateTo(0,
         duration: const Duration(milliseconds: 200), curve: Curves.linear);
   }
 
   Future<void> move2Top() async {
-    if (_scrollController.offset != _scrollController.position.minScrollExtent) {
+    if (!_scrollController.hasClients) {
+      if (refreshKey.currentState?.mounted ?? false) {
+        await refreshKey.currentState?.show();
+      }
+      return;
+    }
+    if (_scrollController.offset !=
+        _scrollController.position.minScrollExtent) {
       await scrollToTop();
     } else {
       if (refreshKey.currentState?.mounted ?? false) {
@@ -159,8 +168,10 @@ class TaskPageState extends ConsumerState<TaskPage>
                         (value) {
                       ref
                           .read(
+                          // ignore: use_build_context_synchronously
                           SingleAccountPageState.ofTaskProvider(context)(getProviderName(context))
                               .notifier)
+                          // ignore: use_build_context_synchronously
                           .loadData(context, false);
                     },
                   );
@@ -345,8 +356,10 @@ class TaskPageState extends ConsumerState<TaskPage>
                   (value) {
                     ref
                         .read(
+                            // ignore: use_build_context_synchronously
                             SingleAccountPageState.ofTaskProvider(context)(getProviderName(context))
                                 .notifier)
+                        // ignore: use_build_context_synchronously
                         .loadData(context, false);
                   },
                 );
@@ -608,7 +621,7 @@ class TaskPageState extends ConsumerState<TaskPage>
       },
     );
 
-    Overlay.of(context)?.insert(_editModeOverlay!);
+    Overlay.of(context).insert(_editModeOverlay!);
   }
 
   void removeOverlay() {
@@ -851,7 +864,7 @@ class ListBodyWidget extends ConsumerStatefulWidget {
   final bool onlyShowPullRepo;
 
   const ListBodyWidget({
-    Key? key,
+    super.key,
     required this.model,
     required this.list,
     required this.searchText,
@@ -859,7 +872,7 @@ class ListBodyWidget extends ConsumerStatefulWidget {
     required this.checked,
     required this.changed,
     required this.onlyShowPullRepo,
-  }) : super(key: key);
+  });
 
   @override
   ConsumerState<ListBodyWidget> createState() => _ListBodyState();
@@ -933,11 +946,11 @@ class TaskItemCell extends StatelessWidget {
   const TaskItemCell(
     this.bean,
     this.ref, {
-    Key? key,
+    super.key,
     this.editMode = false,
     required this.checkedCallback,
     required this.checked,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -967,6 +980,7 @@ class TaskItemCell extends StatelessWidget {
             backgroundColor: const Color(0xffF19A39),
             onPressed: (_) {
               WidgetsBinding.instance.endOfFrame.then((timeStamp) {
+                // ignore: use_build_context_synchronously
                 pinTask(context);
               });
             },
@@ -977,6 +991,7 @@ class TaskItemCell extends StatelessWidget {
             backgroundColor: const Color(0xffA356D6),
             onPressed: (_) {
               WidgetsBinding.instance.endOfFrame.then((timeStamp) {
+                // ignore: use_build_context_synchronously
                 enableTask(context);
               });
             },
@@ -987,6 +1002,7 @@ class TaskItemCell extends StatelessWidget {
             backgroundColor: const Color(0xffEA4D3E),
             onPressed: (_) {
               WidgetsBinding.instance.endOfFrame.then((timeStamp) {
+                // ignore: use_build_context_synchronously
                 delTask(context, ref);
               });
             },
@@ -1179,22 +1195,23 @@ class TaskItemCell extends StatelessWidget {
     );
   }
 
-  startCron(BuildContext context, WidgetRef ref, bool showLog) async {
+  Future<void> startCron(BuildContext context, WidgetRef ref, bool showLog) async {
     await ref
         .read(SingleAccountPageState.ofTaskProvider(context)(getProviderName(context)).notifier)
         .runCrons(context, [bean.sId!]);
     if (showLog) {
+      // ignore: use_build_context_synchronously
       logCron(context, ref);
     }
   }
 
-  stopCron(BuildContext context, WidgetRef ref) {
+  void stopCron(BuildContext context, WidgetRef ref) {
     ref
         .read(SingleAccountPageState.ofTaskProvider(context)(getProviderName(context)).notifier)
         .stopCrons(context, [bean.sId!]);
   }
 
-  logCron(BuildContext context, WidgetRef ref) {
+  void logCron(BuildContext context, WidgetRef ref) {
     Navigator.of(context)
         .push(
       CupertinoPageRoute(
@@ -1213,9 +1230,11 @@ class TaskItemCell extends StatelessWidget {
           () {
             ref
                 .read(
+                  // ignore: use_build_context_synchronously
                   SingleAccountPageState.ofTaskProvider(context)(getProviderName(context)).notifier,
                 )
                 .loadData(
+                  // ignore: use_build_context_synchronously
                   context,
                   false,
                 );
@@ -1379,10 +1398,10 @@ class EditModeButton extends ConsumerWidget {
 
   const EditModeButton(
     this.title, {
-    Key? key,
+    super.key,
     required this.icon,
     required this.onTap,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context, ref) {
@@ -1397,6 +1416,7 @@ class EditModeButton extends ConsumerWidget {
         padding: const EdgeInsets.symmetric(
           horizontal: 10,
         ),
+        onPressed: onTap,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -1417,7 +1437,6 @@ class EditModeButton extends ConsumerWidget {
             ),
           ],
         ),
-        onPressed: onTap,
       ),
     );
   }

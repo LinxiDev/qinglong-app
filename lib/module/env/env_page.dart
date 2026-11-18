@@ -21,7 +21,7 @@ import 'package:qinglong_app/utils/utils.dart';
 import '../../base/ui/enable_widget.dart';
 
 class EnvPage extends ConsumerStatefulWidget {
-  const EnvPage({Key? key}) : super(key: key);
+  const EnvPage({super.key});
 
   @override
   EnvPageState createState() => EnvPageState();
@@ -39,10 +39,17 @@ class EnvPageState extends ConsumerState<EnvPage> with TickerProviderStateMixin 
   GlobalKey<RefreshIndicatorState> refreshKey = GlobalKey();
 
   Future<void> scrollToTop() async {
+    if (!_scrollController.hasClients) return;
     _scrollController.animateTo(0, duration: const Duration(milliseconds: 200), curve: Curves.linear);
   }
 
   Future<void> move2Top() async {
+    if (!_scrollController.hasClients) {
+      if (refreshKey.currentState?.mounted ?? false) {
+        await refreshKey.currentState?.show();
+      }
+      return;
+    }
     if (_scrollController.offset != _scrollController.position.minScrollExtent) {
       await scrollToTop();
     } else {
@@ -182,6 +189,7 @@ class EnvPageState extends ConsumerState<EnvPage> with TickerProviderStateMixin 
                   ),
                 )
                     .then((value) {
+                  // ignore: use_build_context_synchronously
                   ref.read(SingleAccountPageState.ofEnvProvider(context)(getProviderName(context)).notifier).loadData(context, false);
                 });
               },
@@ -380,7 +388,7 @@ class EnvPageState extends ConsumerState<EnvPage> with TickerProviderStateMixin 
       },
     );
 
-    Overlay.of(context)?.insert(_editModeOverlay!);
+    Overlay.of(context).insert(_editModeOverlay!);
   }
 
   void _executeCode(BuildContext context, String s) {
@@ -478,12 +486,12 @@ class EnvItemCell extends StatelessWidget {
     this.bean,
     this.index,
     this.ref, {
-    Key? key,
+    super.key,
     this.editMode = false,
     this.editMode2 = false,
     required this.checkedCallback,
     required this.checked,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -506,6 +514,7 @@ class EnvItemCell extends StatelessWidget {
                 ),
               )
                   .then((value) {
+                // ignore: use_build_context_synchronously
                 ref.read(SingleAccountPageState.ofEnvProvider(context)(getProviderName(context)).notifier).loadData(context, false);
               });
             },
@@ -750,9 +759,12 @@ class EnvItemCell extends StatelessWidget {
     if (response.success) {
       pinned ? "已取消置顶".toast() : "已置顶".toast();
       ref
+          // ignore: use_build_context_synchronously
           .read(SingleAccountPageState.ofEnvProvider(context)(
+                  // ignore: use_build_context_synchronously
                   getProviderName(context))
               .notifier)
+          // ignore: use_build_context_synchronously
           .loadData(context, false);
     } else {
       response.message.toast();
@@ -808,14 +820,18 @@ class EnvItemCell extends StatelessWidget {
     if (name == null || name.isEmpty) return;
 
     final response =
+        // ignore: use_build_context_synchronously
         await SingleAccountPageState.ofApi(context).renameEnv([envId], name);
 
     if (response.success) {
       "已重命名".toast();
       ref
+          // ignore: use_build_context_synchronously
           .read(SingleAccountPageState.ofEnvProvider(context)(
+                  // ignore: use_build_context_synchronously
                   getProviderName(context))
               .notifier)
+          // ignore: use_build_context_synchronously
           .loadData(context, false);
     } else {
       response.message.toast();
@@ -871,13 +887,13 @@ class EnvListView extends ConsumerStatefulWidget {
   final ValueChanged<String> changed;
 
   const EnvListView({
-    Key? key,
+    super.key,
     required this.list,
     required this.searchText,
     required this.editMode,
     required this.checked,
     required this.changed,
-  }) : super(key: key);
+  });
 
   @override
   ConsumerState<EnvListView> createState() => _EnvListViewState();
@@ -933,13 +949,13 @@ class EnvRecordListView extends ConsumerStatefulWidget {
   final ValueChanged<String> changed;
 
   const EnvRecordListView({
-    Key? key,
+    super.key,
     required this.list,
     required this.searchText,
     required this.editMode,
     required this.checked,
     required this.changed,
-  }) : super(key: key);
+  });
 
   @override
   ConsumerState<EnvRecordListView> createState() => _EnvRecordListViewState();

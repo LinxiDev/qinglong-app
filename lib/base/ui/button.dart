@@ -6,16 +6,16 @@ class ButtonWidget extends StatefulWidget {
   final String? title;
 
   const ButtonWidget({
-    Key? key,
+    super.key,
     required this.onTap,
     this.title,
-  }) : super(key: key);
+  });
 
   @override
-  _ButtonWidgetState createState() => _ButtonWidgetState();
+  ButtonWidgetState createState() => ButtonWidgetState();
 }
 
-class _ButtonWidgetState extends State<ButtonWidget> {
+class ButtonWidgetState extends State<ButtonWidget> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(

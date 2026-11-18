@@ -37,13 +37,13 @@ class AbsUnderlineTabIndicator extends Decoration {
   }
 
   @override
-  _UnderlinePainter createBoxPainter([VoidCallback? onChanged]) {
-    return _UnderlinePainter(this, onChanged);
+  UnderlinePainter createBoxPainter([VoidCallback? onChanged]) {
+    return UnderlinePainter(this, onChanged);
   }
 }
 
-class _UnderlinePainter extends BoxPainter {
-  _UnderlinePainter(this.decoration, VoidCallback? onChanged)
+class UnderlinePainter extends BoxPainter {
+  UnderlinePainter(this.decoration, VoidCallback? onChanged)
       : super(onChanged);
 
   final AbsUnderlineTabIndicator decoration;

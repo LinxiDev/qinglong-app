@@ -19,7 +19,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../main.dart';
 
 class AboutPage extends ConsumerStatefulWidget {
-  const AboutPage({Key? key}) : super(key: key);
+  const AboutPage({super.key});
 
   @override
   ConsumerState createState() => _AboutPageState();
@@ -208,51 +208,6 @@ class _AboutPageState extends ConsumerState<AboutPage> with LazyLoadState<AboutP
                 child: Column(
                   children: [
                     QlVisible(
-                      child: Material(
-                        color: Colors.transparent,
-                        child: InkWell(
-                          borderRadius: const BorderRadius.only(
-                            topLeft: Radius.circular(10),
-                            topRight: Radius.circular(10),
-                          ),
-                          onTap: () async {
-                            InAppReview.instance.openStoreListing(appStoreId: "1625871665");
-                          },
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                              vertical: 10,
-                              horizontal: 15,
-                            ),
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(
-                                  CupertinoIcons.heart,
-                                  color: ref.watch(themeProvider).primaryColor,
-                                  size: 20,
-                                ),
-                                const SizedBox(
-                                  width: 15,
-                                ),
-                                Text(
-                                  "在 App Store 评分",
-                                  style: TextStyle(
-                                    color: ref.watch(themeProvider).themeColor.titleColor(),
-                                    fontSize: 16,
-                                  ),
-                                ),
-                                const Spacer(),
-                                Icon(
-                                  CupertinoIcons.right_chevron,
-                                  size: 16,
-                                  color: ref.watch(themeProvider).themeColor.descColor(),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
                       childReplace: Material(
                         color: Colors.transparent,
                         child: InkWell(
@@ -295,6 +250,51 @@ class _AboutPageState extends ConsumerState<AboutPage> with LazyLoadState<AboutP
                                 const SizedBox(
                                   width: 5,
                                 ),
+                                Icon(
+                                  CupertinoIcons.right_chevron,
+                                  size: 16,
+                                  color: ref.watch(themeProvider).themeColor.descColor(),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                      child: Material(
+                        color: Colors.transparent,
+                        child: InkWell(
+                          borderRadius: const BorderRadius.only(
+                            topLeft: Radius.circular(10),
+                            topRight: Radius.circular(10),
+                          ),
+                          onTap: () async {
+                            InAppReview.instance.openStoreListing(appStoreId: "1625871665");
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                              vertical: 10,
+                              horizontal: 15,
+                            ),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  CupertinoIcons.heart,
+                                  color: ref.watch(themeProvider).primaryColor,
+                                  size: 20,
+                                ),
+                                const SizedBox(
+                                  width: 15,
+                                ),
+                                Text(
+                                  "在 App Store 评分",
+                                  style: TextStyle(
+                                    color: ref.watch(themeProvider).themeColor.titleColor(),
+                                    fontSize: 16,
+                                  ),
+                                ),
+                                const Spacer(),
                                 Icon(
                                   CupertinoIcons.right_chevron,
                                   size: 16,
@@ -468,9 +468,9 @@ class _AboutPageState extends ConsumerState<AboutPage> with LazyLoadState<AboutP
     );
   }
 
-  void _launchURL(String _url) async {
+  void _launchURL(String url) async {
     try {
-      await launchUrl(Uri.tryParse(_url.trimLeft())!);
+      await launchUrl(Uri.tryParse(url.trimLeft())!);
     } catch (e) {
       logger.e(e);
     }
@@ -493,6 +493,7 @@ class _AboutPageState extends ConsumerState<AboutPage> with LazyLoadState<AboutP
     if (response.success) {
       if (response.bean?.hasNewVersion ?? false) {
         showCupertinoDialog(
+          // ignore: use_build_context_synchronously
           context: context,
           useRootNavigator: false,
           builder: (childContext) => CupertinoAlertDialog(

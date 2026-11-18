@@ -27,13 +27,13 @@ class TreeNode extends ConsumerStatefulWidget {
   /// The node object used to display the widget state
   final ScriptData node;
 
-  const TreeNode({Key? key, required this.node}) : super(key: key);
+  const TreeNode({super.key, required this.node});
 
   @override
-  _TreeNodeState createState() => _TreeNodeState();
+  TreeNodeState createState() => TreeNodeState();
 }
 
-class _TreeNodeState extends ConsumerState<TreeNode> with SingleTickerProviderStateMixin {
+class TreeNodeState extends ConsumerState<TreeNode> with SingleTickerProviderStateMixin {
   static final Animatable<double> _easeInTween = CurveTween(curve: Curves.easeIn);
 
   late AnimationController _controller;
@@ -52,8 +52,8 @@ class _TreeNodeState extends ConsumerState<TreeNode> with SingleTickerProviderSt
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    TreeView? _treeView = TreeView.of(context);
-    _controller.duration = _treeView!.theme.expandSpeed;
+    TreeView? treeView = TreeView.of(context);
+    _controller.duration = treeView!.theme.expandSpeed;
   }
 
   @override
@@ -83,8 +83,8 @@ class _TreeNodeState extends ConsumerState<TreeNode> with SingleTickerProviderSt
   }
 
   void _handleExpand() {
-    TreeView? _treeView = TreeView.of(context);
-    assert(_treeView != null, 'TreeView must exist in context');
+    TreeView? treeView = TreeView.of(context);
+    assert(treeView != null, 'TreeView must exist in context');
     setState(() {
       _isExpanded = !_isExpanded;
       if (_isExpanded) {
@@ -96,59 +96,59 @@ class _TreeNodeState extends ConsumerState<TreeNode> with SingleTickerProviderSt
         });
       }
     });
-    if (_treeView!.onExpansionChanged != null) _treeView.onExpansionChanged!(widget.node.key, _isExpanded);
+    if (treeView!.onExpansionChanged != null) treeView.onExpansionChanged!(widget.node.key, _isExpanded);
   }
 
   void _handleDeleteSelf() {
-    TreeView? _treeView = TreeView.of(context);
-    if (_treeView!.onDeleteSelfClick != null) _treeView.onDeleteSelfClick!(widget.node);
+    TreeView? treeView = TreeView.of(context);
+    if (treeView!.onDeleteSelfClick != null) treeView.onDeleteSelfClick!(widget.node);
   }
 
   void _handleTap() {
-    TreeView? _treeView = TreeView.of(context);
-    assert(_treeView != null, 'TreeView must exist in context');
-    if (_treeView!.onNodeTap != null) {
-      _treeView.onNodeTap!(widget.node.key);
+    TreeView? treeView = TreeView.of(context);
+    assert(treeView != null, 'TreeView must exist in context');
+    if (treeView!.onNodeTap != null) {
+      treeView.onNodeTap!(widget.node.key);
     }
   }
 
   void _handleDoubleTap() {
-    TreeView? _treeView = TreeView.of(context);
-    assert(_treeView != null, 'TreeView must exist in context');
-    if (_treeView!.onNodeDoubleTap != null) {
-      _treeView.onNodeDoubleTap!(widget.node.key);
+    TreeView? treeView = TreeView.of(context);
+    assert(treeView != null, 'TreeView must exist in context');
+    if (treeView!.onNodeDoubleTap != null) {
+      treeView.onNodeDoubleTap!(widget.node.key);
     }
   }
 
   Widget _buildNodeExpander() {
-    TreeView? _treeView = TreeView.of(context);
-    assert(_treeView != null, 'TreeView must exist in context');
-    TreeViewTheme _theme = _treeView!.theme;
-    if (_theme.expanderTheme.type == ExpanderType.none) return Container();
+    TreeView? treeView = TreeView.of(context);
+    assert(treeView != null, 'TreeView must exist in context');
+    TreeViewTheme theme = treeView!.theme;
+    if (theme.expanderTheme.type == ExpanderType.none) return Container();
     return widget.node.isParent
         ? GestureDetector(
             onTap: () => _handleExpand(),
             child: _TreeNodeExpander(
               speed: _controller.duration!,
               expanded: widget.node.expanded,
-              themeData: _theme.expanderTheme,
+              themeData: theme.expanderTheme,
             ),
           )
-        : Container(width: _theme.expanderTheme.size);
+        : Container(width: theme.expanderTheme.size);
   }
 
   Widget _buildNodeIcon() {
-    TreeView? _treeView = TreeView.of(context);
-    assert(_treeView != null, 'TreeView must exist in context');
-    TreeViewTheme _theme = _treeView!.theme;
-    bool isSelected = _treeView.controller.selectedKey != null && _treeView.controller.selectedKey == widget.node.key;
+    TreeView? treeView = TreeView.of(context);
+    assert(treeView != null, 'TreeView must exist in context');
+    TreeViewTheme theme = treeView!.theme;
+    bool isSelected = treeView.controller.selectedKey != null && treeView.controller.selectedKey == widget.node.key;
     return Container(
       alignment: Alignment.center,
-      width: _theme.iconTheme.size! + _theme.iconPadding,
+      width: theme.iconTheme.size! + theme.iconPadding,
       child: widget.node.isParent
           ? Icon(
               widget.node.expanded ? CupertinoIcons.folder_badge_minus : CupertinoIcons.folder_badge_plus,
-              size: _theme.iconTheme.size,
+              size: theme.iconTheme.size,
               color: isSelected ? ref.watch(themeProvider).primaryColor : ref.watch(themeProvider).themeColor.titleColor(),
             )
           : const SizedBox.shrink(),
@@ -156,13 +156,13 @@ class _TreeNodeState extends ConsumerState<TreeNode> with SingleTickerProviderSt
   }
 
   Widget _buildNodeLabel() {
-    TreeView? _treeView = TreeView.of(context);
-    assert(_treeView != null, 'TreeView must exist in context');
-    TreeViewTheme _theme = _treeView!.theme;
+    TreeView? treeView = TreeView.of(context);
+    assert(treeView != null, 'TreeView must exist in context');
+    TreeViewTheme theme = treeView!.theme;
     final icon = _buildNodeIcon();
     return Container(
       padding: EdgeInsets.symmetric(
-        vertical: _theme.verticalSpacing ?? (_theme.dense ? 10 : 15),
+        vertical: theme.verticalSpacing ?? (theme.dense ? 10 : 15),
         horizontal: 0,
       ),
       child: Row(
@@ -195,14 +195,14 @@ class _TreeNodeState extends ConsumerState<TreeNode> with SingleTickerProviderSt
   }
 
   Widget _buildNodeWidget() {
-    TreeView? _treeView = TreeView.of(context);
-    assert(_treeView != null, 'TreeView must exist in context');
-    TreeViewTheme _theme = _treeView!.theme;
-    bool isSelected = _treeView.controller.selectedKey != null && _treeView.controller.selectedKey == widget.node.key;
-    bool canSelectParent = _treeView.allowParentSelect;
+    TreeView? treeView = TreeView.of(context);
+    assert(treeView != null, 'TreeView must exist in context');
+    TreeViewTheme theme = treeView!.theme;
+    bool isSelected = treeView.controller.selectedKey != null && treeView.controller.selectedKey == widget.node.key;
+    bool canSelectParent = treeView.allowParentSelect;
     final arrowContainer = _buildNodeExpander();
-    final labelContainer = _treeView.nodeBuilder != null ? _treeView.nodeBuilder!(context, widget.node) : _buildNodeLabel();
-    Widget _tappable = _treeView.onNodeDoubleTap != null
+    final labelContainer = treeView.nodeBuilder != null ? treeView.nodeBuilder!(context, widget.node) : _buildNodeLabel();
+    Widget tappable = treeView.onNodeDoubleTap != null
         ? GestureDetector(
             behavior: HitTestBehavior.opaque,
             onTap: _handleTap,
@@ -215,8 +215,8 @@ class _TreeNodeState extends ConsumerState<TreeNode> with SingleTickerProviderSt
             child: labelContainer,
           );
     if (widget.node.isParent) {
-      if (_treeView.supportParentDoubleTap && canSelectParent) {
-        _tappable = GestureDetector(
+      if (treeView.supportParentDoubleTap && canSelectParent) {
+        tappable = GestureDetector(
           onTap: canSelectParent ? _handleTap : _handleExpand,
           behavior: HitTestBehavior.opaque,
           onDoubleTap: () {
@@ -225,15 +225,15 @@ class _TreeNodeState extends ConsumerState<TreeNode> with SingleTickerProviderSt
           },
           child: labelContainer,
         );
-      } else if (_treeView.supportParentDoubleTap) {
-        _tappable = GestureDetector(
+      } else if (treeView.supportParentDoubleTap) {
+        tappable = GestureDetector(
           onTap: _handleExpand,
           onDoubleTap: _handleDoubleTap,
           behavior: HitTestBehavior.opaque,
           child: labelContainer,
         );
       } else {
-        _tappable = GestureDetector(
+        tappable = GestureDetector(
           onTap: canSelectParent ? _handleTap : _handleExpand,
           behavior: HitTestBehavior.opaque,
           child: labelContainer,
@@ -241,14 +241,14 @@ class _TreeNodeState extends ConsumerState<TreeNode> with SingleTickerProviderSt
       }
     }
     return Container(
-      color: isSelected ? _theme.colorScheme.primary : null,
+      color: isSelected ? theme.colorScheme.primary : null,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.center,
-        children: _theme.expanderTheme.position == ExpanderPosition.end
+        children: theme.expanderTheme.position == ExpanderPosition.end
             ? <Widget>[
                 Expanded(
-                  child: _tappable,
+                  child: tappable,
                 ),
                 arrowContainer,
               ]
@@ -257,7 +257,7 @@ class _TreeNodeState extends ConsumerState<TreeNode> with SingleTickerProviderSt
                   width: 10,
                 ),
                 Expanded(
-                  child: _tappable,
+                  child: tappable,
                 ),
               ],
       ),
@@ -266,8 +266,8 @@ class _TreeNodeState extends ConsumerState<TreeNode> with SingleTickerProviderSt
 
   @override
   Widget build(BuildContext context) {
-    TreeView? _treeView = TreeView.of(context);
-    assert(_treeView != null, 'TreeView must exist in context');
+    TreeView? treeView = TreeView.of(context);
+    assert(treeView != null, 'TreeView must exist in context');
     final bool closed = (!_isExpanded || !widget.node.expanded) && _controller.isDismissed;
     final nodeWidget = _buildNodeWidget();
     return widget.node.isParent
@@ -310,7 +310,7 @@ class _TreeNodeState extends ConsumerState<TreeNode> with SingleTickerProviderSt
             child: closed
                 ? null
                 : Container(
-                    margin: EdgeInsets.only(left: _treeView!.theme.horizontalSpacing ?? _treeView.theme.iconTheme.size!),
+                    margin: EdgeInsets.only(left: treeView!.theme.horizontalSpacing ?? treeView.theme.iconTheme.size!),
                     child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: widget.node.children.map((ScriptData node) {
@@ -426,30 +426,30 @@ class _TreeNodeExpanderState extends State<_TreeNodeExpander> with SingleTickerP
 
   @override
   Widget build(BuildContext context) {
-    IconData _arrow;
-    double _iconSize = 16;
-    double _borderWidth = 0;
-    BoxShape _shapeBorder = BoxShape.rectangle;
-    Color _backColor = Colors.transparent;
-    Color? _iconColor = widget.themeData.color ?? Theme.of(context).iconTheme.color;
+    IconData arrow;
+    double iconSize = 16;
+    double borderWidth = 0;
+    BoxShape shapeBorder = BoxShape.rectangle;
+    Color backColor = Colors.transparent;
+    Color? iconColor = widget.themeData.color ?? Theme.of(context).iconTheme.color;
     switch (widget.themeData.modifier) {
       case ExpanderModifier.none:
         break;
       case ExpanderModifier.circleFilled:
-        _shapeBorder = BoxShape.circle;
-        _backColor = widget.themeData.color ?? Colors.black;
-        _iconColor = _onColor(_backColor);
+        shapeBorder = BoxShape.circle;
+        backColor = widget.themeData.color ?? Colors.black;
+        iconColor = _onColor(backColor);
         break;
       case ExpanderModifier.circleOutlined:
-        _borderWidth = _kBorderWidth;
-        _shapeBorder = BoxShape.circle;
+        borderWidth = _kBorderWidth;
+        shapeBorder = BoxShape.circle;
         break;
       case ExpanderModifier.squareFilled:
-        _backColor = widget.themeData.color ?? Colors.black;
-        _iconColor = _onColor(_backColor);
+        backColor = widget.themeData.color ?? Colors.black;
+        iconColor = _onColor(backColor);
         break;
       case ExpanderModifier.squareOutlined:
-        _borderWidth = _kBorderWidth;
+        borderWidth = _kBorderWidth;
         break;
     }
     // case ExpanderType.chevron:
@@ -464,14 +464,14 @@ class _TreeNodeExpanderState extends State<_TreeNodeExpander> with SingleTickerP
     //   _arrow = Icons.arrow_drop_down;
     //   break;
     // case ExpanderType.plusMinus:
-    _arrow = widget.expanded ? Icons.remove : Icons.add;
+    arrow = widget.expanded ? Icons.remove : Icons.add;
     //   break;
     // }
 
-    Icon _icon = Icon(
-      _arrow,
-      size: _iconSize,
-      color: _iconColor,
+    Icon icon = Icon(
+      arrow,
+      size: iconSize,
+      color: iconColor,
     );
 
     if (widget.expanded) {
@@ -484,18 +484,18 @@ class _TreeNodeExpanderState extends State<_TreeNodeExpander> with SingleTickerP
       height: widget.themeData.size + 2,
       alignment: Alignment.center,
       decoration: BoxDecoration(
-        shape: _shapeBorder,
-        border: _borderWidth == 0
+        shape: shapeBorder,
+        border: borderWidth == 0
             ? null
             : Border.all(
-                width: _borderWidth,
+                width: borderWidth,
                 color: widget.themeData.color ?? Colors.black,
               ),
-        color: _backColor,
+        color: backColor,
       ),
       child: AnimatedBuilder(
         animation: controller,
-        child: _icon,
+        child: icon,
         builder: (context, child) {
           return Transform.rotate(
             angle: animation.value * (-pi / 180),

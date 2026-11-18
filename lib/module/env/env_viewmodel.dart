@@ -36,8 +36,9 @@ class EnvViewModel extends BaseViewModel {
           .addAll(list.where((element) => element.status == 1).toList());
       enabledList.clear();
       enabledList.addAll(list.where((element) => element.status == 0).toList());
+      // ignore: use_build_context_synchronously
       notifyICloud(context, list);
-      success();
+      list.isEmpty ? empty(notify: true) : success();
     } else {
       list.clear();
       disabledList.clear();
@@ -58,6 +59,7 @@ class EnvViewModel extends BaseViewModel {
         await SingleAccountPageState.ofApi(context).delEnvs(id);
     if (result.success) {
       "删除成功".toast();
+      // ignore: use_build_context_synchronously
       loadData(context, false);
     } else {
       failed(result.message, notify: true);
@@ -69,6 +71,7 @@ class EnvViewModel extends BaseViewModel {
         await SingleAccountPageState.ofApi(context).delEnv(id);
     if (result.success) {
       "删除成功".toast();
+      // ignore: use_build_context_synchronously
       loadData(context, false);
     } else {
       failed(result.message, notify: true);
@@ -87,6 +90,7 @@ class EnvViewModel extends BaseViewModel {
 
       if (response.success) {
         "启用成功".toast();
+        // ignore: use_build_context_synchronously
         loadData(context, false);
       } else {
         failToast(response.message, notify: true);
@@ -97,6 +101,7 @@ class EnvViewModel extends BaseViewModel {
 
       if (response.success) {
         "禁用成功".toast();
+        // ignore: use_build_context_synchronously
         loadData(context, false);
       } else {
         failToast(response.message, notify: true);
@@ -107,6 +112,7 @@ class EnvViewModel extends BaseViewModel {
   void update(
       BuildContext context, String id, int newIndex, int oldIndex) async {
     await SingleAccountPageState.ofApi(context).moveEnv(id, oldIndex, newIndex);
+    // ignore: use_build_context_synchronously
     loadData(context, false);
   }
 }

@@ -95,14 +95,12 @@ class QlDepCupertinoContextMenu extends StatefulWidget {
   ///
   /// [child] is required and cannot be null.
   QlDepCupertinoContextMenu({
-    Key? key,
+    super.key,
     required this.actions,
     required this.child,
     required this.bean,
     this.previewBuilder,
-  })  : assert(actions != null && actions.isNotEmpty),
-        assert(child != null),
-        super(key: key);
+  })  : assert(actions.isNotEmpty);
 
   final DependencyBean bean;
 
@@ -365,7 +363,7 @@ class _QlDepCupertinoContextMenuState extends State<QlDepCupertinoContextMenu>
         );
       },
     );
-    Overlay.of(context)!.insert(_lastOverlayEntry!);
+    Overlay.of(context).insert(_lastOverlayEntry!);
     _openController.forward();
   }
 
@@ -403,12 +401,11 @@ class _QlDepCupertinoContextMenuState extends State<QlDepCupertinoContextMenu>
 // siblings of the original child.
 class _DecoyChild extends StatefulWidget {
   const _DecoyChild({
-    Key? key,
     this.beginRect,
     required this.controller,
     this.endRect,
     this.child,
-  }) : super(key: key);
+  });
 
   final Rect? beginRect;
   final AnimationController controller;
@@ -519,22 +516,14 @@ class _ContextMenuRoute<T> extends PopupRoute<T> {
   // Build a _ContextMenuRoute.
   _ContextMenuRoute({
     required List<Widget> actions,
-    required _ContextMenuLocation contextMenuLocation,
+    required this._contextMenuLocation,
     this.barrierLabel,
-    _ContextMenuPreviewBuilderChildless? builder,
-    ui.ImageFilter? filter,
-    required Rect previousChildRect,
-    RouteSettings? settings,
-  })  : assert(actions != null && actions.isNotEmpty),
-        assert(contextMenuLocation != null),
-        _actions = actions,
-        _builder = builder,
-        _contextMenuLocation = contextMenuLocation,
-        _previousChildRect = previousChildRect,
-        super(
-          filter: filter,
-          settings: settings,
-        );
+    this._builder,
+    super.filter,
+    required this._previousChildRect,
+    super.settings,
+  })  : assert(actions.isNotEmpty),
+        _actions = actions;
 
   // Barrier color for a Cupertino modal barrier.
   static const Color _kModalBarrierColor = Color(0x6604040F);
@@ -822,7 +811,6 @@ class _ContextMenuRoute<T> extends PopupRoute<T> {
 // animating out.
 class _ContextMenuRouteStatic extends StatefulWidget {
   const _ContextMenuRouteStatic({
-    Key? key,
     this.actions,
     required this.child,
     this.childGlobalKey,
@@ -830,9 +818,7 @@ class _ContextMenuRouteStatic extends StatefulWidget {
     this.onDismiss,
     required this.orientation,
     this.sheetGlobalKey,
-  })  : assert(contextMenuLocation != null),
-        assert(orientation != null),
-        super(key: key);
+  });
 
   final List<Widget>? actions;
   final Widget child;
@@ -1162,16 +1148,11 @@ class _ContextMenuRouteStaticState extends State<_ContextMenuRouteStatic>
 // list of actions that are typically CupertinoContextMenuActions.
 class _ContextMenuSheet extends StatelessWidget {
   _ContextMenuSheet({
-    Key? key,
+    super.key,
     required this.actions,
-    required _ContextMenuLocation contextMenuLocation,
-    required Orientation orientation,
-  })  : assert(actions != null && actions.isNotEmpty),
-        assert(contextMenuLocation != null),
-        assert(orientation != null),
-        _contextMenuLocation = contextMenuLocation,
-        _orientation = orientation,
-        super(key: key);
+    required this._contextMenuLocation,
+    required this._orientation,
+  })  : assert(actions.isNotEmpty);
 
   final List<Widget> actions;
   final _ContextMenuLocation _contextMenuLocation;

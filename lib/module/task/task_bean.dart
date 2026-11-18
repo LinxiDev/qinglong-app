@@ -96,7 +96,7 @@ class TaskBean {
     this.pid,
   });
 
-  get nId => _id;
+  String? get nId => _id;
 
   /// 定时类型
   String get scheduleType => ScheduleType.of(schedule);

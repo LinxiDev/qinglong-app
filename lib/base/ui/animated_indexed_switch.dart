@@ -7,16 +7,16 @@ class AnimatedIndexedStack extends StatefulWidget {
   final List<Widget> children;
 
   const AnimatedIndexedStack({
-    Key? key,
+    super.key,
     required this.index,
     required this.children,
-  }) : super(key: key);
+  });
 
   @override
-  _AnimatedIndexedStackState createState() => _AnimatedIndexedStackState();
+  AnimatedIndexedStackState createState() => AnimatedIndexedStackState();
 }
 
-class _AnimatedIndexedStackState extends State<AnimatedIndexedStack>
+class AnimatedIndexedStackState extends State<AnimatedIndexedStack>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _animation;

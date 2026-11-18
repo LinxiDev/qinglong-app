@@ -17,13 +17,13 @@ class ScriptEditPage extends ConsumerStatefulWidget {
   final String title;
   final String path;
 
-  const ScriptEditPage(this.title, this.path, this.content, {Key? key}) : super(key: key);
+  const ScriptEditPage(this.title, this.path, this.content, {super.key});
 
   @override
-  _ScriptEditPageState createState() => _ScriptEditPageState();
+  ScriptEditPageState createState() => ScriptEditPageState();
 }
 
-class _ScriptEditPageState extends ConsumerState<ScriptEditPage> {
+class ScriptEditPageState extends ConsumerState<ScriptEditPage> {
   late String result;
   late String preResult;
   late CodeMirrorOptions options;
@@ -46,7 +46,7 @@ class _ScriptEditPageState extends ConsumerState<ScriptEditPage> {
     super.initState();
   }
 
-  getLanguageType(String title) {
+  String getLanguageType(String title) {
     if (title.endsWith(".js")) {
       return 'javascript';
     }
@@ -142,10 +142,12 @@ class _ScriptEditPageState extends ConsumerState<ScriptEditPage> {
               try {
                 await hideKeyboardFocus();
                 await EasyLoading.show(status: " 提交中");
+                // ignore: use_build_context_synchronously
                 HttpResponse<NullResponse> response = await SingleAccountPageState.ofApi(context).updateScript(widget.title, widget.path, result);
                 await EasyLoading.dismiss();
                 if (response.success) {
                   "提交成功".toast();
+                  // ignore: use_build_context_synchronously
                   Navigator.of(context).pop(result);
                 } else {
                   (response.message ?? "").toast();

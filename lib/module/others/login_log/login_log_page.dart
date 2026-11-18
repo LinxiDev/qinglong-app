@@ -16,13 +16,13 @@ import 'login_log_bean.dart';
 
 
 class LoginLogPage extends ConsumerStatefulWidget {
-  const LoginLogPage({Key? key}) : super(key: key);
+  const LoginLogPage({super.key});
 
   @override
-  _LoginLogPageState createState() => _LoginLogPageState();
+  LoginLogPageState createState() => LoginLogPageState();
 }
 
-class _LoginLogPageState extends ConsumerState<LoginLogPage>
+class LoginLogPageState extends ConsumerState<LoginLogPage>
     with LazyLoadState<LoginLogPage> {
   List<LoginLogBean> list = [];
 

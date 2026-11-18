@@ -15,7 +15,7 @@ import '../../main.dart';
 ///
 /// 展示面板与脚本发送通知的结果、渠道、失败原因，方便排查通知未送达的问题。
 class NotifyLogPage extends ConsumerStatefulWidget {
-  const NotifyLogPage({Key? key}) : super(key: key);
+  const NotifyLogPage({super.key});
 
   @override
   ConsumerState<NotifyLogPage> createState() => _NotifyLogPageState();

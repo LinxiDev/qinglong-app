@@ -20,14 +20,13 @@ class InTimeDepLogPage extends StatefulWidget {
   final bool needTimer;
   final String title;
 
-  const InTimeDepLogPage(this.id, this.needTimer, this.title, {Key? key})
-      : super(key: key);
+  const InTimeDepLogPage(this.id, this.needTimer, this.title, {super.key});
 
   @override
-  _InTimeDepLogPageState createState() => _InTimeDepLogPageState();
+  InTimeDepLogPageState createState() => InTimeDepLogPageState();
 }
 
-class _InTimeDepLogPageState extends State<InTimeDepLogPage>
+class InTimeDepLogPageState extends State<InTimeDepLogPage>
     with LazyLoadState<InTimeDepLogPage> {
   Timer? _timer;
 
@@ -45,7 +44,7 @@ class _InTimeDepLogPageState extends State<InTimeDepLogPage>
   bool isRequest = false;
   bool canRequest = true;
 
-  getLogData() async {
+  Future<void> getLogData() async {
     if (!canRequest) return;
     if (isRequest) return;
     isRequest = true;
@@ -70,7 +69,9 @@ class _InTimeDepLogPageState extends State<InTimeDepLogPage>
             }
           });
         }
-      } catch (e) {}
+      } catch (e) {
+        // 忽略异常，保持原有行为
+      }
       setState(() {});
     }
     isRequest = false;

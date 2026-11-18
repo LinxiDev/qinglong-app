@@ -17,7 +17,7 @@ import '../../main.dart';
 ///
 /// 展示今日成功/失败、近 7 天趋势、耗时榜与执行次数榜。
 class DashboardPage extends ConsumerStatefulWidget {
-  const DashboardPage({Key? key}) : super(key: key);
+  const DashboardPage({super.key});
 
   @override
   ConsumerState<DashboardPage> createState() => _DashboardPageState();

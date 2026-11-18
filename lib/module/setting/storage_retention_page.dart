@@ -17,7 +17,7 @@ import '../../main.dart';
 /// 支持配置运行实例 / 统计数据的保留天数，清理依赖缓存、压缩数据库，
 /// 清理前可先预览将被删除的条目数量。
 class StorageRetentionPage extends ConsumerStatefulWidget {
-  const StorageRetentionPage({Key? key}) : super(key: key);
+  const StorageRetentionPage({super.key});
 
   @override
   ConsumerState<StorageRetentionPage> createState() =>

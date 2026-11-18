@@ -8,8 +8,7 @@ class AppLogo extends StatelessWidget {
   final double? height;
   final BoxFit fit;
 
-  const AppLogo({Key? key, this.width, this.height, this.fit = BoxFit.contain})
-    : super(key: key);
+  const AppLogo({super.key, this.width, this.height, this.fit = BoxFit.contain});
 
   /// 当前主题下应使用的 Logo 资源
   static String assetOf(BuildContext context) {

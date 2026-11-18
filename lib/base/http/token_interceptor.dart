@@ -31,8 +31,7 @@ class TokenInterceptor extends Interceptor {
           getIt<UserInfoViewModel>(instanceName: index.toString())
               .token!
               .isNotEmpty) {
-        options.headers["Authorization"] = "Bearer " +
-            getIt<UserInfoViewModel>(instanceName: index.toString()).token!;
+        options.headers["Authorization"] = "Bearer ${getIt<UserInfoViewModel>(instanceName: index.toString()).token!}";
       }
     }
     return handler.next(options);

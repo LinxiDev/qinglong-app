@@ -14,8 +14,8 @@ import 'package:qinglong_app/utils/extension.dart';
 
 class AddDependencyPage extends ConsumerStatefulWidget {
   const AddDependencyPage({
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   ConsumerState<AddDependencyPage> createState() => _AddDependencyPageState();
@@ -24,7 +24,7 @@ class AddDependencyPage extends ConsumerStatefulWidget {
 class _AddDependencyPageState extends ConsumerState<AddDependencyPage> {
   final TextEditingController _nameController = TextEditingController();
 
-  DepedencyEnum depedencyType = DepedencyEnum.NodeJS;
+  DepedencyEnum depedencyType = DepedencyEnum.nodeJs;
 
   @override
   void initState() {
@@ -73,16 +73,16 @@ class _AddDependencyPageState extends ConsumerState<AddDependencyPage> {
                 DropdownButtonFormField<DepedencyEnum>(
                   items: [
                     DropdownMenuItem(
-                      value: DepedencyEnum.NodeJS,
-                      child: Text(DepedencyEnum.NodeJS.name),
+                      value: DepedencyEnum.nodeJs,
+                      child: Text(DepedencyEnum.nodeJs.name),
                     ),
                     DropdownMenuItem(
-                      value: DepedencyEnum.Python3,
-                      child: Text(DepedencyEnum.Python3.name),
+                      value: DepedencyEnum.python3,
+                      child: Text(DepedencyEnum.python3.name),
                     ),
                     DropdownMenuItem(
-                      value: DepedencyEnum.Linux,
-                      child: Text(DepedencyEnum.Linux.name),
+                      value: DepedencyEnum.linux,
+                      child: Text(DepedencyEnum.linux.name),
                     ),
                   ],
                   style: TextStyle(
@@ -100,7 +100,7 @@ class _AddDependencyPageState extends ConsumerState<AddDependencyPage> {
                     CupertinoIcons.chevron_up_chevron_down,
                     size: 16,
                   ),
-                  initialValue: DepedencyEnum.NodeJS,
+                  initialValue: DepedencyEnum.nodeJs,
                   onChanged: (value) {
                     depedencyType = value!;
                   },
@@ -164,6 +164,7 @@ class _AddDependencyPageState extends ConsumerState<AddDependencyPage> {
           )
           .toList());
       await EasyLoading.show(status: " 提交中");
+      // ignore: use_build_context_synchronously
       HttpResponse<String> response = await SingleAccountPageState.ofApi(context).addDependency(list);
 
       await EasyLoading.dismiss();
@@ -178,6 +179,7 @@ class _AddDependencyPageState extends ConsumerState<AddDependencyPage> {
             "新增成功".toast();
           }
         }
+        // ignore: use_build_context_synchronously
         Navigator.of(context).pop(data);
       } else {
         response.message.toast();

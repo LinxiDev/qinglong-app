@@ -16,19 +16,21 @@ class DependencyViewModel extends BaseViewModel {
   @override
   void retry(BuildContext context, {bool showLoading = true}) async {
     await loadData(
-        context, DepedencyEnum.NodeJS.name.toLowerCase().toString(), true);
+        context, DepedencyEnum.nodeJs.name.toLowerCase().toString(), true);
     await loadData(
-        context, DepedencyEnum.Python3.name.toLowerCase().toString(), true);
+        // ignore: use_build_context_synchronously
+        context, DepedencyEnum.python3.name.toLowerCase().toString(), true);
     await loadData(
-        context, DepedencyEnum.Linux.name.toLowerCase().toString(), true);
+        // ignore: use_build_context_synchronously
+        context, DepedencyEnum.linux.name.toLowerCase().toString(), true);
   }
 
   List<DependencyBean> getListByType(int index) {
     if (DependcyPageState.types[index].name ==
-        DepedencyEnum.NodeJS.name.toString()) {
+        DepedencyEnum.nodeJs.name.toString()) {
       return nodeJsList;
     } else if (DependcyPageState.types[index].name ==
-        DepedencyEnum.Python3.name.toString()) {
+        DepedencyEnum.python3.name.toString()) {
       return python3List;
     }
     return linuxList;
@@ -72,6 +74,7 @@ class DependencyViewModel extends BaseViewModel {
     List<int?>? id,
   ) async {
     await SingleAccountPageState.ofApi(context).dependencyReinstall(sId, id);
+    // ignore: use_build_context_synchronously
     await loadData(context, type);
   }
 
@@ -85,4 +88,4 @@ class DependencyViewModel extends BaseViewModel {
   }
 }
 
-enum DepedencyEnum { NodeJS, Python3, Linux }
+enum DepedencyEnum { nodeJs, python3, linux }

@@ -1,3 +1,4 @@
+// ignore_for_file: file_names
 import 'package:qinglong_app/module/task/task_bean.dart';
 
 import '../../main.dart';

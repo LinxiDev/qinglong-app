@@ -25,15 +25,15 @@ class LoginPage extends ConsumerStatefulWidget {
   final bool fromAddNewAccount;
 
   const LoginPage({
-    Key? key,
+    super.key,
     this.fromAddNewAccount = false,
-  }) : super(key: key);
+  });
 
   @override
-  _LoginPageState createState() => _LoginPageState();
+  LoginPageState createState() => LoginPageState();
 }
 
-class _LoginPageState extends ConsumerState<LoginPage> {
+class LoginPageState extends ConsumerState<LoginPage> {
   final TextEditingController _hostController = TextEditingController();
   final TextEditingController _aliasController = TextEditingController();
   final TextEditingController _userNameController = TextEditingController();
@@ -135,6 +135,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                         child: Row(
                           children: [
                             Visibility(
+                              visible:SpUtil.getBool(spSingleInstance,defValue: false) ,
                               child: CupertinoButton(
                                 padding: EdgeInsets.zero,
                                 onPressed: () {
@@ -146,7 +147,6 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                                   size: 26,
                                 ),
                               ),
-                              visible:SpUtil.getBool(spSingleInstance,defValue: false) ,
                             ),
                             Expanded(
                               child: Align(
@@ -229,13 +229,13 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                           Row(
                             children: [
                               const SizedBox(
+                                width: 40,
                                 child: Text(
                                   "账户",
                                   style: TextStyle(
                                     fontSize: 16,
                                   ),
                                 ),
-                                width: 40,
                               ),
                               const SizedBox(
                                 width: 30,
@@ -481,7 +481,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                                             value: e,
                                             child: buildCell(context, e),
                                           ))
-                                      .toList(),
+                                      ,
                                 ],
                                 child: Row(
                                   mainAxisSize: MainAxisSize.min,

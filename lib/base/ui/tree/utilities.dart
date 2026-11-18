@@ -21,9 +21,6 @@ class Utilities {
     caseSensitive: false,
   );
 
-  static const Color BLACK = Color.fromARGB(255, 0, 0, 0);
-  static const Color WHITE = Color.fromARGB(255, 255, 255, 255);
-
   static Color getColor(String value) {
     String colorValue = value;
     if (_hexExp.hasMatch(colorValue)) {
@@ -641,24 +638,28 @@ class Utilities {
   }
 
   static String toRGBA(Color color) {
-    return 'rgba(${color.red},${color.green},${color.blue},${color.alpha / 255})';
+    final int r = (color.r * 255.0).round().clamp(0, 255);
+    final int g = (color.g * 255.0).round().clamp(0, 255);
+    final int b = (color.b * 255.0).round().clamp(0, 255);
+    final int a = (color.a * 255.0).round().clamp(0, 255);
+    return 'rgba($r,$g,$b,${a / 255})';
   }
 
   static Color textColor(Color color) {
     if (color.computeLuminance() > 0.6) {
-      return BLACK;
+      return Colors.black;
     } else {
-      return WHITE;
+      return Colors.white;
     }
   }
 
   static String generateRandom([int length = 16]) {
-    final Random _random = Random.secure();
-    var values = List<int>.generate(length, (i) => _random.nextInt(256));
+    final Random random = Random.secure();
+    var values = List<int>.generate(length, (i) => random.nextInt(256));
     return base64Url.encode(values).substring(0, length);
   }
 
-  static bool truthful(value) {
+  static bool truthful(dynamic value) {
     if (value == null) {
       return false;
     }

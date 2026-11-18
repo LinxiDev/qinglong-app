@@ -7,8 +7,7 @@ class CupertinoSheer extends ConsumerWidget {
   final String title;
   final GestureTapCallback onTap;
 
-  const CupertinoSheer({
-    Key? key,
+  const CupertinoSheer({super.key,
     required this.title,
     required this.onTap,
   });

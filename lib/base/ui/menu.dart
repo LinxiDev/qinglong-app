@@ -12,16 +12,13 @@ import 'package:cupertino_ui/cupertino_ui.dart';
 class QLCupertinoContextMenuAction extends StatefulWidget {
   /// Construct a CupertinoContextMenuAction.
   const QLCupertinoContextMenuAction({
-    Key? key,
+    super.key,
     required this.child,
     this.isDefaultAction = false,
     this.isDestructiveAction = false,
     this.onPressed,
     this.trailingIcon,
-  })  : assert(child != null),
-        assert(isDefaultAction != null),
-        assert(isDestructiveAction != null),
-        super(key: key);
+  });
 
   /// The widget that will be placed inside the action.
   final Widget child;

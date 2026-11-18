@@ -7,9 +7,9 @@ class SearchCell extends ConsumerStatefulWidget {
   final TextEditingController controller;
 
   const SearchCell({
-    Key? key,
+    super.key,
     required this.controller,
-  }) : super(key: key);
+  });
 
   @override
   ConsumerState createState() => _SearchCellState();

@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:qinglong_app/base/theme.dart';
 
 class EmptyWidget extends ConsumerWidget {
-  const EmptyWidget({Key? key}) : super(key: key);
+  const EmptyWidget({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

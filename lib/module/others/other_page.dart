@@ -31,7 +31,7 @@ import '../task/task_page.dart';
 import '../update_max_account_page.dart';
 
 class OtherPage extends ConsumerStatefulWidget {
-  const OtherPage({Key? key}) : super(key: key);
+  const OtherPage({super.key});
 
   @override
   OtherPageState createState() => OtherPageState();
@@ -66,6 +66,7 @@ class OtherPageState extends ConsumerState<OtherPage>
   }
 
   Future<void> scrollToTop() async {
+    if (!_scrollController.hasClients) return;
     _scrollController.animateTo(0,
         duration: const Duration(milliseconds: 200), curve: Curves.linear);
   }
@@ -183,6 +184,7 @@ class OtherPageState extends ConsumerState<OtherPage>
                                   Row(
                                     children: [
                                       Flexible(
+                                        fit: FlexFit.loose,
                                         child: Text(
                                           (SingleAccountPageState.ofUserInfo(
                                                               context)
@@ -206,7 +208,6 @@ class OtherPageState extends ConsumerState<OtherPage>
                                             fontWeight: FontWeight.w600,
                                           ),
                                         ),
-                                        fit: FlexFit.loose,
                                       ),
 
                                     ],
@@ -911,6 +912,7 @@ class OtherPageState extends ConsumerState<OtherPage>
     TextEditingController controller = TextEditingController(text: day);
     showCupertinoDialog(
       useRootNavigator: false,
+      // ignore: use_build_context_synchronously
       context: context,
       builder: (context) => CupertinoAlertDialog(
         title: const Text(
@@ -1123,6 +1125,7 @@ class OtherPageState extends ConsumerState<OtherPage>
       userName = response.bean?.username ?? "青龙客户端";
       if (userIcon != null && userIcon!.isNotEmpty) {
         userIcon =
+            // ignore: use_build_context_synchronously
             "${SingleAccountPageState.ofUserInfo(context).host}/api/static/$userIcon";
       }
       setState(() {});
@@ -1138,7 +1141,7 @@ class OtherPageState extends ConsumerState<OtherPage>
           defValue: getDefaultLogExperiedTime());
       String now = DateFormat('yyyy-MM-dd').format(DateTime.now()); //获取多少天前的日期
 
-      print("...$before天之前的文件全部删除");
+      debugPrint("...$before天之前的文件全部删除");
 
       Directory directory = Directory(
           "${await FileUtil(SingleAccountPageState.of(context)?.index ?? 0).localPath}/");
@@ -1154,17 +1157,17 @@ class OtherPageState extends ConsumerState<OtherPage>
           if (b.difference(a).inDays > before) {
             if (await file.exists()) {
               await file.delete(recursive: true);
-              print("删除成功${file.path}");
+              debugPrint("删除成功${file.path}");
             }
           } else {
-            print("不用删除${file.path}");
+            debugPrint("不用删除${file.path}");
           }
         } else {
-          print("时间格式出错${file.path}");
+          debugPrint("时间格式出错${file.path}");
         }
       }
     } catch (e) {
-      print(e);
+      debugPrint('$e');
     }
   }
 
@@ -1198,7 +1201,9 @@ class OtherPageState extends ConsumerState<OtherPage>
         desc = poetData["data"]?["content"]?.toString() ?? "欢迎使用青龙客户端";
         if (mounted) setState(() {});
       }
-    } catch (e) {}
+    } catch (e) {
+      // 忽略异常，保持原有行为
+    }
   }
 }
 

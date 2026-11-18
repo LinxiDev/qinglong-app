@@ -13,7 +13,7 @@ import 'package:qinglong_app/utils/extension.dart';
 
 
 class ScriptDownloadPage extends ConsumerStatefulWidget {
-  const ScriptDownloadPage({Key? key}) : super(key: key);
+  const ScriptDownloadPage({super.key});
 
   @override
   ConsumerState<ScriptDownloadPage> createState() => _ScriptDownloadPageState();
@@ -93,7 +93,7 @@ class _ScriptDownloadPageState extends ConsumerState<ScriptDownloadPage> {
     }
     EasyLoading.show(status: "下载中");
     try {
-      var _dio = Dio(
+      var dio = Dio(
         BaseOptions(
           connectTimeout: const Duration(seconds: 50),
           receiveTimeout: const Duration(seconds: 50),
@@ -101,7 +101,7 @@ class _ScriptDownloadPageState extends ConsumerState<ScriptDownloadPage> {
           contentType: "application/json",
         ),
       );
-      var response = await _dio.get(
+      var response = await dio.get(
         controller.text.trim(),
       );
       EasyLoading.dismiss();
@@ -113,6 +113,7 @@ class _ScriptDownloadPageState extends ConsumerState<ScriptDownloadPage> {
           f.deleteSync();
         }
         await f.writeAsString(response.data.toString());
+        // ignore: use_build_context_synchronously
         Navigator.of(context).pop({
           "path": f.path,
           "name": fileName,

@@ -18,9 +18,9 @@ class AddAppKeyPage extends ConsumerStatefulWidget {
   final Map<String, dynamic> bean;
 
   const AddAppKeyPage({
-    Key? key,
+    super.key,
     required this.bean,
-  }) : super(key: key);
+  });
 
   @override
   ConsumerState<AddAppKeyPage> createState() => _AddAppKeyPageState();
@@ -236,6 +236,7 @@ class _AddAppKeyPageState extends ConsumerState<AddAppKeyPage> {
     EasyLoading.dismiss();
 
     if (response.success) {
+      // ignore: use_build_context_synchronously
       Navigator.of(context).pop(true);
     } else {
       response.message.toast();
