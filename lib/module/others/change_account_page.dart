@@ -317,7 +317,10 @@ class ChangeAccountPageState extends ConsumerState<ChangeAccountPage> {
                     color: themeColor.settingBgColor(),
                     borderRadius: BorderRadius.circular(sliding ? 0 : 14),
                     border: sliding
-                        ? null
+                        ? Border.all(
+                            color: Colors.transparent,
+                            width: isCurrent ? 1.5 : 1,
+                          )
                         : Border.all(
                             color: isCurrent
                                 ? primary

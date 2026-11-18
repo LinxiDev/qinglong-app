@@ -200,7 +200,9 @@ class TaskLogPageState extends ConsumerState<TaskLogPage>
                                         sliding ? 0 : 14,
                                       ),
                                       border: sliding
-                                          ? null
+                                          ? Border.all(
+                                              color: Colors.transparent,
+                                            )
                                           : Border.all(
                                               color:
                                                   ref
@@ -403,7 +405,9 @@ class TaskLogPageState extends ConsumerState<TaskLogPage>
                                         sliding ? 0 : 14,
                                       ),
                                       border: sliding
-                                          ? null
+                                          ? Border.all(
+                                              color: Colors.transparent,
+                                            )
                                           : Border.all(
                                               color:
                                                   ref

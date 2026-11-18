@@ -1102,7 +1102,7 @@ class TaskItemCell extends StatelessWidget {
                         : ref.watch(themeProvider).themeColor.settingBgColor(),
                     borderRadius: BorderRadius.circular(sliding ? 0 : 14),
                     border: sliding
-                        ? null
+                        ? Border.all(color: Colors.transparent)
                         : Border.all(
                             color:
                                 ref.watch(themeProvider).themeMode == modeDark
