@@ -959,12 +959,8 @@ class _ListBodyState extends ConsumerState<ListBodyWidget>
                 false) ||
             (item.schedule?.contains(widget.searchText.toLowerCase()) ??
                 false)) {
-          return Container(
-            color: item.isPinned == 1
-                ? ref.watch(themeProvider).themeColor.pinColor()
-                : ref.watch(themeProvider).themeColor.settingBgColor(),
-            child: Divider(height: 1, indent: widget.editMode ? 55 : 15),
-          );
+          // 卡片之间改用固定垂直间距，避免分隔线在圆角卡片间形成黑线
+          return const SizedBox(height: 8);
         } else {
           return const SizedBox.shrink();
         }
@@ -1044,6 +1040,10 @@ class TaskItemCell extends StatelessWidget {
           ),
           SlidableAction(
             backgroundColor: const Color(0xffEA4D3E),
+            // 左滑菜单最右端一项：右侧两角与卡片圆角(14)一致，左端直角与卡片相接
+            borderRadius: const BorderRadius.horizontal(
+              right: Radius.circular(14),
+            ),
             onPressed: (_) {
               WidgetsBinding.instance.endOfFrame.then((timeStamp) {
                 if (context.mounted) {
@@ -1062,6 +1062,10 @@ class TaskItemCell extends StatelessWidget {
         children: [
           SlidableAction(
             backgroundColor: const Color(0xffD25535),
+            // 右滑菜单最左端一项：左侧两角与卡片圆角(14)一致，右端直角与卡片相接
+            borderRadius: const BorderRadius.horizontal(
+              left: Radius.circular(14),
+            ),
             onPressed: (_) {
               if (bean.status! == 1) {
                 startCron(
@@ -1141,13 +1145,14 @@ class TaskItemCell extends StatelessWidget {
                     color: Colors.transparent,
                     padding: const EdgeInsets.symmetric(
                       horizontal: 15,
-                      vertical: 8,
+                      vertical: 6,
                     ),
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        // 第一行：任务名称 + 状态；右侧最近执行时间
                         Row(
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
@@ -1156,15 +1161,7 @@ class TaskItemCell extends StatelessWidget {
                                 mainAxisSize: MainAxisSize.max,
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 children: [
-                                  ConstrainedBox(
-                                    constraints: BoxConstraints.loose(
-                                      Size.fromWidth(
-                                        MediaQuery.of(context).size.width *
-                                            (((bean.isDisabled ?? 0) == 1)
-                                                ? 0.45
-                                                : 0.55),
-                                      ),
-                                    ),
+                                  Flexible(
                                     child: Material(
                                       color: Colors.transparent,
                                       child: Text(
@@ -1172,12 +1169,12 @@ class TaskItemCell extends StatelessWidget {
                                         maxLines: 1,
                                         overflow: TextOverflow.ellipsis,
                                         style: TextStyle(
-                                          overflow: TextOverflow.ellipsis,
                                           color: ref
                                               .watch(themeProvider)
                                               .themeColor
                                               .titleColor(),
-                                          fontSize: 17,
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w600,
                                         ),
                                       ),
                                     ),
@@ -1196,6 +1193,7 @@ class TaskItemCell extends StatelessWidget {
                                 ],
                               ),
                             ),
+                            const SizedBox(width: 8),
                             Material(
                               color: Colors.transparent,
                               child: Text(
@@ -1218,38 +1216,59 @@ class TaskItemCell extends StatelessWidget {
                             ),
                           ],
                         ),
-                        const SizedBox(height: 5),
-                        Material(
-                          color: Colors.transparent,
-                          child: Text(
-                            bean.schedule ?? "",
-                            maxLines: 1,
-                            style: TextStyle(
-                              overflow: TextOverflow.ellipsis,
-                              color: ref
-                                  .watch(themeProvider)
-                                  .themeColor
-                                  .descColor(),
-                              fontSize: 14,
+                        const SizedBox(height: 4),
+                        // 第二行：定时规则在左，命令在右
+                        Row(
+                          children: [
+                            Text(
+                              "定时",
+                              style: TextStyle(
+                                color: ref
+                                    .watch(themeProvider)
+                                    .themeColor
+                                    .descColor(),
+                                fontSize: 12,
+                              ),
                             ),
-                          ),
-                        ),
-                        const SizedBox(height: 5),
-                        Material(
-                          color: Colors.transparent,
-                          child: Text(
-                            bean.command ?? "",
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
-                              overflow: TextOverflow.ellipsis,
-                              color: ref
-                                  .watch(themeProvider)
-                                  .themeColor
-                                  .descColor(),
-                              fontSize: 14,
+                            const SizedBox(width: 6),
+                            Expanded(
+                              child: Material(
+                                color: Colors.transparent,
+                                child: Text(
+                                  bean.schedule ?? "",
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(
+                                    color: ref
+                                        .watch(themeProvider)
+                                        .themeColor
+                                        .descColor(),
+                                    fontSize: 13,
+                                  ),
+                                ),
+                              ),
                             ),
-                          ),
+                            const SizedBox(width: 8),
+                            Flexible(
+                              flex: 2,
+                              child: Material(
+                                color: Colors.transparent,
+                                child: Text(
+                                  bean.command ?? "",
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  textAlign: TextAlign.right,
+                                  style: TextStyle(
+                                    color: ref
+                                        .watch(themeProvider)
+                                        .themeColor
+                                        .descColor(),
+                                    fontSize: 13,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ],
                     ),

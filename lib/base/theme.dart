@@ -110,6 +110,8 @@ class ThemeViewModel extends ChangeNotifier {
       brightness: Brightness.light,
       primaryColor: _primaryColor,
       splashColor: Colors.transparent,
+      dividerColor: const Color(0xFFECEEF1),
+      dividerTheme: const DividerThemeData(color: Color(0xFFECEEF1)),
       colorScheme: ColorScheme.light(
         secondary: _primaryColor,
         primary: _primaryColor,
@@ -199,6 +201,8 @@ class ThemeViewModel extends ChangeNotifier {
       brightness: Brightness.light,
       primaryColor: _primaryColor,
       splashColor: Colors.transparent,
+      dividerColor: const Color(0xFFECEEF1),
+      dividerTheme: const DividerThemeData(color: Color(0xFFECEEF1)),
       colorScheme: ColorScheme.light(
         secondary: _primaryColor,
         primary: _primaryColor,
@@ -291,9 +295,9 @@ class ThemeViewModel extends ChangeNotifier {
         },
       ),
       splashColor: Colors.transparent,
-      dividerColor: const Color(0xff242424),
+      dividerColor: const Color(0xFF2E2E31),
       canvasColor: const Color(0xff242424),
-      dividerTheme: const DividerThemeData(color: Color(0xff242424)),
+      dividerTheme: const DividerThemeData(color: Color(0xFF2E2E31)),
       floatingActionButtonTheme: const FloatingActionButtonThemeData().copyWith(
         backgroundColor: Colors.white,
       ),

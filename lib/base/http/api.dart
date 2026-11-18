@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:qinglong_app/base/http/http.dart';
 import 'package:qinglong_app/base/http/url.dart';
 import 'package:qinglong_app/main.dart';
@@ -203,6 +204,19 @@ class Api {
     return await getIt<Http>(instanceName: index.toString()).put<NullResponse>(
       Url.updatePassword,
       {"username": name, "password": password},
+    );
+  }
+
+  /// 上传用户头像（multipart/form-data，字段名 avatar，面板 v2.24+ 支持）。
+  /// dio 发送 FormData 时会在分发阶段自动把 Content-Type 改写为
+  /// multipart/form-data 并附带 boundary；t 参数由 TokenInterceptor 统一追加。
+  Future<HttpResponse<NullResponse>> updateAvatar(String filePath) async {
+    final FormData formData = FormData.fromMap(<String, dynamic>{
+      "avatar": await MultipartFile.fromFile(filePath),
+    });
+    return await getIt<Http>(instanceName: index.toString()).put<NullResponse>(
+      getIt<Url>(instanceName: index.toString()).userAvatar,
+      formData,
     );
   }
 

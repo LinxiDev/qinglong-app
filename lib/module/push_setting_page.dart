@@ -26,6 +26,9 @@ class _PushSettingPageState extends ConsumerState<PushSettingPage> {
   PushBean? current;
   bool loading = true;
 
+  /// 服务端当前已开启的通知渠道 type，null 或空表示通知已关闭
+  String? serverType;
+
   @override
   void initState() {
     initData();
@@ -61,6 +64,19 @@ class _PushSettingPageState extends ConsumerState<PushSettingPage> {
                     children: [
                       const SizedBox(height: 10),
                       const Text("通知设置", style: TextStyle(fontSize: 14)),
+                      const SizedBox(height: 6),
+                      Text(
+                        (serverType == null || serverType!.isEmpty)
+                            ? "当前状态：通知推送已关闭"
+                            : "当前状态：已开启 ${getNameByKey(serverType!)}",
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: ref
+                              .watch(themeProvider)
+                              .themeColor
+                              .descColor(),
+                        ),
+                      ),
                       const SizedBox(height: 10),
                       DropdownButtonFormField<PushBean>(
                         items: list
@@ -297,27 +313,48 @@ class _PushSettingPageState extends ConsumerState<PushSettingPage> {
   }
 
   void onLazyLoad() async {
-    var response = await SingleAccountPageState.ofApi(context).getNotifcation();
+    try {
+      var response = await SingleAccountPageState.ofApi(
+        context,
+      ).getNotifcation();
 
-    if (response.success) {
+      if (!response.success) {
+        // 读取失败不能让页面永远卡在 loading
+        if (mounted) {
+          response.message?.toast();
+          setState(() {
+            loading = false;
+          });
+        }
+        return;
+      }
+
       String result = response.bean ?? "{}";
-      Map<String, dynamic> json = jsonDecode(result);
+      Map<String, dynamic> json;
+      try {
+        json = jsonDecode(result) as Map<String, dynamic>;
+      } catch (e) {
+        json = <String, dynamic>{};
+      }
 
       if (json.isEmpty) {
+        serverType = null;
         current = list.last;
         setState(() {
           loading = false;
         });
         return;
       }
-      String? type = json["type"];
+      String? type = json["type"]?.toString();
       if (type == null || type.isEmpty) {
+        serverType = null;
         current = list.last;
         setState(() {
           loading = false;
         });
         return;
       }
+      serverType = type;
 
       int index = list.indexWhere((element) => element.key == type);
       if (index < 0) {
@@ -334,6 +371,13 @@ class _PushSettingPageState extends ConsumerState<PushSettingPage> {
       setState(() {
         loading = false;
       });
+    } catch (e) {
+      // 网络等异常时降级展示，不阻塞页面
+      if (mounted) {
+        setState(() {
+          loading = false;
+        });
+      }
     }
   }
 

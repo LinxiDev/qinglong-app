@@ -323,6 +323,10 @@ class TreeNodeState extends ConsumerState<TreeNode>
                   children: [
                     SlidableAction(
                       backgroundColor: const Color(0xffEA4D3E),
+                      // 左滑菜单最右端一项：右侧两角取全局统一圆角(14)
+                      borderRadius: const BorderRadius.horizontal(
+                        right: Radius.circular(14),
+                      ),
                       onPressed: (_) {
                         WidgetsBinding.instance.endOfFrame.then((timeStamp) {
                           _handleDeleteSelf();
@@ -372,6 +376,10 @@ class TreeNodeState extends ConsumerState<TreeNode>
               children: [
                 SlidableAction(
                   backgroundColor: const Color(0xffEA4D3E),
+                  // 左滑菜单最右端一项：右侧两角取全局统一圆角(14)
+                  borderRadius: const BorderRadius.horizontal(
+                    right: Radius.circular(14),
+                  ),
                   onPressed: (_) {
                     WidgetsBinding.instance.endOfFrame.then((timeStamp) {
                       _handleDeleteSelf();

@@ -286,6 +286,10 @@ class TaskItemCell extends StatelessWidget {
             ),
             SlidableAction(
               backgroundColor: const Color(0xffEA4D3E),
+              // 左滑菜单最右端一项：右侧两角与卡片圆角(14)一致，左端直角与卡片相接
+              borderRadius: const BorderRadius.horizontal(
+                right: Radius.circular(14),
+              ),
               onPressed: (_) {
                 WidgetsBinding.instance.endOfFrame.then((value) {
                   if (context.mounted) {
@@ -304,6 +308,10 @@ class TaskItemCell extends StatelessWidget {
           children: [
             SlidableAction(
               backgroundColor: const Color(0xffD25535),
+              // 右滑菜单最左端一项：左侧两角与卡片圆角(14)一致，右端直角与卡片相接
+              borderRadius: const BorderRadius.horizontal(
+                left: Radius.circular(14),
+              ),
               onPressed: (_) {
                 if (bean["status"] == 1) {
                   _startCron(context, ref, true);

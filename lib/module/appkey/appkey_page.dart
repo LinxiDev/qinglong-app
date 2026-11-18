@@ -258,6 +258,10 @@ class AppKeyItemCell extends StatelessWidget {
             ),
             SlidableAction(
               backgroundColor: const Color(0xffEA4D3E),
+              // 左滑菜单最右端一项：右侧两角与卡片圆角(14)一致，左端直角与卡片相接
+              borderRadius: const BorderRadius.horizontal(
+                right: Radius.circular(14),
+              ),
               onPressed: (_) {
                 WidgetsBinding.instance.endOfFrame.then((value) {
                   if (context.mounted) {

@@ -341,6 +341,10 @@ class Url {
   // ---------------- 用户安全 ----------------
   String get ipBlacklist => p("/user/ip-blacklist");
 
+  // ---------------- 用户资料 ----------------
+  /// 用户头像上传（multipart/form-data，字段名 avatar，面板 v2.24+ 支持）
+  String get userAvatar => p("/user/avatar");
+
   // ---------------- 环境变量（置顶/重命名） ----------------
   String get envPin => p("/envs/pin");
 

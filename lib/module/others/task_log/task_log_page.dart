@@ -134,6 +134,10 @@ class TaskLogPageState extends ConsumerState<TaskLogPage>
                           children: [
                             SlidableAction(
                               backgroundColor: const Color(0xffEA4D3E),
+                              // 左滑菜单最右端一项：右侧两角与卡片圆角(14)一致
+                              borderRadius: const BorderRadius.horizontal(
+                                right: Radius.circular(14),
+                              ),
                               onPressed: (_) {
                                 showCupertinoDialog(
                                   context: context,
@@ -301,6 +305,10 @@ class TaskLogPageState extends ConsumerState<TaskLogPage>
                           children: [
                             SlidableAction(
                               backgroundColor: const Color(0xffEA4D3E),
+                              // 左滑菜单最右端一项：右侧两角与卡片圆角(14)一致
+                              borderRadius: const BorderRadius.horizontal(
+                                right: Radius.circular(14),
+                              ),
                               onPressed: (_) {
                                 showCupertinoDialog(
                                   context: context,

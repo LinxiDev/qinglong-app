@@ -398,7 +398,8 @@ class _AboutPageState extends ConsumerState<AboutPage>
         return;
       }
       final String normalized = tag.replaceFirst(RegExp(r'^[vV]'), "");
-      if (mounted && normalized != desc) {
+      // 仅当 Release 版本严格大于当前版本时才提示新版本（相等或更低不算）
+      if (mounted && desc.isNotEmpty && _isVersionGreater(normalized, desc)) {
         setState(() {
           latestVersion = normalized;
         });
@@ -445,6 +446,21 @@ class _AboutPageState extends ConsumerState<AboutPage>
       }
     }
   }
+}
+
+/// 语义化版本号比较：a > b 返回 true（按数字段逐段比较，如 1.2.10 > 1.2.9）
+bool _isVersionGreater(String a, String b) {
+  final List<String> pa = a.split('.');
+  final List<String> pb = b.split('.');
+  final int len = pa.length > pb.length ? pa.length : pb.length;
+  for (int i = 0; i < len; i++) {
+    final int va = i < pa.length ? (int.tryParse(pa[i]) ?? 0) : 0;
+    final int vb = i < pb.length ? (int.tryParse(pb[i]) ?? 0) : 0;
+    if (va != vb) {
+      return va > vb;
+    }
+  }
+  return false;
 }
 
 String getPlatformName() {

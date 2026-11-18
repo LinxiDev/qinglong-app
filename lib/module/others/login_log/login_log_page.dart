@@ -67,61 +67,60 @@ class LoginLogPageState extends ConsumerState<LoginLogPage>
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const SizedBox(height: 2),
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              ConstrainedBox(
-                                constraints: BoxConstraints.loose(
-                                  Size.fromWidth(
-                                    MediaQuery.of(context).size.width / 1.8,
+                      // 左列用 Expanded 吸收地址宽度，时间固定在右侧不再被挤错位
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const SizedBox(height: 2),
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Flexible(
+                                  child: Text(
+                                    "${item.address}",
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(
+                                      color: ref
+                                          .watch(themeProvider)
+                                          .themeColor
+                                          .titleColor(),
+                                      fontSize: 14,
+                                    ),
                                   ),
                                 ),
-                                child: Text(
-                                  "${item.address}",
-                                  style: TextStyle(
-                                    color: ref
-                                        .watch(themeProvider)
-                                        .themeColor
-                                        .titleColor(),
-                                    fontSize: 14,
+                                const SizedBox(width: 5),
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 2),
+                                  child: StatusWidget(
+                                    title: item.status == 0 ? "成功" : "失败",
+                                    color: item.status == 0
+                                        ? ref.watch(themeProvider).primaryColor
+                                        : const Color(0xffFB5858),
                                   ),
                                 ),
-                              ),
-                              const SizedBox(width: 5),
-                              Padding(
-                                padding: const EdgeInsets.only(top: 2),
-                                child: StatusWidget(
-                                  title: item.status == 0 ? "成功" : "失败",
-                                  color: item.status == 0
-                                      ? ref.watch(themeProvider).primaryColor
-                                      : const Color(0xffFB5858),
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 10),
-                          SelectableText(
-                            "${item.ip}",
-                            selectionWidthStyle: BoxWidthStyle.max,
-                            selectionHeightStyle: BoxHeightStyle.max,
-                            style: TextStyle(
-                              color: ref
-                                  .watch(themeProvider)
-                                  .themeColor
-                                  .descColor(),
-                              fontSize: 14,
+                              ],
                             ),
-                          ),
-                          const SizedBox(height: 10),
-                        ],
+                            const SizedBox(height: 10),
+                            SelectableText(
+                              "${item.ip}",
+                              selectionWidthStyle: BoxWidthStyle.max,
+                              selectionHeightStyle: BoxHeightStyle.max,
+                              style: TextStyle(
+                                color: ref
+                                    .watch(themeProvider)
+                                    .themeColor
+                                    .descColor(),
+                                fontSize: 14,
+                              ),
+                            ),
+                            const SizedBox(height: 10),
+                          ],
+                        ),
                       ),
-                      const Spacer(),
                       Padding(
-                        padding: const EdgeInsets.only(top: 10),
+                        padding: const EdgeInsets.only(top: 2),
                         child: Text(
                           Utils.formatMessageTime(item.timestamp ?? 0),
                           style: TextStyle(
