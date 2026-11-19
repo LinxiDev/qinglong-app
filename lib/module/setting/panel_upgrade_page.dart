@@ -477,7 +477,7 @@ class _PanelUpgradePageState extends ConsumerState<PanelUpgradePage> {
                         const SizedBox(
                           width: 14,
                           height: 14,
-                          child: CircularProgressIndicator(strokeWidth: 2),
+                          child: CupertinoActivityIndicator(radius: 7),
                         ),
                       const SizedBox(width: 8),
                       Text(

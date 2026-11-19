@@ -9,6 +9,7 @@ import 'package:qinglong_app/base/ql_app_bar.dart';
 import 'package:qinglong_app/base/routes.dart';
 import 'package:qinglong_app/base/single_account_page.dart';
 import 'package:qinglong_app/base/theme.dart';
+import 'package:qinglong_app/base/ui/loading_widget.dart';
 import 'package:qinglong_app/main.dart';
 import 'package:qinglong_app/utils/extension.dart';
 
@@ -176,7 +177,7 @@ class _TwoFactorPageState extends ConsumerState<TwoFactorPage> {
         backCall: () => Navigator.of(context).pop(),
       ),
       body: loading
-          ? const Center(child: CircularProgressIndicator())
+          ? const Center(child: LoadingWidget())
           : ListView(
               padding: const EdgeInsets.fromLTRB(15, 15, 15, 40),
               children: [

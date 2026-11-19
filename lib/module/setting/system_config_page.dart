@@ -9,6 +9,7 @@ import 'package:qinglong_app/base/commit_button.dart';
 import 'package:qinglong_app/base/ql_app_bar.dart';
 import 'package:qinglong_app/base/single_account_page.dart';
 import 'package:qinglong_app/base/theme.dart';
+import 'package:qinglong_app/base/ui/loading_widget.dart';
 import 'package:qinglong_app/utils/extension.dart';
 
 /// 系统配置细分项（对齐青龙官方 PUT /system/config/* 接口）。
@@ -263,7 +264,7 @@ class _SystemConfigPageState extends ConsumerState<SystemConfigPage> {
         ],
       ),
       body: loading
-          ? const Center(child: CircularProgressIndicator())
+          ? const Center(child: LoadingWidget())
           : SingleChildScrollView(
               primary: true,
               padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),

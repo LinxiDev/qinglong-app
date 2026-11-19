@@ -6,6 +6,7 @@ import 'package:material_ui/material_ui.dart';
 import 'package:qinglong_app/base/ql_app_bar.dart';
 import 'package:qinglong_app/base/single_account_page.dart';
 import 'package:qinglong_app/base/theme.dart';
+import 'package:qinglong_app/base/ui/loading_widget.dart';
 import 'package:qinglong_app/main.dart';
 import 'package:qinglong_app/utils/extension.dart';
 import 'package:share_plus/share_plus.dart';
@@ -137,7 +138,7 @@ class _SubscribeLogsPageState extends ConsumerState<SubscribeLogsPage> {
         backCall: () => Navigator.of(context).pop(),
       ),
       body: loading
-          ? const Center(child: CircularProgressIndicator())
+          ? const Center(child: LoadingWidget())
           : logs.isEmpty
           ? Center(
               child: Text(
