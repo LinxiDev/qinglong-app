@@ -165,17 +165,9 @@ class _AddEnvPageState extends ConsumerState<AddEnvPage>
             id: envBean.id,
             nId: envBean.nId,
           );
-      await EasyLoading.show(status: " 提交中");
-      if (envBean.sId != null && envBean.sId!.isNotEmpty) {
-        if (mounted) {
-          await SingleAccountPageState.ofApi(context).enableEnv([envBean.sId!]);
-        }
-      }
       await EasyLoading.dismiss();
       if (response.success) {
-        (envBean.sId == null || envBean.sId!.isEmpty)
-            ? "新增成功"
-            : "修改成功${envBean.status == 1 ? ",并自动启用" : ""}".toast();
+        (envBean.sId == null || envBean.sId!.isEmpty) ? "新增成功" : "修改成功".toast();
         if (mounted) {
           Navigator.of(context).pop();
         }

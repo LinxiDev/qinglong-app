@@ -300,7 +300,11 @@ class TaskDetailPageState extends ConsumerState<TaskDetailPage>
                       ),
                       TaskDetailCell(
                         title: "运行状态",
-                        desc: widget.taskBean.status == 0 ? "正在运行" : "空闲",
+                        desc: widget.taskBean.status == 0
+                            ? "正在运行"
+                            : widget.taskBean.status == 3
+                            ? "排队中"
+                            : "空闲",
                       ),
                       TaskDetailCell(
                         title: "脚本状态",

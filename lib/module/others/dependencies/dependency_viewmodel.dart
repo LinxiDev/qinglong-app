@@ -85,10 +85,15 @@ class DependencyViewModel extends BaseViewModel {
     List<String?>? sId,
     List<int?>? id,
   ) async {
-    await SingleAccountPageState.ofApi(context).dependencyReinstall(sId, id);
-    if (context.mounted) {
-      await loadData(context, type);
+    final response = await SingleAccountPageState.ofApi(context)
+        .dependencyReinstall(sId, id);
+    if (!context.mounted) {
+      return;
     }
+    if (!response.success) {
+      (response.message ?? "重装失败").toast();
+    }
+    await loadData(context, type);
   }
 
   Future<void> del(
@@ -97,7 +102,15 @@ class DependencyViewModel extends BaseViewModel {
     List<String?>? sId,
     List<int?>? ids,
   ) async {
-    await SingleAccountPageState.ofApi(context).delDependency(sId, ids);
+    final response = await SingleAccountPageState.ofApi(context)
+        .delDependency(sId, ids);
+    if (!context.mounted) {
+      return;
+    }
+    if (!response.success) {
+      (response.message ?? "删除失败").toast();
+    }
+    await loadData(context, type);
   }
 }
 
