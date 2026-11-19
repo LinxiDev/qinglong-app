@@ -20,14 +20,18 @@ class EnvViewModel extends BaseViewModel {
     loadData(context, showLoading);
   }
 
-  Future<void> loadData(BuildContext context, [isLoading = true]) async {
+  Future<void> loadData(
+    BuildContext context, [
+    isLoading = true,
+    String search = "",
+  ]) async {
     if (isLoading && list.isEmpty) {
       loading(notify: true);
     }
 
     HttpResponse<List<EnvBean>> result = await SingleAccountPageState.ofApi(
       context,
-    ).envs("");
+    ).envs(search);
 
     if (result.success && result.bean != null) {
       list.clear();

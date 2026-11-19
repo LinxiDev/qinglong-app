@@ -1,5 +1,9 @@
+import 'dart:async';
+
 import 'package:custom_sliding_segmented_control/custom_sliding_segmented_control.dart';
 import 'package:cupertino_ui/cupertino_ui.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -80,6 +84,8 @@ class EnvPageState extends ConsumerState<EnvPage>
     return model.list;
   }
 
+  Timer? _searchTimer;
+
   @override
   void initState() {
     _tabController = TabController(length: 3, vsync: this);
@@ -87,11 +93,27 @@ class EnvPageState extends ConsumerState<EnvPage>
     super.initState();
     searchText.addListener(() {
       setState(() {});
+
+      /// 官方支持 searchValue 服务端过滤，输入停止后 350ms 重新拉取
+      _searchTimer?.cancel();
+      _searchTimer = Timer(const Duration(milliseconds: 350), () {
+        if (!mounted) {
+          return;
+        }
+        ref
+            .read(
+              SingleAccountPageState.ofEnvProvider(context)(
+                getProviderName(context),
+              ).notifier,
+            )
+            .loadData(context, false, searchText.text);
+      });
     });
   }
 
   @override
   void dispose() {
+    _searchTimer?.cancel();
     removeOverlay();
     super.dispose();
   }
@@ -278,6 +300,17 @@ class EnvPageState extends ConsumerState<EnvPage>
                 ),
               ),
             ),
+            if (!editMode)
+              CupertinoButton(
+                color: Colors.transparent,
+                padding: EdgeInsets.zero,
+                onPressed: () => importEnvs(context, ref),
+                child: Icon(
+                  CupertinoIcons.arrow_down_doc,
+                  size: 22,
+                  color: Theme.of(context).appBarTheme.iconTheme?.color,
+                ),
+              ),
           ],
         ),
         body: BaseStateWidget<EnvViewModel>(
@@ -385,6 +418,34 @@ class EnvPageState extends ConsumerState<EnvPage>
       height: searchCellHeight.toDouble(),
       child: SearchCell(controller: searchText),
     );
+  }
+
+  /// 导入环境变量 JSON 文件（官方 POST /envs/upload，字段名 env）
+  Future<void> importEnvs(BuildContext context, WidgetRef ref) async {
+    final List<PlatformFile> files = await FilePicker.pickFiles();
+    final String? path = files.isNotEmpty ? files.first.path : null;
+    if (path == null || !mounted) {
+      return;
+    }
+    EasyLoading.show(status: "导入中");
+    final response = await SingleAccountPageState.ofApi(context)
+        .uploadEnvs(path);
+    EasyLoading.dismiss();
+    if (!mounted) {
+      return;
+    }
+    if (response.success) {
+      "导入成功".toast();
+      ref
+          .read(
+            SingleAccountPageState.ofEnvProvider(context)(
+              getProviderName(context),
+            ).notifier,
+          )
+          .loadData(context, false, searchText.text);
+    } else {
+      (response.message ?? "导入失败").toast();
+    }
   }
 
   OverlayEntry? _editModeOverlay;
@@ -549,6 +610,83 @@ class EnvItemCell extends StatelessWidget {
     required this.checked,
   });
 
+  /// 设置变量标签（官方 POST/DELETE /envs/labels）
+  Future<void> editEnvLabels(
+    BuildContext context,
+    WidgetRef ref,
+    EnvBean bean,
+  ) async {
+    final TextEditingController controller = TextEditingController(
+      text: (bean.labels ?? []).join(","),
+    );
+    final String? value = await showCupertinoDialog<String>(
+      context: context,
+      useRootNavigator: false,
+      builder: (childContext) => CupertinoAlertDialog(
+        title: const Text("设置标签"),
+        content: Padding(
+          padding: const EdgeInsets.only(top: 12),
+          child: CupertinoTextField(
+            controller: controller,
+            placeholder: "多个标签用逗号分隔",
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+            autofocus: true,
+          ),
+        ),
+        actions: [
+          CupertinoDialogAction(
+            child: const Text("取消"),
+            onPressed: () => Navigator.of(childContext).pop(),
+          ),
+          CupertinoDialogAction(
+            isDefaultAction: true,
+            child: const Text("保存"),
+            onPressed: () => Navigator.of(childContext).pop(controller.text),
+          ),
+        ],
+      ),
+    );
+    if (value == null || !context.mounted) {
+      return;
+    }
+    final int? id = bean.id;
+    if (id == null) {
+      "该面板变量 ID 不是数字，无法设置标签".toast();
+      return;
+    }
+    final List<String> labels = value
+        .split(RegExp(r"[,，]"))
+        .map((e) => e.trim())
+        .where((e) => e.isNotEmpty)
+        .toList();
+    EasyLoading.show();
+    final api = SingleAccountPageState.ofApi(context);
+    bool ok = true;
+    final List<String> old = bean.labels ?? <String>[];
+    if (old.isNotEmpty) {
+      ok = (await api.updateEnvLabels([id], old, remove: true)).success;
+    }
+    if (ok && labels.isNotEmpty) {
+      ok = (await api.updateEnvLabels([id], labels)).success;
+    }
+    EasyLoading.dismiss();
+    if (!context.mounted) {
+      return;
+    }
+    if (ok) {
+      "标签已更新".toast();
+      ref
+          .read(
+            SingleAccountPageState.ofEnvProvider(context)(
+              getProviderName(context),
+            ).notifier,
+          )
+          .loadData(context, false);
+    } else {
+      "标签更新失败".toast();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     // 滑动时卡片圆角归零与方形菜单平直对接，关闭后恢复圆角
@@ -657,6 +795,12 @@ class EnvItemCell extends StatelessWidget {
                               title: "重命名变量名",
                               icon: CupertinoIcons.pencil,
                               onTap: () => renameEnvName(context, ref),
+                            ),
+                            addDivider(),
+                            CupertinoSheer(
+                              title: "设置标签",
+                              icon: CupertinoIcons.tag,
+                              onTap: () => editEnvLabels(context, ref, bean),
                             ),
                           ]);
                         },
@@ -781,6 +925,20 @@ class EnvItemCell extends StatelessWidget {
                                                           fontSize: 14,
                                                         ),
                                                       ),
+                                                      if ((bean.labels ?? [])
+                                                          .isNotEmpty)
+                                                        TextSpan(
+                                                          text:
+                                                              "  #${bean.labels!.join(" #")}",
+                                                          style: TextStyle(
+                                                            color: ref
+                                                                .watch(
+                                                                  themeProvider,
+                                                                )
+                                                                .primaryColor,
+                                                            fontSize: 13,
+                                                          ),
+                                                        ),
                                                     ],
                                                   ),
                                                 ),

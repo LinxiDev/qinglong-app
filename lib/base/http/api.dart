@@ -1008,4 +1008,235 @@ class Api {
       ids,
     );
   }
+
+  // ==================== 环境变量：标签 / 批量导入 ====================
+
+  /// 批量添加或移除变量标签（官方 POST/DELETE /envs/labels）
+  Future<HttpResponse<NullResponse>> updateEnvLabels(
+    List<int> ids,
+    List<String> labels, {
+    bool remove = false,
+  }) async {
+    final Http http = getIt<Http>(instanceName: index.toString());
+    final Url url = getIt<Url>(instanceName: index.toString());
+    final Map<String, dynamic> body = {"ids": ids, "labels": labels};
+    return remove
+        ? await http.delete<NullResponse>(url.envLabels, body)
+        : await http.post<NullResponse>(url.envLabels, body);
+  }
+
+  /// 导入环境变量（multipart 字段名 env）
+  Future<HttpResponse<NullResponse>> uploadEnvs(String filePath) async {
+    final FormData formData = FormData.fromMap(<String, dynamic>{
+      "env": await MultipartFile.fromFile(filePath),
+    });
+    return await getIt<Http>(instanceName: index.toString()).post<NullResponse>(
+      getIt<Url>(instanceName: index.toString()).envUpload,
+      formData,
+    );
+  }
+
+  // ==================== 任务视图 / 标签 / 导入 ====================
+
+  Future<HttpResponse<String>> cronViews() async {
+    return await getIt<Http>(
+      instanceName: index.toString(),
+    ).get<String>(getIt<Url>(instanceName: index.toString()).cronViews, null);
+  }
+
+  Future<HttpResponse<NullResponse>> addCronView(
+    Map<String, dynamic> body,
+  ) async {
+    return await getIt<Http>(instanceName: index.toString()).post<NullResponse>(
+      getIt<Url>(instanceName: index.toString()).cronViews,
+      body,
+    );
+  }
+
+  Future<HttpResponse<NullResponse>> updateCronView(
+    Map<String, dynamic> body,
+  ) async {
+    return await getIt<Http>(instanceName: index.toString()).put<NullResponse>(
+      getIt<Url>(instanceName: index.toString()).cronViews,
+      body,
+    );
+  }
+
+  Future<HttpResponse<NullResponse>> deleteCronView(List<int> ids) async {
+    return await getIt<Http>(instanceName: index.toString())
+        .delete<NullResponse>(
+          getIt<Url>(instanceName: index.toString()).cronViews,
+          ids,
+        );
+  }
+
+  Future<HttpResponse<NullResponse>> moveCronView(
+    int id,
+    int fromIndex,
+    int toIndex,
+  ) async {
+    return await getIt<Http>(instanceName: index.toString()).put<NullResponse>(
+      getIt<Url>(instanceName: index.toString()).cronViewsMove,
+      {"id": id, "fromIndex": fromIndex, "toIndex": toIndex},
+    );
+  }
+
+  Future<HttpResponse<NullResponse>> enableCronView(List<int> ids) async {
+    return await getIt<Http>(instanceName: index.toString()).put<NullResponse>(
+      getIt<Url>(instanceName: index.toString()).cronViewsEnable,
+      ids,
+    );
+  }
+
+  Future<HttpResponse<NullResponse>> disableCronView(List<int> ids) async {
+    return await getIt<Http>(instanceName: index.toString()).put<NullResponse>(
+      getIt<Url>(instanceName: index.toString()).cronViewsDisable,
+      ids,
+    );
+  }
+
+  Future<HttpResponse<NullResponse>> updateCronLabels(
+    List<int> ids,
+    List<String> labels, {
+    bool remove = false,
+  }) async {
+    final Http http = getIt<Http>(instanceName: index.toString());
+    final Url url = getIt<Url>(instanceName: index.toString());
+    final Map<String, dynamic> body = {"ids": ids, "labels": labels};
+    return remove
+        ? await http.delete<NullResponse>(url.cronLabels, body)
+        : await http.post<NullResponse>(url.cronLabels, body);
+  }
+
+  Future<HttpResponse<String>> importCrons() async {
+    return await getIt<Http>(
+      instanceName: index.toString(),
+    ).get<String>(getIt<Url>(instanceName: index.toString()).cronImport, null);
+  }
+
+  /// 读取任务日志分块（offset/limit/tail，官方 v2.23+）
+  Future<HttpResponse<String>> cronLogChunk(
+    String id, {
+    int? offset,
+    int? limit,
+    bool tail = false,
+  }) async {
+    return await getIt<Http>(instanceName: index.toString()).get<String>(
+      getIt<Url>(instanceName: index.toString()).cronLogChunk(id),
+      {
+        "offset": offset?.toString(),
+        "limit": limit?.toString(),
+        "tail": tail ? "true" : null,
+      },
+    );
+  }
+
+  /// 任务历史日志文件列表
+  Future<HttpResponse<String>> cronLogFiles(String id) async {
+    return await getIt<Http>(instanceName: index.toString()).get<String>(
+      getIt<Url>(instanceName: index.toString()).cronLogFiles(id),
+      null,
+    );
+  }
+
+  // ==================== 订阅历史日志 ====================
+
+  Future<HttpResponse<String>> subscribeLogs(int id) async {
+    return await getIt<Http>(instanceName: index.toString()).get<String>(
+      getIt<Url>(instanceName: index.toString()).subscribeLogs(id),
+      null,
+    );
+  }
+
+  // ==================== 脚本 / 日志下载（服务端） ====================
+
+  Future<HttpResponse<String>> downloadScript(
+    String filename,
+    String? path,
+  ) async {
+    return await getIt<Http>(instanceName: index.toString()).post<String>(
+      getIt<Url>(instanceName: index.toString()).scriptDownload,
+      {"filename": filename, "path": path ?? ""},
+    );
+  }
+
+  Future<HttpResponse<String>> downloadLog(String filename, String path) async {
+    return await getIt<Http>(instanceName: index.toString()).post<String>(
+      getIt<Url>(instanceName: index.toString()).logsDownload,
+      {"filename": filename, "path": path},
+    );
+  }
+
+  /// 读取日志内容分块（offset/limit/tail）
+  Future<HttpResponse<String>> logDetailChunk(
+    String file,
+    String path, {
+    int? offset,
+    int? limit,
+    bool tail = false,
+  }) async {
+    return await getIt<Http>(instanceName: index.toString())
+        .get<String>(getIt<Url>(instanceName: index.toString()).logsDetail, {
+          "file": file,
+          "path": path,
+          "offset": offset?.toString(),
+          "limit": limit?.toString(),
+          "tail": tail ? "true" : null,
+        });
+  }
+
+  // ==================== 仪表盘扩展 ====================
+
+  Future<HttpResponse<String>> dashboardLabels() async {
+    return await getIt<Http>(instanceName: index.toString()).get<String>(
+      getIt<Url>(instanceName: index.toString()).dashboardLabels,
+      null,
+    );
+  }
+
+  Future<HttpResponse<String>> dashboardSystem() async {
+    return await getIt<Http>(instanceName: index.toString()).get<String>(
+      getIt<Url>(instanceName: index.toString()).dashboardSystem,
+      null,
+    );
+  }
+
+  // ==================== 用户：登出 / 两步验证 ====================
+
+  Future<HttpResponse<NullResponse>> logout() async {
+    return await getIt<Http>(instanceName: index.toString()).post<NullResponse>(
+      getIt<Url>(instanceName: index.toString()).userLogout,
+      <String, dynamic>{},
+    );
+  }
+
+  Future<HttpResponse<String>> twoFactorInit() async {
+    return await getIt<Http>(instanceName: index.toString()).get<String>(
+      getIt<Url>(instanceName: index.toString()).twoFactorInit,
+      null,
+    );
+  }
+
+  Future<HttpResponse<NullResponse>> activeTwoFactor(String code) async {
+    return await getIt<Http>(instanceName: index.toString()).put<NullResponse>(
+      getIt<Url>(instanceName: index.toString()).twoFactorActive,
+      {"code": code},
+    );
+  }
+
+  Future<HttpResponse<NullResponse>> deactivateTwoFactor() async {
+    return await getIt<Http>(instanceName: index.toString()).put<NullResponse>(
+      getIt<Url>(instanceName: index.toString()).twoFactorDeactivate,
+      <String, dynamic>{},
+    );
+  }
+
+  // ==================== 配置示例 ====================
+
+  Future<HttpResponse<String>> configSamples() async {
+    return await getIt<Http>(instanceName: index.toString()).get<String>(
+      getIt<Url>(instanceName: index.toString()).configSamples,
+      null,
+    );
+  }
 }

@@ -2,6 +2,7 @@ class EnvBean {
   String? name;
   String? value;
   String? remarks;
+  List<String>? labels;
   int? status;
   String? sId;
   String? _id;
@@ -28,6 +29,12 @@ class EnvBean {
     name = json['name'];
     value = json['value'];
     remarks = json['remarks'];
+    if (json['labels'] is List) {
+      labels = (json['labels'] as List)
+          .map((e) => e.toString())
+          .where((e) => e.isNotEmpty)
+          .toList();
+    }
     createdAt = json['createdAt'];
     updatedAt = json['updatedAt'];
     status = json['status'];
@@ -46,6 +53,7 @@ class EnvBean {
     data['name'] = name;
     data['value'] = value;
     data['remarks'] = remarks;
+    data['labels'] = labels;
     data['status'] = status;
     data['_id'] = _id;
     data['id'] = id;

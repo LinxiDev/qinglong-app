@@ -371,6 +371,56 @@ class Url {
 
   String get envRename => p("/envs/name");
 
+  // ---------------- 环境变量：标签与批量导入 ----------------
+  String get envLabels => p("/envs/labels");
+
+  String get envUpload => p("/envs/upload");
+
+  // ---------------- 定时任务：视图、标签、导入、日志 ----------------
+  String get cronViews => p("/crons/views");
+
+  String get cronViewsMove => p("/crons/views/move");
+
+  String get cronViewsEnable => p("/crons/views/enable");
+
+  String get cronViewsDisable => p("/crons/views/disable");
+
+  String get cronLabels => p("/crons/labels");
+
+  /// 单次运行日志（支持 offset/limit/tail 增量读取）
+  String cronLogChunk(String id) => p("/crons/$id/log");
+
+  /// 运行历史日志文件列表
+  String cronLogFiles(String id) => p("/crons/$id/logs");
+
+  // ---------------- 订阅 ----------------
+  /// 订阅历史日志文件列表
+  String subscribeLogs(int id) => p("/subscriptions/$id/logs");
+
+  // ---------------- 脚本与日志下载 ----------------
+  String get scriptDownload => p("/scripts/download");
+
+  String get logsDownload => p("/logs/download");
+
+  // ---------------- 仪表盘 ----------------
+  String get dashboardLabels => p("/dashboard/labels");
+
+  String get dashboardSystem => p("/dashboard/system");
+
+  // ---------------- 用户 ----------------
+  String get userLogout => p("/user/logout");
+
+  String get twoFactorInit => p("/user/two-factor/init");
+
+  String get twoFactorActive => p("/user/two-factor/active");
+
+  String get twoFactorDeactivate => p("/user/two-factor/deactivate");
+
+  // ---------------- 配置与系统 ----------------
+  String get configSamples => p("/configs/samples");
+
+  String get systemLang => p("/system/config/lang");
+
   // ---------------- 依赖 ----------------
   String get dependencyRefresh => p("/dependencies/refresh");
 

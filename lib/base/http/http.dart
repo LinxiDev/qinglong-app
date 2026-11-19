@@ -188,6 +188,18 @@ class Http {
   ) {
     int code = 0;
     if (response.statusCode == 200) {
+      /// 部分官方接口直接返回文本/文件流（配置文件内容、日志内容、
+      /// 镜像源切换输出等），不是 {code,data} 包装，直接视为成功
+      if (response.data is! Map) {
+        final String text = response.data?.toString() ?? "";
+        if (T == NullResponse) {
+          return HttpResponse<T>(success: true, code: 200);
+        }
+        if (T == String) {
+          return HttpResponse<T>(success: true, code: 200, bean: text as T);
+        }
+        return HttpResponse<T>(success: false, code: -1000, message: text);
+      }
       try {
         if (response.data["code"] == 200) {
           if (response.data[serializationName] != null) {
