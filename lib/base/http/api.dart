@@ -800,22 +800,6 @@ class Api {
     );
   }
 
-  /// 任务的触发历史
-  Future<HttpResponse<String>> cronTriggers(String id, {int limit = 25}) async {
-    return await getIt<Http>(instanceName: index.toString()).get<String>(
-      getIt<Url>(instanceName: index.toString()).cronTriggers(id),
-      {"limit": "$limit"},
-    );
-  }
-
-  /// 任务当日执行结果
-  Future<HttpResponse<String>> cronDailyResults(String id) async {
-    return await getIt<Http>(instanceName: index.toString()).get<String>(
-      getIt<Url>(instanceName: index.toString()).cronDailyResults(id),
-      null,
-    );
-  }
-
   // ==================== 仪表盘 ====================
 
   Future<HttpResponse<String>> dashboardOverview() async {
@@ -919,22 +903,7 @@ class Api {
     );
   }
 
-  Future<HttpResponse<NullResponse>> deleteSystemLog() async {
-    return await getIt<Http>(instanceName: index.toString())
-        .delete<NullResponse>(
-          getIt<Url>(instanceName: index.toString()).systemLogDelete,
-          null,
-        );
-  }
-
   // ==================== 数据保留与清理 ====================
-
-  Future<HttpResponse<String>> retentionGetConfig() async {
-    return await getIt<Http>(instanceName: index.toString()).get<String>(
-      getIt<Url>(instanceName: index.toString()).retentionConfig,
-      null,
-    );
-  }
 
   Future<HttpResponse<String>> retentionUpdateConfig(
     Map<String, dynamic> data,
@@ -1013,13 +982,6 @@ class Api {
   // ==================== 依赖 ====================
 
   /// 重新检查并安装依赖，type 取值 nodejs / python3
-  Future<HttpResponse<String>> refreshDependencies(String type) async {
-    return await getIt<Http>(instanceName: index.toString()).post<String>(
-      getIt<Url>(instanceName: index.toString()).dependencyRefresh,
-      {"type": type},
-    );
-  }
-
   Future<HttpResponse<NullResponse>> cancelDependency(List<int> ids) async {
     return await getIt<Http>(instanceName: index.toString()).put<NullResponse>(
       getIt<Url>(instanceName: index.toString()).dependencyCancel,
@@ -1075,31 +1037,6 @@ class Api {
     ).get<String>(getIt<Url>(instanceName: index.toString()).cronImport, null);
   }
 
-  /// 读取任务日志分块（offset/limit/tail，官方 v2.23+）
-  Future<HttpResponse<String>> cronLogChunk(
-    String id, {
-    int? offset,
-    int? limit,
-    bool tail = false,
-  }) async {
-    return await getIt<Http>(instanceName: index.toString()).get<String>(
-      getIt<Url>(instanceName: index.toString()).cronLogChunk(id),
-      {
-        "offset": offset?.toString(),
-        "limit": limit?.toString(),
-        "tail": tail ? "true" : null,
-      },
-    );
-  }
-
-  /// 任务历史日志文件列表
-  Future<HttpResponse<String>> cronLogFiles(String id) async {
-    return await getIt<Http>(instanceName: index.toString()).get<String>(
-      getIt<Url>(instanceName: index.toString()).cronLogFiles(id),
-      null,
-    );
-  }
-
   /// 单个任务详情（GET /crons/detail?id=）
   Future<HttpResponse<String>> cronDetail(String id) async {
     return await getIt<Http>(instanceName: index.toString()).get<String>(
@@ -1119,54 +1056,11 @@ class Api {
 
   // ==================== 脚本 / 日志下载（服务端） ====================
 
-  Future<HttpResponse<String>> downloadScript(
-    String filename,
-    String? path,
-  ) async {
-    return await getIt<Http>(instanceName: index.toString()).post<String>(
-      getIt<Url>(instanceName: index.toString()).scriptDownload,
-      {"filename": filename, "path": path ?? ""},
-    );
-  }
-
   Future<HttpResponse<String>> downloadLog(String filename, String path) async {
     return await getIt<Http>(instanceName: index.toString()).post<String>(
       getIt<Url>(instanceName: index.toString()).logsDownload,
       {"filename": filename, "path": path},
     );
-  }
-
-  /// 任务日志分块原始响应（含 nextOffset/total/logStatus）
-  Future<HttpResponse<Map<String, dynamic>>> cronLogChunkRaw(
-    String id, {
-    int? offset,
-    int? limit,
-    bool tail = false,
-  }) async {
-    return await getIt<Http>(instanceName: index.toString())
-        .getMap(getIt<Url>(instanceName: index.toString()).cronLogChunk(id), {
-          "offset": offset?.toString(),
-          "limit": limit?.toString(),
-          "tail": tail ? "true" : null,
-        });
-  }
-
-  /// 日志内容分块原始响应（含 nextOffset/total 等字段）
-  Future<HttpResponse<Map<String, dynamic>>> logDetailChunkRaw(
-    String file,
-    String path, {
-    int? offset,
-    int? limit,
-    bool tail = false,
-  }) async {
-    return await getIt<Http>(instanceName: index.toString())
-        .getMap(getIt<Url>(instanceName: index.toString()).logsDetail, {
-          "file": file,
-          "path": path,
-          "offset": offset?.toString(),
-          "limit": limit?.toString(),
-          "tail": tail ? "true" : null,
-        });
   }
 
   /// 读取日志内容分块（offset/limit/tail）

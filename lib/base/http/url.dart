@@ -302,22 +302,12 @@ class Url {
 
   String get cronDetail => p("/crons/detail");
 
-  String get cronStatus => p("/crons/status");
-
   String get cronImport => p("/crons/import");
 
   String cronInstances(String id) => p("/crons/$id/instances");
 
-  String cronTriggers(String id) => p("/crons/$id/triggers");
-
-  String cronDailyResults(String id) => p("/crons/$id/daily-results");
-
   String cronInstanceStop(String id, String instanceId) =>
       p("/crons/$id/instances/$instanceId/stop");
-
-  String cronLogs(String id) => p("/crons/$id/logs");
-
-  String cronDetailById(String id) => p("/crons/$id");
 
   // ---------------- 仪表盘统计 ----------------
   String get dashboardOverview => p("/dashboard/overview");
@@ -345,8 +335,6 @@ class Url {
   String get systemNotifyLog => p("/system/notify-log");
 
   String get systemLog => p("/system/log");
-
-  String get systemLogDelete => p("/system/log");
 
   String get systemNotify => p("/system/notify");
 
@@ -379,19 +367,11 @@ class Url {
   // ---------------- 定时任务：标签、导入、日志 ----------------
   String get cronLabels => p("/crons/labels");
 
-  /// 单次运行日志（支持 offset/limit/tail 增量读取）
-  String cronLogChunk(String id) => p("/crons/$id/log");
-
-  /// 运行历史日志文件列表
-  String cronLogFiles(String id) => p("/crons/$id/logs");
-
   // ---------------- 订阅 ----------------
   /// 订阅历史日志文件列表
   String subscribeLogs(int id) => p("/subscriptions/$id/logs");
 
-  // ---------------- 脚本与日志下载 ----------------
-  String get scriptDownload => p("/scripts/download");
-
+  // ---------------- 日志下载 ----------------
   String get logsDownload => p("/logs/download");
 
   // ---------------- 仪表盘 ----------------
@@ -414,10 +394,6 @@ class Url {
   String get systemLang => p("/system/config/lang");
 
   // ---------------- 依赖 ----------------
-  String get dependencyRefresh => p("/dependencies/refresh");
-
-  String get dependencyRefreshActive => p("/dependencies/refresh/active");
-
   String get dependencyCancel => p("/dependencies/cancel");
 
   static bool inWhiteList(String path) {

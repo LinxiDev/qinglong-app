@@ -171,6 +171,23 @@ class TaskViewModel extends BaseViewModel {
   }
 
   /// 加载下一页（列表滚动到底部时触发）
+  /// 切换 Tab：清空旧数据并立即进入 loading，避免弱网下继续展示上一个 Tab
+  Future<void> switchTab(BuildContext context, int index, String search) async {
+    if (currentTab == index) {
+      return;
+    }
+    currentTab = index;
+    list.clear();
+    running.clear();
+    idle.clear();
+    disabled.clear();
+    lastSearch = search;
+    page = 1;
+    hasMore = true;
+    loading(notify: true);
+    await loadData(context, false, search, index);
+  }
+
   Future<void> loadMore(BuildContext context) async {
     if (loadingMore || !hasMore || currentTab == 2) {
       return;

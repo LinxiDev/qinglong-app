@@ -159,7 +159,7 @@ class TaskPageState extends ConsumerState<TaskPage>
     if (model.currentTab == index) {
       return;
     }
-    model.loadData(context, false, searchText.text, index);
+    model.switchTab(context, index, searchText.text);
   }
 
   /// 列表滑到底部时自动加载下一页（20 条/页）
