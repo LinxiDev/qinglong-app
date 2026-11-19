@@ -71,7 +71,13 @@ class ScriptPageState extends ConsumerState<ScriptPage>
     }
   }
 
-  late TreeViewController _treeViewController;
+  /// 空树占位，声明即初始化：
+  /// 首帧 build 在 loadData 完成前就会访问该控制器，
+  /// 若用 late 声明会抛 LateInitializationError，
+  /// 触发自定义 ErrorWidget 闪现 "Instance of 'FlutterErrorDetails'"
+  TreeViewController _treeViewController = TreeViewController(
+    children: const [],
+  );
 
   /// 按关键字过滤脚本树（保留命中文件及其父目录）
   List<ScriptData> _filterScripts(List<ScriptData> nodes, String keyword) {
