@@ -2,11 +2,11 @@ import 'package:cupertino_ui/cupertino_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
-import 'package:material_ui/material_ui.dart';
 import 'package:qinglong_app/main.dart' as app;
+import 'package:qinglong_app/module/code_editor/codemirror/io.dart';
 
-/// 配置文件编辑页：桌面/Windows 无 webview 实现时应降级为只读文本视图，
-/// 至少保证页面可打开、内容可读、可正常返回，而不是抛 MissingPluginException。
+/// 配置文件编辑页：Android/iOS/桌面统一使用 re_editor 原生编辑器，
+/// 页面可打开、内容进入编辑器、可正常返回，而不是抛异常或展示空白。
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
@@ -18,7 +18,6 @@ void main() {
         t.contains('Unable to get application documents directory') ||
         t.contains('quick_actions') ||
         t.contains('local_auth') ||
-        t.contains('webview_flutter') ||
         t.contains('fluttertoast') ||
         t.contains('showToast');
   }
@@ -57,7 +56,7 @@ void main() {
     return true;
   }
 
-  testWidgets('配置文件编辑页（webview 降级）', (WidgetTester tester) async {
+  testWidgets('配置文件编辑页（原生编辑器）', (WidgetTester tester) async {
     final ErrorWidgetBuilder original = ErrorWidget.builder;
     app.main();
     await settle(tester, 10);
@@ -83,20 +82,18 @@ void main() {
     }
 
     expect(find.text('编辑config.sh'), findsOneWidget, reason: '应进入配置编辑页');
-    expect(find.byType(TextField), findsWidgets, reason: '应有可读的内容视图');
 
-    // 桌面端为只读降级视图，内容应能看到 shell 片段
-    final Iterable<String?> texts = tester
-        .widgetList<TextField>(find.byType(TextField))
-        .map((TextField f) => f.controller?.text);
-    final bool hasContent = texts.any(
-      (String? t) => (t ?? '').contains('#!/') || (t ?? '').contains('export'),
+    // 原生编辑器为自绘组件，无 TextField；内容经 onCreate → setValue 进入控制器
+    final CodeMirrorViewState state = tester.state<CodeMirrorViewState>(
+      find.byType(CodeMirrorView),
     );
-    expect(hasContent, isTrue, reason: '编辑页应展示配置文件内容');
+    expect(
+      state.debugText.contains('#!/') || state.debugText.contains('export'),
+      isTrue,
+      reason: '编辑器应持有配置文件内容',
+    );
     // ignore: avoid_print
-    print(
-      'CFG_EDIT PASS: 编辑页内容长度=${texts.map((t) => (t ?? '').length).toList()}',
-    );
+    print('CFG_EDIT PASS: 编辑器内容长度=${state.debugText.length}');
 
     // 返回列表
     await tester.tap(
