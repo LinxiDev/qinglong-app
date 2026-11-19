@@ -31,7 +31,7 @@ class TaskViewModel extends BaseViewModel {
   bool runAllTasked = false;
 
   /// 分页与视图筛选（对齐官方 GET /crons?page&size&searchValue&filters）
-  static const int pageSize = 100;
+  static const int pageSize = 20;
   int page = 1;
   bool hasMore = true;
   bool loadingMore = false;

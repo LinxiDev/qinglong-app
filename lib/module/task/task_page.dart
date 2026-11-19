@@ -143,7 +143,7 @@ class TaskPageState extends ConsumerState<TaskPage>
 
   Timer? _searchTimer;
 
-  /// 列表滑到底部时自动加载下一页（100 条/页）
+  /// 列表滑到底部时自动加载下一页（20 条/页）
   void _onScrollLoadMore() {
     if (!_scrollController.hasClients) {
       return;
