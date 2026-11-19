@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
+import 'package:qinglong_app/base/base_viewmodel.dart';
 import 'package:qinglong_app/module/task/task_viewmodel.dart';
 
 /// 回归：生命周期回调在 GetIt 未注册时不得崩溃。
@@ -46,5 +47,17 @@ void main() {
     vm.runAllTasks(context);
 
     expect(vm.runAllTasked, isFalse, reason: '守卫应提前返回，不触发批量运行');
+  });
+
+  testWidgets('switchTab 在注册表失效时结束列表区 loading', (tester) async {
+    final BuildContext context = await buildContext(tester);
+    final vm = TaskViewModel();
+    vm.success(notify: false);
+
+    await vm.switchTab(context, 3, "");
+
+    expect(vm.currentTab, 3);
+    expect(vm.tabLoading, isFalse, reason: '不得停留在列表区转圈状态');
+    expect(vm.currentState, PageState.content, reason: '状态栏应保持可见');
   });
 }

@@ -41,6 +41,12 @@ class TaskViewModel extends BaseViewModel {
   /// 当前 Tab：0 全部 / 1 运行中 / 2 空闲中 / 3 已禁用
   int currentTab = 0;
 
+  /// Tab 切换时仅列表区显示 loading，保持搜索框与状态栏可交互
+  bool tabLoading = false;
+
+  /// 请求令牌：快速切换状态/搜索时丢弃过期响应
+  int _requestSeq = 0;
+
   Map<String, dynamic>? _tabFilters() {
     if (currentTab == 1) {
       // 运行中（status 0）；面板会自动排除 isDisabled
@@ -93,11 +99,17 @@ class TaskViewModel extends BaseViewModel {
     if (!getIt.isRegistered<SystemBean>(
       instanceName: accountIndex.toString(),
     )) {
+      tabLoading = false;
+      // 切 Tab 后注册表失效时也要结束局部 loading，避免一直转圈
+      if (currentState == PageState.content) {
+        success();
+      }
       return;
     }
     if (isLoading && list.isEmpty) {
       loading(notify: true);
     }
+    final int requestSeq = ++_requestSeq;
 
     if (getIt<SystemBean>(
       instanceName: (SingleAccountPageState.of(context)?.index ?? 0).toString(),
@@ -108,6 +120,9 @@ class TaskViewModel extends BaseViewModel {
         search: lastSearch,
         filters: _tabFilters(),
       );
+      if (requestSeq != _requestSeq) {
+        return;
+      }
       if (temp.success && temp.bean != null) {
         final List<TaskBean> data = temp.bean?.data ?? [];
         list.clear();
@@ -130,7 +145,9 @@ class TaskViewModel extends BaseViewModel {
         } else if (context.mounted) {
           sortList(context);
         }
-        list.isEmpty ? empty(notify: true) : success();
+        tabLoading = false;
+        // 列表为空也保持 content：状态栏常驻，空态由列表区展示
+        success();
         if (MultiAccountPageState.actionRunAll ==
                 MultiAccountPageState.useAction() &&
             !runAllTasked) {
@@ -141,12 +158,21 @@ class TaskViewModel extends BaseViewModel {
         }
       } else {
         list.clear();
-        failed(temp.message, notify: true);
+        tabLoading = false;
+        if (currentTab == 0) {
+          failed(temp.message, notify: true);
+        } else {
+          // 切 Tab 失败时保留状态栏，仅提示错误
+          failToast(temp.message, notify: true);
+        }
       }
     } else {
       HttpResponse<List<TaskBean>> result = await SingleAccountPageState.ofApi(
         context,
       ).crons();
+      if (requestSeq != _requestSeq) {
+        return;
+      }
       if (result.success && result.bean != null) {
         list.clear();
         list.addAll(result.bean!);
@@ -154,7 +180,8 @@ class TaskViewModel extends BaseViewModel {
         if (context.mounted) {
           sortList(context);
         }
-        list.isEmpty ? empty(notify: true) : success();
+        tabLoading = false;
+        success();
         if (MultiAccountPageState.actionRunAll ==
                 MultiAccountPageState.useAction() &&
             !runAllTasked) {
@@ -165,7 +192,12 @@ class TaskViewModel extends BaseViewModel {
         }
       } else {
         list.clear();
-        failed(result.message, notify: true);
+        tabLoading = false;
+        if (currentTab == 0) {
+          failed(result.message, notify: true);
+        } else {
+          failToast(result.message, notify: true);
+        }
       }
     }
   }
@@ -184,7 +216,9 @@ class TaskViewModel extends BaseViewModel {
     lastSearch = search;
     page = 1;
     hasMore = true;
-    loading(notify: true);
+    // 仅列表区 loading，避免整页（含状态栏）被替换导致无法继续切换
+    tabLoading = true;
+    success();
     await loadData(context, false, search, index);
   }
 
@@ -193,6 +227,8 @@ class TaskViewModel extends BaseViewModel {
       return;
     }
     loadingMore = true;
+    final int tabAtRequest = currentTab;
+    final int pageAtRequest = page;
     final temp = await SingleAccountPageState.ofApi(context).crons2_13_09(
       page: page + 1,
       size: pageSize,
@@ -200,6 +236,10 @@ class TaskViewModel extends BaseViewModel {
       filters: _tabFilters(),
     );
     loadingMore = false;
+    // Tab 已切换或列表已重载时丢弃过期分页结果，避免写错列表
+    if (tabAtRequest != currentTab || pageAtRequest != page) {
+      return;
+    }
     if (temp.success && temp.bean != null) {
       final List<TaskBean> items = temp.bean?.data ?? [];
       final int? serverTotal = temp.bean?.total;

@@ -638,6 +638,36 @@ class TaskPageState extends ConsumerState<TaskPage>
   ) {
     return LayoutBuilder(
       builder: (context, c) {
+        // 切 Tab 时只替换列表区，搜索框与状态栏保持可见可点
+        if (model.tabLoading) {
+          return SizedBox(
+            height: c.maxHeight,
+            child: const Center(child: LoadingWidget()),
+          );
+        }
+        // 该状态无数据时保持列表区空态，状态栏仍可切换
+        if (list.isEmpty) {
+          return SizedBox(
+            height: c.maxHeight,
+            child: ListView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              children: [
+                SizedBox(
+                  height: c.maxHeight * 0.6,
+                  child: Center(
+                    child: Text(
+                      "暂无数据",
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: ref.watch(themeProvider).themeColor.descColor(),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          );
+        }
         return SizedBox(
           height: c.maxHeight,
           child: ListBodyWidget(
