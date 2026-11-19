@@ -69,15 +69,24 @@ class _SystemConfigPageState extends ConsumerState<SystemConfigPage> {
         try {
           final dynamic decoded = jsonDecode(response.bean ?? "{}");
           if (decoded is Map<String, dynamic>) {
-            final dynamic inner = decoded["data"];
-            data = inner is Map<String, dynamic> ? inner : decoded;
+            /// 面板 GET /system/config 返回的是配置记录：
+            /// {id, ip, type, info:{timezone, cronConcurrency, ...}}
+            /// 真正的配置项在 info 内，兼容旧版本直接平铺的情况
+            final dynamic info = decoded["info"];
+            data = info is Map<String, dynamic> ? info : decoded;
           }
         } catch (e) {
           data = <String, dynamic>{};
         }
         setState(() {
-          _concurrencyController.text =
-              data["cronConcurrency"]?.toString() ?? "";
+          /// 面板把「未设置」的并发数存为 0，展示时按留空处理
+          final dynamic concurrency = data["cronConcurrency"];
+          final int concurrencyValue = concurrency is num
+              ? concurrency.toInt()
+              : 0;
+          _concurrencyController.text = concurrencyValue > 0
+              ? concurrencyValue.toString()
+              : "";
           _dependenceProxyController.text =
               data["dependenceProxy"]?.toString() ?? "";
           _nodeMirrorController.text = data["nodeMirror"]?.toString() ?? "";
