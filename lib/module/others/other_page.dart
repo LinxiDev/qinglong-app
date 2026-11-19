@@ -495,12 +495,6 @@ class OtherPageState extends ConsumerState<OtherPage>
                                     },
                                   ),
                           ),
-                          const Spacer(),
-                        ],
-                      ),
-                      const SizedBox(height: 6),
-                      Row(
-                        children: [
                           Expanded(
                             child:
                                 SingleAccountPageState.ofUserInfo(context)
@@ -519,9 +513,6 @@ class OtherPageState extends ConsumerState<OtherPage>
                                     },
                                   ),
                           ),
-                          const Expanded(child: SizedBox.shrink()),
-                          const Expanded(child: SizedBox.shrink()),
-                          const Spacer(),
                         ],
                       ),
                     ],
