@@ -189,21 +189,56 @@ class Http {
         return HttpResponse(success: false, message: "没有该模块的访问权限", code: 401);
       }
 
-      if (e.response != null && e.response!.data != null) {
+      if (e.response != null && e.response!.data is Map) {
+        // 有响应体：优先展示面板返回的 message（青龙为中文）
+        final dynamic data = e.response!.data;
         return HttpResponse(
           success: false,
-          message: e.response?.data["message"] ?? e.message,
-          code: e.response?.data["code"] ?? 0,
+          message: data["message"] ?? _networkErrorMessage(e),
+          code: data["code"] ?? 0,
         );
       } else {
         return HttpResponse(
           success: false,
-          message: e.message,
+          message: _networkErrorMessage(e),
           code: e.response?.statusCode ?? 0,
         );
       }
     } catch (e) {
-      return HttpResponse(success: false, message: e.toString(), code: 400);
+      logger.e(e);
+      return HttpResponse(success: false, message: "请求处理失败，请稍后重试", code: 400);
+    }
+  }
+
+  /// 连接级异常的中文提示（无响应体的网络错误，
+  /// 避免把 Dio/Socket 的英文原文直接透出给用户）
+  String _networkErrorMessage(DioException e) {
+    switch (e.type) {
+      case DioExceptionType.connectionTimeout:
+      case DioExceptionType.sendTimeout:
+      case DioExceptionType.receiveTimeout:
+      case DioExceptionType.transformTimeout:
+        return "连接超时，请检查网络后重试";
+      case DioExceptionType.connectionError:
+        return "无法连接服务器，请检查网络或面板地址";
+      case DioExceptionType.badCertificate:
+        return "证书校验失败，请检查面板证书配置";
+      case DioExceptionType.cancel:
+        return "请求已取消";
+      case DioExceptionType.badResponse:
+        return "服务器响应异常(${e.response?.statusCode ?? 0})";
+      case DioExceptionType.unknown:
+        final String raw = e.error?.toString() ?? "";
+        if (raw.contains("SocketException") ||
+            raw.contains("Failed host lookup") ||
+            raw.contains("Connection refused") ||
+            raw.contains("Network is unreachable")) {
+          return "网络连接失败，请检查网络后重试";
+        }
+        if (raw.contains("HandshakeException")) {
+          return "安全连接建立失败，请检查面板证书配置";
+        }
+        return "网络请求失败，请稍后重试";
     }
   }
 
