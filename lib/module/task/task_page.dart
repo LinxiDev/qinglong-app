@@ -145,7 +145,7 @@ class TaskPageState extends ConsumerState<TaskPage>
   Timer? _searchTimer;
 
   /// 切换 Tab 时按服务端筛选重新拉取
-  /// 全部=无筛选、运行中=status[0]、未使用=全量本地过滤、已禁用=status[2]
+  /// 全部=无筛选、运行中=status[0]、空闲中=status[1]、已禁用=status[2]
   void _onTabChanged() {
     final TabController? controller = _tabController;
     if (controller == null || controller.indexIsChanging) {
@@ -205,7 +205,7 @@ class TaskPageState extends ConsumerState<TaskPage>
     } else if (index == 1) {
       return model.running;
     } else if (index == 2) {
-      return model.neverRunning;
+      return model.idle;
     } else if (index == 3) {
       return model.disabled;
     }
@@ -610,7 +610,7 @@ class TaskPageState extends ConsumerState<TaskPage>
                             children: [
                               body(model, model.list, ref, true),
                               body(model, model.running, ref, false),
-                              body(model, model.neverRunning, ref, false),
+                              body(model, model.idle, ref, false),
                               body(model, model.disabled, ref, false),
                             ],
                           ),
@@ -1587,7 +1587,7 @@ class SliverTabBarDelegate extends SliverPersistentHeaderDelegate {
                   ),
                 ),
                 2: Text(
-                  TaskViewModel.neverStr,
+                  TaskViewModel.idleStr,
                   maxLines: 1,
                   style: TextStyle(
                     fontSize: 14,

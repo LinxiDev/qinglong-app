@@ -13,13 +13,13 @@ Map<int, int> sort = {0: 0, 5: 1, 3: 2, 1: 3, 4: 4};
 class TaskViewModel extends BaseViewModel {
   static const String allStr = "全部";
   static const String runningStr = "运行中";
-  static const String neverStr = "未使用";
+  static const String idleStr = "空闲中";
   static const String notScriptStr = "拉库";
   static const String disableStr = "已禁用";
 
   List<TaskBean> list = [];
   List<TaskBean> running = [];
-  List<TaskBean> neverRunning = [];
+  List<TaskBean> idle = [];
   List<TaskBean> notScripts = [];
   List<TaskBean> disabled = [];
 
@@ -38,7 +38,7 @@ class TaskViewModel extends BaseViewModel {
   bool loadingMore = false;
   String lastSearch = "";
 
-  /// 当前 Tab：0 全部 / 1 运行中 / 2 未使用 / 3 已禁用
+  /// 当前 Tab：0 全部 / 1 运行中 / 2 空闲中 / 3 已禁用
   int currentTab = 0;
 
   Map<String, dynamic>? _tabFilters() {
@@ -46,6 +46,12 @@ class TaskViewModel extends BaseViewModel {
       // 运行中（status 0）；面板会自动排除 isDisabled
       return {
         "status": [0],
+      };
+    }
+    if (currentTab == 2) {
+      // 空闲中（status 1）
+      return {
+        "status": [1],
       };
     }
     if (currentTab == 3) {
@@ -62,7 +68,7 @@ class TaskViewModel extends BaseViewModel {
       case 1:
         return running;
       case 2:
-        return neverRunning;
+        return idle;
       case 3:
         return disabled;
       default:
@@ -96,36 +102,28 @@ class TaskViewModel extends BaseViewModel {
     if (getIt<SystemBean>(
       instanceName: (SingleAccountPageState.of(context)?.index ?? 0).toString(),
     ).isUpperVersion2_13_9()) {
-      /// 「未使用」无法用官方 filters 表达 NULL，改为全量拉取后本地过滤
-      final bool neverUsedTab = currentTab == 2;
-      final int requestSize = neverUsedTab ? 10000 : pageSize;
       var temp = await SingleAccountPageState.ofApi(context).crons2_13_09(
         page: 1,
-        size: requestSize,
+        size: pageSize,
         search: lastSearch,
         filters: _tabFilters(),
       );
       if (temp.success && temp.bean != null) {
         final List<TaskBean> data = temp.bean?.data ?? [];
-        if (neverUsedTab) {
-          data.removeWhere((element) => element.lastRunningTime != null);
-        }
         list.clear();
         list.addAll(data);
         page = 1;
         final int? serverTotal = temp.bean?.total;
         total = serverTotal ?? data.length;
-        hasMore =
-            !neverUsedTab &&
-            (serverTotal != null
-                ? data.length < serverTotal
-                : data.length >= requestSize);
+        hasMore = serverTotal != null
+            ? data.length < serverTotal
+            : data.length >= pageSize;
         if (currentTab == 1) {
           running.clear();
           running.addAll(data);
         } else if (currentTab == 2) {
-          neverRunning.clear();
-          neverRunning.addAll(data);
+          idle.clear();
+          idle.addAll(data);
         } else if (currentTab == 3) {
           disabled.clear();
           disabled.addAll(data);
@@ -297,10 +295,8 @@ class TaskViewModel extends BaseViewModel {
     }
     running.clear();
     running.addAll(list.where((element) => element.status == 0));
-    neverRunning.clear();
-    neverRunning.addAll(
-      list.where((element) => element.lastRunningTime == null),
-    );
+    idle.clear();
+    idle.addAll(list.where((element) => element.status == 1));
     notScripts.clear();
     notScripts.addAll(
       list.where(
