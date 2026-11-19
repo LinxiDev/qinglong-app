@@ -11,6 +11,7 @@ import 'package:qinglong_app/base/single_account_page.dart';
 import 'package:qinglong_app/base/theme.dart';
 import 'package:qinglong_app/base/ui/app_logo.dart';
 import 'package:qinglong_app/base/ui/lazy_load_state.dart';
+import 'package:qinglong_app/module/setting/panel_upgrade_page.dart';
 import 'package:qinglong_app/module/home/system_bean.dart';
 import 'package:qinglong_app/module/in_app_purchase_page.dart';
 import 'package:qinglong_app/utils/extension.dart';
@@ -413,37 +414,23 @@ class _AboutPageState extends ConsumerState<AboutPage>
   @override
   void onLazyLoad() {}
 
+  /// 点击「青龙服务端」：有版本检测结果后分流——
+  /// 有新版本 → 进入面板升级页（可下载/应用/重启）；无新版本 → 仅提示
   void _checkUpdate() async {
     var response = await SingleAccountPageState.ofApi(context).checkUpdate();
+    if (!mounted) {
+      return;
+    }
     if (response.success) {
       if (response.bean?.hasNewVersion ?? false) {
-        if (mounted) {
-          showCupertinoDialog(
-            context: context,
-            useRootNavigator: false,
-            builder: (childContext) => CupertinoAlertDialog(
-              title: Text("青龙服务端发现新版本 ${response.bean?.lastVersion}"),
-              content: Padding(
-                padding: const EdgeInsets.only(left: 5, top: 5),
-                child: Text(
-                  "${response.bean?.lastLog}",
-                  textAlign: TextAlign.left,
-                ),
-              ),
-              actions: [
-                CupertinoDialogAction(
-                  child: const Text("知道了"),
-                  onPressed: () {
-                    Navigator.of(childContext).pop();
-                  },
-                ),
-              ],
-            ),
-          );
-        }
+        Navigator.of(context).push(
+          CupertinoPageRoute(builder: (context) => const PanelUpgradePage()),
+        );
       } else {
-        "已经是新版本".toast();
+        "已是最新版本".toast();
       }
+    } else {
+      response.message?.toast();
     }
   }
 }
