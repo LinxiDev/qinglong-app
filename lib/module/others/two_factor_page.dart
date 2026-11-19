@@ -209,13 +209,24 @@ class _TwoFactorPageState extends ConsumerState<TwoFactorPage> {
                               ),
                             ),
                             const SizedBox(height: 16),
-                            CupertinoButton(
-                              color: const Color(0xffEA4D3E),
-                              borderRadius: BorderRadius.circular(10),
-                              onPressed: disable,
-                              child: const Text(
-                                "关闭两步验证",
-                                style: TextStyle(color: Colors.white),
+                            // 页面级主按钮：对齐登录页规格（高 50、圆角 12、白字加粗）
+                            GestureDetector(
+                              onTap: disable,
+                              child: Container(
+                                height: 50,
+                                alignment: Alignment.center,
+                                decoration: BoxDecoration(
+                                  color: const Color(0xffEA4D3E),
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: const Text(
+                                  "关闭两步验证",
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
                               ),
                             ),
                           ]
@@ -296,13 +307,28 @@ class _TwoFactorPageState extends ConsumerState<TwoFactorPage> {
                               ),
                             ),
                             const SizedBox(height: 12),
-                            CupertinoButton(
-                              color: ref.watch(themeProvider).primaryColor,
-                              borderRadius: BorderRadius.circular(10),
-                              onPressed: activating ? null : enable,
-                              child: Text(
-                                activating ? "启用中…" : "启用两步验证",
-                                style: const TextStyle(color: Colors.white),
+                            GestureDetector(
+                              onTap: activating ? null : enable,
+                              child: Container(
+                                height: 50,
+                                alignment: Alignment.center,
+                                decoration: BoxDecoration(
+                                  color: ref
+                                      .watch(themeProvider)
+                                      .primaryColor
+                                      .withValues(alpha: activating ? 0.5 : 1),
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: activating
+                                    ? const LoadingWidget(color: Colors.white)
+                                    : const Text(
+                                        "启用两步验证",
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
                               ),
                             ),
                           ],
