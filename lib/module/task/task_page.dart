@@ -19,7 +19,6 @@ import 'package:qinglong_app/base/ui/search_cell.dart';
 import 'package:qinglong_app/module/task/add_task_page.dart';
 import 'package:qinglong_app/module/task/intime_log/intime_log_page.dart';
 import 'package:qinglong_app/module/task/task_bean.dart';
-import 'package:qinglong_app/module/task/task_view_page.dart';
 import 'package:qinglong_app/module/task/task_viewmodel.dart';
 import 'package:qinglong_app/utils/extension.dart';
 import 'package:qinglong_app/utils/sp_utils.dart';
@@ -121,6 +120,7 @@ class TaskPageState extends ConsumerState<TaskPage>
     _tabController = TabController(length: 4, vsync: this);
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    _scrollController.addListener(_onScrollLoadMore);
     searchText.addListener(() {
       setState(() {});
 
@@ -142,6 +142,24 @@ class TaskPageState extends ConsumerState<TaskPage>
   }
 
   Timer? _searchTimer;
+
+  /// 列表滑到底部时自动加载下一页（100 条/页）
+  void _onScrollLoadMore() {
+    if (!_scrollController.hasClients) {
+      return;
+    }
+    final ScrollPosition position = _scrollController.position;
+    if (position.pixels < position.maxScrollExtent - 200) {
+      return;
+    }
+    final model = ref.read(
+      SingleAccountPageState.ofTaskProvider(context)(getProviderName(context))
+          .notifier,
+    );
+    if (model.hasMore && !model.loadingMore) {
+      model.loadMore(context);
+    }
+  }
 
   double searchCellHeight = 55;
 
@@ -342,37 +360,6 @@ class TaskPageState extends ConsumerState<TaskPage>
             },
           ),
           actions: [
-            CupertinoButton(
-              color: Colors.transparent,
-              padding: EdgeInsets.zero,
-              onPressed: () {
-                Navigator.of(context)
-                    .push(
-                      CupertinoPageRoute(
-                        builder: (context) => const TaskViewPage(),
-                      ),
-                    )
-                    .then((value) {
-                      if (!context.mounted) {
-                        return;
-                      }
-                      final model = ref.read(
-                        SingleAccountPageState.ofTaskProvider(context)(
-                          getProviderName(context),
-                        ).notifier,
-                      );
-                      if (value is String) {
-                        model.applyView(value, null);
-                      }
-                      model.loadData(context, false);
-                    });
-              },
-              child: Icon(
-                CupertinoIcons.square_list,
-                size: 22,
-                color: Theme.of(context).appBarTheme.iconTheme?.color,
-              ),
-            ),
             CupertinoButton(
               color: Colors.transparent,
               padding: EdgeInsets.zero,
@@ -667,6 +654,7 @@ class TaskPageState extends ConsumerState<TaskPage>
   @override
   void dispose() {
     _searchTimer?.cancel();
+    _scrollController.removeListener(_onScrollLoadMore);
     WidgetsBinding.instance.removeObserver(this);
     removeOverlay();
     super.dispose();
@@ -1035,35 +1023,6 @@ class _ListBodyState extends ConsumerState<ListBodyWidget>
       physics: const NeverScrollableScrollPhysics(),
       keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
       itemBuilder: (context, index) {
-        if (index == widget.list.length) {
-          final model = ref.read(
-            SingleAccountPageState.ofTaskProvider(context)(
-              getProviderName(context),
-            ).notifier,
-          );
-          if (!model.hasMore) {
-            return const SizedBox.shrink();
-          }
-          return Center(
-            child: Padding(
-              padding: const EdgeInsets.all(15),
-              child: CupertinoButton(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                color: ref.watch(themeProvider).themeColor.settingBgColor(),
-                onPressed: model.loadingMore
-                    ? null
-                    : () => model.loadMore(context),
-                child: Text(
-                  model.loadingMore ? "加载中…" : "加载更多",
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: ref.watch(themeProvider).primaryColor,
-                  ),
-                ),
-              ),
-            ),
-          );
-        }
         TaskBean item = widget.list[index];
         if (widget.searchText.isEmpty ||
             (item.name?.toLowerCase().contains(
@@ -1089,7 +1048,7 @@ class _ListBodyState extends ConsumerState<ListBodyWidget>
           return const SizedBox.shrink();
         }
       },
-      itemCount: widget.list.length + 1,
+      itemCount: widget.list.length,
       separatorBuilder: (BuildContext context, int index) {
         if (index >= widget.list.length) {
           return const SizedBox.shrink();

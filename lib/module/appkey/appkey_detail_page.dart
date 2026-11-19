@@ -187,7 +187,7 @@ class TaskDetailPageState extends ConsumerState<AppKeyDetailDetailPage> {
   }
 }
 
-class AppKeyDetailCell extends ConsumerWidget {
+class AppKeyDetailCell extends ConsumerStatefulWidget {
   final String title;
   final String? desc;
   final Widget? icon;
@@ -204,7 +204,15 @@ class AppKeyDetailCell extends ConsumerWidget {
   });
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<AppKeyDetailCell> createState() => _AppKeyDetailCellState();
+}
+
+class _AppKeyDetailCellState extends ConsumerState<AppKeyDetailCell> {
+  late bool _obscure = widget.obtext;
+
+  @override
+  Widget build(BuildContext context) {
+    final ThemeColors themeColor = ref.watch(themeProvider).themeColor;
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -214,47 +222,67 @@ class AppKeyDetailCell extends ConsumerWidget {
           child: Row(
             children: [
               Text(
-                title,
-                style: TextStyle(
-                  color: ref.watch(themeProvider).themeColor.titleColor(),
-                  fontSize: 16,
-                ),
+                widget.title,
+                style: TextStyle(color: themeColor.titleColor(), fontSize: 16),
               ),
               const SizedBox(width: 30),
-              desc != null
+              widget.desc != null
                   ? Expanded(
-                      child: GestureDetector(
-                        behavior: HitTestBehavior.opaque,
-                        onTap: () {
-                          Clipboard.setData(ClipboardData(text: desc ?? ""));
-                          "已复制到剪切板".toast();
-                        },
-                        child: Align(
-                          alignment: Alignment.centerRight,
-                          child: Text(
-                            obtext ? "*******" : desc!,
-                            textAlign: TextAlign.right,
-                            style: TextStyle(
-                              color: ref
-                                  .watch(themeProvider)
-                                  .themeColor
-                                  .descColor(),
-                              fontSize: 14,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          Flexible(
+                            child: GestureDetector(
+                              behavior: HitTestBehavior.opaque,
+                              onTap: () {
+                                Clipboard.setData(
+                                  ClipboardData(text: widget.desc ?? ""),
+                                );
+                                "已复制到剪切板".toast();
+                              },
+                              child: Text(
+                                _obscure ? "*******" : widget.desc!,
+                                textAlign: TextAlign.right,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  color: themeColor.descColor(),
+                                  fontSize: 14,
+                                ),
+                              ),
                             ),
                           ),
-                        ),
+                          if (widget.obtext) ...[
+                            const SizedBox(width: 6),
+                            GestureDetector(
+                              behavior: HitTestBehavior.opaque,
+                              onTap: () {
+                                setState(() {
+                                  _obscure = !_obscure;
+                                });
+                              },
+                              child: Icon(
+                                _obscure
+                                    ? CupertinoIcons.eye
+                                    : CupertinoIcons.eye_slash,
+                                size: 18,
+                                color: themeColor.descColor(),
+                              ),
+                            ),
+                          ],
+                        ],
                       ),
                     )
                   : Expanded(
                       child: Align(
                         alignment: Alignment.centerRight,
-                        child: icon!,
+                        child: widget.icon!,
                       ),
                     ),
             ],
           ),
         ),
-        hideDivide ? const SizedBox.shrink() : const Divider(height: 1),
+        widget.hideDivide ? const SizedBox.shrink() : const Divider(height: 1),
       ],
     );
   }

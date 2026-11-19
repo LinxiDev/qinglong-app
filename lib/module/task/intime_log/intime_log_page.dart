@@ -41,9 +41,6 @@ class InTimeLogPageState extends ConsumerState<InTimeLogPage>
 
   String? content;
 
-  /// 已读取的日志字节偏移（官方分块接口）
-  int _offset = 0;
-
   bool isRequest = false;
   bool canRequest = true;
   bool alwaysAuthScroll = false;
@@ -58,39 +55,8 @@ class InTimeLogPageState extends ConsumerState<InTimeLogPage>
       return;
     }
     isRequest = true;
-    final api = SingleAccountPageState.ofApi(context);
-    HttpResponse<String> response;
-
-    /// 优先使用官方分块接口：首屏取尾部 128KB，之后按 offset 增量追加
-    final chunkResponse = await api.cronLogChunkRaw(
-      widget.cronId,
-      offset: _offset == 0 ? null : _offset,
-      limit: 131072,
-      tail: _offset == 0,
-    );
-    if (chunkResponse.success && chunkResponse.bean != null) {
-      final Map<String, dynamic> map = chunkResponse.bean!;
-      final String chunk = (map["data"] ?? "").toString();
-      final int total = map["total"] is num ? (map["total"] as num).toInt() : 0;
-      final int nextOffset = map["nextOffset"] is num
-          ? (map["nextOffset"] as num).toInt()
-          : 0;
-      if (_offset > 0 && total < _offset) {
-        // 日志已轮转或开始新一轮运行，重新读取
-        content = chunk;
-      } else {
-        content = _offset == 0 ? chunk : "${content ?? ""}$chunk";
-      }
-      _offset = nextOffset > 0 ? nextOffset : _offset;
-      response = HttpResponse(success: true, code: 200, bean: content);
-    } else {
-      /// 旧面板没有分块接口时回退整段读取
-      response = await api.inTimeLog(widget.cronId);
-      if (response.success) {
-        content = response.bean;
-        _offset = 0;
-      }
-    }
+    HttpResponse<String> response = await SingleAccountPageState.ofApi(context)
+        .inTimeLog(widget.cronId);
 
     if (!mounted) {
       return;

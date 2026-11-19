@@ -1049,64 +1049,7 @@ class Api {
     );
   }
 
-  // ==================== 任务视图 / 标签 / 导入 ====================
-
-  Future<HttpResponse<String>> cronViews() async {
-    return await getIt<Http>(
-      instanceName: index.toString(),
-    ).get<String>(getIt<Url>(instanceName: index.toString()).cronViews, null);
-  }
-
-  Future<HttpResponse<NullResponse>> addCronView(
-    Map<String, dynamic> body,
-  ) async {
-    return await getIt<Http>(instanceName: index.toString()).post<NullResponse>(
-      getIt<Url>(instanceName: index.toString()).cronViews,
-      body,
-    );
-  }
-
-  Future<HttpResponse<NullResponse>> updateCronView(
-    Map<String, dynamic> body,
-  ) async {
-    return await getIt<Http>(instanceName: index.toString()).put<NullResponse>(
-      getIt<Url>(instanceName: index.toString()).cronViews,
-      body,
-    );
-  }
-
-  Future<HttpResponse<NullResponse>> deleteCronView(List<int> ids) async {
-    return await getIt<Http>(instanceName: index.toString())
-        .delete<NullResponse>(
-          getIt<Url>(instanceName: index.toString()).cronViews,
-          ids,
-        );
-  }
-
-  Future<HttpResponse<NullResponse>> moveCronView(
-    int id,
-    int fromIndex,
-    int toIndex,
-  ) async {
-    return await getIt<Http>(instanceName: index.toString()).put<NullResponse>(
-      getIt<Url>(instanceName: index.toString()).cronViewsMove,
-      {"id": id, "fromIndex": fromIndex, "toIndex": toIndex},
-    );
-  }
-
-  Future<HttpResponse<NullResponse>> enableCronView(List<int> ids) async {
-    return await getIt<Http>(instanceName: index.toString()).put<NullResponse>(
-      getIt<Url>(instanceName: index.toString()).cronViewsEnable,
-      ids,
-    );
-  }
-
-  Future<HttpResponse<NullResponse>> disableCronView(List<int> ids) async {
-    return await getIt<Http>(instanceName: index.toString()).put<NullResponse>(
-      getIt<Url>(instanceName: index.toString()).cronViewsDisable,
-      ids,
-    );
-  }
+  // ==================== 任务标签 / 导入 ====================
 
   Future<HttpResponse<NullResponse>> updateCronLabels(
     List<int> ids,

@@ -54,11 +54,33 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
 
     final Api api = SingleAccountPageState.ofApi(context);
 
+    /// 第一批：首屏关键数据，先渲染
     final List<HttpResponse<String>> responses = await Future.wait([
       api.dashboardOverview(),
       api.dashboardTrend(days: trendDays),
       api.dashboardTopTime(),
       api.dashboardTopCount(),
+    ]);
+
+    if (!mounted) {
+      return;
+    }
+
+    overview = _decodeMap(responses[0]);
+    trend = _decodeList(responses[1]);
+    topTime = _decodeList(responses[2]);
+    topCount = _decodeList(responses[3]);
+
+    setState(() {
+      loading = false;
+    });
+
+    if (!responses[0].success) {
+      responses[0].message.toast();
+    }
+
+    /// 第二批：扩展统计在后台补齐，不阻塞首屏
+    final List<HttpResponse<String>> extra = await Future.wait([
       api.dashboardRuntime(),
       api.dashboardLabels(),
       api.dashboardSystem(),
@@ -70,23 +92,13 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
       return;
     }
 
-    overview = _decodeMap(responses[0]);
-    trend = _decodeList(responses[1]);
-    topTime = _decodeList(responses[2]);
-    topCount = _decodeList(responses[3]);
-    runtime = _decodeMap(responses[4]);
-    labels = _decodeList(responses[5]);
-    systemInfo = _decodeMap(responses[6]);
-    successes = _decodeList(responses[7]);
-    failures = _decodeList(responses[8]);
-
     setState(() {
-      loading = false;
+      runtime = _decodeMap(extra[0]);
+      labels = _decodeList(extra[1]);
+      systemInfo = _decodeMap(extra[2]);
+      successes = _decodeList(extra[3]);
+      failures = _decodeList(extra[4]);
     });
-
-    if (!responses[0].success) {
-      responses[0].message.toast();
-    }
   }
 
   Map<String, dynamic> _decodeMap(HttpResponse<String> response) {

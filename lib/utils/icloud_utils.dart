@@ -26,13 +26,13 @@ class ICloudUtils {
 
   ICloudUtils(this.index);
 
-  Future<void> asyncSubscribe(String list, {bool focusUpdate = false}) async {
+  Future<bool> asyncSubscribe(String list, {bool focusUpdate = false}) async {
     try {
-      if (list.isEmpty) return;
-      if (SpUtil.getInt(spVIP, defValue: typeNormal) == typeNormal) return;
+      if (list.isEmpty) return true;
+      if (SpUtil.getInt(spVIP, defValue: typeNormal) == typeNormal) return true;
       if (SpUtil.getBool(spICloud, defValue: true) == false &&
           focusUpdate == false) {
-        return;
+        return true;
       }
 
       bool exist = await existContent(
@@ -43,8 +43,10 @@ class ICloudUtils {
       if (!exist) {
         await FileUtil(index).writeSubscribe(list);
       }
+      return true;
     } catch (e) {
       logger.e(e);
+      return false;
     }
   }
 
@@ -62,13 +64,13 @@ class ICloudUtils {
     return false;
   }
 
-  Future<void> asyncEnv(List<EnvBean> list, {bool focusUpdate = false}) async {
+  Future<bool> asyncEnv(List<EnvBean> list, {bool focusUpdate = false}) async {
     try {
-      if (list.isEmpty) return;
-      if (SpUtil.getInt(spVIP, defValue: typeNormal) == typeNormal) return;
+      if (list.isEmpty) return true;
+      if (SpUtil.getInt(spVIP, defValue: typeNormal) == typeNormal) return true;
       if (SpUtil.getBool(spICloud, defValue: true) == false &&
           focusUpdate == false) {
-        return;
+        return true;
       }
       bool exist = await existContent(
         await FileUtil(index).getEnvDirectory(),
@@ -78,23 +80,25 @@ class ICloudUtils {
       if (!exist) {
         await FileUtil(index).writeEnv(jsonEncode(list));
       }
+      return true;
     } catch (e) {
       logger.e(e);
+      return false;
     }
   }
 
-  Future<void> asyncConfig(
+  Future<bool> asyncConfig(
     String? title,
     String? content, {
     bool focusUpdate = false,
   }) async {
     try {
-      if (SpUtil.getInt(spVIP, defValue: typeNormal) == typeNormal) return;
+      if (SpUtil.getInt(spVIP, defValue: typeNormal) == typeNormal) return true;
 
-      if (content == null || content.isEmpty) return;
+      if (content == null || content.isEmpty) return true;
       if (SpUtil.getBool(spICloud, defValue: true) == false &&
           focusUpdate == false) {
-        return;
+        return true;
       }
 
       bool exist = await existContent(
@@ -105,8 +109,10 @@ class ICloudUtils {
       if (!exist) {
         await FileUtil(index).writeConfig(title ?? "nameNotFound.sh", content);
       }
+      return true;
     } catch (e) {
-      // 忽略异常，保持原有行为
+      logger.e(e);
+      return false;
     }
   }
 
@@ -183,31 +189,70 @@ class ICloudUtils {
 
   void _handleRestoreSubscribe(String localSubscribePath) async {
     try {
-      final file = File(localSubscribePath);
-      final contents = await file.readAsString();
+      final File file = File(localSubscribePath);
+      final String contents = await file.readAsString();
+      final List<dynamic> data = jsonDecode(contents);
+      final Api api = Api(index);
 
-      List<Map<String, dynamic>> list = [];
+      /// 按 alias/url 匹配现有订阅，已存在则更新，避免重复还原产生重复订阅
+      final Map<String, Map<String, dynamic>> existing = {};
+      final current = await api.subscribes();
+      if (current.success && current.bean != null) {
+        final dynamic decoded = jsonDecode(current.bean!);
+        if (decoded is List) {
+          for (final dynamic item in decoded) {
+            if (item is Map) {
+              final Map<String, dynamic> map = Map<String, dynamic>.from(item);
+              final String key = (map["alias"] ?? map["url"] ?? "").toString();
+              if (key.isNotEmpty) {
+                existing[key] = map;
+              }
+            }
+          }
+        }
+      }
 
-      List<dynamic> data = jsonDecode(contents);
-
-      list.addAll(
-        data.map((e) {
-          return e as Map<String, dynamic>;
-        }).toList(),
-      );
-
-      for (var value in list) {
-        value.remove("id");
+      int created = 0;
+      int updated = 0;
+      int failed = 0;
+      for (final dynamic item in data) {
+        if (item is! Map) {
+          continue;
+        }
+        final Map<String, dynamic> value = Map<String, dynamic>.from(item);
+        final String key = (value["alias"] ?? value["url"] ?? "").toString();
+        final Map<String, dynamic>? old = existing[key];
         value.remove("status");
         value.remove("pid");
-        value.remove("is_disabled");
         value.remove("log_path");
         value.remove("createdAt");
         value.remove("updatedAt");
 
-        await Api(index).addSubscribes(value);
+        final bool exists = old != null && old["id"] != null;
+        if (exists) {
+          value["id"] = old["id"];
+        } else {
+          value.remove("id");
+          value.remove("is_disabled");
+        }
+        final response = exists
+            ? await api.updateSubscribes(value)
+            : await api.addSubscribes(value);
+        if (response.success) {
+          if (exists) {
+            updated++;
+          } else {
+            created++;
+          }
+        } else {
+          failed++;
+        }
       }
-      "已还原，请刷新订阅管理列表查看".toast();
+      if (failed > 0) {
+        "还原完成：新增 $created，更新 $updated，失败 $failed".toast();
+      } else {
+        "已还原订阅（新增 $created，更新 $updated），未删除现有订阅".toast();
+      }
     } catch (e) {
       e.toString().toast();
     }
@@ -215,30 +260,67 @@ class ICloudUtils {
 
   void _handleRestoreEnv(String localEnvPath) async {
     try {
-      final file = File(localEnvPath);
-      final contents = await file.readAsString();
+      final File file = File(localEnvPath);
+      final String contents = await file.readAsString();
+      final List<dynamic> data = jsonDecode(contents);
+      final List<EnvBean> list = data.map((e) => EnvBean.fromJson(e)).toList();
+      final Api api = Api(index);
 
-      List<EnvBean> list = [];
-
-      List<dynamic> data = jsonDecode(contents);
-
-      list.addAll(data.map((e) => EnvBean.fromJson(e)).toList());
-
-      var result = await Api(index).envs("");
-
-      if (result.success) {
-        if (result.bean != null && result.bean!.isNotEmpty) {
-          List<String> temp = result.bean!.map((e) => e.sId!).toList();
-          await Api(index).delEnvs(temp);
+      /// 按变量名 upsert：不删除面板已有变量，保留其状态与置顶
+      final Map<String, EnvBean> existing = {};
+      final result = await api.envs("");
+      if (result.success && result.bean != null) {
+        for (final EnvBean item in result.bean!) {
+          if (item.name != null) {
+            existing[item.name!] = item;
+          }
         }
       }
 
-      for (var value in list) {
-        if (value.name == null || value.value == null) continue;
+      int created = 0;
+      int updated = 0;
+      int failed = 0;
+      for (final EnvBean value in list) {
+        if (value.name == null || value.value == null) {
+          continue;
+        }
+        final EnvBean? old = existing[value.name!];
+        final response = old != null
+            ? await api.addEnv(
+                value.name!,
+                value.value!,
+                value.remarks ?? "",
+                id: old.id,
+                nId: old.nId,
+              )
+            : await api.addEnv(value.name!, value.value!, value.remarks ?? "");
+        if (!response.success) {
+          failed++;
+          continue;
+        }
+        if (old == null) {
+          created++;
+        } else {
+          updated++;
+        }
 
-        await Api(index).addEnv(value.name!, value.value!, value.remarks ?? "");
+        /// 同步启用状态（以备份为准）
+        if (old != null &&
+            old.sId != null &&
+            old.sId!.isNotEmpty &&
+            value.status != null) {
+          if (value.status == 1 && old.status != 1) {
+            await api.disableEnv([old.sId!]);
+          } else if (value.status == 0 && old.status == 1) {
+            await api.enableEnv([old.sId!]);
+          }
+        }
       }
-      "已还原，请刷新环境变量列表查看".toast();
+      if (failed > 0) {
+        "还原完成：新增 $created，更新 $updated，失败 $failed".toast();
+      } else {
+        "已还原变量（新增 $created，更新 $updated），未删除现有变量".toast();
+      }
     } catch (e) {
       e.toString().toast();
     }
@@ -246,11 +328,15 @@ class ICloudUtils {
 
   void _handleRestoreConfig(String title, String localConfigPath) async {
     try {
-      final file = File(localConfigPath);
-      final contents = await file.readAsString();
+      final File file = File(localConfigPath);
+      final String contents = await file.readAsString();
 
-      Api(index).saveFile(title, contents);
-      "已还原$title文件".toast();
+      final response = await Api(index).saveFile(title, contents);
+      if (response.success) {
+        "已还原$title文件".toast();
+      } else {
+        (response.message ?? "还原$title失败").toast();
+      }
     } catch (e) {
       e.toString().toast();
     }

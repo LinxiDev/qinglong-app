@@ -376,15 +376,7 @@ class Url {
 
   String get envUpload => p("/envs/upload");
 
-  // ---------------- 定时任务：视图、标签、导入、日志 ----------------
-  String get cronViews => p("/crons/views");
-
-  String get cronViewsMove => p("/crons/views/move");
-
-  String get cronViewsEnable => p("/crons/views/enable");
-
-  String get cronViewsDisable => p("/crons/views/disable");
-
+  // ---------------- 定时任务：标签、导入、日志 ----------------
   String get cronLabels => p("/crons/labels");
 
   /// 单次运行日志（支持 offset/limit/tail 增量读取）

@@ -36,8 +36,6 @@ class TaskViewModel extends BaseViewModel {
   bool hasMore = true;
   bool loadingMore = false;
   String lastSearch = "";
-  String? viewFilters;
-  String? viewSorts;
 
   Future<void> loadData(
     BuildContext context, [
@@ -61,13 +59,8 @@ class TaskViewModel extends BaseViewModel {
     if (getIt<SystemBean>(
       instanceName: (SingleAccountPageState.of(context)?.index ?? 0).toString(),
     ).isUpperVersion2_13_9()) {
-      var temp = await SingleAccountPageState.ofApi(context).crons2_13_09(
-        page: 1,
-        size: pageSize,
-        search: lastSearch,
-        filters: viewFilters,
-        sorts: viewSorts,
-      );
+      var temp = await SingleAccountPageState.ofApi(context)
+          .crons2_13_09(page: 1, size: pageSize, search: lastSearch);
       if (temp.success && temp.bean != null) {
         list.clear();
         list.addAll(temp.bean?.data ?? []);
@@ -122,13 +115,8 @@ class TaskViewModel extends BaseViewModel {
       return;
     }
     loadingMore = true;
-    final temp = await SingleAccountPageState.ofApi(context).crons2_13_09(
-      page: page + 1,
-      size: pageSize,
-      search: lastSearch,
-      filters: viewFilters,
-      sorts: viewSorts,
-    );
+    final temp = await SingleAccountPageState.ofApi(context)
+        .crons2_13_09(page: page + 1, size: pageSize, search: lastSearch);
     loadingMore = false;
     if (temp.success && temp.bean != null) {
       final List<TaskBean> items = temp.bean?.data ?? [];
@@ -147,12 +135,6 @@ class TaskViewModel extends BaseViewModel {
       hasMore = false;
       failed(temp.message, notify: true);
     }
-  }
-
-  /// 应用任务视图的过滤/排序条件
-  void applyView(String? filters, String? sorts) {
-    viewFilters = filters;
-    viewSorts = sorts;
   }
 
   void sortList(BuildContext context) {

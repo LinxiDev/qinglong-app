@@ -458,6 +458,13 @@ class DependcyPageState extends ConsumerState<DependencyPage>
                       },
                     ),
                     EditModeButton(
+                      "取消",
+                      icon: CupertinoIcons.xmark_circle,
+                      onTap: () {
+                        _executeCode(context, "取消");
+                      },
+                    ),
+                    EditModeButton(
                       "删除",
                       icon: CupertinoIcons.delete,
                       onTap: () {
@@ -501,7 +508,7 @@ class DependcyPageState extends ConsumerState<DependencyPage>
               "确定",
               style: TextStyle(color: ref.watch(themeProvider).primaryColor),
             ),
-            onPressed: () {
+            onPressed: () async {
               Navigator.of(context2).pop();
               editMode = false;
               removeOverlay();
@@ -530,6 +537,35 @@ class DependcyPageState extends ConsumerState<DependencyPage>
                       .toList();
 
                   reInstalls(context, sids, ids);
+                } else if (s == "取消") {
+                  List<int?> ids = ref
+                      .read(
+                        SingleAccountPageState.ofDependencyProvider(context)(
+                          getProviderName(context),
+                        ).notifier,
+                      )
+                      .getListByType(_tabController!.index)
+                      .where((element) => checkedIds.contains(element.mustId))
+                      .map((e) => e.id)
+                      .toList();
+                  final List<int> validIds = ids.whereType<int>().toList();
+                  if (validIds.isEmpty) {
+                    "该面板依赖 ID 不是数字，无法取消".toast();
+                  } else {
+                    SingleAccountPageState.ofApi(context)
+                        .cancelDependency(validIds)
+                        .then((response) {
+                          if (!context.mounted) {
+                            return;
+                          }
+                          if (response.success) {
+                            "已发送取消指令".toast();
+                          } else {
+                            (response.message ?? "取消失败").toast();
+                          }
+                        })
+                        .catchError((e) {});
+                  }
                 } else if (s == "删除") {
                   List<String?> sids = ref
                       .read(

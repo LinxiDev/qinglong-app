@@ -180,17 +180,32 @@ class _IcloudPageState extends ConsumerState<IcloudPage>
                             var result = await Api(
                               SingleAccountPageState.of(context)!.index,
                             ).envs("");
-                            if (context.mounted) {
-                              await getIt<ICloudUtils>(
-                                instanceName: SingleAccountPageState.of(
-                                  context,
-                                )!.index.toString(),
-                              ).asyncEnv(result.bean ?? [], focusUpdate: true);
+                            if (!result.success) {
+                              (result.message ?? "读取环境变量失败").toast();
+                              return;
                             }
-                            SpUtil.putString(spEnvBackTime, ICloudUtils.now());
-                            setState(() {});
+                            if (!context.mounted) {
+                              return;
+                            }
+                            final bool ok = await getIt<ICloudUtils>(
+                              instanceName: SingleAccountPageState.of(context)!
+                                  .index
+                                  .toString(),
+                            ).asyncEnv(result.bean ?? [], focusUpdate: true);
+                            if (!context.mounted) {
+                              return;
+                            }
+                            if (ok) {
+                              SpUtil.putString(
+                                spEnvBackTime,
+                                ICloudUtils.now(),
+                              );
+                              setState(() {});
+                            } else {
+                              "同步失败，请重试".toast();
+                            }
                           } catch (e) {
-                            // 忽略异常，保持原有行为
+                            "同步失败，请重试".toast();
                           }
                         },
                         child: Padding(
@@ -359,22 +374,31 @@ class _IcloudPageState extends ConsumerState<IcloudPage>
                                   .content("config.sh");
                           if (result.success && result.bean != null) {
                             content = result.bean ?? "";
-                            if (context.mounted) {
-                              await ICloudUtils(
-                                SingleAccountPageState.of(context)!.index,
-                              ).asyncConfig(
-                                "config.sh",
-                                content,
-                                focusUpdate: true,
-                              );
+                            if (!context.mounted) {
+                              return;
                             }
-                            SpUtil.putString(
-                              spConfigBackTime,
-                              ICloudUtils.now(),
-                            );
-                            setState(() {});
+                            final bool ok =
+                                await ICloudUtils(
+                                  SingleAccountPageState.of(context)!.index,
+                                ).asyncConfig(
+                                  "config.sh",
+                                  content,
+                                  focusUpdate: true,
+                                );
+                            if (!context.mounted) {
+                              return;
+                            }
+                            if (ok) {
+                              SpUtil.putString(
+                                spConfigBackTime,
+                                ICloudUtils.now(),
+                              );
+                              setState(() {});
+                            } else {
+                              "同步失败，请重试".toast();
+                            }
                           } else {
-                            result.message!.toast();
+                            (result.message ?? "读取 config.sh 失败").toast();
                           }
                         },
                         child: Padding(
@@ -550,21 +574,34 @@ class _IcloudPageState extends ConsumerState<IcloudPage>
                             var result = await Api(
                               SingleAccountPageState.of(context)!.index,
                             ).subscribes();
-                            if (context.mounted) {
-                              await getIt<ICloudUtils>(
-                                instanceName: SingleAccountPageState.of(
-                                  context,
-                                )!.index.toString(),
-                              ).asyncSubscribe(
-                                result.bean ?? "",
-                                focusUpdate: true,
-                              );
+                            if (!result.success) {
+                              (result.message ?? "读取订阅失败").toast();
+                              return;
                             }
-                            SpUtil.putString(
-                              spSubscribeBackTime,
-                              ICloudUtils.now(),
-                            );
-                            setState(() {});
+                            if (!context.mounted) {
+                              return;
+                            }
+                            final bool ok =
+                                await getIt<ICloudUtils>(
+                                  instanceName: SingleAccountPageState.of(
+                                    context,
+                                  )!.index.toString(),
+                                ).asyncSubscribe(
+                                  result.bean ?? "",
+                                  focusUpdate: true,
+                                );
+                            if (!context.mounted) {
+                              return;
+                            }
+                            if (ok) {
+                              SpUtil.putString(
+                                spSubscribeBackTime,
+                                ICloudUtils.now(),
+                              );
+                              setState(() {});
+                            } else {
+                              "同步失败，请重试".toast();
+                            }
                           } catch (e) {
                             // 忽略异常，保持原有行为
                           }
