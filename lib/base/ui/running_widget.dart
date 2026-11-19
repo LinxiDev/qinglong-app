@@ -4,6 +4,32 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:qinglong_app/base/theme.dart';
 import 'package:qinglong_app/base/ui/loading_widget.dart';
 
+/// 队列中标记（官方 status=3），固定蓝色
+class QueueWidget extends ConsumerWidget {
+  const QueueWidget({super.key});
+
+  @override
+  Widget build(BuildContext context, ref) {
+    const Color color = Color(0xff1E88E5);
+    return Container(
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(2),
+        border: Border.all(color: color, width: 1),
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: 3),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const LoadingWidget(color: color, size: 12),
+          const SizedBox(width: 3),
+          const Text("队列中", style: TextStyle(color: color, fontSize: 9)),
+        ],
+      ),
+    );
+  }
+}
+
 class RunningWidget extends ConsumerWidget {
   const RunningWidget({super.key});
 

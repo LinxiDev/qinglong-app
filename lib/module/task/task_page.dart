@@ -1319,11 +1319,16 @@ class TaskItemCell extends StatelessWidget {
                                           ),
                                         ),
                                         SizedBox(
-                                          width: bean.status == 0 ? 7 : 0,
+                                          width:
+                                              bean.status == 0 ||
+                                                  bean.status == 3
+                                              ? 7
+                                              : 0,
                                         ),
-                                        bean.status == 0
-                                            ? const RunningWidget()
-                                            : const SizedBox.shrink(),
+                                        if (bean.status == 0)
+                                          const RunningWidget(),
+                                        if (bean.status == 3)
+                                          const QueueWidget(),
                                         const SizedBox(width: 7),
                                         bean.isDisabled == 1
                                             ? const StatusWidget(
