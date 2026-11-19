@@ -51,7 +51,6 @@ dependencies:
   # 能力
   file_picker: ^13.4.0
   permission_handler: ^13.0.2
-  webview_flutter: ^4.14.1
   url_launcher: ^6.3.3
   share_plus: ^13.3.1
   package_info_plus: ^10.2.2
@@ -65,6 +64,8 @@ dependencies:
   vector_math: any
   local_auth_android: any
   local_auth_darwin: any
+  re_editor: ^0.10.0
+  re_highlight: ^0.0.3
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -80,7 +81,6 @@ flutter:
   assets:
     - assets/scan.json
     - assets/images/
-    - assets/codemirror.html
 
 flutter_app_name:
   name: "青龙客户端"

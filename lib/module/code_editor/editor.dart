@@ -1,7 +1,7 @@
 import 'package:material_ui/material_ui.dart';
 
 import 'codemirror/impl.dart';
-import 'codemirror/io.dart' if (dart.library.html) 'codemirror/web.dart';
+import 'codemirror/io.dart';
 
 export 'codemirror/impl.dart';
 

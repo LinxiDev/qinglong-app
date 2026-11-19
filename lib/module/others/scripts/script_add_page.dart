@@ -45,24 +45,7 @@ class _ScriptAddPageState extends ConsumerState<ScriptAddPage> {
   }
 
   String getLanguageType(String title) {
-    if (title.endsWith(".js")) {
-      return 'javascript';
-    }
-
-    if (title.endsWith(".sh")) {
-      return 'shell';
-    }
-
-    if (title.endsWith(".py")) {
-      return 'python';
-    }
-    if (title.endsWith(".json")) {
-      return 'shell';
-    }
-    if (title.endsWith(".yaml")) {
-      return 'yaml';
-    }
-    return "shell";
+    return languageModeForFileName(title);
   }
 
   @override
