@@ -282,12 +282,14 @@ class Api {
     );
   }
 
-  Future<HttpResponse<NullResponse>> delSubscribe(int cron) async {
+  /// 删除订阅；[force] 为 true 时同时删除关联任务与脚本目录（官方 ?force=true）
+  Future<HttpResponse<NullResponse>> delSubscribe(
+    int cron, {
+    bool force = false,
+  }) async {
+    final String url = getIt<Url>(instanceName: index.toString()).subscribes;
     return await getIt<Http>(instanceName: index.toString())
-        .delete<NullResponse>(
-          getIt<Url>(instanceName: index.toString()).addSubscribes,
-          [cron],
-        );
+        .delete<NullResponse>(force ? "$url?force=true" : url, [cron]);
   }
 
   Future<HttpResponse<NullResponse>> delTask(List<String> crons) async {
@@ -1184,6 +1186,39 @@ class Api {
       getIt<Url>(instanceName: index.toString()).logsDownload,
       {"filename": filename, "path": path},
     );
+  }
+
+  /// 任务日志分块原始响应（含 nextOffset/total/logStatus）
+  Future<HttpResponse<Map<String, dynamic>>> cronLogChunkRaw(
+    String id, {
+    int? offset,
+    int? limit,
+    bool tail = false,
+  }) async {
+    return await getIt<Http>(instanceName: index.toString())
+        .getMap(getIt<Url>(instanceName: index.toString()).cronLogChunk(id), {
+          "offset": offset?.toString(),
+          "limit": limit?.toString(),
+          "tail": tail ? "true" : null,
+        });
+  }
+
+  /// 日志内容分块原始响应（含 nextOffset/total 等字段）
+  Future<HttpResponse<Map<String, dynamic>>> logDetailChunkRaw(
+    String file,
+    String path, {
+    int? offset,
+    int? limit,
+    bool tail = false,
+  }) async {
+    return await getIt<Http>(instanceName: index.toString())
+        .getMap(getIt<Url>(instanceName: index.toString()).logsDetail, {
+          "file": file,
+          "path": path,
+          "offset": offset?.toString(),
+          "limit": limit?.toString(),
+          "tail": tail ? "true" : null,
+        });
   }
 
   /// 读取日志内容分块（offset/limit/tail）

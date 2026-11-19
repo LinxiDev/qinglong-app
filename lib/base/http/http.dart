@@ -76,6 +76,32 @@ class Http {
     _dio = null;
   }
 
+  /// 读取原始 JSON 对象（用于日志分块需要的 nextOffset/total 等
+  /// 与 data 同级、会被 decodeResponse 丢弃的字段）
+  Future<HttpResponse<Map<String, dynamic>>> getMap(
+    String uri,
+    Map<String, String?>? json,
+  ) async {
+    try {
+      _init();
+      final response = await _dio!.get(uri, queryParameters: json);
+      if (response.statusCode == 200 && response.data is Map) {
+        return HttpResponse(
+          success: true,
+          code: 200,
+          bean: Map<String, dynamic>.from(response.data),
+        );
+      }
+      return HttpResponse(
+        success: false,
+        code: response.statusCode ?? 0,
+        message: response.statusMessage,
+      );
+    } on DioException catch (e) {
+      return exceptionHandler<Map<String, dynamic>>(e, uri);
+    }
+  }
+
   Future<HttpResponse<T>> get<T>(
     String uri,
     Map<String, String?>? json, {

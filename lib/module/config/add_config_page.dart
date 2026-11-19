@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 
@@ -128,6 +129,13 @@ class _AddConfigPageState extends ConsumerState<AddConfigPage> {
               pickLocalFile();
             },
           ),
+          addDivider(),
+          CupertinoSheer(
+            title: "使用示例",
+            onTap: () {
+              useSample(context);
+            },
+          ),
         ]);
       },
       child: Container(
@@ -140,6 +148,75 @@ class _AddConfigPageState extends ConsumerState<AddConfigPage> {
         ),
       ),
     );
+  }
+
+  /// 从面板内置示例创建配置文件（GET /configs/samples + detail + save）
+  Future<void> useSample(BuildContext context) async {
+    final api = SingleAccountPageState.ofApi(context);
+    final response = await api.configSamples();
+    if (!mounted) {
+      return;
+    }
+    if (!response.success) {
+      (response.message ?? "读取示例失败").toast();
+      return;
+    }
+    List<Map> samples = [];
+    try {
+      final dynamic decoded = jsonDecode(response.bean ?? "[]");
+      dynamic list = decoded;
+      if (decoded is Map && decoded["data"] is List) {
+        list = decoded["data"];
+      }
+      if (list is List) {
+        samples = list.whereType<Map>().toList();
+      }
+    } catch (e) {
+      e.toString().toast();
+    }
+    if (samples.isEmpty) {
+      "当前面板没有示例配置".toast();
+      return;
+    }
+    final String? name = await showCupertinoModalPopup<String>(
+      context: context,
+      builder: (childContext) => CupertinoActionSheet(
+        title: const Text("选择示例"),
+        actions: samples.map((e) {
+          final String value = "${e["value"] ?? e["title"] ?? ""}";
+          return CupertinoActionSheetAction(
+            onPressed: () => Navigator.of(childContext).pop(value),
+            child: Text("${e["title"] ?? value}"),
+          );
+        }).toList(),
+        cancelButton: CupertinoActionSheetAction(
+          isDestructiveAction: true,
+          onPressed: () => Navigator.of(childContext).pop(),
+          child: const Text("取消"),
+        ),
+      ),
+    );
+    if (name == null || !mounted) {
+      return;
+    }
+    EasyLoading.show(status: "创建中");
+    final contentResponse = await api.content(name);
+    if (!contentResponse.success) {
+      EasyLoading.dismiss();
+      (contentResponse.message ?? "读取示例内容失败").toast();
+      return;
+    }
+    final saveResponse = await api.saveFile(name, contentResponse.bean ?? "");
+    EasyLoading.dismiss();
+    if (!mounted) {
+      return;
+    }
+    if (saveResponse.success) {
+      "已创建 $name".toast();
+      Navigator.of(context).pop(true);
+    } else {
+      (saveResponse.message ?? "创建失败").toast();
+    }
   }
 
   void commitReal() async {

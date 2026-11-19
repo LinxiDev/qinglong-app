@@ -7,6 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:qinglong_app/base/base_state_widget.dart';
+import 'package:qinglong_app/base/cupertino_sheet.dart';
 import 'package:qinglong_app/base/ql_app_bar.dart';
 import 'package:qinglong_app/base/routes.dart';
 import 'package:qinglong_app/base/single_account_page.dart';
@@ -369,6 +370,70 @@ class TaskPageState extends ConsumerState<TaskPage>
               child: Icon(
                 CupertinoIcons.square_list,
                 size: 22,
+                color: Theme.of(context).appBarTheme.iconTheme?.color,
+              ),
+            ),
+            CupertinoButton(
+              color: Colors.transparent,
+              padding: EdgeInsets.zero,
+              onPressed: () {
+                showMoreOperate(context, [
+                  CupertinoSheer(
+                    title: "从系统 crontab 导入",
+                    icon: CupertinoIcons.tray_arrow_down,
+                    onTap: () async {
+                      final bool? ok = await showCupertinoDialog<bool>(
+                        context: context,
+                        useRootNavigator: false,
+                        builder: (childContext) => CupertinoAlertDialog(
+                          title: const Text("导入系统 crontab"),
+                          content: const Text(
+                            "将读取服务器 crontab 并增量导入为任务；"
+                            "重复导入可能产生重复任务，确定继续吗？",
+                          ),
+                          actions: [
+                            CupertinoDialogAction(
+                              child: const Text("取消"),
+                              onPressed: () =>
+                                  Navigator.of(childContext).pop(false),
+                            ),
+                            CupertinoDialogAction(
+                              isDefaultAction: true,
+                              child: const Text("导入"),
+                              onPressed: () =>
+                                  Navigator.of(childContext).pop(true),
+                            ),
+                          ],
+                        ),
+                      );
+                      if (ok != true || !mounted) {
+                        return;
+                      }
+                      final response = await SingleAccountPageState.ofApi(
+                        context,
+                      ).importCrons();
+                      if (!mounted) {
+                        return;
+                      }
+                      if (response.success) {
+                        "已触发导入，请稍后刷新".toast();
+                        ref
+                            .read(
+                              SingleAccountPageState.ofTaskProvider(context)(
+                                getProviderName(context),
+                              ).notifier,
+                            )
+                            .loadData(context, false);
+                      } else {
+                        (response.message ?? "导入失败").toast();
+                      }
+                    },
+                  ),
+                ]);
+              },
+              child: Icon(
+                Icons.more_horiz,
+                size: 24,
                 color: Theme.of(context).appBarTheme.iconTheme?.color,
               ),
             ),

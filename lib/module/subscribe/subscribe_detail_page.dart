@@ -343,7 +343,10 @@ class TaskDetailPageState extends ConsumerState<SubscribeDetailPage>
       context: context1,
       builder: (context) => CupertinoAlertDialog(
         title: const Text("确认删除"),
-        content: Text("确认删除订阅 ${widget.taskBean["name"] ?? ""} 吗"),
+        content: Text(
+          "删除订阅 ${widget.taskBean["name"] ?? ""}？\n"
+          "「连带清理」会同时删除关联任务与脚本目录，不可恢复。",
+        ),
         actions: [
           CupertinoDialogAction(
             child: const Text("取消", style: TextStyle(color: Color(0xff999999))),
@@ -352,8 +355,28 @@ class TaskDetailPageState extends ConsumerState<SubscribeDetailPage>
             },
           ),
           CupertinoDialogAction(
+            isDestructiveAction: true,
+            child: const Text("连带清理"),
+            onPressed: () async {
+              if (!context1.mounted) {
+                return;
+              }
+              Navigator.of(context).pop();
+              await ref
+                  .read(
+                    SingleAccountPageState.ofSubscribeProvider(context1)(
+                      getProviderName(context1),
+                    ),
+                  )
+                  .delSubscribe(context1, widget.taskBean["id"], force: true);
+              if (context1.mounted) {
+                Navigator.of(context1).pop();
+              }
+            },
+          ),
+          CupertinoDialogAction(
             child: Text(
-              "确定",
+              "仅删除",
               style: TextStyle(color: ref.watch(themeProvider).primaryColor),
             ),
             onPressed: () async {

@@ -87,10 +87,14 @@ class SubscribeViewModel extends BaseViewModel {
     }
   }
 
-  Future<void> delSubscribe(BuildContext context, int id) async {
+  Future<void> delSubscribe(
+    BuildContext context,
+    int id, {
+    bool force = false,
+  }) async {
     HttpResponse<NullResponse> result = await SingleAccountPageState.ofApi(
       context,
-    ).delSubscribe(id);
+    ).delSubscribe(id, force: force);
     if (result.success) {
       "删除成功".toast();
       if (context.mounted) {
