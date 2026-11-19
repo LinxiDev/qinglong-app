@@ -54,7 +54,8 @@ class _PanelUpgradePageState extends ConsumerState<PanelUpgradePage> {
   void initState() {
     super.initState();
     _checkUpdate();
-    _fetchStatus();
+    // 旧版面板没有 update-status 接口，首帧静默避免误报错误
+    _fetchStatus(silent: true);
   }
 
   @override

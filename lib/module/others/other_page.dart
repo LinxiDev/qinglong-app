@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
@@ -854,14 +855,23 @@ class OtherPageState extends ConsumerState<OtherPage>
   }
 
   void _delLog(BuildContext context) async {
-    var response = await SingleAccountPageState.ofApi(context).logDel();
+    /// 官方无 GET /system/log/remove，保留天数在 /system/config 的 info 内
+    var response = await SingleAccountPageState.ofApi(context).systemConfig();
     String day = "";
 
     if (response.success) {
-      if (response.bean != null && response.bean?.frequency != null) {
-        day = response.bean!.frequency!.toString();
-      } else {
-        day = response.bean?.info?.frequency.toString() ?? "";
+      try {
+        final dynamic decoded = jsonDecode(response.bean ?? "{}");
+        if (decoded is Map) {
+          final dynamic info = decoded["info"];
+          final Map data = info is Map ? info : decoded;
+          final dynamic frequency = data["logRemoveFrequency"];
+          if (frequency != null) {
+            day = frequency.toString();
+          }
+        }
+      } catch (e) {
+        logger.e(e);
       }
     }
 
@@ -957,8 +967,13 @@ class OtherPageState extends ConsumerState<OtherPage>
                 style: TextStyle(color: ref.watch(themeProvider).primaryColor),
               ),
               onPressed: () async {
+                final int? days = int.tryParse(controller.text.trim());
+                if (days == null || days <= 0) {
+                  "请输入有效的天数".toast();
+                  return;
+                }
                 Navigator.of(context).pop();
-                commitLogDel(int.tryParse(controller.text) ?? 1000);
+                commitLogDel(days);
               },
             ),
           ],

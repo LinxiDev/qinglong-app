@@ -18,6 +18,10 @@ class Url {
 
   static const updatePassword = "/api/user";
 
+  /// 日志保留天数（官方 2.23+ 系统配置项）
+  String get logRemoveFrequency => p("/system/config/log-remove-frequency");
+
+  /// 旧版日志保留接口（<2.23），仅作兼容回退
   String get logDel =>
       getIt<UserInfoViewModel>(instanceName: index.toString()).useSecretLogined
       ? "/open/system/log/remove"
@@ -240,7 +244,7 @@ class Url {
   String resetAppKey(dynamic id) {
     return getIt<UserInfoViewModel>(instanceName: index.toString())
             .useSecretLogined
-        ? "/api/apps/${id.toString()}/reset-secret"
+        ? "/open/apps/${id.toString()}/reset-secret"
         : "/api/apps/${id.toString()}/reset-secret";
   }
 

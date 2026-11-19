@@ -54,8 +54,12 @@ class _StorageRetentionPageState extends ConsumerState<StorageRetentionPage> {
 
     if (response.success) {
       try {
-        final dynamic data = jsonDecode(response.bean ?? "{}");
-        if (data is Map) {
+        final dynamic decoded = jsonDecode(response.bean ?? "{}");
+        if (decoded is Map) {
+          /// 官方没有 GET /system/storage-retention/config，
+          /// 保留策略存放在 /system/config 记录（配置项在 info 内）
+          final dynamic info = decoded["info"];
+          final Map data = info is Map ? info : decoded;
           final dynamic instance = data["runningInstanceRetentionDays"];
           final dynamic stat = data["cronStatRetentionDays"];
           if (instance is num) instanceDays = instance.toInt();
@@ -64,6 +68,8 @@ class _StorageRetentionPageState extends ConsumerState<StorageRetentionPage> {
       } catch (e) {
         logger.e(e);
       }
+    } else {
+      (response.message ?? "读取保留策略失败").toast();
     }
 
     setState(() {
@@ -88,6 +94,22 @@ class _StorageRetentionPageState extends ConsumerState<StorageRetentionPage> {
     EasyLoading.dismiss();
 
     if (response.success) {
+      /// 接口返回更新后的策略，直接回填避免再发一次读取请求
+      try {
+        final dynamic decoded = jsonDecode(response.bean ?? "{}");
+        if (decoded is Map) {
+          final dynamic inner = decoded["data"];
+          final Map data = inner is Map ? inner : decoded;
+          final dynamic instance = data["runningInstanceRetentionDays"];
+          final dynamic stat = data["cronStatRetentionDays"];
+          setState(() {
+            if (instance is num) instanceDays = instance.toInt();
+            if (stat is num) statDays = stat.toInt();
+          });
+        }
+      } catch (e) {
+        logger.e(e);
+      }
       "已保存，面板会按新策略自动清理".toast();
     } else {
       (response.message ?? "保存失败").toast();

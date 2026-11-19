@@ -7,7 +7,6 @@ import 'package:qinglong_app/module/env/env_bean.dart';
 import 'package:qinglong_app/module/home/system_bean.dart';
 import 'package:qinglong_app/module/login/login_bean.dart';
 import 'package:qinglong_app/module/login/user_bean.dart';
-import 'package:qinglong_app/module/others/LogDelBean.dart';
 import 'package:qinglong_app/module/others/dependencies/dependency_bean.dart';
 import 'package:qinglong_app/module/others/login_log/login_log_bean.dart';
 import 'package:qinglong_app/module/others/task_log/task_log_bean.dart';
@@ -31,16 +30,18 @@ class Api {
     }
   }
 
-  Future<HttpResponse<LogDelBean>> logDel() async {
-    return await getIt<Http>(instanceName: index.toString())
-        .get<LogDelBean>(getIt<Url>(instanceName: index.toString()).logDel, {});
-  }
-
+  /// 日志保留天数写入：官方新接口为 PUT /system/config/log-remove-frequency，
+  /// 旧面板（<2.23）仍为 PUT /system/log/remove，失败时回退一次
   Future<HttpResponse<String>> logDelTime(int time) async {
-    return await getIt<Http>(instanceName: index.toString()).put<String>(
-      getIt<Url>(instanceName: index.toString()).logDel,
-      {"frequency": time},
-    );
+    final Http http = getIt<Http>(instanceName: index.toString());
+    final Url url = getIt<Url>(instanceName: index.toString());
+    var response = await http.put<String>(url.logRemoveFrequency, {
+      "logRemoveFrequency": time,
+    });
+    if (!response.success) {
+      response = await http.put<String>(url.logDel, {"frequency": time});
+    }
+    return response;
   }
 
   Future<HttpResponse<SystemBean>> system() async {
