@@ -509,10 +509,17 @@ class _AddSubscribePageState extends ConsumerState<AddSubscribePage> {
 
   void commitReal() async {
     try {
+      /// 提交值必须使用官方面板枚举：
+      /// type: public-repo / private-repo / file
+      /// schedule_type: crontab / interval
       Map<String, dynamic> params = {
         cName: _nameController.getTextOrDefault(),
-        cType: type.name,
-        cCronType: cronType.name,
+        cType: type == Type.public
+            ? "public-repo"
+            : type == Type.private
+            ? "private-repo"
+            : "file",
+        cCronType: cronType == CronType.cron ? "crontab" : "interval",
         cLink: _linkController.getTextOrDefault(),
       };
 
@@ -530,7 +537,9 @@ class _AddSubscribePageState extends ConsumerState<AddSubscribePage> {
       }
 
       if (type == Type.private) {
-        params[cPullType] = pullType.name;
+        params[cPullType] = pullType == PullType.privateKey
+            ? "ssh-key"
+            : "user-pwd";
         if (pullType == PullType.userName) {
           params[cPullOption] = {
             cUserName: _userNameController.getTextOrDefault(),
@@ -739,18 +748,19 @@ class _AddSubscribePageState extends ConsumerState<AddSubscribePage> {
     type = getTypeCodeByTypeName(tempType);
 
     if (type == Type.private) {
-      String tempPullType =
-          widget.taskBean[cPullType] ?? PullType.privateKey.name;
+      String tempPullType = (widget.taskBean[cPullType] ?? "ssh-key")
+          .toString();
       pullType = getPullTypeCodeByPullTypeName(tempPullType);
 
+      /// pull_option 缺失或为空时按未配置处理，避免详情页/编辑页崩溃
+      final dynamic option = widget.taskBean[cPullOption];
+      final Map optionMap = option is Map ? option : <String, dynamic>{};
+
       if (pullType == PullType.privateKey) {
-        _privateKeyController.text =
-            widget.taskBean[cPullOption][cPrivateKey] ?? "";
+        _privateKeyController.text = (optionMap[cPrivateKey] ?? "").toString();
       } else {
-        _userNameController.text =
-            widget.taskBean[cPullOption][cUserName] ?? "";
-        _userPasswordController.text =
-            widget.taskBean[cPullOption][cPassword] ?? "";
+        _userNameController.text = (optionMap[cUserName] ?? "").toString();
+        _userPasswordController.text = (optionMap[cPassword] ?? "").toString();
       }
     }
     String tempCronType = widget.taskBean[cCronType] ?? CronType.cron.name;
@@ -769,10 +779,13 @@ class _AddSubscribePageState extends ConsumerState<AddSubscribePage> {
 
   Type getTypeCodeByTypeName(String name) {
     switch (name) {
+      case "public":
       case "public-repo":
         return Type.public;
+      case "private":
       case "private-repo":
         return Type.private;
+      case "single":
       case "file":
         return Type.single;
     }
@@ -781,9 +794,12 @@ class _AddSubscribePageState extends ConsumerState<AddSubscribePage> {
 
   PullType getPullTypeCodeByPullTypeName(String name) {
     switch (name) {
+      // 官方值为 ssh-key / user-pwd，同时兼容旧版本提交的枚举名
       case "ssh-key":
+      case "privateKey":
         return PullType.privateKey;
       case "user-pwd":
+      case "userName":
         return PullType.userName;
     }
     return PullType.privateKey;

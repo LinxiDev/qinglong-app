@@ -44,8 +44,37 @@ class TaskDetailPageState extends ConsumerState<SubscribeDetailPage>
         .enableSubscribe(context, widget.taskBean["id"], disabled);
   }
 
+  /// 按官方字段解析详情（此前 type/pullType 等写死为默认值，
+  /// 导致私有仓库/单文件/间隔调度的详情展示错误）
+  void _parseBean() {
+    final Map bean = widget.taskBean;
+    final String typeName = (bean["type"] ?? "").toString();
+    type = typeName == "private-repo" || typeName == "private"
+        ? Type.private
+        : typeName == "file" || typeName == "single"
+        ? Type.single
+        : Type.public;
+
+    final String scheduleType = (bean["schedule_type"] ?? "").toString();
+    cronType = scheduleType == "interval" ? CronType.interval : CronType.cron;
+
+    final String pull = (bean["pull_type"] ?? "").toString();
+    pullType = pull == "user-pwd" || pull == "userName"
+        ? PullType.userName
+        : PullType.privateKey;
+
+    final dynamic interval = bean["interval_schedule"];
+    if (interval is Map) {
+      final String unit = (interval["type"] ?? "days").toString();
+      intervalUnit =
+          {"days": "天", "hours": "小时", "minutes": "分钟", "seconds": "秒"}[unit] ??
+          "天";
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    _parseBean();
     return Scaffold(
       appBar: QlAppBar(
         canBack: true,
@@ -107,8 +136,8 @@ class TaskDetailPageState extends ConsumerState<SubscribeDetailPage>
                 addDivider(),
                 CupertinoSheer(
                   title: (widget.taskBean["is_disabled"] ?? 0) == 1
-                      ? "禁用"
-                      : "启用",
+                      ? "启用"
+                      : "禁用",
                   onTap: () {
                     _enableSubscribe(
                       context,
@@ -185,7 +214,7 @@ class TaskDetailPageState extends ConsumerState<SubscribeDetailPage>
                       visible: cronType == CronType.interval,
                       child: SubscribeDetailCell(
                         title: "定时规则",
-                        desc: widget.taskBean >> "interval_schedule",
+                        desc: _intervalDesc(),
                       ),
                     ),
                     Visibility(
@@ -232,7 +261,11 @@ class TaskDetailPageState extends ConsumerState<SubscribeDetailPage>
                     ),
                     SubscribeDetailCell(
                       title: "运行状态",
-                      desc: widget.taskBean["status"] == 0 ? "正在运行" : "空闲",
+                      desc: widget.taskBean["status"] == 0
+                          ? "正在运行"
+                          : widget.taskBean["status"] == 3
+                          ? "排队中"
+                          : "空闲",
                     ),
                     SubscribeDetailCell(
                       title: "订阅状态",
@@ -406,7 +439,28 @@ class TaskDetailPageState extends ConsumerState<SubscribeDetailPage>
     );
   }
 
+  Map get _pullOption {
+    final dynamic option = widget.taskBean["pull_option"];
+    return option is Map ? option : <String, dynamic>{};
+  }
+
+  String _intervalDesc() {
+    final dynamic interval = widget.taskBean["interval_schedule"];
+    if (interval is Map) {
+      final String value = (interval["value"] ?? "").toString();
+      return "每 $value$intervalUnit";
+    }
+    final String raw = (interval ?? "").toString();
+    return raw.isEmpty ? "-" : raw;
+  }
+
   Widget _buildPrivatePub() {
+    final Map option = _pullOption;
+    final String privateKey =
+        (option["privateKey"] ?? option["private_key"] ?? "").toString();
+    final String username = (option["username"] ?? "").toString();
+    final String password = (option["password"] ?? "").toString();
+
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10),
       child: Column(
@@ -417,16 +471,22 @@ class TaskDetailPageState extends ConsumerState<SubscribeDetailPage>
           const SizedBox(height: 15),
           SubscribeDetailCell(
             title: '拉取方式',
-            desc: widget.taskBean >> "pullType",
+            desc: pullType == PullType.privateKey ? "私钥 (SSH)" : "用户名密码",
           ),
           const SizedBox(height: 15),
           Visibility(
             visible: pullType == PullType.privateKey,
-            child: const SubscribeDetailCell(title: '私钥', desc: ""),
+            child: SubscribeDetailCell(
+              title: '私钥',
+              desc: privateKey.isEmpty ? "未配置" : "已配置",
+            ),
           ),
           Visibility(
             visible: pullType == PullType.userName,
-            child: const SubscribeDetailCell(title: '用户名', desc: ""),
+            child: SubscribeDetailCell(
+              title: '用户名',
+              desc: username.isEmpty ? "未配置" : username,
+            ),
           ),
           Visibility(
             visible: pullType == PullType.userName,
@@ -434,7 +494,10 @@ class TaskDetailPageState extends ConsumerState<SubscribeDetailPage>
           ),
           Visibility(
             visible: pullType == PullType.userName,
-            child: const SubscribeDetailCell(title: "密码/Token", desc: ""),
+            child: SubscribeDetailCell(
+              title: "密码/Token",
+              desc: password.isEmpty ? "未配置" : "已配置",
+            ),
           ),
         ],
       ),
