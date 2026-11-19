@@ -73,8 +73,36 @@ class ScriptPageState extends ConsumerState<ScriptPage>
 
   late TreeViewController _treeViewController;
 
+  /// 按关键字过滤脚本树（保留命中文件及其父目录）
+  List<ScriptData> _filterScripts(List<ScriptData> nodes, String keyword) {
+    final List<ScriptData> result = [];
+    for (final ScriptData node in nodes) {
+      final List<ScriptData> children = _filterScripts(node.children, keyword);
+      final bool match = node.title.toLowerCase().contains(keyword);
+      if (match || children.isNotEmpty) {
+        result.add(
+          ScriptData(
+            key: node.key,
+            title: node.title,
+            type: node.type,
+            parent: node.parent,
+            expanded: true,
+            children: children,
+          ),
+        );
+      }
+    }
+    return result;
+  }
+
   @override
   Widget build(BuildContext context) {
+    final String keyword = searchText.text.trim().toLowerCase();
+    final TreeViewController displayedController = keyword.isEmpty
+        ? _treeViewController
+        : _treeViewController.copyWith(
+            children: _filterScripts(_treeViewController.children, keyword),
+          );
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
       onPanDown: (_) {
@@ -144,81 +172,91 @@ class ScriptPageState extends ConsumerState<ScriptPage>
             ),
           ],
         ),
-        body: list.isEmpty
-            ? const Center(child: LoadingWidget())
-            : RefreshIndicator(
-                color: Theme.of(context).primaryColor,
-                onRefresh: () async {
-                  await loadData();
-                  return Future.value();
-                },
-                child: TreeView(
-                  controller: _treeViewController,
-                  onExpansionChanged: (key, state) {
-                    ScriptData? node = _treeViewController.getNode(key);
-                    if (node != null) {
-                      List<ScriptData> updated = _treeViewController.updateNode(
-                        key,
-                        node.copyWith(expanded: !node.expanded),
-                      );
-                      setState(() {
-                        _treeViewController = _treeViewController.copyWith(
-                          children: updated,
-                        );
-                      });
-                    }
-                  },
-                  onDeleteSelfClick: (ScriptData data) {
-                    showCupertinoDialog(
-                      useRootNavigator: false,
-                      context: context,
-                      builder: (context1) => CupertinoAlertDialog(
-                        title: const Text("确认删除"),
-                        content: const Text("确认删除吗"),
-                        actions: [
-                          CupertinoDialogAction(
-                            child: const Text(
-                              "取消",
-                              style: TextStyle(color: Color(0xff999999)),
-                            ),
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                            },
-                          ),
-                          CupertinoDialogAction(
-                            child: Text(
-                              "确定",
-                              style: TextStyle(
-                                color: ref.watch(themeProvider).primaryColor,
-                              ),
-                            ),
-                            onPressed: () async {
-                              Navigator.of(context1).pop();
-                              deleteFold(data);
-                            },
-                          ),
-                        ],
-                      ),
-                    );
-                  },
-                  onNodeTap: (key) {
-                    ScriptData? selectedNode = _treeViewController.getNode(key);
-                    Navigator.of(context)
-                        .pushNamed(
-                          Routes.routeScriptDetail,
-                          arguments: {
-                            "title": selectedNode?.title,
-                            "path": selectedNode?.parent,
-                          },
-                        )
-                        .then((value) {
-                          if (value != null && value == true) {
-                            loadData();
+        body: Column(
+          children: [
+            searchCell(ref),
+            Expanded(
+              child: list.isEmpty
+                  ? const Center(child: LoadingWidget())
+                  : RefreshIndicator(
+                      color: Theme.of(context).primaryColor,
+                      onRefresh: () async {
+                        await loadData();
+                        return Future.value();
+                      },
+                      child: TreeView(
+                        controller: displayedController,
+                        onExpansionChanged: (key, state) {
+                          ScriptData? node = _treeViewController.getNode(key);
+                          if (node != null) {
+                            List<ScriptData> updated = _treeViewController
+                                .updateNode(
+                                  key,
+                                  node.copyWith(expanded: !node.expanded),
+                                );
+                            setState(() {
+                              _treeViewController = _treeViewController
+                                  .copyWith(children: updated);
+                            });
                           }
-                        });
-                  },
-                ),
-              ),
+                        },
+                        onDeleteSelfClick: (ScriptData data) {
+                          showCupertinoDialog(
+                            useRootNavigator: false,
+                            context: context,
+                            builder: (context1) => CupertinoAlertDialog(
+                              title: const Text("确认删除"),
+                              content: const Text("确认删除吗"),
+                              actions: [
+                                CupertinoDialogAction(
+                                  child: const Text(
+                                    "取消",
+                                    style: TextStyle(color: Color(0xff999999)),
+                                  ),
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                ),
+                                CupertinoDialogAction(
+                                  child: Text(
+                                    "确定",
+                                    style: TextStyle(
+                                      color: ref
+                                          .watch(themeProvider)
+                                          .primaryColor,
+                                    ),
+                                  ),
+                                  onPressed: () async {
+                                    Navigator.of(context1).pop();
+                                    deleteFold(data);
+                                  },
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                        onNodeTap: (key) {
+                          ScriptData? selectedNode = _treeViewController
+                              .getNode(key);
+                          Navigator.of(context)
+                              .pushNamed(
+                                Routes.routeScriptDetail,
+                                arguments: {
+                                  "title": selectedNode?.title,
+                                  "path": selectedNode?.parent,
+                                },
+                              )
+                              .then((value) {
+                                if (value != null && value == true) {
+                                  loadData();
+                                }
+                              });
+                        },
+                      ),
+                    ),
+            ),
+          ],
+        ),
       ),
     );
   }

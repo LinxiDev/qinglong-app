@@ -108,6 +108,12 @@ class _IpBlacklistPageState extends ConsumerState<IpBlacklistPage> {
 
     if (ip == null || ip.isEmpty) return;
 
+    /// 官方仅接受 IPv4/IPv6，且禁止 CIDR 网段
+    if (!_isValidIp(ip)) {
+      "IP 格式不正确（仅支持单个 IPv4/IPv6，不支持网段）".toast();
+      return;
+    }
+
     setState(() {
       operating = true;
     });
@@ -128,6 +134,20 @@ class _IpBlacklistPageState extends ConsumerState<IpBlacklistPage> {
     } else {
       (response.message ?? "添加失败").toast();
     }
+  }
+
+  bool _isValidIp(String ip) {
+    if (ip.contains("/")) {
+      return false;
+    }
+    final RegExp v4 = RegExp(r"^(\d{1,3}\.){3}\d{1,3}$");
+    if (v4.hasMatch(ip)) {
+      return ip.split(".").every((e) {
+        final int? n = int.tryParse(e);
+        return n != null && n >= 0 && n <= 255;
+      });
+    }
+    return ip.contains(":") && RegExp(r"^[0-9a-fA-F:]+$").hasMatch(ip);
   }
 
   Future<void> removeIp(String ip) async {

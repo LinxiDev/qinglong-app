@@ -701,6 +701,31 @@ class DependencyCell extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    Future<void> cancelInstall() async {
+      final int? id = bean.id;
+      if (id == null) {
+        "该依赖 ID 不是数字，无法取消".toast();
+        return;
+      }
+      final response = await SingleAccountPageState.ofApi(context)
+          .cancelDependency([id]);
+      if (!context.mounted) {
+        return;
+      }
+      if (response.success) {
+        "已发送取消指令".toast();
+        ref
+            .read(
+              SingleAccountPageState.ofDependencyProvider(context)(
+                getProviderName(context),
+              ).notifier,
+            )
+            .loadData(context, type.name.toLowerCase());
+      } else {
+        (response.message ?? "取消失败").toast();
+      }
+    }
+
     // 滑动时卡片圆角归零与方形菜单平直对接，关闭后恢复圆角
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
@@ -709,7 +734,7 @@ class DependencyCell extends ConsumerWidget {
         enabled: !editMode,
         endActionPane: ActionPane(
           motion: const StretchMotion(),
-          extentRatio: 0.5,
+          extentRatio: 0.65,
           children: [
             SlidableAction(
               backgroundColor: const Color(0xff5D5E70),
@@ -718,6 +743,14 @@ class DependencyCell extends ConsumerWidget {
               },
               foregroundColor: Colors.white,
               icon: CupertinoIcons.memories,
+            ),
+            SlidableAction(
+              backgroundColor: const Color(0xffF5A623),
+              onPressed: (_) {
+                cancelInstall();
+              },
+              foregroundColor: Colors.white,
+              icon: CupertinoIcons.xmark_circle,
             ),
             SlidableAction(
               backgroundColor: const Color(0xffA356D6),

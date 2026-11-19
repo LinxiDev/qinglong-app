@@ -34,6 +34,8 @@ class _SystemConfigPageState extends ConsumerState<SystemConfigPage> {
   final TextEditingController _linuxMirrorController = TextEditingController();
   final TextEditingController _timezoneController = TextEditingController();
   final TextEditingController _panelTitleController = TextEditingController();
+  final TextEditingController _langController = TextEditingController();
+  final TextEditingController _logFrequencyController = TextEditingController();
   final TextEditingController _sshKeyController = TextEditingController();
 
   int? availableCpus;
@@ -54,6 +56,8 @@ class _SystemConfigPageState extends ConsumerState<SystemConfigPage> {
     _linuxMirrorController.dispose();
     _timezoneController.dispose();
     _panelTitleController.dispose();
+    _langController.dispose();
+    _logFrequencyController.dispose();
     _sshKeyController.dispose();
     super.dispose();
   }
@@ -94,6 +98,9 @@ class _SystemConfigPageState extends ConsumerState<SystemConfigPage> {
           _linuxMirrorController.text = data["linuxMirror"]?.toString() ?? "";
           _timezoneController.text = data["timezone"]?.toString() ?? "";
           _panelTitleController.text = data["panelTitle"]?.toString() ?? "";
+          _langController.text = data["lang"]?.toString() ?? "";
+          _logFrequencyController.text =
+              data["logRemoveFrequency"]?.toString() ?? "";
           _sshKeyController.text = data["globalSshKey"]?.toString() ?? "";
           availableCpus = data["availableCpus"] is num
               ? (data["availableCpus"] as num).toInt()
@@ -121,6 +128,11 @@ class _SystemConfigPageState extends ConsumerState<SystemConfigPage> {
     final String concurrency = _concurrencyController.text.trim();
     if (concurrency.isNotEmpty && int.tryParse(concurrency) == null) {
       "并发数必须是数字".toast();
+      return;
+    }
+    final String logFrequencyText = _logFrequencyController.text.trim();
+    if (logFrequencyText.isNotEmpty && int.tryParse(logFrequencyText) == null) {
+      "日志保留天数必须是数字".toast();
       return;
     }
     EasyLoading.show(status: "保存中");
@@ -155,6 +167,10 @@ class _SystemConfigPageState extends ConsumerState<SystemConfigPage> {
         "linuxMirror": _linuxMirrorController.text.trim(),
       });
       await put("timezone", {"timezone": _timezoneController.text.trim()});
+      await put("lang", {"lang": _langController.text.trim()});
+      await put("log-remove-frequency", {
+        "logRemoveFrequency": int.tryParse(logFrequencyText),
+      });
       await put("panel-title", {
         "panelTitle": _panelTitleController.text.trim(),
       });
@@ -290,9 +306,26 @@ class _SystemConfigPageState extends ConsumerState<SystemConfigPage> {
                         ),
                         _divider(dark),
                         _buildField(
+                          title: "面板语言",
+                          hint: "zh 或 en",
+                          controller: _langController,
+                          maxLength: 10,
+                        ),
+                        _divider(dark),
+                        _buildField(
                           title: "时区",
                           hint: "如 Asia/Shanghai",
                           controller: _timezoneController,
+                        ),
+                        _divider(dark),
+                        _buildField(
+                          title: "日志保留天数",
+                          hint: "留空表示不自动清理",
+                          controller: _logFrequencyController,
+                          keyboardType: TextInputType.number,
+                          inputFormatters: [
+                            FilteringTextInputFormatter.digitsOnly,
+                          ],
                         ),
                       ],
                     ),

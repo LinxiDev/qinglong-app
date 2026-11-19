@@ -64,6 +64,9 @@ class _AddSubscribePageState extends ConsumerState<AddSubscribePage> {
   final TextEditingController _suffixController = TextEditingController();
   final TextEditingController _taskBeforeController = TextEditingController();
   final TextEditingController _taskAfterController = TextEditingController();
+  final TextEditingController _proxyController = TextEditingController();
+  bool autoAddCron = true;
+  bool autoDelCron = true;
 
   @override
   void initState() {
@@ -431,6 +434,55 @@ class _AddSubscribePageState extends ConsumerState<AddSubscribePage> {
                   autofocus: false,
                 ),
               ),
+              Visibility(
+                visible: type != Type.single,
+                child: const SizedBox(height: 15),
+              ),
+              Visibility(
+                visible: type != Type.single,
+                child: const TitleWidget("代理"),
+              ),
+              Visibility(
+                visible: type != Type.single,
+                child: const SizedBox(height: 10),
+              ),
+              Visibility(
+                visible: type != Type.single,
+                child: TextField(
+                  controller: _proxyController,
+                  decoration: const InputDecoration(
+                    hintText: "如 http://127.0.0.1:7890，用于 git 拉取",
+                  ),
+                  autofocus: false,
+                ),
+              ),
+              const SizedBox(height: 15),
+              Row(
+                children: [
+                  const Expanded(child: Text("拉到新脚本时自动创建任务")),
+                  CupertinoSwitch(
+                    value: autoAddCron,
+                    onChanged: (value) {
+                      setState(() {
+                        autoAddCron = value;
+                      });
+                    },
+                  ),
+                ],
+              ),
+              Row(
+                children: [
+                  const Expanded(child: Text("脚本被移除时自动删除任务")),
+                  CupertinoSwitch(
+                    value: autoDelCron,
+                    onChanged: (value) {
+                      setState(() {
+                        autoDelCron = value;
+                      });
+                    },
+                  ),
+                ],
+              ),
               const SizedBox(height: 50),
             ],
           ),
@@ -561,6 +613,10 @@ class _AddSubscribePageState extends ConsumerState<AddSubscribePage> {
         params[cBefore] = _taskBeforeController.getTextOrDefault();
         params[cAfter] = _taskAfterController.getTextOrDefault();
       }
+
+      params["proxy"] = _proxyController.getTextOrDefault();
+      params["autoAddCron"] = autoAddCron;
+      params["autoDelCron"] = autoDelCron;
 
       params[cAlias] = getAlias(
         _linkController.text,
@@ -741,6 +797,15 @@ class _AddSubscribePageState extends ConsumerState<AddSubscribePage> {
     _suffixController.text = widget.taskBean >>> cSuffix;
     _taskBeforeController.text = widget.taskBean >>> cBefore;
     _taskAfterController.text = widget.taskBean >>> cAfter;
+    _proxyController.text = (widget.taskBean["proxy"] ?? "").toString();
+    autoAddCron = widget.taskBean.containsKey("autoAddCron")
+        ? (widget.taskBean["autoAddCron"] == true ||
+              widget.taskBean["autoAddCron"] == 1)
+        : true;
+    autoDelCron = widget.taskBean.containsKey("autoDelCron")
+        ? (widget.taskBean["autoDelCron"] == true ||
+              widget.taskBean["autoDelCron"] == 1)
+        : true;
 
     //解析几种type
 

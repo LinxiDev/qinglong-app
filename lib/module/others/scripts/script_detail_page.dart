@@ -188,6 +188,64 @@ class ScriptDetailPageState extends ConsumerState<ScriptDetailPage>
       ),
       addDivider(),
       CupertinoSheer(
+        title: "重命名",
+        icon: CupertinoIcons.pencil_ellipsis_rectangle,
+        onTap: () async {
+          final TextEditingController nameController = TextEditingController(
+            text: widget.title,
+          );
+          final String? newName = await showCupertinoDialog<String>(
+            context: context,
+            useRootNavigator: false,
+            builder: (childContext) => CupertinoAlertDialog(
+              title: const Text("重命名脚本"),
+              content: Padding(
+                padding: const EdgeInsets.only(top: 12),
+                child: CupertinoTextField(
+                  controller: nameController,
+                  autofocus: true,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 8,
+                  ),
+                ),
+              ),
+              actions: [
+                CupertinoDialogAction(
+                  child: const Text("取消"),
+                  onPressed: () => Navigator.of(childContext).pop(),
+                ),
+                CupertinoDialogAction(
+                  isDefaultAction: true,
+                  child: const Text("保存"),
+                  onPressed: () =>
+                      Navigator.of(childContext)
+                          .pop(nameController.text.trim()),
+                ),
+              ],
+            ),
+          );
+          if (newName == null ||
+              newName.isEmpty ||
+              newName == widget.title ||
+              !mounted) {
+            return;
+          }
+          final response = await SingleAccountPageState.ofApi(context)
+              .renameScript(widget.title, widget.path ?? "", newName);
+          if (!mounted) {
+            return;
+          }
+          if (response.success) {
+            "重命名成功".toast();
+            Navigator.of(context).pop(true);
+          } else {
+            (response.message ?? "重命名失败").toast();
+          }
+        },
+      ),
+      addDivider(),
+      CupertinoSheer(
         title: "分享",
         icon: CupertinoIcons.share,
         onTap: () {

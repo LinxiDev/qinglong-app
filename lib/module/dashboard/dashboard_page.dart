@@ -30,6 +30,12 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
   List<Map<String, dynamic>> trend = [];
   List<Map<String, dynamic>> topTime = [];
   List<Map<String, dynamic>> topCount = [];
+  Map<String, dynamic> runtime = {};
+  Map<String, dynamic> systemInfo = {};
+  List<Map<String, dynamic>> labels = [];
+  List<Map<String, dynamic>> successes = [];
+  List<Map<String, dynamic>> failures = [];
+  int trendDays = 7;
 
   @override
   void initState() {
@@ -50,9 +56,14 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
 
     final List<HttpResponse<String>> responses = await Future.wait([
       api.dashboardOverview(),
-      api.dashboardTrend(days: 7),
+      api.dashboardTrend(days: trendDays),
       api.dashboardTopTime(),
       api.dashboardTopCount(),
+      api.dashboardRuntime(),
+      api.dashboardLabels(),
+      api.dashboardSystem(),
+      api.dashboardSuccesses(),
+      api.dashboardFailures(),
     ]);
 
     if (!mounted) {
@@ -63,6 +74,11 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
     trend = _decodeList(responses[1]);
     topTime = _decodeList(responses[2]);
     topCount = _decodeList(responses[3]);
+    runtime = _decodeMap(responses[4]);
+    labels = _decodeList(responses[5]);
+    systemInfo = _decodeMap(responses[6]);
+    successes = _decodeList(responses[7]);
+    failures = _decodeList(responses[8]);
 
     setState(() {
       loading = false;
@@ -161,6 +177,26 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
                     data: topCount,
                     trailingBuilder: (item) => "${item["runCount"] ?? 0} 次",
                   ),
+                  const SizedBox(height: 15),
+                  _buildRankCard(
+                    title: "今日成功排行",
+                    empty: "今日暂无成功记录",
+                    data: successes,
+                    trailingBuilder: (item) => "${item["successCount"] ?? 0} 次",
+                  ),
+                  const SizedBox(height: 15),
+                  _buildRankCard(
+                    title: "今日失败排行",
+                    empty: "今日暂无失败记录",
+                    data: failures,
+                    trailingBuilder: (item) => "${item["failCount"] ?? 0} 次",
+                  ),
+                  const SizedBox(height: 15),
+                  _buildRuntimeCard(),
+                  const SizedBox(height: 15),
+                  _buildSystemCard(),
+                  const SizedBox(height: 15),
+                  _buildLabelsCard(),
                   const SizedBox(height: 10),
                   Center(
                     child: Text(
@@ -393,13 +429,42 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            "近 7 日趋势",
-            style: TextStyle(
-              fontSize: 15,
-              fontWeight: FontWeight.w600,
-              color: ref.watch(themeProvider).themeColor.titleColor(),
-            ),
+          Row(
+            children: [
+              Text(
+                "近 $trendDays 日趋势",
+                style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
+                  color: ref.watch(themeProvider).themeColor.titleColor(),
+                ),
+              ),
+              const Spacer(),
+              ...[7, 14, 30].map(
+                (days) => CupertinoButton(
+                  minimumSize: Size.zero,
+                  padding: const EdgeInsets.symmetric(horizontal: 6),
+                  onPressed: () {
+                    if (trendDays == days) {
+                      return;
+                    }
+                    setState(() {
+                      trendDays = days;
+                    });
+                    loadData();
+                  },
+                  child: Text(
+                    "$days天",
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: trendDays == days
+                          ? ref.watch(themeProvider).primaryColor
+                          : ref.watch(themeProvider).themeColor.descColor(),
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
           const SizedBox(height: 16),
           SizedBox(
@@ -510,6 +575,147 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
         ],
       ),
     );
+  }
+
+  int _intOf(Map<String, dynamic> data, String key) {
+    final dynamic value = data[key];
+    if (value is num) {
+      return value.toInt();
+    }
+    return int.tryParse("${value ?? ""}") ?? 0;
+  }
+
+  String _stringOf(Map<String, dynamic> data, String key) {
+    final dynamic value = data[key];
+    return value == null ? "-" : "$value";
+  }
+
+  String _formatUptime(dynamic value) {
+    final int seconds = value is num
+        ? value.toInt()
+        : int.tryParse("$value") ?? 0;
+    if (seconds <= 0) {
+      return "-";
+    }
+    final int days = seconds ~/ 86400;
+    final int hours = (seconds % 86400) ~/ 3600;
+    return days > 0 ? "$days 天 $hours 小时" : "$hours 小时";
+  }
+
+  Widget _buildSimpleCard(String title, List<List<String>> rows) {
+    return Container(
+      padding: const EdgeInsets.fromLTRB(15, 15, 15, 8),
+      decoration: BoxDecoration(
+        color: ref.watch(themeProvider).themeColor.settingBordorColor(),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style: TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.w600,
+              color: ref.watch(themeProvider).themeColor.titleColor(),
+            ),
+          ),
+          const SizedBox(height: 6),
+          if (rows.isEmpty)
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 18),
+              child: Center(
+                child: Text(
+                  "暂无数据",
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: ref.watch(themeProvider).themeColor.descColor(),
+                  ),
+                ),
+              ),
+            )
+          else
+            ...rows.map(
+              (row) => Padding(
+                padding: const EdgeInsets.symmetric(vertical: 7),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        row[0],
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: ref
+                              .watch(themeProvider)
+                              .themeColor
+                              .titleColor(),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Text(
+                      row[1],
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                        color: ref.watch(themeProvider).primaryColor,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildRuntimeCard() {
+    final List running = runtime["running"] is List
+        ? runtime["running"] as List
+        : [];
+    final List<List<String>> rows = [
+      ["运行中实例", "${_intOf(runtime, "runningCount")}"],
+      ["排队中", "${_intOf(runtime, "queuedCount")}"],
+      ...running
+          .take(5)
+          .map(
+            (e) => <String>[
+              e is Map ? "${e["name"] ?? "-"}" : "-",
+              "${e is Map ? (e["elapsed"] ?? 0) : 0} 秒",
+            ],
+          ),
+    ];
+    return _buildSimpleCard("运行中任务", rows);
+  }
+
+  Widget _buildSystemCard() {
+    final List loadAvg = systemInfo["loadAvg"] is List
+        ? systemInfo["loadAvg"] as List
+        : [];
+    final List<List<String>> rows = [
+      ["平台", _stringOf(systemInfo, "platform")],
+      ["CPU 核心", _stringOf(systemInfo, "cpus")],
+      ["内存占用", "${_stringOf(systemInfo, "memUsagePercent")}%"],
+      ["负载", loadAvg.isEmpty ? "-" : loadAvg.map((e) => "$e").join(" / ")],
+      ["运行时长", _formatUptime(systemInfo["uptime"])],
+    ];
+    return _buildSimpleCard("系统资源", rows);
+  }
+
+  Widget _buildLabelsCard() {
+    final List<List<String>> rows = labels
+        .take(8)
+        .map(
+          (item) => <String>[
+            "${item["label"] ?? "未分类"}",
+            "${item["todayRuns"] ?? 0} 次 / ${item["successRate"] ?? 0}%",
+          ],
+        )
+        .toList();
+    return _buildSimpleCard("标签统计", rows);
   }
 
   Widget _buildRankCard({

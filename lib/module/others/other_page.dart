@@ -16,6 +16,7 @@ import 'package:qinglong_app/module/in_app_purchase_page.dart';
 import 'package:qinglong_app/module/others/change_account_page.dart';
 import 'package:qinglong_app/module/others/sort_account_page.dart';
 import 'package:qinglong_app/module/others/text_size_page.dart';
+import 'package:qinglong_app/module/others/two_factor_page.dart';
 import 'package:qinglong_app/module/others/update_password_page.dart';
 import 'package:qinglong_app/utils/extension.dart';
 import 'package:qinglong_app/utils/icloud_utils.dart';
@@ -494,6 +495,32 @@ class OtherPageState extends ConsumerState<OtherPage>
                                     },
                                   ),
                           ),
+                          const Spacer(),
+                        ],
+                      ),
+                      const SizedBox(height: 6),
+                      Row(
+                        children: [
+                          Expanded(
+                            child:
+                                SingleAccountPageState.ofUserInfo(context)
+                                    .useSecretLogined
+                                ? const SizedBox.shrink()
+                                : buildOtherFun2(
+                                    "两步验证",
+                                    CupertinoIcons.lock_shield,
+                                    () {
+                                      Navigator.of(context).push(
+                                        CupertinoPageRoute(
+                                          builder: (context) =>
+                                              const TwoFactorPage(),
+                                        ),
+                                      );
+                                    },
+                                  ),
+                          ),
+                          const Expanded(child: SizedBox.shrink()),
+                          const Expanded(child: SizedBox.shrink()),
                           const Spacer(),
                         ],
                       ),

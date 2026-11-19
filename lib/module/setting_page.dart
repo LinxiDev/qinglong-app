@@ -640,6 +640,11 @@ class _SettingPageState extends ConsumerState<SettingPage> {
                             ),
                             onPressed: () {
                               Navigator.of(context1).pop();
+                              /// 官方提供 POST /user/logout 注销令牌，失败不影响本地退出
+                              SingleAccountPageState.ofApi(context)
+                                  .logout()
+                                  .then((value) {})
+                                  .catchError((e) {});
                               SingleAccountPageState.ofUserInfo(
                                 context,
                               ).updateToken(

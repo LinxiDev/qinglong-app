@@ -16,13 +16,17 @@ class SubscribeViewModel extends BaseViewModel {
     loadData(context, showLoading);
   }
 
-  Future<void> loadData(BuildContext context, [isLoading = true]) async {
+  Future<void> loadData(
+    BuildContext context, [
+    isLoading = true,
+    String search = "",
+  ]) async {
     if (isLoading && list.isEmpty) {
       loading(notify: true);
     }
 
     HttpResponse<String> result = await SingleAccountPageState.ofApi(context)
-        .subscribes();
+        .subscribes(search: search);
 
     if (result.success && result.bean != null) {
       list.clear();

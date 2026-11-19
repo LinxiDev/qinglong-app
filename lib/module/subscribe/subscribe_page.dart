@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cupertino_ui/cupertino_ui.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -40,13 +42,36 @@ class SubscribePageState extends ConsumerState<SubscribePage> {
     );
   }
 
+  Timer? _searchTimer;
+
   @override
   void initState() {
     super.initState();
     controller.addListener(floatingButtonVisibility);
     searchText.addListener(() {
       setState(() {});
+
+      /// 官方支持 searchValue 服务端过滤，输入停止后 350ms 重新拉取
+      _searchTimer?.cancel();
+      _searchTimer = Timer(const Duration(milliseconds: 350), () {
+        if (!mounted) {
+          return;
+        }
+        ref
+            .read(
+              SingleAccountPageState.ofSubscribeProvider(context)(
+                getProviderName(context),
+              ).notifier,
+            )
+            .loadData(context, false, searchText.text);
+      });
     });
+  }
+
+  @override
+  void dispose() {
+    _searchTimer?.cancel();
+    super.dispose();
   }
 
   void floatingButtonVisibility() {

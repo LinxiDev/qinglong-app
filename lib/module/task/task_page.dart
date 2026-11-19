@@ -18,6 +18,7 @@ import 'package:qinglong_app/base/ui/search_cell.dart';
 import 'package:qinglong_app/module/task/add_task_page.dart';
 import 'package:qinglong_app/module/task/intime_log/intime_log_page.dart';
 import 'package:qinglong_app/module/task/task_bean.dart';
+import 'package:qinglong_app/module/task/task_view_page.dart';
 import 'package:qinglong_app/module/task/task_viewmodel.dart';
 import 'package:qinglong_app/utils/extension.dart';
 import 'package:qinglong_app/utils/sp_utils.dart';
@@ -323,6 +324,34 @@ class TaskPageState extends ConsumerState<TaskPage>
             },
           ),
           actions: [
+            CupertinoButton(
+              color: Colors.transparent,
+              padding: EdgeInsets.zero,
+              onPressed: () {
+                Navigator.of(context)
+                    .push(
+                      CupertinoPageRoute(
+                        builder: (context) => const TaskViewPage(),
+                      ),
+                    )
+                    .then((value) {
+                      if (context.mounted) {
+                        ref
+                            .read(
+                              SingleAccountPageState.ofTaskProvider(context)(
+                                getProviderName(context),
+                              ).notifier,
+                            )
+                            .loadData(context, false);
+                      }
+                    });
+              },
+              child: Icon(
+                CupertinoIcons.square_list,
+                size: 22,
+                color: Theme.of(context).appBarTheme.iconTheme?.color,
+              ),
+            ),
             CupertinoButton(
               color: Colors.transparent,
               padding: EdgeInsets.zero,

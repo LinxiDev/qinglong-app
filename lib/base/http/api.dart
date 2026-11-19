@@ -130,10 +130,10 @@ class Api {
         );
   }
 
-  Future<HttpResponse<String>> subscribes() async {
+  Future<HttpResponse<String>> subscribes({String search = ""}) async {
     return await getIt<Http>(instanceName: index.toString()).get<String>(
       getIt<Url>(instanceName: index.toString()).subscribes,
-      {"searchValue": ""},
+      {"searchValue": search},
     );
   }
 
@@ -1217,8 +1217,9 @@ class Api {
     );
   }
 
-  Future<HttpResponse<NullResponse>> activeTwoFactor(String code) async {
-    return await getIt<Http>(instanceName: index.toString()).put<NullResponse>(
+  /// 官方返回布尔值（true=启用成功），用字符串接收以便区分 false
+  Future<HttpResponse<String>> activeTwoFactor(String code) async {
+    return await getIt<Http>(instanceName: index.toString()).put<String>(
       getIt<Url>(instanceName: index.toString()).twoFactorActive,
       {"code": code},
     );

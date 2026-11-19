@@ -14,6 +14,7 @@ import 'package:qinglong_app/module/task/add_task_page.dart';
 import 'package:qinglong_app/module/task/intime_log/intime_log_page.dart';
 import 'package:qinglong_app/module/task/cron_instance_page.dart';
 import 'package:qinglong_app/module/task/task_bean.dart';
+import 'package:qinglong_app/utils/extension.dart';
 import 'package:qinglong_app/utils/utils.dart';
 import 'package:timezone/standalone.dart';
 
@@ -422,6 +423,12 @@ class TaskDetailPageState extends ConsumerState<TaskDetailPage>
                 ),
                 addDivider(),
                 CupertinoSheer(
+                  title: "设置标签",
+                  icon: CupertinoIcons.tag,
+                  onTap: () => editTaskLabels(),
+                ),
+                addDivider(),
+                CupertinoSheer(
                   title: widget.taskBean.isDisabled! == 0 ? "禁用" : "启用",
                   icon: widget.taskBean.isDisabled! == 0
                       ? CupertinoIcons.eye_slash
@@ -447,6 +454,73 @@ class TaskDetailPageState extends ConsumerState<TaskDetailPage>
       ),
       body: body,
     );
+  }
+
+  /// 设置任务标签（官方 POST/DELETE /crons/labels）
+  Future<void> editTaskLabels() async {
+    final int? id = widget.taskBean.id;
+    if (id == null) {
+      "该面板任务 ID 不是数字，无法设置标签".toast();
+      return;
+    }
+    final TextEditingController controller = TextEditingController(
+      text: widget.taskBean.labels.join(","),
+    );
+    final String? value = await showCupertinoDialog<String>(
+      context: context,
+      useRootNavigator: false,
+      builder: (childContext) => CupertinoAlertDialog(
+        title: const Text("设置标签"),
+        content: Padding(
+          padding: const EdgeInsets.only(top: 12),
+          child: CupertinoTextField(
+            controller: controller,
+            placeholder: "多个标签用逗号分隔",
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+            autofocus: true,
+          ),
+        ),
+        actions: [
+          CupertinoDialogAction(
+            child: const Text("取消"),
+            onPressed: () => Navigator.of(childContext).pop(),
+          ),
+          CupertinoDialogAction(
+            isDefaultAction: true,
+            child: const Text("保存"),
+            onPressed: () => Navigator.of(childContext).pop(controller.text),
+          ),
+        ],
+      ),
+    );
+    if (value == null || !mounted) {
+      return;
+    }
+    final List<String> labels = value
+        .split(RegExp(r"[,，]"))
+        .map((e) => e.trim())
+        .where((e) => e.isNotEmpty)
+        .toList();
+    final api = SingleAccountPageState.ofApi(context);
+    bool ok = true;
+    final List<String> old = widget.taskBean.labels;
+    if (old.isNotEmpty) {
+      ok = (await api.updateCronLabels([id], old, remove: true)).success;
+    }
+    if (ok && labels.isNotEmpty) {
+      ok = (await api.updateCronLabels([id], labels)).success;
+    }
+    if (!mounted) {
+      return;
+    }
+    if (ok) {
+      "标签已更新".toast();
+      setState(() {
+        widget.taskBean.labels = labels;
+      });
+    } else {
+      "标签更新失败".toast();
+    }
   }
 
   Future<void> startCron(BuildContext context, WidgetRef ref) async {
