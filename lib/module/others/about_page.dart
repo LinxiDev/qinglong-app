@@ -416,6 +416,7 @@ class _AboutPageState extends ConsumerState<AboutPage>
 
   /// 点击「青龙服务端」：有版本检测结果后分流——
   /// 有新版本 → 进入面板升级页（可下载/应用/重启）；无新版本 → 仅提示
+  /// 点击「青龙服务端」：有新版本弹窗引导去升级，无新版本仅提示
   void _checkUpdate() async {
     var response = await SingleAccountPageState.ofApi(context).checkUpdate();
     if (!mounted) {
@@ -423,8 +424,39 @@ class _AboutPageState extends ConsumerState<AboutPage>
     }
     if (response.success) {
       if (response.bean?.hasNewVersion ?? false) {
-        Navigator.of(context).push(
-          CupertinoPageRoute(builder: (context) => const PanelUpgradePage()),
+        showCupertinoDialog(
+          context: context,
+          useRootNavigator: false,
+          builder: (childContext) => CupertinoAlertDialog(
+            title: Text("青龙服务端发现新版本 ${response.bean?.lastVersion}"),
+            content: Padding(
+              padding: const EdgeInsets.only(left: 5, top: 5),
+              child: Text(
+                "${response.bean?.lastLog}",
+                textAlign: TextAlign.left,
+              ),
+            ),
+            actions: [
+              CupertinoDialogAction(
+                child: const Text("取消"),
+                onPressed: () {
+                  Navigator.of(childContext).pop();
+                },
+              ),
+              CupertinoDialogAction(
+                isDefaultAction: true,
+                child: const Text("去升级"),
+                onPressed: () {
+                  Navigator.of(childContext).pop();
+                  Navigator.of(context).push(
+                    CupertinoPageRoute(
+                      builder: (context) => const PanelUpgradePage(),
+                    ),
+                  );
+                },
+              ),
+            ],
+          ),
         );
       } else {
         "已是最新版本".toast();
