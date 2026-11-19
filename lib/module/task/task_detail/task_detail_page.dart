@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:ui';
 
 import 'package:cupertino_ui/cupertino_ui.dart';
@@ -13,6 +14,7 @@ import 'package:qinglong_app/base/ui/loading_widget.dart';
 import 'package:qinglong_app/module/task/add_task_page.dart';
 import 'package:qinglong_app/module/task/intime_log/intime_log_page.dart';
 import 'package:qinglong_app/module/task/cron_instance_page.dart';
+import 'package:qinglong_app/main.dart' show logger;
 import 'package:qinglong_app/module/task/task_bean.dart';
 import 'package:qinglong_app/utils/extension.dart';
 import 'package:qinglong_app/utils/utils.dart';
@@ -638,7 +640,50 @@ class TaskDetailPageState extends ConsumerState<TaskDetailPage>
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       getNextRunTime(widget.taskBean.schedule ?? "");
     });
+    refreshTaskDetail();
     setState(() {});
+  }
+
+  /// 拉取任务最新详情，避免详情页状态与列表数据陈旧
+  Future<void> refreshTaskDetail() async {
+    final int? id =
+        widget.taskBean.id ?? int.tryParse(widget.taskBean.sId ?? "");
+    if (id == null) {
+      return;
+    }
+    final response = await SingleAccountPageState.ofApi(context)
+        .cronDetail("$id");
+    if (!mounted || !response.success) {
+      return;
+    }
+    try {
+      final dynamic decoded = jsonDecode(response.bean ?? "{}");
+      dynamic data = decoded;
+      if (decoded is Map && decoded["data"] is Map) {
+        data = decoded["data"];
+      }
+      if (data is! Map) {
+        return;
+      }
+      final TaskBean bean = TaskBean.fromJson(Map<String, dynamic>.from(data));
+      setState(() {
+        widget.taskBean
+          ..name = bean.name
+          ..command = bean.command
+          ..schedule = bean.schedule
+          ..status = bean.status
+          ..isDisabled = bean.isDisabled
+          ..isPinned = bean.isPinned
+          ..lastRunningTime = bean.lastRunningTime
+          ..lastExecutionTime = bean.lastExecutionTime
+          ..pid = bean.pid
+          ..extraSchedules = bean.extraSchedules
+          ..labels = bean.labels;
+      });
+      getNextRunTime(widget.taskBean.schedule ?? "");
+    } catch (e) {
+      logger.e(e);
+    }
   }
 }
 

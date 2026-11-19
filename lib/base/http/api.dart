@@ -94,11 +94,22 @@ class Api {
         .get<UserBean>(Url.user, null);
   }
 
-  Future<HttpResponse<TaskBean2>> crons2_13_09() async {
-    return await getIt<Http>(instanceName: index.toString()).get<TaskBean2>(
-      getIt<Url>(instanceName: index.toString()).tasks,
-      {"page": "1", "size": "10000", "searchText": ""},
-    );
+  Future<HttpResponse<TaskBean2>> crons2_13_09({
+    int page = 1,
+    int size = 100,
+    String search = "",
+    String? filters,
+    String? sorts,
+  }) async {
+    return await getIt<Http>(instanceName: index.toString())
+        .get<TaskBean2>(getIt<Url>(instanceName: index.toString()).tasks, {
+          "page": "$page",
+          "size": "$size",
+          "searchValue": search,
+          "searchText": search,
+          if (filters != null && filters.isNotEmpty) "filters": filters,
+          if (sorts != null && sorts.isNotEmpty) "sorts": sorts,
+        });
   }
 
   Future<HttpResponse<List<TaskBean>>> crons() async {
@@ -1136,6 +1147,14 @@ class Api {
     return await getIt<Http>(instanceName: index.toString()).get<String>(
       getIt<Url>(instanceName: index.toString()).cronLogFiles(id),
       null,
+    );
+  }
+
+  /// 单个任务详情（GET /crons/detail?id=）
+  Future<HttpResponse<String>> cronDetail(String id) async {
+    return await getIt<Http>(instanceName: index.toString()).get<String>(
+      getIt<Url>(instanceName: index.toString()).cronDetail,
+      {"id": id},
     );
   }
 

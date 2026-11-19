@@ -30,7 +30,23 @@ class TaskViewModel extends BaseViewModel {
 
   bool runAllTasked = false;
 
-  Future<void> loadData(BuildContext context, [isLoading = true]) async {
+  /// 分页与视图筛选（对齐官方 GET /crons?page&size&searchValue&filters）
+  static const int pageSize = 100;
+  int page = 1;
+  bool hasMore = true;
+  bool loadingMore = false;
+  String lastSearch = "";
+  String? viewFilters;
+  String? viewSorts;
+
+  Future<void> loadData(
+    BuildContext context, [
+    isLoading = true,
+    String? search,
+  ]) async {
+    if (search != null) {
+      lastSearch = search;
+    }
     // 生命周期回调可能在注册表未就绪时到达（测试 teardown、登出瞬间等）
     final int accountIndex = SingleAccountPageState.of(context)?.index ?? 0;
     if (!getIt.isRegistered<SystemBean>(
@@ -45,10 +61,18 @@ class TaskViewModel extends BaseViewModel {
     if (getIt<SystemBean>(
       instanceName: (SingleAccountPageState.of(context)?.index ?? 0).toString(),
     ).isUpperVersion2_13_9()) {
-      var temp = await SingleAccountPageState.ofApi(context).crons2_13_09();
+      var temp = await SingleAccountPageState.ofApi(context).crons2_13_09(
+        page: 1,
+        size: pageSize,
+        search: lastSearch,
+        filters: viewFilters,
+        sorts: viewSorts,
+      );
       if (temp.success && temp.bean != null) {
         list.clear();
         list.addAll(temp.bean?.data ?? []);
+        page = 1;
+        hasMore = (temp.bean?.data?.length ?? 0) >= pageSize;
         if (context.mounted) {
           sortList(context);
         }
@@ -72,6 +96,7 @@ class TaskViewModel extends BaseViewModel {
       if (result.success && result.bean != null) {
         list.clear();
         list.addAll(result.bean!);
+        hasMore = false;
         if (context.mounted) {
           sortList(context);
         }
@@ -89,6 +114,45 @@ class TaskViewModel extends BaseViewModel {
         failed(result.message, notify: true);
       }
     }
+  }
+
+  /// 加载下一页（列表滚动到底部时触发）
+  Future<void> loadMore(BuildContext context) async {
+    if (loadingMore || !hasMore) {
+      return;
+    }
+    loadingMore = true;
+    final temp = await SingleAccountPageState.ofApi(context).crons2_13_09(
+      page: page + 1,
+      size: pageSize,
+      search: lastSearch,
+      filters: viewFilters,
+      sorts: viewSorts,
+    );
+    loadingMore = false;
+    if (temp.success && temp.bean != null) {
+      final List<TaskBean> items = temp.bean?.data ?? [];
+      if (items.length < pageSize) {
+        hasMore = false;
+      }
+      if (items.isNotEmpty) {
+        page++;
+        list.addAll(items);
+        if (context.mounted) {
+          sortList(context);
+        }
+      }
+      success();
+    } else {
+      hasMore = false;
+      failed(temp.message, notify: true);
+    }
+  }
+
+  /// 应用任务视图的过滤/排序条件
+  void applyView(String? filters, String? sorts) {
+    viewFilters = filters;
+    viewSorts = sorts;
   }
 
   void sortList(BuildContext context) {

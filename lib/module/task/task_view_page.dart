@@ -116,68 +116,71 @@ class _TaskViewPageState extends ConsumerState<TaskViewPage> {
               itemBuilder: (context, index) {
                 final Map<String, dynamic> view = views[index];
                 final bool disabled = _disabled(view);
-                return Container(
-                  margin: const EdgeInsets.only(bottom: 10),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 14,
-                    vertical: 12,
-                  ),
-                  decoration: BoxDecoration(
-                    color: themeColor.settingBgColor(),
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                      color: dark
-                          ? const Color(0xFF2E2E31)
-                          : const Color(0xFFE6E8EC),
+                return GestureDetector(
+                  onTap: () => Navigator.of(context).pop(_filtersText(view)),
+                  child: Container(
+                    margin: const EdgeInsets.only(bottom: 10),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 14,
+                      vertical: 12,
                     ),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Expanded(
-                            child: Text(
-                              "${view["name"] ?? "未命名视图"}",
-                              style: TextStyle(
-                                fontSize: 15,
-                                fontWeight: FontWeight.w600,
-                                color: themeColor.titleColor(),
-                              ),
-                            ),
-                          ),
-                          if (disabled)
-                            const Text(
-                              "已禁用",
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: Color(0xffFB5858),
-                              ),
-                            ),
-                        ],
+                    decoration: BoxDecoration(
+                      color: themeColor.settingBgColor(),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: dark
+                            ? const Color(0xFF2E2E31)
+                            : const Color(0xFFE6E8EC),
                       ),
-                      const SizedBox(height: 6),
-                      Text(
-                        _filtersText(view).isEmpty
-                            ? "无条件（全部任务）"
-                            : _filtersText(view),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: themeColor.descColor(),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                "${view["name"] ?? "未命名视图"}",
+                                style: TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w600,
+                                  color: themeColor.titleColor(),
+                                ),
+                              ),
+                            ),
+                            if (disabled)
+                              const Text(
+                                "已禁用",
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: Color(0xffFB5858),
+                                ),
+                              ),
+                          ],
                         ),
-                      ),
-                      const SizedBox(height: 8),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          _action(disabled ? "启用" : "禁用", () => toggle(view)),
-                          _action("编辑", () => showEditor(view)),
-                          _action("删除", () => deleteView(view), danger: true),
-                        ],
-                      ),
-                    ],
+                        const SizedBox(height: 6),
+                        Text(
+                          _filtersText(view).isEmpty
+                              ? "无条件（全部任务）"
+                              : _filtersText(view),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: themeColor.descColor(),
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            _action(disabled ? "启用" : "禁用", () => toggle(view)),
+                            _action("编辑", () => showEditor(view)),
+                            _action("删除", () => deleteView(view), danger: true),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
                 );
               },

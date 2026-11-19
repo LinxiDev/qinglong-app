@@ -122,8 +122,25 @@ class TaskPageState extends ConsumerState<TaskPage>
     WidgetsBinding.instance.addObserver(this);
     searchText.addListener(() {
       setState(() {});
+
+      /// 官方支持 searchValue 服务端过滤，输入停止后 350ms 重新拉取
+      _searchTimer?.cancel();
+      _searchTimer = Timer(const Duration(milliseconds: 350), () {
+        if (!mounted) {
+          return;
+        }
+        ref
+            .read(
+              SingleAccountPageState.ofTaskProvider(context)(
+                getProviderName(context),
+              ).notifier,
+            )
+            .loadData(context, false, searchText.text);
+      });
     });
   }
+
+  Timer? _searchTimer;
 
   double searchCellHeight = 55;
 
@@ -335,15 +352,18 @@ class TaskPageState extends ConsumerState<TaskPage>
                       ),
                     )
                     .then((value) {
-                      if (context.mounted) {
-                        ref
-                            .read(
-                              SingleAccountPageState.ofTaskProvider(context)(
-                                getProviderName(context),
-                              ).notifier,
-                            )
-                            .loadData(context, false);
+                      if (!context.mounted) {
+                        return;
                       }
+                      final model = ref.read(
+                        SingleAccountPageState.ofTaskProvider(context)(
+                          getProviderName(context),
+                        ).notifier,
+                      );
+                      if (value is String) {
+                        model.applyView(value, null);
+                      }
+                      model.loadData(context, false);
                     });
               },
               child: Icon(
@@ -581,6 +601,7 @@ class TaskPageState extends ConsumerState<TaskPage>
 
   @override
   void dispose() {
+    _searchTimer?.cancel();
     WidgetsBinding.instance.removeObserver(this);
     removeOverlay();
     super.dispose();
@@ -949,6 +970,35 @@ class _ListBodyState extends ConsumerState<ListBodyWidget>
       physics: const NeverScrollableScrollPhysics(),
       keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
       itemBuilder: (context, index) {
+        if (index == widget.list.length) {
+          final model = ref.read(
+            SingleAccountPageState.ofTaskProvider(context)(
+              getProviderName(context),
+            ).notifier,
+          );
+          if (!model.hasMore) {
+            return const SizedBox.shrink();
+          }
+          return Center(
+            child: Padding(
+              padding: const EdgeInsets.all(15),
+              child: CupertinoButton(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                color: ref.watch(themeProvider).themeColor.settingBgColor(),
+                onPressed: model.loadingMore
+                    ? null
+                    : () => model.loadMore(context),
+                child: Text(
+                  model.loadingMore ? "加载中…" : "加载更多",
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: ref.watch(themeProvider).primaryColor,
+                  ),
+                ),
+              ),
+            ),
+          );
+        }
         TaskBean item = widget.list[index];
         if (widget.searchText.isEmpty ||
             (item.name?.toLowerCase().contains(
@@ -974,8 +1024,11 @@ class _ListBodyState extends ConsumerState<ListBodyWidget>
           return const SizedBox.shrink();
         }
       },
-      itemCount: widget.list.length,
+      itemCount: widget.list.length + 1,
       separatorBuilder: (BuildContext context, int index) {
+        if (index >= widget.list.length) {
+          return const SizedBox.shrink();
+        }
         TaskBean item = widget.list[index];
         if (widget.searchText.isEmpty ||
             (item.name?.toLowerCase().contains(

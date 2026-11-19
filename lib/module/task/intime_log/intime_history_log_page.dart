@@ -8,6 +8,7 @@ import 'package:qinglong_app/base/single_account_page.dart';
 import 'package:qinglong_app/base/ui/lazy_load_state.dart';
 import 'package:qinglong_app/base/ui/loading_widget.dart';
 import 'package:qinglong_app/utils/extension.dart';
+import 'package:qinglong_app/utils/icloud_utils.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../../../base/cupertino_sheet.dart';
@@ -68,6 +69,30 @@ class InTimeHistoryLogPageState extends State<InTimeHistoryLogPage>
                   icon: CupertinoIcons.share,
                   onTap: () async {
                     SharePlus.instance.share(ShareParams(text: content ?? ""));
+                  },
+                ),
+                addDivider(),
+                CupertinoSheer(
+                  title: "下载",
+                  icon: CupertinoIcons.cloud_download,
+                  onTap: () async {
+                    EasyLoading.show(status: "下载中");
+                    final response = await SingleAccountPageState.ofApi(context)
+                        .downloadLog(widget.title, widget.path);
+                    EasyLoading.dismiss();
+                    if (!context.mounted) {
+                      return;
+                    }
+                    if (response.success) {
+                      final String name =
+                          "${DateTime.now().millisecondsSinceEpoch}_"
+                          "${widget.title.split("/").last}";
+                      await FileUtil(0)
+                          .writeDownloadFile(name, response.bean ?? "");
+                      "已写入qinglong_app文件夹下,文件名$name".toast2();
+                    } else {
+                      (response.message ?? "下载失败").toast();
+                    }
                   },
                 ),
                 addDivider(),

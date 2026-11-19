@@ -10,7 +10,9 @@ import 'package:qinglong_app/base/theme.dart';
 import 'package:qinglong_app/base/ui/lazy_load_state.dart';
 import 'package:qinglong_app/base/ui/loading_widget.dart';
 import 'package:qinglong_app/module/subscribe/add_subscribe_page.dart';
+import 'package:qinglong_app/module/subscribe/subscribe_logs_page.dart';
 import 'package:qinglong_app/module/task/intime_log/intime_subscribe_log_page.dart';
+import 'package:qinglong_app/utils/extension.dart';
 import 'package:qinglong_app/utils/utils.dart';
 
 class SubscribeDetailPage extends ConsumerStatefulWidget {
@@ -102,6 +104,29 @@ class TaskDetailPageState extends ConsumerState<SubscribeDetailPage>
                   title: "查看日志",
                   onTap: () {
                     showLog();
+                  },
+                ),
+                addDivider(),
+                CupertinoSheer(
+                  title: "历史日志",
+                  onTap: () {
+                    final dynamic idValue = widget.taskBean["id"];
+                    final int? id = idValue is num
+                        ? idValue.toInt()
+                        : int.tryParse("$idValue");
+                    if (id == null) {
+                      "该面板订阅 ID 不是数字".toast();
+                      return;
+                    }
+                    Navigator.of(context).push(
+                      CupertinoPageRoute(
+                        builder: (context) => SubscribeLogsPage(
+                          subscriptionId: id,
+                          title: widget.taskBean["name"]?.toString() ?? "",
+                          alias: widget.taskBean["alias"]?.toString() ?? "",
+                        ),
+                      ),
+                    );
                   },
                 ),
                 addDivider(),
