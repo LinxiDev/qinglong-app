@@ -5,11 +5,13 @@ import '../../main.dart';
 
 class TaskBean2 {
   List<TaskBean>? data;
+  int? total;
 
-  TaskBean2({this.data});
+  TaskBean2({this.data, this.total});
 
   TaskBean2.fromJson(Map<String, dynamic> json) {
     try {
+      total = json['total'] is num ? (json['total'] as num).toInt() : null;
       if (json['data'] != null) {
         data = <TaskBean>[];
         json['data'].forEach((v) {

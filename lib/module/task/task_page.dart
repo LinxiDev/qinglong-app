@@ -121,6 +121,7 @@ class TaskPageState extends ConsumerState<TaskPage>
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     _scrollController.addListener(_onScrollLoadMore);
+    _tabController!.addListener(_onTabChanged);
     searchText.addListener(() {
       setState(() {});
 
@@ -142,6 +143,24 @@ class TaskPageState extends ConsumerState<TaskPage>
   }
 
   Timer? _searchTimer;
+
+  /// 切换 Tab 时按服务端筛选重新拉取
+  /// 全部=无筛选、运行中=status[0]、未使用=全量本地过滤、已禁用=status[2]
+  void _onTabChanged() {
+    final TabController? controller = _tabController;
+    if (controller == null || controller.indexIsChanging) {
+      return;
+    }
+    final int index = controller.index;
+    final model = ref.read(
+      SingleAccountPageState.ofTaskProvider(context)(getProviderName(context))
+          .notifier,
+    );
+    if (model.currentTab == index) {
+      return;
+    }
+    model.loadData(context, false, searchText.text, index);
+  }
 
   /// 列表滑到底部时自动加载下一页（20 条/页）
   void _onScrollLoadMore() {
@@ -654,6 +673,7 @@ class TaskPageState extends ConsumerState<TaskPage>
   @override
   void dispose() {
     _searchTimer?.cancel();
+    _tabController?.removeListener(_onTabChanged);
     _scrollController.removeListener(_onScrollLoadMore);
     WidgetsBinding.instance.removeObserver(this);
     removeOverlay();

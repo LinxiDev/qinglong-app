@@ -33,17 +33,54 @@ class TaskViewModel extends BaseViewModel {
   /// 分页与视图筛选（对齐官方 GET /crons?page&size&searchValue&filters）
   static const int pageSize = 20;
   int page = 1;
+  int total = 0;
   bool hasMore = true;
   bool loadingMore = false;
   String lastSearch = "";
+
+  /// 当前 Tab：0 全部 / 1 运行中 / 2 未使用 / 3 已禁用
+  int currentTab = 0;
+
+  Map<String, dynamic>? _tabFilters() {
+    if (currentTab == 1) {
+      // 运行中（status 0）；面板会自动排除 isDisabled
+      return {
+        "status": [0],
+      };
+    }
+    if (currentTab == 3) {
+      // 已禁用（status 2，面板联动 isDisabled=1）
+      return {
+        "status": [2],
+      };
+    }
+    return null;
+  }
+
+  List<TaskBean> get _currentList {
+    switch (currentTab) {
+      case 1:
+        return running;
+      case 2:
+        return neverRunning;
+      case 3:
+        return disabled;
+      default:
+        return list;
+    }
+  }
 
   Future<void> loadData(
     BuildContext context, [
     isLoading = true,
     String? search,
+    int? tab,
   ]) async {
     if (search != null) {
       lastSearch = search;
+    }
+    if (tab != null) {
+      currentTab = tab;
     }
     // 生命周期回调可能在注册表未就绪时到达（测试 teardown、登出瞬间等）
     final int accountIndex = SingleAccountPageState.of(context)?.index ?? 0;
@@ -59,14 +96,40 @@ class TaskViewModel extends BaseViewModel {
     if (getIt<SystemBean>(
       instanceName: (SingleAccountPageState.of(context)?.index ?? 0).toString(),
     ).isUpperVersion2_13_9()) {
-      var temp = await SingleAccountPageState.ofApi(context)
-          .crons2_13_09(page: 1, size: pageSize, search: lastSearch);
+      /// 「未使用」无法用官方 filters 表达 NULL，改为全量拉取后本地过滤
+      final bool neverUsedTab = currentTab == 2;
+      final int requestSize = neverUsedTab ? 10000 : pageSize;
+      var temp = await SingleAccountPageState.ofApi(context).crons2_13_09(
+        page: 1,
+        size: requestSize,
+        search: lastSearch,
+        filters: _tabFilters(),
+      );
       if (temp.success && temp.bean != null) {
+        final List<TaskBean> data = temp.bean?.data ?? [];
+        if (neverUsedTab) {
+          data.removeWhere((element) => element.lastRunningTime != null);
+        }
         list.clear();
-        list.addAll(temp.bean?.data ?? []);
+        list.addAll(data);
         page = 1;
-        hasMore = (temp.bean?.data?.length ?? 0) >= pageSize;
-        if (context.mounted) {
+        final int? serverTotal = temp.bean?.total;
+        total = serverTotal ?? data.length;
+        hasMore =
+            !neverUsedTab &&
+            (serverTotal != null
+                ? data.length < serverTotal
+                : data.length >= requestSize);
+        if (currentTab == 1) {
+          running.clear();
+          running.addAll(data);
+        } else if (currentTab == 2) {
+          neverRunning.clear();
+          neverRunning.addAll(data);
+        } else if (currentTab == 3) {
+          disabled.clear();
+          disabled.addAll(data);
+        } else if (context.mounted) {
           sortList(context);
         }
         list.isEmpty ? empty(notify: true) : success();
@@ -111,22 +174,33 @@ class TaskViewModel extends BaseViewModel {
 
   /// 加载下一页（列表滚动到底部时触发）
   Future<void> loadMore(BuildContext context) async {
-    if (loadingMore || !hasMore) {
+    if (loadingMore || !hasMore || currentTab == 2) {
       return;
     }
     loadingMore = true;
-    final temp = await SingleAccountPageState.ofApi(context)
-        .crons2_13_09(page: page + 1, size: pageSize, search: lastSearch);
+    final temp = await SingleAccountPageState.ofApi(context).crons2_13_09(
+      page: page + 1,
+      size: pageSize,
+      search: lastSearch,
+      filters: _tabFilters(),
+    );
     loadingMore = false;
     if (temp.success && temp.bean != null) {
       final List<TaskBean> items = temp.bean?.data ?? [];
-      if (items.length < pageSize) {
-        hasMore = false;
+      final int? serverTotal = temp.bean?.total;
+      if (serverTotal != null) {
+        total = serverTotal;
       }
       if (items.isNotEmpty) {
         page++;
-        list.addAll(items);
-        if (context.mounted) {
+        _currentList.addAll(items);
+        hasMore = serverTotal != null
+            ? _currentList.length < serverTotal
+            : items.length >= pageSize;
+        if (!identical(_currentList, list)) {
+          list.addAll(items);
+        }
+        if (currentTab == 0 && context.mounted) {
           sortList(context);
         }
       }

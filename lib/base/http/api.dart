@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
 import 'package:qinglong_app/base/http/http.dart';
 import 'package:qinglong_app/base/http/url.dart';
@@ -94,22 +96,25 @@ class Api {
         .get<UserBean>(Url.user, null);
   }
 
+  /// 任务列表（官方分页 + 搜索 + filters）
+  ///
+  /// [filters] 为官方对象结构，如 `{"status":[0]}`（status 必须数组，
+  /// 含 2 时面板会联动 isDisabled=1）。
   Future<HttpResponse<TaskBean2>> crons2_13_09({
     int page = 1,
     int size = 100,
     String search = "",
-    String? filters,
-    String? sorts,
+    Map<String, dynamic>? filters,
   }) async {
-    return await getIt<Http>(instanceName: index.toString())
-        .get<TaskBean2>(getIt<Url>(instanceName: index.toString()).tasks, {
-          "page": "$page",
-          "size": "$size",
-          "searchValue": search,
-          "searchText": search,
-          if (filters != null && filters.isNotEmpty) "filters": filters,
-          if (sorts != null && sorts.isNotEmpty) "sorts": sorts,
-        });
+    return await getIt<Http>(
+      instanceName: index.toString(),
+    ).get<TaskBean2>(getIt<Url>(instanceName: index.toString()).tasks, {
+      "page": "$page",
+      "size": "$size",
+      "searchValue": search,
+      "searchText": search,
+      if (filters != null && filters.isNotEmpty) "filters": jsonEncode(filters),
+    });
   }
 
   Future<HttpResponse<List<TaskBean>>> crons() async {
