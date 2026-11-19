@@ -424,14 +424,14 @@ class EnvPageState extends ConsumerState<EnvPage>
   Future<void> importEnvs(BuildContext context, WidgetRef ref) async {
     final List<PlatformFile> files = await FilePicker.pickFiles();
     final String? path = files.isNotEmpty ? files.first.path : null;
-    if (path == null || !mounted) {
+    if (path == null || !context.mounted) {
       return;
     }
     EasyLoading.show(status: "导入中");
     final response = await SingleAccountPageState.ofApi(context)
         .uploadEnvs(path);
     EasyLoading.dismiss();
-    if (!mounted) {
+    if (!context.mounted) {
       return;
     }
     if (response.success) {

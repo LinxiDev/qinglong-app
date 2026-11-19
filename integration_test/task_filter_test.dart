@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:cupertino_ui/cupertino_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
@@ -190,12 +189,10 @@ void main() {
 
       final Map<String, dynamic> idle = await api(
         "GET",
-        "/api/crons?page=1&size=100&filters=" +
-            Uri.encodeQueryComponent(
-              jsonEncode({
-                "status": [1],
-              }),
-            ),
+        "/api/crons?page=1&size=100&filters="
+            "${Uri.encodeQueryComponent(jsonEncode({
+              "status": [1],
+            }))}",
         token: token,
       );
       expect(
@@ -206,12 +203,10 @@ void main() {
 
       final Map<String, dynamic> disabledFilter = await api(
         "GET",
-        "/api/crons?page=1&size=100&filters=" +
-            Uri.encodeQueryComponent(
-              jsonEncode({
-                "status": [2],
-              }),
-            ),
+        "/api/crons?page=1&size=100&filters="
+            "${Uri.encodeQueryComponent(jsonEncode({
+              "status": [2],
+            }))}",
         token: token,
       );
       expect(

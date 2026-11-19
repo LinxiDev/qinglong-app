@@ -412,13 +412,13 @@ class TaskPageState extends ConsumerState<TaskPage>
                           ],
                         ),
                       );
-                      if (ok != true || !mounted) {
+                      if (ok != true || !context.mounted) {
                         return;
                       }
                       final response = await SingleAccountPageState.ofApi(
                         context,
                       ).importCrons();
-                      if (!mounted) {
+                      if (!context.mounted) {
                         return;
                       }
                       if (response.success) {

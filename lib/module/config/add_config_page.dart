@@ -154,7 +154,7 @@ class _AddConfigPageState extends ConsumerState<AddConfigPage> {
   Future<void> useSample(BuildContext context) async {
     final api = SingleAccountPageState.ofApi(context);
     final response = await api.configSamples();
-    if (!mounted) {
+    if (!context.mounted) {
       return;
     }
     if (!response.success) {
@@ -196,7 +196,7 @@ class _AddConfigPageState extends ConsumerState<AddConfigPage> {
         ),
       ),
     );
-    if (name == null || !mounted) {
+    if (name == null || !context.mounted) {
       return;
     }
     EasyLoading.show(status: "创建中");
@@ -208,7 +208,7 @@ class _AddConfigPageState extends ConsumerState<AddConfigPage> {
     }
     final saveResponse = await api.saveFile(name, contentResponse.bean ?? "");
     EasyLoading.dismiss();
-    if (!mounted) {
+    if (!context.mounted) {
       return;
     }
     if (saveResponse.success) {
