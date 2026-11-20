@@ -34,6 +34,15 @@ void main() {
     }
   }
 
+  /// 在当前页搜索框输入不可能命中的关键字，构造稳定的空结果
+  Future<void> enterSearch(WidgetTester tester, String keyword) async {
+    // 搜索框是 CupertinoTextField，用 EditableText 兼容 Material/Cupertino
+    final Finder fields = find.byType(EditableText).hitTestable();
+    if (fields.evaluate().isEmpty) return;
+    await tester.enterText(fields.first, keyword);
+    await settle(tester, 5);
+  }
+
   Future<bool> tapTab(WidgetTester tester, String label) async {
     final List<Element> elements = find.text(label).evaluate().toList();
     if (elements.isEmpty) return false;
@@ -71,7 +80,13 @@ void main() {
 
     for (final String tab in <String>['定时任务', '环境变量']) {
       expect(await tapTab(tester, tab), isTrue, reason: '应能切换到 $tab');
-      expect(find.text('暂无数据'), findsWidgets, reason: '$tab 在无数据时应展示空态占位');
+      bool empty = find.text('暂无数据').evaluate().isNotEmpty;
+      if (!empty) {
+        // 共享演示面板可能自带数据，用不存在的关键字过滤后再验证空态 UI
+        await enterSearch(tester, '__EMPTY_STATE_PROBE__');
+        empty = find.text('暂无数据').evaluate().isNotEmpty;
+      }
+      expect(empty, isTrue, reason: '$tab 在无数据时应展示空态占位');
       // ignore: avoid_print
       print('EMPTY_STATE PASS: $tab 空态正常');
     }
