@@ -444,6 +444,28 @@ class Api {
     );
   }
 
+  /// 批量新增环境变量（官方 POST /envs，body 为数组）。
+  /// 新建页开启「按换行拆分」时，每个非空行创建为一个独立变量。
+  Future<HttpResponse<NullResponse>> addEnvs(
+    String name,
+    List<String> values,
+    String remarks,
+  ) async {
+    final List<Map<String, dynamic>> data = values
+        .map(
+          (value) => <String, dynamic>{
+            "value": value,
+            "remarks": remarks,
+            "name": name,
+          },
+        )
+        .toList();
+    return await getIt<Http>(instanceName: index.toString()).post<NullResponse>(
+      getIt<Url>(instanceName: index.toString()).addEnv,
+      data,
+    );
+  }
+
   Future<HttpResponse<NullResponse>> moveEnv(
     String id,
     int fromIndex,

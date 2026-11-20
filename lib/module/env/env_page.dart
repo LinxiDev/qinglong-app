@@ -23,6 +23,7 @@ import 'package:qinglong_app/utils/extension.dart';
 import 'package:qinglong_app/utils/utils.dart';
 
 import '../../base/ui/enable_widget.dart';
+import '../../base/ui/label_tag.dart';
 
 class EnvPage extends ConsumerStatefulWidget {
   const EnvPage({super.key});
@@ -850,34 +851,6 @@ class EnvItemCell extends StatelessWidget {
                                         Expanded(
                                           child: Row(
                                             children: [
-                                              Container(
-                                                padding:
-                                                    const EdgeInsets.symmetric(
-                                                      horizontal: 5,
-                                                    ),
-                                                decoration: BoxDecoration(
-                                                  borderRadius:
-                                                      BorderRadius.circular(3),
-                                                  border: Border.all(
-                                                    color: ref
-                                                        .watch(themeProvider)
-                                                        .themeColor
-                                                        .descColor(),
-                                                    width: 1,
-                                                  ),
-                                                ),
-                                                child: Text(
-                                                  "${getIndexByIndex(context, index)}",
-                                                  style: TextStyle(
-                                                    color: ref
-                                                        .watch(themeProvider)
-                                                        .themeColor
-                                                        .descColor(),
-                                                    fontSize: 12,
-                                                  ),
-                                                ),
-                                              ),
-                                              const SizedBox(width: 5),
                                               ConstrainedBox(
                                                 constraints:
                                                     BoxConstraints.loose(
@@ -925,20 +898,6 @@ class EnvItemCell extends StatelessWidget {
                                                           fontSize: 14,
                                                         ),
                                                       ),
-                                                      if ((bean.labels ?? [])
-                                                          .isNotEmpty)
-                                                        TextSpan(
-                                                          text:
-                                                              "  #${bean.labels!.join(" #")}",
-                                                          style: TextStyle(
-                                                            color: ref
-                                                                .watch(
-                                                                  themeProvider,
-                                                                )
-                                                                .primaryColor,
-                                                            fontSize: 13,
-                                                          ),
-                                                        ),
                                                     ],
                                                   ),
                                                 ),
@@ -959,6 +918,25 @@ class EnvItemCell extends StatelessWidget {
                                           ),
                                         ),
                                         const SizedBox(width: 15),
+                                        Visibility(
+                                          visible:
+                                              !editMode2 &&
+                                              (bean.labels ?? []).isNotEmpty,
+                                          child: Row(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              for (final String label
+                                                  in bean.labels ?? <String>[])
+                                                Padding(
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                        right: 6,
+                                                      ),
+                                                  child: LabelTag(label),
+                                                ),
+                                            ],
+                                          ),
+                                        ),
                                         Visibility(
                                           visible: !editMode2,
                                           child: Material(
@@ -1175,10 +1153,6 @@ class EnvItemCell extends StatelessWidget {
         ],
       ),
     );
-  }
-
-  int getIndexByIndex(BuildContext context, int index) {
-    return index + 1;
   }
 }
 

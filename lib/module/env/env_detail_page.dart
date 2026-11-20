@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:qinglong_app/base/ql_app_bar.dart';
 import 'package:qinglong_app/base/single_account_page.dart';
 import 'package:qinglong_app/base/theme.dart';
+import 'package:qinglong_app/base/ui/label_tag.dart';
 import 'package:qinglong_app/module/env/env_bean.dart';
 import 'package:qinglong_app/utils/utils.dart';
 
@@ -72,6 +73,66 @@ class TaskDetailPageState extends ConsumerState<EnvDetailPage> {
                   EnvDetailCell(
                     title: "备注",
                     desc: widget.envBean.remarks ?? "",
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(
+                      top: 10,
+                      left: 15,
+                      bottom: 10,
+                    ),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "标签",
+                          style: TextStyle(
+                            color: ref
+                                .watch(themeProvider)
+                                .themeColor
+                                .titleColor(),
+                            fontSize: 16,
+                          ),
+                        ),
+                        const SizedBox(width: 30),
+                        Expanded(
+                          child: Align(
+                            alignment: Alignment.centerRight,
+                            child: (widget.envBean.labels ?? []).isEmpty
+                                ? Text(
+                                    "-",
+                                    style: TextStyle(
+                                      color: ref
+                                          .watch(themeProvider)
+                                          .themeColor
+                                          .descColor(),
+                                      fontSize: 16,
+                                    ),
+                                  )
+                                : Wrap(
+                                    spacing: 6,
+                                    runSpacing: 6,
+                                    alignment: WrapAlignment.end,
+                                    children: [
+                                      for (final String label
+                                          in widget.envBean.labels ??
+                                              <String>[])
+                                        LabelTag(label),
+                                    ],
+                                  ),
+                          ),
+                        ),
+                        const SizedBox(width: 15),
+                      ],
+                    ),
+                  ),
+                  Divider(
+                    indent: 15,
+                    endIndent: 15,
+                    height: 0.5,
+                    thickness: 0.5,
+                    color: ref.watch(themeProvider).themeMode == modeDark
+                        ? const Color(0xFF2E2E31)
+                        : const Color(0xFFECEEF1),
                   ),
                   EnvDetailCell(
                     title: "变量状态",
