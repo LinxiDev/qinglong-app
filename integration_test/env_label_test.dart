@@ -8,6 +8,8 @@ import 'package:integration_test/integration_test.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:qinglong_app/main.dart' as app;
 
+import 'test_support.dart';
+
 /// 环境变量标签回归（需可登录的真实面板）。
 ///
 /// 直接用 HTTP 创建变量并设置 #qa 标签，UI 断言尽力而为，
@@ -100,6 +102,26 @@ void main() {
     final ErrorWidgetBuilder original = ErrorWidget.builder;
     List<int> ids = [];
     String? token;
+    final String envName = '${qaPrefix}env_label_${qaRunId()}';
+
+    // 不论断言是否通过，都按名称清理本次新增的环境变量
+    addTearDown(() async {
+      if (token == null) return;
+      final Map<String, dynamic> result = await api(
+        "GET",
+        "/api/envs?searchValue=$envName",
+        token: token,
+      );
+      final List<int> cleanupIds = ((result["data"] as List?) ?? [])
+          .whereType<Map>()
+          .where((e) => e["name"] == envName)
+          .map((e) => e["id"])
+          .whereType<int>()
+          .toList();
+      if (cleanupIds.isNotEmpty) {
+        await api("DELETE", "/api/envs", body: cleanupIds, token: token);
+      }
+    });
 
     try {
       final Map<String, dynamic> login = await api(
@@ -121,19 +143,19 @@ void main() {
         "POST",
         "/api/envs",
         body: [
-          {"name": "qa_ui_env", "value": "1", "remarks": "qa automation"},
+          {"name": envName, "value": "1", "remarks": "qa automation"},
         ],
         token: token,
       );
       final Map<String, dynamic> envList = await api(
         "GET",
-        "/api/envs?searchValue=qa_ui_env",
+        "/api/envs?searchValue=$envName",
         token: token,
       );
       final List<dynamic> envs = (envList["data"] as List?) ?? [];
       ids = envs
           .whereType<Map>()
-          .where((e) => e["name"] == "qa_ui_env")
+          .where((e) => e["name"] == envName)
           .map((e) => e["id"])
           .whereType<int>()
           .toList();
@@ -151,13 +173,13 @@ void main() {
       );
       final Map<String, dynamic> labeled = await api(
         "GET",
-        "/api/envs?searchValue=qa_ui_env",
+        "/api/envs?searchValue=$envName",
         token: token,
       );
       final List<dynamic> labeledEnvs = (labeled["data"] as List?) ?? [];
       final Map? bean = labeledEnvs
           .whereType<Map>()
-          .where((e) => e["name"] == "qa_ui_env")
+          .where((e) => e["name"] == envName)
           .firstOrNull;
       expect(bean, isNotNull, reason: '应能查询到测试变量');
       expect(
@@ -178,10 +200,7 @@ void main() {
       await tapTab(tester, '环境变量');
       await settle(tester, 5);
       expect(
-        find
-            .textContaining('qa_ui_env', findRichText: true)
-            .evaluate()
-            .isNotEmpty,
+        find.textContaining(envName, findRichText: true).evaluate().isNotEmpty,
         isTrue,
         reason: '环境变量列表应展示测试变量',
       );

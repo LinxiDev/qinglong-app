@@ -4,6 +4,8 @@ import 'package:integration_test/integration_test.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:qinglong_app/main.dart' as app;
 
+import 'test_support.dart';
+
 /// 空态回归：面板无任务 / 环境变量 / 配置文件时应展示空态占位。
 ///
 /// 需要面板处于“空数据”状态（CI 上新建的面板天然满足）。
@@ -82,8 +84,8 @@ void main() {
       expect(await tapTab(tester, tab), isTrue, reason: '应能切换到 $tab');
       bool empty = find.text('暂无数据').evaluate().isNotEmpty;
       if (!empty) {
-        // 共享演示面板可能自带数据，用不存在的关键字过滤后再验证空态 UI
-        await enterSearch(tester, '__EMPTY_STATE_PROBE__');
+        // 共享演示面板可能自带数据，统一用不存在的关键字构造空态
+        await enterSearch(tester, qaEmptyKeyword);
         empty = find.text('暂无数据').evaluate().isNotEmpty;
       }
       expect(empty, isTrue, reason: '$tab 在无数据时应展示空态占位');

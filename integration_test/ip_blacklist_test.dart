@@ -5,7 +5,11 @@ import 'package:integration_test/integration_test.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:qinglong_app/main.dart' as app;
 
+import 'test_support.dart';
+
 /// IP 黑名单增删回归（需已登录且面板版本 >= v2.22）。
+///
+/// IP 无法加文本前缀，固定使用 [testIp]，并在 tearDown 中强制移除。
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
@@ -75,6 +79,31 @@ void main() {
 
   testWidgets('IP 黑名单增删', (WidgetTester tester) async {
     final ErrorWidgetBuilder original = ErrorWidget.builder;
+    const String testIp = '10.0.0.3';
+
+    // 成功失败都强制移除测试 IP
+    addTearDown(() async {
+      final String? token = await qaLogin();
+      if (token == null) return;
+      await qaApi(
+        "DELETE",
+        "/api/user/ip-blacklist",
+        body: {"ip": testIp},
+        token: token,
+      );
+    });
+
+    // 预清理，避免上次中断残留导致重复添加
+    final String? preToken = await qaLogin();
+    if (preToken != null) {
+      await qaApi(
+        "DELETE",
+        "/api/user/ip-blacklist",
+        body: {"ip": testIp},
+        token: preToken,
+      );
+    }
+
     app.main();
     await settle(tester, 10);
 
@@ -101,19 +130,19 @@ void main() {
     await settle(tester, 2);
     expect(find.text('添加 IP 黑名单'), findsOneWidget, reason: '应弹出添加对话框');
 
-    await tester.enterText(find.byType(TextField).first, '10.0.0.3');
+    await tester.enterText(find.byType(TextField).first, testIp);
     await tester.pump();
     await tester.tap(find.text('确定').last, warnIfMissed: false);
     await settle(tester, 5);
-    expect(find.text('10.0.0.3'), findsWidgets, reason: '新增后列表应出现该 IP');
+    expect(find.text(testIp), findsWidgets, reason: '新增后列表应出现该 IP');
     // ignore: avoid_print
-    print('IP_BL 新增 10.0.0.3 成功');
+    print('IP_BL 新增 $testIp 成功');
 
     await tester.tap(find.text('解除').first, warnIfMissed: false);
     await settle(tester, 5);
-    expect(find.text('10.0.0.3'), findsNothing, reason: '解除后列表应移除该 IP');
+    expect(find.text(testIp), findsNothing, reason: '解除后列表应移除该 IP');
     // ignore: avoid_print
-    print('IP_BL PASS: 新增/解除 10.0.0.3 均生效');
+    print('IP_BL PASS: 新增/解除 $testIp 均生效');
 
     ErrorWidget.builder = original;
   });

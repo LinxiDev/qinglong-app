@@ -8,7 +8,7 @@ name: 集成测试（真实面板）
 #      QL_TOKEN  面板 token（配了则免登录）
 #      QL_USER / QL_PASS  面板账号密码（未配 QL_TOKEN 时用于自动登录）
 # 3. 测试结束后自动清理用例创建的数据（仅按测试前缀匹配，不会误删真实数据）：
-#      环境变量 TEST_UI_VAR_* / 定时任务 UI_TEST_TASK_* / IP 黑名单 10.0.0.3
+#      环境变量 qa_ui_* / 定时任务 qa_ui_* / IP 黑名单 10.0.0.3
 # 4. 每个测试文件单独起进程执行：应用启动时用 GetIt 注册单例，
 #    同一进程内多次 app.main() 会重复注册而失败。
 
@@ -166,7 +166,7 @@ jobs:
           # 环境变量：仅删除测试前缀
           envs = req("/api/envs").get("data") or []
           ids = [e["id"] for e in envs
-                 if str(e.get("name", "")).startswith("TEST_UI_VAR")]
+                 if str(e.get("name", "")).startswith("qa_ui_")]
           if ids:
               print("删除测试环境变量:", ids)
               req("/api/envs", "DELETE", ids)
@@ -175,7 +175,7 @@ jobs:
           crons = (req("/api/crons?page=1&size=50&searchText=")
                    .get("data", {}).get("data") or [])
           ids = [c["id"] for c in crons
-                 if str(c.get("name", "")).startswith("UI_TEST_TASK")]
+                 if str(c.get("name", "")).startswith("qa_ui_")]
           if ids:
               print("删除测试定时任务:", ids)
               req("/api/crons", "DELETE", ids)

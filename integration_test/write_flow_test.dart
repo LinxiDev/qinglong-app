@@ -5,10 +5,12 @@ import 'package:integration_test/integration_test.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:qinglong_app/main.dart' as app;
 
+import 'test_support.dart';
+
 /// 环境变量新增回归（需已登录的真实面板）。
 ///
 /// 断言提交成功后新增页自动关闭且列表出现新变量。
-/// 测试数据 TEST_UI_VAR 需在用例结束后通过接口清理，避免污染面板。
+/// 变量名统一为 `qa_ui_env_add_<runId>`，tearDown 中通过接口删除。
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
@@ -90,9 +92,29 @@ void main() {
       reason: '表单应有名称与值两个输入框',
     );
 
-    final String suffix = '${DateTime.now().millisecondsSinceEpoch % 100000}';
-    final String envName = 'TEST_UI_VAR_$suffix';
-    final String envValue = 'hello_$suffix';
+    final String runId = qaRunId();
+    final String envName = '${qaPrefix}env_add_$runId';
+    final String envValue = '${qaPrefix}value_$runId';
+
+    // 无论断言是否通过都删除本次新增的变量
+    addTearDown(() async {
+      final String? token = await qaLogin();
+      if (token == null) return;
+      final Map<String, dynamic> result = await qaApi(
+        "GET",
+        "/api/envs?searchValue=$envName",
+        token: token,
+      );
+      final List<int> ids = ((result["data"] as List?) ?? [])
+          .whereType<Map>()
+          .where((e) => e["name"] == envName)
+          .map((e) => e["id"])
+          .whereType<int>()
+          .toList();
+      if (ids.isNotEmpty) {
+        await qaApi("DELETE", "/api/envs", body: ids, token: token);
+      }
+    });
     await tester.enterText(find.byType(TextField).at(0), envName);
     await tester.pump();
     await tester.enterText(find.byType(TextField).at(1), envValue);

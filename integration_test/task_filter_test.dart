@@ -7,6 +7,8 @@ import 'package:integration_test/integration_test.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:qinglong_app/main.dart' as app;
 
+import 'test_support.dart';
+
 /// 任务列表分页 + 状态 Tab 服务端筛选回归（需已登录的真实面板）。
 ///
 /// 直接用 HTTP 预置 21 条 qa_ui_ 任务（3 条禁用），测试结束全部删除。
@@ -71,6 +73,14 @@ void main() {
     }
   }
 
+  /// 搜索框是 CupertinoTextField，用 EditableText 定位并把列表限定到测试数据
+  Future<void> enterSearch(WidgetTester tester, String keyword) async {
+    final Finder fields = find.byType(EditableText).hitTestable();
+    if (fields.evaluate().isEmpty) return;
+    await tester.enterText(fields.first, keyword);
+    await settle(tester, 5);
+  }
+
   Future<bool> tapTab(WidgetTester tester, String label) async {
     final List<Element> elements = find.text(label).evaluate().toList();
     if (elements.isEmpty) return false;
@@ -110,6 +120,34 @@ void main() {
     List<int> ids = [];
     String? token;
 
+    // 统一标识：qa_ui_task_<runId>_，统计与清理都限定在该命名空间内
+    const String taskPrefix = '${qaPrefix}task_';
+    final String runId = qaRunId();
+    final String firstName = '$taskPrefix${runId}_20';
+    final String lastName = '$taskPrefix${runId}_0';
+
+    // 断言失败时 finally 可能还没拿到 ids，tearDown 再按前缀兜底清理一次
+    addTearDown(() async {
+      if (token == null) return;
+      final Map<String, dynamic> result = await api(
+        "GET",
+        "/api/crons?page=1&size=100&searchValue=$taskPrefix",
+        token: token,
+      );
+      final List<int> cleanupIds =
+          (((result["data"] as Map?)?["data"] as List?) ?? [])
+              .whereType<Map>()
+              .where(
+                (e) => (e["name"]?.toString() ?? "").startsWith(taskPrefix),
+              )
+              .map((e) => e["id"])
+              .whereType<int>()
+              .toList();
+      if (cleanupIds.isNotEmpty) {
+        await api("DELETE", "/api/crons", body: cleanupIds, token: token);
+      }
+    });
+
     try {
       /// 预置数据（App 启动前完成，避免依赖页面刷新）
       final Map<String, dynamic> login = await api(
@@ -127,13 +165,32 @@ void main() {
         return;
       }
 
+      /// 先清理历史残留，保证下面的计数断言不受上次失败/并发任务影响
+      final Map<String, dynamic> stale = await api(
+        "GET",
+        "/api/crons?page=1&size=100&searchValue=$taskPrefix",
+        token: token,
+      );
+      final List<int> staleIds =
+          (((stale["data"] as Map?)?["data"] as List?) ?? [])
+              .whereType<Map>()
+              .where(
+                (e) => (e["name"]?.toString() ?? "").startsWith(taskPrefix),
+              )
+              .map((e) => e["id"])
+              .whereType<int>()
+              .toList();
+      if (staleIds.isNotEmpty) {
+        await api("DELETE", "/api/crons", body: staleIds, token: token);
+      }
+
       for (int i = 0; i < 21; i++) {
         await api(
           "POST",
           "/api/crons",
           body: {
-            "name": "qa_ui_$i",
-            "command": "echo qa_ui_$i",
+            "name": '$taskPrefix${runId}_$i',
+            "command": "echo $taskPrefix${runId}_$i",
             "schedule": "0 0 1 1 *",
           },
           token: token,
@@ -141,7 +198,7 @@ void main() {
       }
       final Map<String, dynamic> list = await api(
         "GET",
-        "/api/crons?page=1&size=100&searchValue=qa_ui_",
+        "/api/crons?page=1&size=100&searchValue=$taskPrefix",
         token: token,
       );
       final List<dynamic> items =
@@ -151,7 +208,11 @@ void main() {
           .where(
             (e) =>
                 e is Map &&
-                ["qa_ui_0", "qa_ui_1", "qa_ui_2"].contains(e["name"]),
+                [
+                  '$taskPrefix${runId}_0',
+                  '$taskPrefix${runId}_1',
+                  '$taskPrefix${runId}_2',
+                ].contains(e["name"]),
           )
           .map((e) => e["id"])
           .whereType<int>()
@@ -163,7 +224,7 @@ void main() {
       /// API 层断言：分页与状态筛选（不依赖 App 登录态）
       final Map<String, dynamic> page1 = await api(
         "GET",
-        "/api/crons?page=1&size=20&searchValue=qa_ui_",
+        "/api/crons?page=1&size=20&searchValue=$taskPrefix",
         token: token,
       );
       final Map<String, dynamic> page1Data = Map<String, dynamic>.from(
@@ -178,7 +239,7 @@ void main() {
 
       final Map<String, dynamic> page2 = await api(
         "GET",
-        "/api/crons?page=2&size=20&searchValue=qa_ui_",
+        "/api/crons?page=2&size=20&searchValue=$taskPrefix",
         token: token,
       );
       expect(
@@ -189,7 +250,7 @@ void main() {
 
       final Map<String, dynamic> idle = await api(
         "GET",
-        "/api/crons?page=1&size=100&filters="
+        "/api/crons?page=1&size=100&searchValue=$taskPrefix&filters="
             "${Uri.encodeQueryComponent(jsonEncode({
               "status": [1],
             }))}",
@@ -203,7 +264,7 @@ void main() {
 
       final Map<String, dynamic> disabledFilter = await api(
         "GET",
-        "/api/crons?page=1&size=100&filters="
+        "/api/crons?page=1&size=100&searchValue=$taskPrefix&filters="
             "${Uri.encodeQueryComponent(jsonEncode({
               "status": [2],
             }))}",
@@ -226,22 +287,24 @@ void main() {
 
       await tapTab(tester, '定时任务');
       await settle(tester, 4);
+      // 把列表限定到测试数据，避免演示面板自带任务影响分页与状态 Tab
+      await enterSearch(tester, taskPrefix);
 
-      /// 默认排序按创建时间倒序：首屏 qa_ui_20..，第二页才出现 qa_ui_0
+      /// 默认排序按创建时间倒序：首屏最后一条，第二页才出现第一条
       expect(
-        find.textContaining('qa_ui_20').evaluate().isNotEmpty,
+        find.textContaining(firstName).evaluate().isNotEmpty,
         isTrue,
-        reason: '第一页应包含 qa_ui_20',
+        reason: '第一页应包含 $firstName',
       );
       expect(
-        find.textContaining('qa_ui_0').evaluate().isEmpty,
+        find.textContaining(lastName).evaluate().isEmpty,
         isTrue,
         reason: '第二页任务不应在首屏全部渲染',
       );
 
       await dragUp(tester);
       expect(
-        find.textContaining('qa_ui_0').evaluate().isNotEmpty,
+        find.textContaining(lastName).evaluate().isNotEmpty,
         isTrue,
         reason: '滚动到底应自动加载第二页任务',
       );
@@ -250,9 +313,9 @@ void main() {
       await tapTab(tester, '已禁用');
       await settle(tester, 4);
       expect(
-        find.textContaining('qa_ui_0').evaluate().isNotEmpty,
+        find.textContaining(lastName).evaluate().isNotEmpty,
         isTrue,
-        reason: '已禁用 Tab 应包含被禁用的 qa_ui_0',
+        reason: '已禁用 Tab 应包含被禁用的 $lastName',
       );
 
       // ignore: avoid_print
