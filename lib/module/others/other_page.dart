@@ -7,6 +7,7 @@ import 'package:material_ui/material_ui.dart';
 import 'package:cupertino_ui/cupertino_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:qinglong_app/base/avatar_revision.dart';
 import 'package:qinglong_app/base/routes.dart';
 import 'package:qinglong_app/base/single_account_page.dart';
 import 'package:qinglong_app/base/sp_const.dart';
@@ -53,6 +54,18 @@ class OtherPageState extends ConsumerState<OtherPage>
   void initState() {
     super.initState();
     delLogsByExperiedDate();
+    avatarRevision.addListener(_onAvatarRevision);
+  }
+
+  @override
+  void dispose() {
+    avatarRevision.removeListener(_onAvatarRevision);
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _onAvatarRevision() {
+    _loadUserInfo();
   }
 
   final ScrollController _scrollController = ScrollController();
@@ -1083,21 +1096,30 @@ class OtherPageState extends ConsumerState<OtherPage>
 
   @override
   void onLazyLoad() async {
-    var response = await SingleAccountPageState.ofApi(context).user();
-
-    if (response.success) {
-      userIcon = response.bean?.avatar;
-      userName = response.bean?.username ?? "青龙客户端";
-      if (userIcon != null && userIcon!.isNotEmpty) {
-        if (mounted) {
-          userIcon =
-              "${SingleAccountPageState.ofUserInfo(context).host}/api/static/$userIcon";
-        }
-      }
-      setState(() {});
-    }
+    _loadUserInfo();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       loadPoet();
+    });
+  }
+
+  Future<void> _loadUserInfo() async {
+    final response = await SingleAccountPageState.ofApi(context).user();
+    if (!mounted || !response.success) {
+      return;
+    }
+    String? icon = response.bean?.avatar;
+    if (icon != null && icon.isNotEmpty) {
+      if (!icon.startsWith("http")) {
+        String host = SingleAccountPageState.ofUserInfo(context).host ?? "";
+        if (host.endsWith("/")) {
+          host = host.substring(0, host.length - 1);
+        }
+        icon = "$host/api/static/$icon";
+      }
+    }
+    setState(() {
+      userIcon = icon;
+      userName = response.bean?.username ?? "青龙客户端";
     });
   }
 

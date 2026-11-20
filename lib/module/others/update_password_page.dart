@@ -1,9 +1,11 @@
 import 'dart:io';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:qinglong_app/base/avatar_revision.dart';
 import 'package:qinglong_app/base/commit_button.dart';
 import 'package:qinglong_app/base/http/http.dart';
 import 'package:qinglong_app/base/ql_app_bar.dart';
@@ -32,8 +34,41 @@ class _UpdatePasswordPageState extends ConsumerState<UpdatePasswordPage>
 
   FocusNode focusNode = FocusNode();
 
-  /// 本地选择的头像文件路径（用于预览，上传成功后“我的”页会刷新头像）
+  /// 本地选择的头像文件路径（上传期间预览）
   String? _avatarPath;
+
+  /// 服务端已有头像的完整地址
+  String? _avatarUrl;
+
+  /// 选中并上传头像后回读服务端头像；返回是否成功拿到最新地址
+  Future<bool> _loadAvatar() async {
+    try {
+      final response = await SingleAccountPageState.ofApi(context).user();
+      if (!mounted || !response.success || response.bean == null) {
+        return false;
+      }
+      final String? avatar = response.bean!.avatar;
+      String? url;
+      if (avatar != null && avatar.isNotEmpty) {
+        if (avatar.startsWith("http")) {
+          url = avatar;
+        } else {
+          String host = SingleAccountPageState.ofUserInfo(context).host ?? "";
+          if (host.endsWith("/")) {
+            host = host.substring(0, host.length - 1);
+          }
+          url = "$host/api/static/$avatar";
+        }
+      }
+      setState(() {
+        _avatarUrl = url;
+      });
+      return true;
+    } catch (_) {
+      // 头像加载失败保持占位 logo，不打断页面
+      return false;
+    }
+  }
 
   /// 面板 v2.24+ 才支持头像上传
   bool get _supportAvatarUpload {
@@ -63,6 +98,10 @@ class _UpdatePasswordPageState extends ConsumerState<UpdatePasswordPage>
     if (path == null) {
       return;
     }
+    if (await File(path).length() > 5 * 1024 * 1024) {
+      "头像不能超过 5MB".toast();
+      return;
+    }
     if (!mounted) {
       return;
     }
@@ -77,10 +116,38 @@ class _UpdatePasswordPageState extends ConsumerState<UpdatePasswordPage>
       return;
     }
     if (response.success) {
+      // 重新拉取服务端头像（文件名每次上传都会变化）
+      final bool loaded = await _loadAvatar();
+      if (!mounted) {
+        return;
+      }
+      if (loaded) {
+        setState(() {
+          _avatarPath = null;
+        });
+      }
+      // 回读失败时保留本地预览，避免上传成功却退回旧头像
+      avatarRevision.value++;
       "头像更新成功".toast();
     } else {
+      // 失败撤回本地预览，回到原头像/logo
+      setState(() {
+        _avatarPath = null;
+      });
       response.message.toast();
     }
+  }
+
+  /// 与「我的」页一致：默认显示青龙 logo
+  Widget _defaultAvatar() {
+    return Image.asset(
+      ref.watch(themeProvider).themeMode == modeDark
+          ? "assets/images/ql_dark.png"
+          : "assets/images/ql.png",
+      width: 60,
+      height: 60,
+      fit: BoxFit.cover,
+    );
   }
 
   @override
@@ -112,44 +179,41 @@ class _UpdatePasswordPageState extends ConsumerState<UpdatePasswordPage>
                   onTap: _pickAndUploadAvatar,
                   child: Stack(
                     children: [
-                      Container(
-                        width: 80,
-                        height: 80,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: ref
-                              .watch(themeProvider)
-                              .themeColor
-                              .settingBgColor(),
-                          border: Border.all(
-                            color: ref.watch(themeProvider).primaryColor,
-                            width: 2,
-                          ),
+                      SizedBox(
+                        width: 60,
+                        height: 60,
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(10),
+                          child: _avatarPath != null
+                              ? Image.file(
+                                  File(_avatarPath!),
+                                  fit: BoxFit.cover,
+                                )
+                              : (_avatarUrl != null && _avatarUrl!.isNotEmpty
+                                    ? CachedNetworkImage(
+                                        imageUrl: _avatarUrl!,
+                                        width: 60,
+                                        height: 60,
+                                        fit: BoxFit.cover,
+                                        placeholder: (_, _) => _defaultAvatar(),
+                                        errorWidget: (_, _, _) =>
+                                            _defaultAvatar(),
+                                      )
+                                    : _defaultAvatar()),
                         ),
-                        clipBehavior: Clip.antiAlias,
-                        child: _avatarPath == null
-                            ? Icon(
-                                Icons.person,
-                                size: 44,
-                                color: ref
-                                    .watch(themeProvider)
-                                    .themeColor
-                                    .descColor(),
-                              )
-                            : Image.file(File(_avatarPath!), fit: BoxFit.cover),
                       ),
                       Positioned(
                         right: 0,
                         bottom: 0,
                         child: Container(
-                          padding: const EdgeInsets.all(4),
+                          padding: const EdgeInsets.all(3),
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
                             color: ref.watch(themeProvider).primaryColor,
                           ),
                           child: const Icon(
                             Icons.camera_alt,
-                            size: 14,
+                            size: 12,
                             color: Colors.white,
                           ),
                         ),
@@ -275,5 +339,6 @@ class _UpdatePasswordPageState extends ConsumerState<UpdatePasswordPage>
   @override
   void onLazyLoad() {
     focusNode.requestFocus();
+    _loadAvatar();
   }
 }
